@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Add issue to project
-        uses: actions/add-to-project@v1
+        uses: mheap/github-project-action@v1
         with:
           project-url: "https://github.com/orgs/PM4-FS25-FortressForge/projects/2"
           github-token: ${{ secrets.GITHUB_TOKEN }}
