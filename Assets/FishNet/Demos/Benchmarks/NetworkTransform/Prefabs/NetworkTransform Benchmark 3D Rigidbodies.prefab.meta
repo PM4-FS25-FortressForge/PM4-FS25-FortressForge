@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: d0094caa4668ec944ab8d744c518dda9
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 207815
+  packageName: 'FishNet: Networking Evolved'
+  packageVersion: 4.6.2R
+  assetPath: Assets/FishNet/Demos/Benchmarks/NetworkTransform/Prefabs/NetworkTransform
+    Benchmark 3D Rigidbodies.prefab
+  uploadId: 737117
