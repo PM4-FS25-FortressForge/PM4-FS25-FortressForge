@@ -13,4 +13,4 @@ jobs:
         run: |
           gh project item-add 2 --owner PM4-FS25-FortressForge --url ${{ github.event.issue.html_url }}
         env:
-          GH_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.PAT_ACTION }}
