@@ -1,5 +1,3 @@
-name: Add New Issues to Project
-
 on:
   issues:
     types: [opened]
@@ -8,8 +6,11 @@ jobs:
   add-to-project:
     runs-on: ubuntu-latest
     steps:
-      - name: Add issue to project
-        uses: mheap/github-project-action@v1
-        with:
-          project-url: "https://github.com/orgs/PM4-FS25-FortressForge/projects/2"
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Add issue to project using GitHub CLI
+        run: |
+          gh project item-add 2 --owner PM4-FS25-FortressForge --url ${{ github.event.issue.html_url }}
+        env:
+          GH_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
