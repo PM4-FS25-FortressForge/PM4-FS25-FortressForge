@@ -1,2 +1,41 @@
-- name: Unity - Builder
-  uses: game-ci/unity-builder@v4.3.0
+name: Unity Build
+
+on:
+  push:    # Runs on any push to any branch
+  pull_request:  # Runs on any PR to any branch
+  workflow_dispatch:  # Allows manual execution from GitHub UI
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # Change to windows-latest if needed
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Cache Unity Library
+        uses: actions/cache@v3
+        with:
+          path: Library
+          key: Library-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            Library-${{ runner.os }}-
+
+      - name: Set Up Unity License
+        run: |
+          echo "Setting up Unity License"
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+
+      - name: Build Unity Project
+        uses: game-ci/unity-builder@v4.3.0
+        with:
+          unityVersion: 6000.0.37f  # Change to match your Unity version
+          targetPlatform: StandaloneWindows64  # Change for different platforms
+          projectPath: .  # Adjust if your Unity project is in a subfolder
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: UnityBuild
+          path: build/StandaloneWindows64  # Change based on the platform
