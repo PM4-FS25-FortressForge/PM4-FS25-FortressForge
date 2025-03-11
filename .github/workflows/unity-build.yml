@@ -32,7 +32,7 @@ jobs:
       - name: Build Unity Project
         uses: game-ci/unity-builder@v4.3.0
         with:
-          unityVersion: 6000.0.37f  # Change to your actual Unity version
+          unityVersion: 6000.0.37f1  # Change to your actual Unity version
           targetPlatform: StandaloneWindows64
           projectPath: .  # Adjust if Unity project is in a subfolder
         env:
