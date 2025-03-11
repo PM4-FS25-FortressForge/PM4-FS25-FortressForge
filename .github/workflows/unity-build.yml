@@ -21,28 +21,22 @@ jobs:
           restore-keys: |
             Library-${{ runner.os }}-
 
-      - name: Debug Unity License Secret
-        run: |
-          echo "License first few characters: ${UNITY_LICENSE:0:20}..."
-        env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-
       - name: Set Up Unity License
         run: |
-          echo "$UNITY_LICENSE" | base64 --decode > Unity.ulf
-          echo "License file created: $(ls -l Unity.ulf)"
+          mkdir -p $HOME/.unity
+          echo "$UNITY_LICENSE" | base64 --decode > $HOME/.unity/Unity.ulf
+          echo "License file created at: $HOME/.unity/Unity.ulf"
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
 
       - name: Build Unity Project
         uses: game-ci/unity-builder@v4.3.0
         with:
-          unityVersion: 6000.0.37f
-          targetPlatform: StandaloneWindows64  # Change for different platforms
-          projectPath: .  # Adjust if your Unity project is in a subfolder
+          unityVersion: 6000.0.37f  # Change to your actual Unity version
+          targetPlatform: StandaloneWindows64
+          projectPath: .  # Adjust if Unity project is in a subfolder
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-          UNITY_LICENSE_PATH: ${{ github.workspace }}/Unity.ulf  # Ensure Unity finds the license
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
