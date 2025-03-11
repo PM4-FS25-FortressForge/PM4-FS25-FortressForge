@@ -35,7 +35,7 @@ jobs:
           projectPath: .  # Adjust if your Unity project is in a subfolder
 
       - name: Upload Build Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: UnityBuild
           path: build/StandaloneWindows64  # Change based on the platform
