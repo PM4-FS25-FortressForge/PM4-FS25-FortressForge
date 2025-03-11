@@ -23,7 +23,7 @@ jobs:
 
       - name: Set Up Unity License
         run: |
-          echo "License first few characters: ${UNITY_LICENSE:0:20}..."
+          echo "Setting up Unity License"
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
 
