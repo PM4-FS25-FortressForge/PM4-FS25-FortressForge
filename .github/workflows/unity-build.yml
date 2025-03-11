@@ -14,25 +14,35 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Cache Unity Library
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: Library
           key: Library-${{ runner.os }}-${{ github.sha }}
           restore-keys: |
             Library-${{ runner.os }}-
 
+      - name: Debug Unity License Secret
+        run: |
+          echo "License first few characters: ${UNITY_LICENSE:0:20}..."
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+
       - name: Set Up Unity License
         run: |
-          echo "Setting up Unity License"
+          echo "$UNITY_LICENSE" | base64 --decode > Unity.ulf
+          echo "License file created: $(ls -l Unity.ulf)"
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
 
       - name: Build Unity Project
         uses: game-ci/unity-builder@v4.3.0
         with:
-          unityVersion: 6000.0.37f  # Change to match your Unity version
+          unityVersion: 6000.0.37f
           targetPlatform: StandaloneWindows64  # Change for different platforms
           projectPath: .  # Adjust if your Unity project is in a subfolder
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_LICENSE_PATH: ${{ github.workspace }}/Unity.ulf  # Ensure Unity finds the license
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
