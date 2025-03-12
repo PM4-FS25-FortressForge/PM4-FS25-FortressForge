@@ -24,7 +24,7 @@ jobs:
   build:
     env:
       UNITY_PROJECT_PATH: ''
-    runs-on: ${{ matrix.os }}
+    runs-on: windows-latest
     strategy:
       matrix:
         os: [buildalon-windows]
