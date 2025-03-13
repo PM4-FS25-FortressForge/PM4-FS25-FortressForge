@@ -1,8 +1,10 @@
 name: Unity Build
 
 on:
-  push:    # Runs on any push to any branch
-  pull_request:  # Runs on any PR to any branch
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
   workflow_dispatch:  # Allows manual execution from GitHub UI
 
 jobs:
