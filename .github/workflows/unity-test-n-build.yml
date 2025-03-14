@@ -21,7 +21,7 @@ jobs:
   test:
     name: Run Unity Tests
     env:
-      UNITY_PROJECT_PATH: 'FortressForge'
+      UNITY_PROJECT_PATH: './'
     runs-on: windows-latest
     steps:
       - uses: game-ci/unity-test-runner@v4
