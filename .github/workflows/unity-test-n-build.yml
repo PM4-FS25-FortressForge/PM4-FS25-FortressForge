@@ -2,13 +2,14 @@
 # Feel free to edit this workflow to update build targets or add additional steps.
 # Check out the Buildalon open source actions at https://github.com/marketplace?query=buildalon
 
-name: Unity Build
-
+name: Buildalon Unity Build
 on:
   push:
-    branches: [ main ]
+    branches:
+      - 'main'
   pull_request:
-    branches: [ main ]
+    branches:
+      - '*'
   workflow_dispatch:
     inputs:
       clean:
@@ -16,12 +17,10 @@ on:
         required: false
         default: false
         type: 'boolean'
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ ( github.event_name == 'pull_request' || github.event.action == 'synchronize' ) }}
 jobs:
-  
   build:
     env:
       UNITY_PROJECT_PATH: ''
@@ -37,6 +36,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           clean: ${{ github.event.inputs.clean == 'true' }}
+      - uses: buildalon/unity-setup@v1
+        with:
+          build-targets: '${{ matrix.build-target }}'
       - uses: buildalon/activate-unity-license@v1
         with:
           license: 'Personal'
