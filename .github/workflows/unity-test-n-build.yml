@@ -21,9 +21,16 @@ jobs:
   test:
     name: Run Unity Tests
     env:
-      UNITY_PROJECT_PATH: './'
+      UNITY_PROJECT_PATH: 'FortressForge'
     runs-on: windows-latest
     steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Debug Directory Structure
+        run: |
+          echo "Current directory:"
+          ls -R
       - uses: game-ci/unity-test-runner@v4
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
