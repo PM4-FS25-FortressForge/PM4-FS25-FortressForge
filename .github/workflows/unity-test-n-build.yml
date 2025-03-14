@@ -2,14 +2,13 @@
 # Feel free to edit this workflow to update build targets or add additional steps.
 # Check out the Buildalon open source actions at https://github.com/marketplace?query=buildalon
 
-name: Buildalon Unity Build
+name: Unity Build
+
 on:
   push:
-    branches:
-      - 'main'
+    branches: [ main ]
   pull_request:
-    branches:
-      - '*'
+    branches: [ main ]
   workflow_dispatch:
     inputs:
       clean:
@@ -17,11 +16,59 @@ on:
         required: false
         default: false
         type: 'boolean'
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ ( github.event_name == 'pull_request' || github.event.action == 'synchronize' ) }}
 jobs:
+  test:
+    name: Run Unity Tests
+    env:
+      UNITY_PROJECT_PATH: ''
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        os: [ buildalon-windows ]
+        include:
+          - os: buildalon-windows
+            build-target: StandaloneWindows64
+            build-args: ''
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          clean: ${{ github.event.inputs.clean == 'true' }}
+      - uses: buildalon/unity-setup@v1
+        with:
+          build-targets: '${{ matrix.build-target }}'
+      - uses: buildalon/activate-unity-license@v1
+        with:
+          license: 'Personal'
+          username: '${{ secrets.UNITY_USERNAME }}'
+          password: '${{ secrets.UNITY_PASSWORD }}'
+
+      - name: Run Edit Mode Tests
+        uses: buildalon/unity-action@v1
+        with:
+          log-name: 'editmode-tests'
+          build-target: 'StandaloneWindows64'
+          args: '-runTests -batchmode -nographics -testPlatform EditMode -logfile editmode-tests.log'
+
+      - name: Run Play Mode Tests
+        uses: buildalon/unity-action@v1
+        with:
+          log-name: 'playmode-tests'
+          build-target: 'StandaloneWindows64'
+          args: '-runTests -batchmode -nographics -testPlatform PlayMode -logfile playmode-tests.log'
+
+      - name: Upload Test Logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: Unity-Test-Logs
+          path: |
+            editmode-tests.log
+            playmode-tests.log
   build:
+    needs: test  # Ensure tests pass before building
     env:
       UNITY_PROJECT_PATH: ''
     runs-on: windows-latest
@@ -36,9 +83,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           clean: ${{ github.event.inputs.clean == 'true' }}
-      - uses: buildalon/unity-setup@v1
-        with:
-          build-targets: '${{ matrix.build-target }}'
       - uses: buildalon/activate-unity-license@v1
         with:
           license: 'Personal'
@@ -94,3 +138,4 @@ jobs:
           } else {
             Write-Host "::debug::Artifacts folder not found."
           }
+
