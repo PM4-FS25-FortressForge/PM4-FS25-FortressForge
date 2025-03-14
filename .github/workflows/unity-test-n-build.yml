@@ -23,6 +23,8 @@ concurrency:
 jobs:
   test:
     name: Run Unity Tests
+    env:
+      UNITY_PROJECT_PATH: ''
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
