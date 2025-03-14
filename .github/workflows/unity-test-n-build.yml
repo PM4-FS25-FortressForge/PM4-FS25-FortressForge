@@ -37,10 +37,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           clean: ${{ github.event.inputs.clean == 'true' }}
-      - uses: buildalon/unity-setup@v1
-        with:
-          build-targets: '${{ matrix.build-target }}'
-          unity-hub-version: '2.4.4' # Specify the desired Unity Hub version
       - uses: buildalon/activate-unity-license@v1
         with:
           license: 'Personal'
