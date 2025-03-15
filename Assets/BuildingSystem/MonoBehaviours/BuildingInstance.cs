@@ -6,7 +6,7 @@ public abstract class BuildingInstance : MonoBehaviour
 
     protected int currentHealth;
 
-    protected virtual void Start() 
+    public void Start() 
     {
         if (buildingData != null) 
         {

@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public abstract class BaseBuilding : ScriptableObject
 {
     [Header("Shape Data")]
-    public List<HexCell> shapeData;
+    public List<ShapeData> shapeData;
     
     public GameObject buildingPrefab;
     

@@ -3,42 +3,47 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // Hexgrid coordinates are relative to each player's core building
-public class HexGrid
+public class HexGrid_
 {
     private Vector3 origin;
     private Dictionary<(int, int, int), HexCell> hexMap; // Q, R, H -> HexCell
+    
     private int radius; // Radius of the hex grid
     private int height; // Height of the hex grid
     
-    private float innerRadius = 1f;
+    private float cellRadius = 10f; // Distance from the center of a hex to a corner
+    private float cellHeight = 10f; // Distance between two hexes
     
-    public HexGrid(Vector3 origin, int initialRadius, int initialHeight)
+    private GameObject hexGridCellPrefab;
+    
+    public HexGrid_(Vector3 origin, int initialRadius, int initialHeight)
     {
         this.origin = origin;
         this.radius = initialRadius;
         this.height = initialHeight;
+        this.hexGridCellPrefab = hexGridCellPrefab;
         InitializeGrid(initialRadius, initialHeight);
     }
     
     public (int, int, int) WorldCoordinatesToHexCoordinates(Vector3 worldCoordinates)
     {
         Vector3 localCoordinates = worldCoordinates - origin;
-        float q = (2f / 3f * localCoordinates.x) / innerRadius;
-        float r = (-1f / 3f * localCoordinates.x + Mathf.Sqrt(3) / 3f * localCoordinates.z) / innerRadius;
+        float q = (2f / 3f * localCoordinates.x) / cellRadius;
+        float r = (-1f / 3f * localCoordinates.x + Mathf.Sqrt(3) / 3f * localCoordinates.z) / cellRadius;
         return (Mathf.RoundToInt(q), Mathf.RoundToInt(r), Mathf.RoundToInt(worldCoordinates.y));
     }
     
     public Vector3 HexCoordinatesToWorldCoordinates(int q, int r, int h)
     {
-        float x = innerRadius * 3f / 2f * q;
-        float z = innerRadius * Mathf.Sqrt(3) * (r + q / 2f);
-        return new Vector3(x, h, z) + origin;
+        float x = cellRadius * 3f / 2f * q;
+        float z = cellRadius * Mathf.Sqrt(3) * (r + q / 2f);
+        return new Vector3(x, h * cellHeight, z) + origin;
     }
     
     // Get neighbor in a specific direction (0-7)
     public HexCell GetNeighbor(HexCell hex, int direction)
     {
-        return hexMap[(hex.Q + Directions[direction].Q, hex.R + Directions[direction].R, hex.H + Directions[direction].H)];
+        return hexMap[(hex.q + Directions[direction].q, hex.r + Directions[direction].r, hex.h + Directions[direction].h)];
     }
     
     // Find all 8 neighbors of a given hex
@@ -69,7 +74,7 @@ public class HexGrid
                 for (int r = r1; r <= r2; r++)
                 {
                     HexCell hex = new HexCell(q, r, h);
-                    hex.Position = HexCoordinatesToWorldCoordinates(q, r, h);
+                    hex.position = HexCoordinatesToWorldCoordinates(q, r, h);
                     hexMap.Add((q, r, h), hex);
                 }
             }
