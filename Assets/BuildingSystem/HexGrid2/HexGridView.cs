@@ -6,7 +6,7 @@ using UnityEngine;
 /// </summary>
 public class HexGridView : MonoBehaviour
 {
-    public HexGrid HexGrid { get; set; }
+    private HexGrid HexGrid { get; set; }
     
     private GameObject TilePrefab { get; set; }
 
