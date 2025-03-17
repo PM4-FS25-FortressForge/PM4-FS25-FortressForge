@@ -15,18 +15,18 @@ jobs:
 
       # Checkout
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           lfs: true
       
       # Cache
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: Library
           key: Library
 
       # Test
       - name: Run tests
-        uses: game-ci/unity-test-runner@v2
+        uses: game-ci/unity-test-runner@v4
         with:
           unityVersion: 6000.0.37f1
