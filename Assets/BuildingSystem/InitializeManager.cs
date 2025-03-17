@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public class InitializeManager : MonoBehaviour
 {
     [Header("Referenzen für das GridView")]
     [SerializeField] private GameObject tilePrefab;       // Prefab, das pro Hexfeld instanziert wird
