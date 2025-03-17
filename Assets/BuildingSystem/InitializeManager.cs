@@ -6,8 +6,7 @@ public class InitializeManager : MonoBehaviour
 {
     [Header("Referenzen für das GridView")]
     [SerializeField] private GameObject tilePrefab;       // Prefab, das pro Hexfeld instanziert wird
-
-    private Dictionary<string, HexGridView> gridViewByPlayerId = new Dictionary<string, HexGridView>();
+    
     void Start()
     {
         // 1) Grid für Spieler 1 erstellen
@@ -24,10 +23,7 @@ public class InitializeManager : MonoBehaviour
             new GameObject("Player 1 HexGridView").AddComponent<HexGridView>(),
             grid1.Origin,
             Quaternion.identity);
-        gridView1.transform.SetParent(this.transform);
-        gridViewByPlayerId.Add(grid1.OwnerId, gridView1);
-        
-        // 3) HexGridView-Objekt bauen
+        gridView1.transform.SetParent(transform);
         gridView1.BuildGridView(tilePrefab, grid1);
 
         // 4) Grid für Spieler 2 erstellen
@@ -44,9 +40,7 @@ public class InitializeManager : MonoBehaviour
             new GameObject("Player 2 HexGridView").AddComponent<HexGridView>(),
             grid2.Origin, 
             Quaternion.identity);
-        gridView2.transform.SetParent(this.transform);
-        gridViewByPlayerId.Add(grid2.OwnerId, gridView2);
-        
+        gridView2.transform.SetParent(transform);
         gridView2.BuildGridView(tilePrefab, grid2);
     }
     
