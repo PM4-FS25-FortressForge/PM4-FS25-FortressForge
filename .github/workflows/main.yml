@@ -9,7 +9,7 @@ on:
       - 'main'
   pull_request:
     branches:
-      - '*'
+      - 'main'
   workflow_dispatch:
     inputs:
       clean:
@@ -17,36 +17,34 @@ on:
         required: false
         default: false
         type: 'boolean'
-        
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ ( github.event_name == 'pull_request' || github.event.action == 'synchronize' ) }}
 jobs:
   build:
     env:
-      UNITY_PROJECT_PATH: 'FortressForge'
+      UNITY_PROJECT_PATH: ''
     runs-on: self-hosted
     strategy:
       matrix:
-        os: [ubuntu]
+        os: [buildalon-windows, buildalon-macos]
         include:
-          - os: ubuntu
-            build-target: StandaloneLinux64
+          - os: buildalon-windows
+            build-target: StandaloneWindows64
             build-args: ''
+          - os: buildalon-macos
+            build-target: StandaloneOSX
+            build-args: ' -enableAppleAutomaticSigning'
     steps:
       - uses: actions/checkout@v4
         with:
           clean: ${{ github.event.inputs.clean == 'true' }}
+          lfs: true
+          submodules: 'recursive'
       - uses: buildalon/unity-setup@v1
         with:
           build-targets: '${{ matrix.build-target }}'
-      - name: Install Dependencies (Wine, Mono)
-        run: |
-          sudo dpkg --add-architecture i386
-          sudo apt update
-          sudo apt install -y wine64 wine32 mono-complete libglib2.0-dev libgtk-3-dev \
-            libnss3 libasound2 libx11-dev libxi6 libxrandr2 libxcursor-dev libxinerama1 \
-            libxkbcommon-x11-0 libatk1.0-0 libatk-bridge2.0-0
+          version-file: 'FortressForge/ProjectSettings/ProjectVersion.txt'
       - uses: buildalon/activate-unity-license@v1
         with:
           license: 'Personal'
@@ -64,11 +62,26 @@ jobs:
           build-target: '${{ matrix.build-target }}'
           args: '-quit -batchmode -executeMethod Buildalon.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject'
       - uses: buildalon/unity-action@v1
+        name: ${{ matrix.build-target }}-Editor-Tests
+        with:
+          build-target: '${{ matrix.build-target }}'
+          args: '-runTests -batchmode -testPlatform EditMode -testResults "${{ github.workspace }}/Logs/EditMode-test-results.xml"'
+          log-name: 'EditMode-Tests'
+      - uses: buildalon/unity-action@v1
         name: '${{ matrix.build-target }}-Build'
         with:
           log-name: '${{ matrix.build-target }}-Build'
           build-target: '${{ matrix.build-target }}'
           args: '-quit -batchmode -executeMethod Buildalon.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild${{ matrix.build-args }}'
+      - uses: buildalon/unity-xcode-builder@v1
+        id: xcode-build
+        if: ${{ matrix.build-target == 'StandaloneOSX' }}
+        with:
+          project-path: ${{ env.UNITY_PROJECT_PATH }}/Builds/${{ matrix.build-target }}/**/*.xcodeproj
+          app-store-connect-key: ${{ secrets.APP_STORE_CONNECT_KEY }}
+          app-store-connect-key-id: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          app-store-connect-issuer-id: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          team-id: ${{ secrets.APPLE_TEAM_ID }}
       - uses: actions/upload-artifact@v4
         id: upload-artifact
         name: 'Upload ${{ matrix.build-target }} Artifacts'
@@ -79,6 +92,8 @@ jobs:
           name: '${{ github.run_number }}.${{ github.run_attempt }}-${{ matrix.os }}-${{ matrix.build-target }}-Artifacts'
           path: |
             ${{ github.workspace }}/**/*.log
+            ${{ github.workspace }}/**/*.xml
+            ${{ steps.xcode-build.outputs.executable }}
             ${{ env.UNITY_PROJECT_PATH }}/Builds/StandaloneWindows64/**/*.exe
             ${{ env.UNITY_PROJECT_PATH }}/Builds/StandaloneWindows64/**/*.dll
             ${{ env.UNITY_PROJECT_PATH }}/Builds/StandaloneWindows64/**/*_Data
@@ -102,4 +117,3 @@ jobs:
           } else {
             Write-Host "::debug::Artifacts folder not found."
           }
-  
