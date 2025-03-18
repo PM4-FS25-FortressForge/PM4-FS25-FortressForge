@@ -27,14 +27,11 @@ jobs:
     runs-on: self-hosted
     strategy:
       matrix:
-        os: [buildalon-windows, buildalon-macos]
+        os: [buildalon-ubuntu]
         include:
-          - os: buildalon-windows
-            build-target: StandaloneWindows64
+          - os: buildalon-ubuntu
+            build-target: StandaloneLinux64
             build-args: ''
-          - os: buildalon-macos
-            build-target: StandaloneOSX
-            build-args: ' -enableAppleAutomaticSigning'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -73,15 +70,6 @@ jobs:
           log-name: '${{ matrix.build-target }}-Build'
           build-target: '${{ matrix.build-target }}'
           args: '-quit -batchmode -executeMethod Buildalon.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild${{ matrix.build-args }}'
-      - uses: buildalon/unity-xcode-builder@v1
-        id: xcode-build
-        if: ${{ matrix.build-target == 'StandaloneOSX' }}
-        with:
-          project-path: ${{ env.UNITY_PROJECT_PATH }}/Builds/${{ matrix.build-target }}/**/*.xcodeproj
-          app-store-connect-key: ${{ secrets.APP_STORE_CONNECT_KEY }}
-          app-store-connect-key-id: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
-          app-store-connect-issuer-id: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
-          team-id: ${{ secrets.APPLE_TEAM_ID }}
       - uses: actions/upload-artifact@v4
         id: upload-artifact
         name: 'Upload ${{ matrix.build-target }} Artifacts'
@@ -93,11 +81,9 @@ jobs:
           path: |
             ${{ github.workspace }}/**/*.log
             ${{ github.workspace }}/**/*.xml
-            ${{ steps.xcode-build.outputs.executable }}
-            ${{ env.UNITY_PROJECT_PATH }}/Builds/StandaloneWindows64/**/*.exe
-            ${{ env.UNITY_PROJECT_PATH }}/Builds/StandaloneWindows64/**/*.dll
-            ${{ env.UNITY_PROJECT_PATH }}/Builds/StandaloneWindows64/**/*_Data
-            ${{ env.UNITY_PROJECT_PATH }}/Builds/StandaloneWindows64/MonoBleedingEdge/
+            ${{ env.UNITY_PROJECT_PATH }}/Builds/StandaloneLinux64/**/*.x86_64
+            ${{ env.UNITY_PROJECT_PATH }}/Builds/StandaloneLinux64/**/*.so
+            ${{ env.UNITY_PROJECT_PATH }}/Builds/StandaloneLinux64/**/*_Data/
       - name: Clean Artifacts
         if: always()
         shell: pwsh
