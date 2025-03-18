@@ -31,7 +31,7 @@ jobs:
         os: [ubuntu]
         include:
           - os: ubuntu
-            build-target: StandaloneWindows64
+            build-target: StandaloneLinux64
             build-args: ''
     steps:
       - uses: actions/checkout@v4
