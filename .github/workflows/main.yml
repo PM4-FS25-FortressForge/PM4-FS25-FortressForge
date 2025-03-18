@@ -25,7 +25,7 @@ jobs:
   build:
     env:
       UNITY_PROJECT_PATH: 'FortressForge'
-    runs-on: Unity
+    runs-on: self-hosted
     strategy:
       matrix:
         os: [ubuntu]
