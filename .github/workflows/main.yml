@@ -17,6 +17,7 @@ on:
         required: false
         default: false
         type: 'boolean'
+        
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ ( github.event_name == 'pull_request' || github.event.action == 'synchronize' ) }}
@@ -24,12 +25,12 @@ jobs:
   build:
     env:
       UNITY_PROJECT_PATH: 'FortressForge'
-    runs-on: windows-latest
+    runs-on: Unity
     strategy:
       matrix:
-        os: [buildalon-windows]
+        os: [ubuntu]
         include:
-          - os: buildalon-windows
+          - os: ubuntu
             build-target: StandaloneWindows64
             build-args: ''
     steps:
@@ -39,6 +40,13 @@ jobs:
       - uses: buildalon/unity-setup@v1
         with:
           build-targets: '${{ matrix.build-target }}'
+      - name: Install Dependencies (Wine, Mono)
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt update
+          sudo apt install -y wine64 wine32 mono-complete libglib2.0-dev libgtk-3-dev \
+            libnss3 libasound2 libx11-dev libxi6 libxrandr2 libxcursor-dev libxinerama1 \
+            libxkbcommon-x11-0 libatk1.0-0 libatk-bridge2.0-0
       - uses: buildalon/activate-unity-license@v1
         with:
           license: 'Personal'
