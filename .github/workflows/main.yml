@@ -50,7 +50,7 @@ jobs:
       - name: Add Build Pipeline Package
         working-directory: ${{ env.UNITY_PROJECT_PATH }}
         run: |
-          npm install -g openupm-cli
+          sudo npm install -g openupm-cli
           openupm add com.virtualmaker.buildalon
       - uses: buildalon/unity-action@v1
         name: Project Validation
