@@ -17,30 +17,30 @@ public class CameraController : MonoBehaviour
     /// If you change the values in the Unity Editor it will override the default values in this script
     
     // Initial camera setup
-    [SerializeField] private float yaw = 0.0f;
-    [SerializeField] private float pitch = 45;
-    [SerializeField] private float distance = 6f;
-    [SerializeField] private Vector3 targetPosition = Vector3.zero; //At the Sart the Camera will always look (be centered) at the point at 0.0.0 coordinates
+    [SerializeField] public float yaw = 0.0f;
+    [SerializeField] public float pitch = 45;
+    [SerializeField] public float zoom = 6f;
+    [SerializeField] public Vector3 targetPosition = Vector3.zero; //At the Sart the Camera will always look (be centered) at the point at 0.0.0 coordinates
 
     // Movement & rotation speeds
-    [SerializeField] private float moveSpeed = 5.0f;
-    [SerializeField] private float RotationSpeed = 50.0f;
-    [SerializeField] private float PitchSpeed = 40.0f;
-    [SerializeField] private float ZoomSpeed = 2.0f;
+    [SerializeField] public float moveSpeed = 5.0f;
+    [SerializeField] public float rotationSpeed = 50.0f;
+    [SerializeField] public float pitchSpeed = 40.0f;
+    [SerializeField] public float zoomSpeed = 2.0f;
 
     // Limits
     [Tooltip("To avoid the camera to flip or bug do not use value higher than 89\u00b0 or lower than 0\u00b0")]
-    [SerializeField] private Vector2 pitchLimits = new Vector2(89, 0); // Pitch flat to fully top-dow (To avoid the camera to flip do not use value higher than 89°)
-    [SerializeField] private Vector2 distanceLimits = new Vector2(2.0f, 20.0f); // Min/Max distance from target Zoom
+    [SerializeField] public Vector2 pitchLimits = new Vector2(89, 0); // Pitch flat to fully top-dow (To avoid the camera to flip do not use value higher than 89°)
+    [SerializeField] public Vector2 zoomLimits = new Vector2(2.0f, 20.0f); // Min/Max distance from target Zoom
 
     // Internal
-    private PlayerInput playerInput;
-    private InputAction moveTargetAction;
-    private InputAction rotateAction;
-    private InputAction zoomAction;
-    private InputAction zoomButtons;
-    private InputAction pitchAction;
-    private float deltaTime;
+    private PlayerInput _playerInput;
+    private InputAction _moveTargetAction;
+    private InputAction _rotateAction;
+    private InputAction _zoomAction;
+    private InputAction _zoomButtons;
+    private InputAction _pitchAction;
+    private float _deltaTime;
         
  /// <summary>
  /// Start function to initialize the PlayerInput and the InputActions
@@ -51,8 +51,8 @@ public class CameraController : MonoBehaviour
     void Start()
     {
         // Input initialization of playerInput Unity Object and error managment
-        playerInput = GetComponent<PlayerInput>();
-        if (playerInput == null)    //Test if the playerInput Unity Object is found
+        _playerInput = GetComponent<PlayerInput>();
+        if (_playerInput == null)    //Test if the playerInput Unity Object is found
         {
             Debug.LogError("OrbitCamera: No PlayerInput component found!");
             enabled = false;        // Disable this Script if not found 
@@ -60,11 +60,11 @@ public class CameraController : MonoBehaviour
         }
         
         // Input initialization of Buttons and error managment
-        moveTargetAction = InitializeActionsButtons("Move");        // WASD movement
-        rotateAction = InitializeActionsButtons("Rotate");          // Q/E for yaw rotation
-        pitchAction = InitializeActionsButtons("Pitch");            // Up/Down arrow keys
-        zoomAction = InitializeActionsButtons("Zoom");              // Zoom in/out mouse Wheel
-        zoomButtons = InitializeActionsButtons("ZoomButtons");      // Zoom in/out Buttons (left/right arrow keys)
+        _moveTargetAction = InitializeActionsButtons("Move");        // WASD movement
+        _rotateAction = InitializeActionsButtons("Rotate");          // Q/E for yaw rotation
+        _pitchAction = InitializeActionsButtons("Pitch");            // Up/Down arrow keys
+        _zoomAction = InitializeActionsButtons("Zoom");              // Zoom in/out mouse Wheel
+        _zoomButtons = InitializeActionsButtons("ZoomButtons");      // Zoom in/out Buttons (left/right arrow keys)
     }
 
 /// <summary>
@@ -75,7 +75,7 @@ public class CameraController : MonoBehaviour
 /// </summary>
     void FixedUpdate()
     {
-        deltaTime = Time.deltaTime;
+        _deltaTime = Time.deltaTime;
         HandleMovement();      //Move Target (WASD)
         HandleRotation();      //Rotate around target (Q/E)
         HandlePitch();         //Pitch control (Arrow keys)
@@ -90,10 +90,10 @@ public class CameraController : MonoBehaviour
 /// </summary>
    private void HandleMovement()
     {
-        Vector2 moveInput = moveTargetAction.ReadValue<Vector2>();  // WASD input
+        Vector2 moveInput = _moveTargetAction.ReadValue<Vector2>();  // WASD input
         Vector3 moveDir = new Vector3(moveInput.x, 0, moveInput.y); // X (A/D), Z (W/S)
         Vector3 moveVector = Quaternion.Euler(0, yaw, 0) * moveDir; // Move relative to current yaw
-        targetPosition += moveVector * moveSpeed * deltaTime;   // calculate new target position
+        targetPosition += moveVector * moveSpeed * _deltaTime;   // calculate new target position
     }
 
 /// <summary>
@@ -103,8 +103,8 @@ public class CameraController : MonoBehaviour
 /// </summary>
     private void HandleRotation()
     {
-        float rotateInput = rotateAction.ReadValue<float>();    // Q/E input
-        yaw = (yaw + rotateInput * RotationSpeed * deltaTime) % 360f;  // Rotate around target
+        float rotateInput = _rotateAction.ReadValue<float>();    // Q/E input
+        yaw = (yaw + rotateInput * rotationSpeed * _deltaTime) % 360f;  // Rotate around target
     }
 
 /// <summary>
@@ -114,8 +114,8 @@ public class CameraController : MonoBehaviour
 /// </summary>
     private void HandlePitch()
     {
-        float pitchInput = pitchAction.ReadValue<float>();  // Up/Down arrows
-        pitch += pitchInput * PitchSpeed * deltaTime;     // move camera in pitch angle to center
+        float pitchInput = _pitchAction.ReadValue<float>();  // Up/Down arrows
+        pitch += pitchInput * pitchSpeed * _deltaTime;     // move camera in pitch angle to center
         pitch = Mathf.Clamp(pitch, pitchLimits.y, pitchLimits.x);   // Limit pitch angle
     }
 
@@ -126,11 +126,11 @@ public class CameraController : MonoBehaviour
 /// </summary>
     private void HandleZoom()
     {
-        float zoomInput = zoomAction.ReadValue<float>();    // Zoom input with mouse wheel
-        distance = Mathf.Clamp(distance - zoomInput * ZoomSpeed, distanceLimits.x, distanceLimits.y);   // Zoom without deltaTime to make it consistent and good feeling
+        float zoomInput = _zoomAction.ReadValue<float>();    // Zoom input with mouse wheel
+        zoom = Mathf.Clamp(zoom - zoomInput * zoomSpeed, zoomLimits.x, zoomLimits.y);   // Zoom without deltaTime to make it consistent and good feeling
 
-        float zoomButtonInput = zoomButtons.ReadValue<float>(); // Zoom input with the Buttons
-        distance = Mathf.Clamp(distance - zoomButtonInput * ZoomSpeed * deltaTime * 2, distanceLimits.x, distanceLimits.y); // Zoom faster (multiplied by 2) with buttons but depends on the deltaTime
+        float zoomButtonInput = _zoomButtons.ReadValue<float>(); // Zoom input with the Buttons
+        zoom = Mathf.Clamp(zoom - zoomButtonInput * zoomSpeed * _deltaTime * 2, zoomLimits.x, zoomLimits.y); // Zoom faster (multiplied by 2) with buttons but depends on the deltaTime
     }
 
 /// <summary>
@@ -141,7 +141,7 @@ public class CameraController : MonoBehaviour
     private void UpdateCameraPosition()
     {
         Quaternion rotation = Quaternion.Euler(pitch, yaw, 0);  //Calculate the rotation around the centred object
-        Vector3 offset = rotation * new Vector3(0, 0, -distance); // Calculate the offset of the camera
+        Vector3 offset = rotation * new Vector3(0, 0, -zoom); // Calculate the offset of the camera
         transform.position = targetPosition + offset;  // Set the new position of the camera
         transform.LookAt(targetPosition);   // Always look at the center point
     }
@@ -156,7 +156,7 @@ public class CameraController : MonoBehaviour
 /// <returns>returns the desiredButtonAction as InputAction</returns>
     private InputAction InitializeActionsButtons(string Action)
     {
-        InputAction desiredButtonAction = playerInput.actions[Action]; // Get the desired action from the playerInput ActionMap
+        InputAction desiredButtonAction = _playerInput.actions[Action]; // Get the desired action from the playerInput ActionMap
         if (desiredButtonAction == null)    //Test if the desired action / Button is found in the playerInput ActionMap
         {
             Debug.LogError(Action + ": This action or button was not found in ActionMap");
