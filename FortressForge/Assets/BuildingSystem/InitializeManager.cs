@@ -10,7 +10,7 @@ public class InitializeManager : MonoBehaviour
     void Start()
     {
         // 1) Grid für Spieler 1 erstellen
-        HexGrid grid1 = HexGridManager.Instance.CreateHexGrid(
+        HexGridData grid1 = HexGridManager.Instance.CreateHexGrid(
             new Vector3(800, 0, 800), 
             5, 
             2, 
@@ -27,7 +27,7 @@ public class InitializeManager : MonoBehaviour
         gridView1.BuildGridView(tilePrefab, grid1);
 
         // 4) Grid für Spieler 2 erstellen
-        HexGrid grid2 = HexGridManager.Instance.CreateHexGrid(
+        HexGridData grid2 = HexGridManager.Instance.CreateHexGrid(
             new Vector3(300, 0, 300), 
             5, 
             2, 

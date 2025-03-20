@@ -6,49 +6,33 @@ using UnityEngine;
 public class HexTileView : MonoBehaviour
 {
     private HexTileData tileData;
-    private Color defaultColor = Color.green; // Wird beim Init korrekt gesetzt.
-
+    private Color _freeColor = Color.green; // Wird beim Init korrekt gesetzt.
+    private Color _occupiedColor = Color.red;
+    private Color _highlightColor = Color.yellow;
+    
+    private MeshRenderer _renderer;
+    
     public void Init(HexTileData data)
     {
         tileData = data;
-        var renderer = GetComponentInChildren<MeshRenderer>();
-        if (renderer != null)
-        {
-            // Speichere die beim Instantiieren vorhandene Farbe,
-            // damit wir später wieder auf "Normal" zurück können.
-            // defaultColor = renderer.material.color;
-        }
+        _renderer = GetComponentInChildren<MeshRenderer>();
         UpdateVisuals();
     }
-
-    /// <summary>
-    /// Hier z.B. Farbe, Text oder Mesh je nach TileData anpassen.
-    /// </summary>
-    private void UpdateVisuals()
+    
+    public void UpdateVisuals()
     {
-        MeshRenderer renderer = GetComponentInChildren<MeshRenderer>();
-        if (renderer != null)
-        {
-            // Einfaches Beispiel: rot, wenn belegt. Sonst grün.
-            if (tileData.IsOccupied)
-                renderer.material.color = Color.red;
-            else
-                renderer.material.color = defaultColor;
-        }
+        _renderer.material.color = tileData.IsOccupied ? _occupiedColor : _freeColor;
     }
 
     /// <summary>
     /// Setzt einen "Hover"-Effekt auf Orange, oder setzt die ursprüngliche Farbe wieder zurück.
     /// </summary>
-    public void SetHighlight(bool highlight)
-    {
-        var renderer = GetComponentInChildren<MeshRenderer>();
-        if (renderer == null) return;
-
+    public void UpdateVisuals(bool highlight) {
         if (highlight)
-            renderer.material.color = Color.Lerp(defaultColor, Color.yellow, 0.5f); 
-        else
-            renderer.material.color = defaultColor;
+            _renderer.material.color = _highlightColor;
+        else {
+            _renderer.material.color = tileData.IsOccupied ? _occupiedColor : _freeColor;
+        }
     }
 
     /// <summary>

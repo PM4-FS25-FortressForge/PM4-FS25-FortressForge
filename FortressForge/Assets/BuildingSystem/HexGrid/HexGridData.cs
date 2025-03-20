@@ -6,7 +6,7 @@ using System.Collections.Generic;
 /// Repräsentiert die reine Datenstruktur eines Hexfeld-Grids.
 /// Keine direkte Rendering-Logik!
 /// </summary>
-public class HexGrid
+public class HexGridData
 {
     public int GridId { get; private set; }
     public Vector3 Origin { get; private set; }
@@ -20,15 +20,15 @@ public class HexGrid
     public float TileHeight { get; private set; }
 
     // Einfache Beispiel-Sammlung für Tile-Daten (key: hex-Koordinate)
-    private Dictionary<(int, int, int), HexTileData> tiles 
+    private readonly Dictionary<(int, int, int), HexTileData> _tiles 
         = new Dictionary<(int, int, int), HexTileData>();
 
     /// <summary>
     /// Zugriff auf alle Tiles (z.B. für die View)
     /// </summary>
-    public Dictionary<(int, int, int), HexTileData> AllTiles => tiles;
+    public Dictionary<(int, int, int), HexTileData> AllTiles => _tiles;
 
-    public HexGrid(int gridId, Vector3 origin, int radius, int height, float tileSize, float tileHeight)
+    public HexGridData(int gridId, Vector3 origin, int radius, int height, float tileSize, float tileHeight)
     {
         GridId = gridId;
         Origin = origin;
@@ -46,13 +46,13 @@ public class HexGrid
                 for (int r = r1; r <= r2; r++)
                 {
                     (int, int, int) coord = (q, r, h);
-                    tiles[coord] = new HexTileData(coord);
+                    _tiles[coord] = new HexTileData(coord);
                 }
             }
         }
     }
     
-public bool ValidateBuidlingPlacement((int, int, int) hexCoord, BaseBuilding building) {
+    public bool ValidateBuidlingPlacement((int, int, int) hexCoord, BaseBuilding building) {
         foreach (var kvp in building.shapeData) {
             (int, int, int) coord = (kvp.r, kvp.q, kvp.h);
             HexTileData tileData = GetTileData((coord.Item1 + hexCoord.Item1, coord.Item2 + hexCoord.Item2, coord.Item3 + hexCoord.Item3));
@@ -68,7 +68,7 @@ public bool ValidateBuidlingPlacement((int, int, int) hexCoord, BaseBuilding bui
     /// </summary>
     public HexTileData GetTileData((int, int, int) hexCoord)
     {
-        if (tiles.TryGetValue(hexCoord, out HexTileData data))
+        if (_tiles.TryGetValue(hexCoord, out HexTileData data))
         {
             return data;
         }
@@ -80,9 +80,9 @@ public bool ValidateBuidlingPlacement((int, int, int) hexCoord, BaseBuilding bui
     /// </summary>
     public void SetTileData((int, int, int) hexCoord, HexTileData newData)
     {
-        if (tiles.ContainsKey(hexCoord))
+        if (_tiles.ContainsKey(hexCoord))
         {
-            tiles[hexCoord] = newData;
+            _tiles[hexCoord] = newData;
         }
     }
 

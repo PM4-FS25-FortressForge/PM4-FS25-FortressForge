@@ -7,7 +7,7 @@ public class HexGridManager : MonoBehaviour
     public static HexGridManager Instance { get; private set; }
 
     // Alle registrierten Grids werden hier abgelegt
-    private Dictionary<int, HexGrid> allGrids = new Dictionary<int, HexGrid>();
+    private Dictionary<int, HexGridData> allGrids = new Dictionary<int, HexGridData>();
 
     private int nextGridId = 0;
 
@@ -28,9 +28,9 @@ public class HexGridManager : MonoBehaviour
     /// Erstellt ein neues HexGrid mit angegebener Größe und Ursprung.
     /// OwnerId kann ein Spielername, eine Netzwerk-ID o. Ä. sein.
     /// </summary>
-    public HexGrid CreateHexGrid(Vector3 origin, int radius, int height, string ownerId, float tileSize, float tileHeight)
+    public HexGridData CreateHexGrid(Vector3 origin, int radius, int height, string ownerId, float tileSize, float tileHeight)
     {
-        HexGrid newGrid = new HexGrid(nextGridId, origin, radius, height, tileSize, tileHeight);
+        HexGridData newGrid = new HexGridData(nextGridId, origin, radius, height, tileSize, tileHeight);
         newGrid.OwnerId = ownerId;
 
         allGrids.Add(nextGridId, newGrid);
@@ -42,9 +42,9 @@ public class HexGridManager : MonoBehaviour
     /// <summary>
     /// Gibt das HexGrid mit passender ID zurück (oder null, wenn nicht vorhanden).
     /// </summary>
-    public HexGrid GetGridById(int gridId)
+    public HexGridData GetGridById(int gridId)
     {
-        if (allGrids.TryGetValue(gridId, out HexGrid grid))
+        if (allGrids.TryGetValue(gridId, out HexGridData grid))
         {
             return grid;
         }
