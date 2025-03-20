@@ -46,8 +46,7 @@ jobs:
         run: |
           cd FortressForge
           sonar-scanner \
-            -Dsonar.projectKey=your_project_key \
-            -Dsonar.organization=your_organization \
+            -Dsonar.projectKey=FortressForge \
             -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
             -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
             -Dsonar.scm.provider=git \
