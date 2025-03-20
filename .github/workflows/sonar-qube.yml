@@ -1,40 +1,47 @@
-name: SonarQube Analysis
-
+name: SonarQube
 on:
   push:
     branches:
-      - main
+      - dev
   pull_request:
-    branches:
-      - main
-
+    types: [opened, synchronize, reopened]
 jobs:
-  sonar:
-    name: SonarQube Scan
-    runs-on: ubuntu-latest
-
+  build:
+    name: Build and analyze
+    runs-on: windows-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
         with:
-          fetch-depth: 0  # Ensure full history is available for SonarQube
-
-      - name: Install SonarScanner CLI
+          java-version: 17
+          distribution: 'zulu' # Alternative distribution options are available.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Cache SonarQube Cloud packages
+        uses: actions/cache@v4
+        with:
+          path: ~\sonar\cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+      - name: Cache SonarQube Cloud scanner
+        id: cache-sonar-scanner
+        uses: actions/cache@v4
+        with:
+          path: .\.sonar\scanner
+          key: ${{ runner.os }}-sonar-scanner
+          restore-keys: ${{ runner.os }}-sonar-scanner
+      - name: Install SonarQube Cloud scanner
+        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+        shell: powershell
         run: |
-          wget -O sonar-scanner-cli.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
-          unzip sonar-scanner-cli.zip
-          mv sonar-scanner-5.0.1.3006-linux sonar-scanner
-          echo "$(pwd)/sonar-scanner/bin" >> $GITHUB_PATH
-
-      - name: Begin SonarQube Analysis
+          New-Item -Path .\.sonar\scanner -ItemType Directory
+          dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
+      - name: Build and analyze
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        shell: powershell
         run: |
-          sonar-scanner \
-            -Dsonar.projectKey="FortressForge" \
-            -Dsonar.organization="your_organization" \
-            -Dsonar.host.url="${{ secrets.SONAR_HOST_URL }}" \
-            -Dsonar.login="${{ secrets.SONAR_TOKEN }}" \
-            -Dsonar.sources=. \
-            -Dsonar.verbose=true
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"PM4-FS25-FortressForge_PM4-FS25-FortressForge" /o:"pm4-fs25-fortressforge" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+          dotnet build
+          .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
