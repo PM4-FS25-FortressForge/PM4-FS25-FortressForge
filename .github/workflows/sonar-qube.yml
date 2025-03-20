@@ -21,7 +21,7 @@ jobs:
       - name: Install SonarScanner .NET
         run: $DOTNET_ROOT/dotnet tool install dotnet-sonarscanner --tool-path ../sonarscanner --version 5.3.1
       - name: Cache Library
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: Library
           key: Library-2020.3.17
