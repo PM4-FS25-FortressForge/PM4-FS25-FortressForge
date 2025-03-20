@@ -47,18 +47,6 @@ jobs:
           license: 'Personal'
           username: '${{ secrets.UNITY_USERNAME }}'
           password: '${{ secrets.UNITY_PASSWORD }}'
-      - name: Begin SonarQube Analysis
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: |
-          cd FortressForge
-          dotnet sonarscanner begin \
-            /k:"FortressForge" \
-            /o:"your_organization" \
-            /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}" \
-            /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
-            /d:sonar.exclusions="**/*.meta,**/*.unity,**/*.prefab,**/*.mat,Packages/**,Temp/**,Logs/**"
       - name: Add Build Pipeline Package
         working-directory: ${{ env.UNITY_PROJECT_PATH }}
         run: |
@@ -96,12 +84,6 @@ jobs:
             ${{ env.UNITY_PROJECT_PATH }}/Builds/StandaloneLinux64/**/*.x86_64
             ${{ env.UNITY_PROJECT_PATH }}/Builds/StandaloneLinux64/**/*.so
             ${{ env.UNITY_PROJECT_PATH }}/Builds/StandaloneLinux64/**/*_Data/
-      - name: End SonarQube Analysis
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          cd FortressForge
-          dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
       - name: Clean Artifacts
         if: always()
         shell: pwsh
