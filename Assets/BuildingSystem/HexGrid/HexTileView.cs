@@ -18,6 +18,7 @@ public class HexTileView : MonoBehaviour
             // damit wir später wieder auf "Normal" zurück können.
             // defaultColor = renderer.material.color;
         }
+
         UpdateVisuals();
     }
 
@@ -29,11 +30,7 @@ public class HexTileView : MonoBehaviour
         MeshRenderer renderer = GetComponentInChildren<MeshRenderer>();
         if (renderer != null)
         {
-            // Einfaches Beispiel: rot, wenn belegt. Sonst grün.
-            if (tileData.IsOccupied)
-                renderer.material.color = Color.red;
-            else
-                renderer.material.color = defaultColor;
+            renderer.material.color = tileData.IsOccupied ? Color.red : defaultColor;
         }
     }
 
@@ -44,11 +41,7 @@ public class HexTileView : MonoBehaviour
     {
         var renderer = GetComponentInChildren<MeshRenderer>();
         if (renderer == null) return;
-
-        if (highlight)
-            renderer.material.color = Color.Lerp(defaultColor, Color.yellow, 0.5f); 
-        else
-            renderer.material.color = defaultColor;
+        renderer.material.color = tileData.IsOccupied ? Color.red : Color.yellow;
     }
 
     /// <summary>

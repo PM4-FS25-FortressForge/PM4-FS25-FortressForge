@@ -11,16 +11,17 @@ public class HexGrid
     public int GridId { get; private set; }
     public Vector3 Origin { get; private set; }
     public string OwnerId { get; set; }
-    
+
     /// <summary>
     /// Grösse der HexTiles werden hier definiert, damit in Zukunft auch unterschiedliche
     /// Tile-Grössen für unterschiedliche Spieler möglich ist (bspw. für KI).
     /// </summary>
     public float TileRadius { get; private set; }
+
     public float TileHeight { get; private set; }
 
     // Einfache Beispiel-Sammlung für Tile-Daten (key: hex-Koordinate)
-    private Dictionary<(int, int, int), HexTileData> tiles 
+    private Dictionary<(int, int, int), HexTileData> tiles
         = new Dictionary<(int, int, int), HexTileData>();
 
     /// <summary>
@@ -61,6 +62,7 @@ public class HexGrid
         {
             return data;
         }
+
         return null;
     }
 
@@ -72,6 +74,52 @@ public class HexGrid
         if (tiles.ContainsKey(hexCoord))
         {
             tiles[hexCoord] = newData;
+        }
+    }
+
+    /// <summary>
+    /// Validierung der Platzierung eines Gebäudes.
+    /// </summary>
+    /// <param name="hexCoord"></param>
+    /// <param name="building"></param>
+    /// <returns></returns>
+    public bool ValidateBuidlingPlacement((int, int, int) hexCoord, BaseBuilding building)
+    {
+        foreach (var kvp in building.shapeData)
+        {
+            (int, int, int) coord = (kvp.r, kvp.q, kvp.h);
+            HexTileData tileData = GetTileData((coord.Item1 + hexCoord.Item1, coord.Item2 + hexCoord.Item2,
+                coord.Item3 + hexCoord.Item3));
+            if (tileData == null || tileData.IsOccupied)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Gebäude platzieren und Felder auf belegt setzen
+    /// </summary>
+    public void PlaceBuilding((int, int, int) coord, BaseBuilding building)
+    {
+        var selectedTile = GetTileData(coord);
+
+
+        // Validieren, ob es möglich ist, das Gebäude an der gewünschten Stelle zu platzieren.
+        if (ValidateBuidlingPlacement(selectedTile.HexCoord, building))
+        {
+            // TODO: Richtiges gebäude platzieren
+            
+            // Feld als besetzt belegen
+            foreach (var kvp in building.shapeData)
+            {
+                (int, int, int) coordInRange = (kvp.r, kvp.q, kvp.h);
+                HexTileData tileData = GetTileData((coordInRange.Item1 + kvp.r, coordInRange.Item2 + kvp.q,
+                    coordInRange.Item3 + kvp.h));
+                tileData.IsOccupied = true;
+            }
         }
     }
 

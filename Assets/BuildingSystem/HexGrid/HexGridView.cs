@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 using System.Collections.Generic;
 
 /// <summary>
@@ -11,7 +12,7 @@ public class HexGridView : MonoBehaviour
     private GameObject TilePrefab { get; set; }
 
     // Speichert alle erzeugten TileViews mit ihren Koordinaten als Schlüssel.
-    private Dictionary<(int, int, int), HexTileView> tileViews 
+    private Dictionary<(int, int, int), HexTileView> tileViews
         = new Dictionary<(int, int, int), HexTileView>();
 
     // Merkt sich das aktuell "gehoverte" Tile, damit wir es beim Verlassen zurücksetzen können.
@@ -30,11 +31,14 @@ public class HexGridView : MonoBehaviour
             Debug.LogWarning("HexGridView: Keine gültigen Referenzen für Grid oder Prefab!");
             return;
         }
+
         UpdateHexGridView();
     }
 
-    private void UpdateHexGridView() {
-        foreach (var kvp in HexGrid.AllTiles) {
+    private void UpdateHexGridView()
+    {
+        foreach (var kvp in HexGrid.AllTiles)
+        {
             (int, int, int) coord = kvp.Key;
             HexTileData tileData = kvp.Value;
 
@@ -46,28 +50,29 @@ public class HexGridView : MonoBehaviour
 
             // Falls das Prefab ein HexTileView-Skript hat, übergeben wir die Daten
             HexTileView tileView = tileObj.GetComponent<HexTileView>();
-            if (tileView != null) {
+            if (tileView != null)
+            {
                 tileView.Init(tileData);
                 tileViews[coord] = tileView;
             }
         }
     }
-    
+
     private (int, int, int) CalculateGridCoord(Vector3 worldPos, Vector3 origin)
     {
         // Verschieben in den lokalen Raum (ursprüngliche Nullpunktlage):
         Vector3 localPos = worldPos - origin;
- 
+
         // q, r und h berechnen (Floating-Point)
         float qFloat = localPos.x / (HexGrid.TileRadius * 1.5f);
         float rFloat = (localPos.z / (HexGrid.TileRadius * Mathf.Sqrt(3))) - (qFloat / 2f);
         float hFloat = localPos.y / HexGrid.TileHeight;
- 
+
         // Auf int runden:
         int q = Mathf.RoundToInt(qFloat);
         int r = Mathf.RoundToInt(rFloat);
         int h = Mathf.RoundToInt(hFloat);
- 
+
         return (q, r, h);
     }
 
@@ -94,6 +99,12 @@ public class HexGridView : MonoBehaviour
                     // Neues Tile highlighten
                     hitTileView.SetHighlight(true);
                     currentlyHoveredTile = hitTileView;
+
+                    // 2) Auf Mausklick reagieren
+                    if (Input.GetMouseButtonDown(0))
+                    {
+                        HandleTileClick();
+                    }
                 }
             }
             else
@@ -137,8 +148,8 @@ public class HexGridView : MonoBehaviour
     {
         foreach (var kvp in tileViews)
         {
-            var c = kvp.Key;           // -> (q, r, h)
-            var tileView = kvp.Value;  // -> Das passende Tile
+            var c = kvp.Key; // -> (q, r, h)
+            var tileView = kvp.Value; // -> Das passende Tile
             if (c.Item3 == floorLevel)
             {
                 tileView.gameObject.SetActive(visible);
@@ -147,10 +158,35 @@ public class HexGridView : MonoBehaviour
 
         // Wenn wir gerade ein Tile ausblenden, das aktuell gehighlightet war,
         // sollten wir das Hover zurücksetzen:
-        if (currentlyHoveredTile != null && 
+        if (currentlyHoveredTile != null &&
             currentlyHoveredTile.FloorLevel == floorLevel && !visible)
         {
             ClearHoveredTile();
         }
     }
+
+    /// <summary>
+    /// Auf Mouseklick korrekt reagieren, z.B. um Gebäude zu platzieren.
+    /// </summary>
+    public void HandleTileClick((int, int, int) coord)
+    {
+        var selectedTile = HexGrid.GetTileData(coord);
+        
+        if (selectedTile == null) return;
+        
+        if (!selectedTile.IsOccupied)
+        {
+            // TODO: Gebäude auswählen
+            //HexGrid.PlaceBuilding(selectedTile.HexCoord, building);
+        }
+        else
+        {
+            // TODO: Interagiert mit Gebäude
+            return;
+        }
+        Update();
+    }
+
+
+    
 }
