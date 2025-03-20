@@ -2,8 +2,11 @@ name: sonarqube-check
 on:
   push:
     branches:
-      - develop
-    workflow_dispatch:
+      - main
+  pull_request:
+    branches:
+      - 'main'
+  workflow_dispatch:
 jobs:
   sonarqube-check:
     runs-on: ubuntu-latest
