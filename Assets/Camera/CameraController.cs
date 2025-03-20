@@ -42,12 +42,12 @@ public class CameraController : MonoBehaviour
     private InputAction _pitchAction;
     private float _deltaTime;
         
- /// <summary>
- /// Start function to initialize the PlayerInput and the InputActions
- /// The PlayerInput is a Unity component that allows you to use the new Input System
- /// This functions checks if the playerInput Unity Object is found if not it will disable this Script and print an error log
- /// Additionally it initializes the InputActions from the Unity ActionMap for the Buttons (WASD, Q/E, Arrow keys and Mouse Wheel)
- /// </summary>
+    /// <summary>
+    /// Start function to initialize the PlayerInput and the InputActions
+    /// The PlayerInput is a Unity component that allows you to use the new Input System
+    /// This functions checks if the playerInput Unity Object is found if not it will disable this Script and print an error log
+    /// Additionally it initializes the InputActions from the Unity ActionMap for the Buttons (WASD, Q/E, Arrow keys and Mouse Wheel)
+    /// </summary>
     void Start()
     {
         // Input initialization of playerInput Unity Object and error managment
@@ -67,12 +67,12 @@ public class CameraController : MonoBehaviour
         _zoomButtons = InitializeActionsButtons("ZoomButtons");      // Zoom in/out Buttons (left/right arrow keys)
     }
 
-/// <summary>
-/// FixedUpdate function to handle the movement, rotation, pitch control and zoom of the camera
-/// This function is called every fixed frame-rate frame
-/// It calls the respective functions to handle the movement, rotation, pitch control and zoom of the camera
-/// Additionally it calls the UpdateCameraPosition function to calculate the new camera position
-/// </summary>
+    /// <summary>
+    /// FixedUpdate function to handle the movement, rotation, pitch control and zoom of the camera
+    /// This function is called every fixed frame-rate frame
+    /// It calls the respective functions to handle the movement, rotation, pitch control and zoom of the camera
+    /// Additionally it calls the UpdateCameraPosition function to calculate the new camera position
+    /// </summary>
     void FixedUpdate()
     {
         _deltaTime = Time.deltaTime;
@@ -83,12 +83,12 @@ public class CameraController : MonoBehaviour
         UpdateCameraPosition();         //Calculate at update camera position
     }
 
-/// <summary>
-/// HandleMovement function to handle the horizontal movement of the camera
-/// To be more specifiv the function calculates the new horizontal position of the target object wich is followed by the camera
-/// To calculate the new target position the function uses the WASD input and the current yaw of the camera
-/// </summary>
-   private void HandleMovement()
+    /// <summary>
+    /// HandleMovement function to handle the horizontal movement of the camera
+    /// To be more specifiv the function calculates the new horizontal position of the target object wich is followed by the camera
+    /// To calculate the new target position the function uses the WASD input and the current yaw of the camera
+    /// </summary>
+    private void HandleMovement()
     {
         Vector2 moveInput = _moveTargetAction.ReadValue<Vector2>();  // WASD input
         Vector3 moveDir = new Vector3(moveInput.x, 0, moveInput.y); // X (A/D), Z (W/S)
@@ -96,22 +96,22 @@ public class CameraController : MonoBehaviour
         targetPosition += moveVector * moveSpeed * _deltaTime;   // calculate new target position
     }
 
-/// <summary>
-/// HandleRotation function to handle the rotation of the camera around the target
-/// The function calculates the new yaw of the camera
-/// To calculate the new yaw the function uses the Q/E input
-/// </summary>
+    /// <summary>
+    /// HandleRotation function to handle the rotation of the camera around the target
+    /// The function calculates the new yaw of the camera
+    /// To calculate the new yaw the function uses the Q/E input
+    /// </summary>
     private void HandleRotation()
     {
         float rotateInput = _rotateAction.ReadValue<float>();    // Q/E input
         yaw = (yaw + rotateInput * rotationSpeed * _deltaTime) % 360f;  // Rotate around target
     }
 
-/// <summary>
-/// HandlePitch function to handle the pitch control of the camera
-/// The function calculates the new pitch of the camera
-/// To calculate the new pitch the function uses the Up/Down arrow keys input
-/// </summary>
+    /// <summary>
+    /// HandlePitch function to handle the pitch control of the camera
+    /// The function calculates the new pitch of the camera
+    /// To calculate the new pitch the function uses the Up/Down arrow keys input
+    /// </summary>
     private void HandlePitch()
     {
         float pitchInput = _pitchAction.ReadValue<float>();  // Up/Down arrows
@@ -119,11 +119,11 @@ public class CameraController : MonoBehaviour
         pitch = Mathf.Clamp(pitch, pitchLimits.y, pitchLimits.x);   // Limit pitch angle
     }
 
-/// <summary>
-/// HandleZoom function to handle the zoom in/out of the camera
-/// The function calculates the new distance of the camera from the target
-/// To calculate the new distance the function uses the mouse wheel input and the arrow keys (left/right) input
-/// </summary>
+    /// <summary>
+    /// HandleZoom function to handle the zoom in/out of the camera
+    /// The function calculates the new distance of the camera from the target
+    /// To calculate the new distance the function uses the mouse wheel input and the arrow keys (left/right) input
+    /// </summary>
     private void HandleZoom()
     {
         float zoomInput = _zoomAction.ReadValue<float>();    // Zoom input with mouse wheel
@@ -133,11 +133,11 @@ public class CameraController : MonoBehaviour
         zoom = Mathf.Clamp(zoom - zoomButtonInput * zoomSpeed * _deltaTime * 2, zoomLimits.x, zoomLimits.y); // Zoom faster (multiplied by 2) with buttons but depends on the deltaTime
     }
 
-/// <summary>
-/// UpdateCameraPosition function to calculate the new position of the camera
-/// The function calculates the new position of the camera based on the target position, the pitch, yaw and distance of the camera
-/// It sets the new position of the camera and makes sure the camera always looks at the centred target
-/// </summary>
+    /// <summary>
+    /// UpdateCameraPosition function to calculate the new position of the camera
+    /// The function calculates the new position of the camera based on the target position, the pitch, yaw and distance of the camera
+    /// It sets the new position of the camera and makes sure the camera always looks at the centred target
+    /// </summary>
     private void UpdateCameraPosition()
     {
         Quaternion rotation = Quaternion.Euler(pitch, yaw, 0);  //Calculate the rotation around the centred object
@@ -146,14 +146,14 @@ public class CameraController : MonoBehaviour
         transform.LookAt(targetPosition);   // Always look at the center point
     }
 
-/// <summary>
-/// InitializeActionsButtons function to initialize the InputActions for the Buttons
-/// This functions checks if the desired action / Button is found in the playerInput ActionMap
-/// if not it will disable this Script and print an error log
-/// Additionally it initializes the InputActions from the Unity ActionMap for the Buttons (WASD, Q/E, Arrow keys and Mouse Wheel)
-/// </summary>
-/// <param name="Action"> Parameter to specify the desired action / button from the playerInput ActionMap</param> 
-/// <returns>returns the desiredButtonAction as InputAction</returns>
+    /// <summary>
+    /// InitializeActionsButtons function to initialize the InputActions for the Buttons
+    /// This functions checks if the desired action / Button is found in the playerInput ActionMap
+    /// if not it will disable this Script and print an error log
+    /// Additionally it initializes the InputActions from the Unity ActionMap for the Buttons (WASD, Q/E, Arrow keys and Mouse Wheel)
+    /// </summary>
+    /// <param name="Action"> Parameter to specify the desired action / button from the playerInput ActionMap</param> 
+    /// <returns>returns the desiredButtonAction as InputAction</returns>
     private InputAction InitializeActionsButtons(string Action)
     {
         InputAction desiredButtonAction = _playerInput.actions[Action]; // Get the desired action from the playerInput ActionMap
