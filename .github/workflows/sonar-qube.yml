@@ -15,7 +15,7 @@ jobs:
       DOTNET_ROOT: '/opt/unity/Editor/Data/NetCore/Sdk-2.2.107'
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Install JDK 11 for SonarScanner .NET
         run: apt update && apt install -y openjdk-11-jre-headless=11.0.11+9-0ubuntu2~18.04
       - name: Install SonarScanner .NET
