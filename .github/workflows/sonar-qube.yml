@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 jobs:
   sonarqube-check:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     container: unityci/editor:ubuntu-2020.3.17f1-base-0
     env:
       DOTNET_ROOT: '/opt/unity/Editor/Data/NetCore/Sdk-2.2.107'
@@ -41,6 +41,6 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: |
-          ../sonarscanner/dotnet-sonarscanner begin /k:"<your_project_key>" /d:sonar.login="$SONAR_TOKEN" /d:sonar.host.url="$SONAR_HOST_URL"
-          $DOTNET_ROOT/dotnet build <your_project_name>.sln
+          ../sonarscanner/dotnet-sonarscanner begin /k:"FortressForge" /d:sonar.login="$SONAR_TOKEN" /d:sonar.host.url="$SONAR_HOST_URL"
+          $DOTNET_ROOT/dotnet build FortressForge.sln
           ../sonarscanner/dotnet-sonarscanner end /d:sonar.login="$SONAR_TOKEN"
