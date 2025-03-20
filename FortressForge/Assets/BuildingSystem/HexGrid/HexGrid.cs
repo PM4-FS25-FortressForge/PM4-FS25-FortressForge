@@ -51,6 +51,17 @@ public class HexGrid
             }
         }
     }
+    
+    public bool ValidateBuidlingPlacement((int, int, int) hexCoord, BaseBuilding building) {
+        foreach (var kvp in building.shapeData) {
+            (int, int, int) coord = (kvp.r, kvp.q, kvp.h);
+            HexTileData tileData = GetTileData((coord.Item1 + hexCoord.Item1, coord.Item2 + hexCoord.Item2, coord.Item3 + hexCoord.Item3));
+            if (tileData == null || tileData.IsOccupied) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     /// <summary>
     /// Gibt die Daten eines bestimmten Hex-Feldes zurück, falls vorhanden.

@@ -205,13 +205,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.31771293, y: -0, z: -0, w: 0.94818693}
-  m_LocalPosition: {x: 500, y: 21.9, z: 470.1}
+  m_LocalRotation: {x: 0.26912743, y: 0.39926758, z: -0.12384455, w: 0.86765105}
+  m_LocalPosition: {x: 106, y: 158.5, z: 90.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 37.049, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 34.466, y: 49.421, z: 0}
 --- !u!114 &330585547
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -464,7 +464,7 @@ Transform:
   m_GameObject: {fileID: 1149923577}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 500, y: 0, z: 517.3205}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -481,7 +481,7 @@ GameObject:
   - component: {fileID: 1496866675}
   - component: {fileID: 1496866674}
   m_Layer: 0
-  m_Name: GameManager
+  m_Name: InitializeManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -499,7 +499,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 715a10cee29e78c44bb686a14f6bb0fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridViewPrefab: {fileID: 5816172020616491414, guid: ca6c3cce65e2cea4b87474ec5aaf2e4b, type: 3}
   tilePrefab: {fileID: 5716116258878632309, guid: 1ae08bcc3c9683442a282e212abda2d9, type: 3}
 --- !u!4 &1496866675
 Transform:
@@ -510,7 +509,7 @@ Transform:
   m_GameObject: {fileID: 1496866673}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 500, y: 0, z: 517.3205}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
