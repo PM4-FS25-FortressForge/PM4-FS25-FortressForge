@@ -19,11 +19,6 @@ jobs:
         with:
           fetch-depth: 0  # Ensure full history is available for SonarQube
 
-      - name: Install Unity
-        uses: game-ci/unity-setup@v2
-        with:
-          unityVersion: 2022.3.5f1  # Change to match your Unity version
-
       - name: Install SonarScanner CLI
         run: |
           wget -O sonar-scanner-cli.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
