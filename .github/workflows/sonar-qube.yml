@@ -24,43 +24,23 @@ jobs:
         with:
           unityVersion: 2022.3.5f1  # Change to match your Unity version
 
-      - name: Install .NET SDK
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '6.0.x'
-
-      - name: Install .NET SonarScanner
+      - name: Install SonarScanner CLI
         run: |
-          dotnet tool install --global dotnet-sonarscanner
+          wget -O sonar-scanner-cli.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
+          unzip sonar-scanner-cli.zip
+          mv sonar-scanner-5.0.1.3006-linux sonar-scanner
+          echo "$(pwd)/sonar-scanner/bin" >> $GITHUB_PATH
 
       - name: Begin SonarQube Analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: |
-          cd FortressForge
-          dotnet sonarscanner begin \
-            /k:"FortressForge" \
-            /o:"your_organization" \
-            /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}" \
-            /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
-            /d:sonar.exclusions="**/*.meta,**/*.unity,**/*.prefab,**/*.mat,Packages/**,Temp/**,Logs/**" \
-            /d:sonar.cs.opencover.reportsPaths=./coverage.xml \
-            /d:sonar.verbose=true
-
-      - name: Build Unity Project (Required for Analysis)
-        run: |
-          cd FortressForge
-          /opt/unity/Editor/Unity -batchmode -quit -nographics -logFile -projectPath "$(pwd)" -buildTarget StandaloneWindows64 -executeMethod UnityEditor.BuildPipeline.BuildPlayer
-
-      - name: Build Solution (Required for C# Analysis)
-        run: |
-          cd FortressForge
-          dotnet build --no-incremental
-
-      - name: End SonarQube Analysis
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          cd FortressForge
-          dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+          sonar-scanner \
+            -Dsonar.projectKey="FortressForge" \
+            -Dsonar.organization="your_organization" \
+            -Dsonar.host.url="${{ secrets.SONAR_HOST_URL }}" \
+            -Dsonar.login="${{ secrets.SONAR_TOKEN }}" \
+            -Dsonar.exclusions="**/*.meta,**/*.unity,**/*.prefab,**/*.mat,Packages/**,Temp/**,Logs/**" \
+            -Dsonar.sources="Assets" \
+            -Dsonar.verbose=true
