@@ -38,9 +38,6 @@ jobs:
           clean: ${{ github.event.inputs.clean == 'true' }}
           lfs: true
           submodules: 'recursive'
-      - name: Install .NET SonarScanner
-        run: |
-          dotnet tool install --global dotnet-sonarscanner
       - uses: buildalon/unity-setup@v1
         with:
           build-targets: '${{ matrix.build-target }}'
