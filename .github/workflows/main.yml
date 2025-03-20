@@ -38,6 +38,9 @@ jobs:
           clean: ${{ github.event.inputs.clean == 'true' }}
           lfs: true
           submodules: 'recursive'
+      - name: Install .NET SonarScanner
+        run: |
+          dotnet tool install --global dotnet-sonarscanner
       - uses: buildalon/unity-setup@v1
         with:
           build-targets: '${{ matrix.build-target }}'
@@ -47,6 +50,18 @@ jobs:
           license: 'Personal'
           username: '${{ secrets.UNITY_USERNAME }}'
           password: '${{ secrets.UNITY_PASSWORD }}'
+      - name: Begin SonarQube Analysis
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: |
+          cd FortressForge
+          dotnet sonarscanner begin \
+            /k:"FortressForge" \
+            /o:"your_organization" \
+            /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}" \
+            /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
+            /d:sonar.exclusions="**/*.meta,**/*.unity,**/*.prefab,**/*.mat,Packages/**,Temp/**,Logs/**"
       - name: Add Build Pipeline Package
         working-directory: ${{ env.UNITY_PROJECT_PATH }}
         run: |
@@ -70,6 +85,10 @@ jobs:
           log-name: '${{ matrix.build-target }}-Build'
           build-target: '${{ matrix.build-target }}'
           args: '-quit -batchmode -executeMethod Buildalon.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild${{ matrix.build-args }}'
+      - name: Build Solution (Required for SonarQube Analysis)
+        run: |
+          cd FortressForge
+          dotnet build --no-incremental
       - uses: actions/upload-artifact@v4
         id: upload-artifact
         name: 'Upload ${{ matrix.build-target }} Artifacts'
@@ -84,6 +103,12 @@ jobs:
             ${{ env.UNITY_PROJECT_PATH }}/Builds/StandaloneLinux64/**/*.x86_64
             ${{ env.UNITY_PROJECT_PATH }}/Builds/StandaloneLinux64/**/*.so
             ${{ env.UNITY_PROJECT_PATH }}/Builds/StandaloneLinux64/**/*_Data/
+      - name: End SonarQube Analysis
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          cd FortressForge
+          dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
       - name: Clean Artifacts
         if: always()
         shell: pwsh
