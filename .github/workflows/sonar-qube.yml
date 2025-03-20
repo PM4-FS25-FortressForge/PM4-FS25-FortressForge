@@ -36,6 +36,5 @@ jobs:
             -Dsonar.organization="your_organization" \
             -Dsonar.host.url="${{ secrets.SONAR_HOST_URL }}" \
             -Dsonar.login="${{ secrets.SONAR_TOKEN }}" \
-            -Dsonar.exclusions="**/*.meta,**/*.unity,**/*.prefab,**/*.mat,Packages/**,Temp/**,Logs/**" \
             -Dsonar.sources="FortressForge/Assets" \
             -Dsonar.verbose=true
