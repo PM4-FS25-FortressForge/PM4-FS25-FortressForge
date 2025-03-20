@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Ensures full history is available for SonarQube
 
       - name: Set up Java (Required for SonarQube)
         uses: actions/setup-java@v3
@@ -42,12 +44,15 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: |
+          cd FortressForge
           sonar-scanner \
             -Dsonar.projectKey=your_project_key \
             -Dsonar.organization=your_organization \
             -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
             -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
-            -Dsonar.sources=FortressForge/Assets/Scripts
+            -Dsonar.scm.provider=git \
+            -Dsonar.projectBaseDir=FortressForge \
+            -Dsonar.sources=Assets/Scripts \
             -Dsonar.exclusions=**/*.meta,**/*.unity,**/*.prefab,**/*.mat \
             -Dsonar.cs.opencover.reportsPaths=./coverage.xml \
             -Dsonar.verbose=true
