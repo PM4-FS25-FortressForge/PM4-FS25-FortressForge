@@ -17,39 +17,50 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Ensures full history is available for SonarQube
+          fetch-depth: 0  # Ensure full history is available for SonarQube
 
-      - name: Set up Java (Required for SonarQube)
-        uses: actions/setup-java@v3
+      - name: Install Unity
+        uses: game-ci/unity-setup@v2
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          unityVersion: 2022.3.5f1  # Change to match your Unity version
 
-      - name: Cache SonarQube Scanner
-        uses: actions/cache@v3
+      - name: Install .NET SDK
+        uses: actions/setup-dotnet@v3
         with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
+          dotnet-version: '6.0.x'
 
-      - name: Install SonarScanner
+      - name: Install .NET SonarScanner
         run: |
-          curl -Lo sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
-          unzip sonar-scanner.zip
-          mv sonar-scanner-* sonar-scanner
-          echo "$(pwd)/sonar-scanner/bin" >> $GITHUB_PATH
+          dotnet tool install --global dotnet-sonarscanner
 
-      - name: Run SonarQube Scan
+      - name: Begin SonarQube Analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: |
           cd FortressForge
-          sonar-scanner \
-            -Dsonar.projectKey=FortressForge \
-            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
-           -Dsonar.sources=Assets/Scripts \
-           -Dsonar.exclusions=**/*.meta,**/*.unity,**/*.prefab,**/*.mat \
-           -Dsonar.language=cs \
-           -Dsonar.verbose=true
+          dotnet sonarscanner begin \
+            /k:"FortressForge" \
+            /o:"your_organization" \
+            /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}" \
+            /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
+            /d:sonar.exclusions="**/*.meta,**/*.unity,**/*.prefab,**/*.mat,Packages/**,Temp/**,Logs/**" \
+            /d:sonar.cs.opencover.reportsPaths=./coverage.xml \
+            /d:sonar.verbose=true
+
+      - name: Build Unity Project (Required for Analysis)
+        run: |
+          cd FortressForge
+          /opt/unity/Editor/Unity -batchmode -quit -nographics -logFile -projectPath "$(pwd)" -buildTarget StandaloneWindows64 -executeMethod UnityEditor.BuildPipeline.BuildPlayer
+
+      - name: Build Solution (Required for C# Analysis)
+        run: |
+          cd FortressForge
+          dotnet build --no-incremental
+
+      - name: End SonarQube Analysis
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          cd FortressForge
+          dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
