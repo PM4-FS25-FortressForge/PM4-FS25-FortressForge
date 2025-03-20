@@ -54,4 +54,5 @@ jobs:
             -Dsonar.sources=Assets/Scripts \
             -Dsonar.exclusions=**/*.meta,**/*.unity,**/*.prefab,**/*.mat \
             -Dsonar.cs.opencover.reportsPaths=./coverage.xml \
+            -Dsonar.language=cs \
             -Dsonar.verbose=true
