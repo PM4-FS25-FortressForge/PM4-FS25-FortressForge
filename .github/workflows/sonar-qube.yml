@@ -2,9 +2,7 @@ name: Build
 on:
   push:
     branches:
-      - dev
-  pull_request:
-    types: [opened, synchronize, reopened]
+      - main
 jobs:
   sonarqube:
     env:
