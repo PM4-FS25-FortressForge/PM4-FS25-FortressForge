@@ -10,6 +10,10 @@ public class HexTileView : MonoBehaviour
     private Color _occupiedColor = Color.red;
     private Color _highlightColor = Color.yellow;
     
+    public Material FREE_MATERIAL;
+    public Material OCCUPIED_MATERIAL;
+    public Material HIGHLIGHT_MATERIAL;
+    
     private MeshRenderer _renderer;
     
     public void Init(HexTileData data)
@@ -21,7 +25,7 @@ public class HexTileView : MonoBehaviour
     
     public void UpdateVisuals()
     {
-        _renderer.material.color = tileData.IsOccupied ? _occupiedColor : _freeColor;
+        _renderer.material = tileData.IsOccupied ? OCCUPIED_MATERIAL : FREE_MATERIAL;
     }
 
     /// <summary>
@@ -29,9 +33,9 @@ public class HexTileView : MonoBehaviour
     /// </summary>
     public void UpdateVisuals(bool highlight) {
         if (highlight)
-            _renderer.material.color = _highlightColor;
+            _renderer.material = HIGHLIGHT_MATERIAL;
         else {
-            _renderer.material.color = tileData.IsOccupied ? _occupiedColor : _freeColor;
+            _renderer.material = tileData.IsOccupied ? OCCUPIED_MATERIAL : FREE_MATERIAL;
         }
     }
 
