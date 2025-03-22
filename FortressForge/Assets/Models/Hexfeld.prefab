@@ -92,9 +92,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c7b79a2e5f6aa64ea8cc1ce58611c85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _freeMaterial: {fileID: 2100000, guid: e1a9e0caf1f515f4488ea3d420086033, type: 2}
-  _occupiedMaterial: {fileID: 2100000, guid: e73fde62696bb84439da0c059f3275a1, type: 2}
-  _highlightMaterial: {fileID: 2100000, guid: 9b3a6bb7541955f4ba1690bd0dcbbe71, type: 2}
+  freeMaterial: {fileID: 2100000, guid: e1a9e0caf1f515f4488ea3d420086033, type: 2}
+  occupiedMaterial: {fileID: 2100000, guid: e73fde62696bb84439da0c059f3275a1, type: 2}
+  highlightMaterial: {fileID: 2100000, guid: 9b3a6bb7541955f4ba1690bd0dcbbe71, type: 2}
 --- !u!64 &5936363936713321884
 MeshCollider:
   m_ObjectHideFlags: 0
