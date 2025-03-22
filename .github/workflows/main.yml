@@ -2,7 +2,7 @@
 # Feel free to edit this workflow to update build targets or add additional steps.
 # Check out the Buildalon open source actions at https://github.com/marketplace?query=buildalon
 
-name: Buildalon Unity Build
+name: Unity Build/Tests
 on:
   push:
     branches:
