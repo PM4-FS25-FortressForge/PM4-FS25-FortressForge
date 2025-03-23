@@ -1,12 +1,37 @@
 ﻿// IronMine.cs
+
+using System;
+using System.Collections.Generic;
+using NUnit.Framework.Constraints;
 using UnityEngine;
 
 namespace FortressForge.EconomyManager
 {
     public class IronMine : MonoBehaviour, IEconomyActor
     {
-        public float productionRate = 5f; // Iron produced per update cycle
         private EconomyManager _economyManager;
+        private bool _enabled = true;
+
+        // Return production value based on resource type
+        public Dictionary<ResourceType, float> GetResourceAmount()
+        {
+            if (!_enabled)
+            {
+                return new Dictionary<ResourceType, float>();
+            }
+            
+            return new Dictionary<ResourceType, float>()
+            {
+                { ResourceType.Iron, 100 },
+                { ResourceType.Power, -50 }
+            };
+
+        }
+
+        public void Disable()
+        {
+            _enabled = false;
+        }
 
         private void Start()
         {
@@ -15,14 +40,6 @@ namespace FortressForge.EconomyManager
             {
                 _economyManager.RegisterActor(this);
             }
-        }
-
-        // Return production value based on resource type
-        public float GetResourceAmount(ResourceType resourceType)
-        {
-            if (resourceType == ResourceType.Iron)
-                return productionRate;
-            return 0;
         }
 
         private void OnDestroy()

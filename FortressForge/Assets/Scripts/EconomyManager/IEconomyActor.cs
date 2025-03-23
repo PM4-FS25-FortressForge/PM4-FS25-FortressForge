@@ -1,7 +1,11 @@
-﻿namespace FortressForge.EconomyManager
+﻿using System.Collections.Generic;
+
+namespace FortressForge.EconomyManager
 {
     public interface IEconomyActor
     {
-        float GetResourceAmount(ResourceType resourceType);
+        Dictionary<ResourceType, float> GetResourceAmount();
+        
+        void Disable();
     }
 }
