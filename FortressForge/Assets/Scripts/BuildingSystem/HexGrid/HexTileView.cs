@@ -1,46 +1,50 @@
 using UnityEngine;
 
-namespace FortressForge.BuildingSystem.HexGrid {
+namespace FortressForge.BuildingSystem.HexGrid
+{
     /// <summary>
-    /// Stellt ein einzelnes Hex-Feld dar.
+    /// Represents the visual representation of a HexTileData.
     /// </summary>
-    public class HexTileView : MonoBehaviour {
-        private HexTileData tileData;
+    public class HexTileView : MonoBehaviour
+    {
+        private HexTileData _tileData;
 
-        public Material freeMaterial;
-        public Material occupiedMaterial;
-        public Material highlightMaterial;
+        public Material FreeMaterial;
+        public Material OccupiedMaterial;
+        public Material HighlightMaterial;
 
         private MeshRenderer _renderer;
 
-        public void Init(HexTileData data) {
-            tileData = data;
+        /// <summary>
+        /// Initializes the HexTileView with the given HexTileData.
+        /// </summary>
+        /// <param name="data"></param>
+        public void Init(HexTileData data)
+        {
+            _tileData = data;
             _renderer = GetComponentInChildren<MeshRenderer>();
             UpdateVisuals();
         }
 
-        public void UpdateVisuals() {
-            _renderer.material = tileData.isOccupied ? occupiedMaterial : freeMaterial;
+        /// <summary>
+        /// Changes the material of the HexTileView based on the IsOccupied property of the HexTileData.
+        /// </summary>
+        public void UpdateVisuals()
+        {
+            _renderer.material = _tileData.IsOccupied ? OccupiedMaterial : FreeMaterial;
         }
 
         /// <summary>
-        /// Setzt einen "Hover"-Effekt auf Orange, oder setzt die ursprüngliche Farbe wieder zurück.
+        /// Changes the material of the HexTileView based on the IsOccupied property of the HexTileData.
         /// </summary>
-        public void UpdateVisuals(bool highlight) {
+        /// <param name="highlight">Whether the tile should be highlighted for a hover effect.</param>
+        public void UpdateVisuals(bool highlight)
+        {
             if (highlight)
-                _renderer.material = highlightMaterial;
-            else {
-                _renderer.material = tileData.isOccupied ? occupiedMaterial : freeMaterial;
-            }
-        }
-
-        /// <summary>
-        /// Optional: Gibt das "Stockwerk" zurück – falls in tileData die Koord.Tupel (q,r,h) stecken.
-        /// </summary>
-        public int FloorLevel {
-            get {
-                // Beispiel: Wir nehmen an, tileData.Coord = (q, r, h)
-                return tileData.hexCoord.Item3;
+                _renderer.material = HighlightMaterial;
+            else
+            {
+                _renderer.material = _tileData.IsOccupied ? OccupiedMaterial : FreeMaterial;
             }
         }
     }

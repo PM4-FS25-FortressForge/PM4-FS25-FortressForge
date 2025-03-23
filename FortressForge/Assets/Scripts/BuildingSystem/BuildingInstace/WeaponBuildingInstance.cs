@@ -1,7 +1,9 @@
 using UnityEngine;
 
-namespace FortressForge.BuildingSystem.BuildingInstance {
-    public class WeaponBuildingInstance : BuildingInstance {
+namespace FortressForge.BuildingSystem.BuildingInstance
+{
+    public class WeaponBuildingInstance : BuildingInstance
+    {
 
     }
 }

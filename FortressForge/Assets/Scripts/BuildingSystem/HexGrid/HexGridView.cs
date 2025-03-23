@@ -1,30 +1,31 @@
+using System;
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace FortressForge.BuildingSystem.HexGrid {
+namespace FortressForge.BuildingSystem.HexGrid
+{
     /// <summary>
-    /// Ein MonoBehaviour, das einem HexGrid Daten entnimmt und
-    /// dafür die Darstellung in der Szene erzeugt.
+    /// A MonoBehaviour that takes data from a HexGrid and
+    /// creates the visual representation in the scene.
     /// </summary>
-    public class HexGridView : MonoBehaviour {
-        private HexGridData _hexGrid { get; set; }
-        private GameObject _tilePrefab { get; set; }
-
+    public class HexGridView : MonoBehaviour
+    {
+        private HexGridData _hexGrid;
+        private GameObject _tilePrefab;
         private readonly Dictionary<(int, int, int), HexTileView> _tileViews = new ();
-
-        // Merkt sich das aktuell "gehoverte" Tile, damit wir es beim Verlassen zurücksetzen können.
-        private HexTileView currentlyHoveredTile;
+        private HexTileView _currentlyHoveredTile;
 
         /// <summary>
-        /// Erzeugt die visuellen Hex-Tiles basierend auf den Grid-Daten.
+        /// Creates a new HexTileView for each tile in the HexGrid and initializes the visuals.
         /// </summary>
-        public void BuildGridView(GameObject tilePrefab, HexGridData hexGrid) {
+        public void BuildGridView(GameObject tilePrefab, HexGridData hexGrid)
+        {
             _tilePrefab = tilePrefab;
             _hexGrid = hexGrid;
 
-            if (_hexGrid == null || _tilePrefab == null) {
-                Debug.LogWarning("HexGridView: Keine gültigen Referenzen für Grid oder Prefab!");
-                return;
+            if (_hexGrid == null || _tilePrefab == null)
+            {
+                throw new InvalidOperationException("HexGridView: Invalid reference to HexGrid or TilePrefab.");
             }
 
             InitializeHexGridView();
@@ -32,25 +33,28 @@ namespace FortressForge.BuildingSystem.HexGrid {
         }
 
         /// <summary>
-        /// Erzeugt bzw. aktualisiert alle Tiles im Hexgrid.
+        /// Updates the visuals of all HexTiles in the HexGrid.
         /// </summary>
-        public void UpdateHexGridView() {
-            // Jetzt einmal durch alle Einträge des HexGrid loopen:
-            foreach (var kvp in _hexGrid.AllTiles) {
+        public void UpdateHexGridView()
+        {
+            foreach (var kvp in _hexGrid.AllTiles)
+            {
                 (int q, int r, int h) = kvp.Key;
                 HexTileView hexTileView = _tileViews[(q, r, h)];
                 hexTileView.UpdateVisuals();
 
                 bool canRender = ShouldRenderTile((q, r, h));
-                SetupTileVisibility(hexTileView, canRender);
+                SetTileVisibility(hexTileView, canRender);
             }
         }
 
         /// <summary>
-        /// Initialisiert die Hex-Tiles im Hexgrid.
+        /// Initializes the HexTileViews for all tiles in the HexGrid.  
         /// </summary>
-        private void InitializeHexGridView() {
-            foreach (var kvp in _hexGrid.AllTiles) {
+        private void InitializeHexGridView()
+        {
+            foreach (var kvp in _hexGrid.AllTiles)
+            {
                 (int q, int r, int h) = kvp.Key;
                 HexTileData tileData = kvp.Value;
 
@@ -60,17 +64,16 @@ namespace FortressForge.BuildingSystem.HexGrid {
         }
 
         /// <summary>
-        /// Aktiviert/Deaktiviert Renderer und Collider, damit
-        /// ein ausgeblendetes Tile weder gezeichnet wird noch Raycasts blockiert.
+        /// Activates/Deactivates the Renderer and Collider to prevent
+        /// an invisible tile from being drawn or blocking raycasts.
         /// </summary>
-        private void SetupTileVisibility(HexTileView tileObj, bool canRender) {
-            // Renderer an-/abschalten
+        private void SetTileVisibility(HexTileView tileObj, bool canRender)
+        {
             Renderer rend = tileObj.GetComponent<Renderer>();
             if (rend != null) {
                 rend.enabled = canRender;
             }
-
-            // Collider an-/abschalten
+            
             Collider col = tileObj.GetComponent<Collider>();
             if (col != null) {
                 col.enabled = canRender;
@@ -78,118 +81,98 @@ namespace FortressForge.BuildingSystem.HexGrid {
         }
 
         /// <summary>
-        /// Initialisiert das HexTileView-Skript (falls vorhanden)
-        /// und merkt es sich im Dictionary.
+        /// Initializes the HexTileView script (if present) and stores it in the dictionary.
         /// </summary>
-        private HexTileView InitializeTile(HexTileData tileData, (int, int, int) coord) {
-            Vector3 worldPos = CalculateWorldPosition(coord, _hexGrid.origin);
+        private HexTileView InitializeTile(HexTileData tileData, (int, int, int) coord)
+        {
+            Vector3 worldPos = CalculateWorldPosition(coord, _hexGrid.Origin);
 
-            // Instanziere das Prefab
-            // Du könntest vorher prüfen: "Haben wir das Tile (q,r,h) schon in tileViews?"
-            GameObject tileObj = Instantiate(
-                _tilePrefab,
-                worldPos,
-                _tilePrefab.transform.rotation,
-                this.transform
-            );
+            if (!_tileViews.ContainsKey(coord)) {
+                GameObject tileObj = Instantiate(
+                    _tilePrefab,
+                    worldPos,
+                    _tilePrefab.transform.rotation,
+                    this.transform
+                );
 
-            HexTileView tileView = tileObj.GetComponent<HexTileView>();
-            tileView.Init(tileData);
-            _tileViews[coord] = tileView;
+                HexTileView tileView = tileObj.GetComponent<HexTileView>();
+                tileView.Init(tileData);
+                _tileViews[coord] = tileView;
 
-            return tileView;
+                return tileView;
+            }
+            return _tileViews[coord];
         }
 
         /// <summary>
-        /// Prüft, ob ein Tile an den gegebenen Koordinaten gerendert werden soll.
-        /// In diesem Beispiel: Immer wenn h = 0 (Boden) oder das darunterliegende
-        /// Tile 'IsOccupied = true' ist.
+        /// Checks if a tile should be rendered at the given coordinates.
+        /// It should be rendered if the tile is at ground level (h = 0) or
+        /// if the tile below it is occupied.
         /// </summary>
-        private bool ShouldRenderTile((int q, int r, int h) coord) {
-            // Boden-Level (kein Tile darunter erforderlich)
+        private bool ShouldRenderTile((int q, int r, int h) coord)
+        {
             if (coord.h == 0)
                 return true;
-
-            // Tile darunter bestimmen
+            
             var belowCoord = (coord.q, coord.r, coord.h - 1);
-            if (_hexGrid.AllTiles.TryGetValue(belowCoord, out HexTileData belowTileData)) {
-                // Nur rendern, wenn das darunterliegende Tile belegt ist
-                return belowTileData.isOccupied;
+            if (_hexGrid.AllTiles.TryGetValue(belowCoord, out HexTileData belowTileData))
+            {
+                return belowTileData.IsOccupied;
             }
-
-            // Gibt es gar kein darunterliegendes Tile, wird auch nicht gerendert
+            
             return false;
         }
 
-        private void Update() {
-            // Per Raycast herausfinden, ob wir ein Tile unter dem Mauszeiger haben
+        
+        private void Update()
+        {
             if (Camera.main == null) return;
-
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit hit, 1000f)) {
-                // Prüfen, ob ein HexTileView getroffen wurde
-                var hitTileView = hit.collider.GetComponentInParent<HexTileView>();
-
-                if (hitTileView != null) {
-                    // Wenn es ein neues Tile ist, highlighten wir es
-                    if (hitTileView != currentlyHoveredTile) {
-                        // Altes Tile (falls vorhanden) zurücksetzen
-                        if (currentlyHoveredTile != null)
-                            currentlyHoveredTile.UpdateVisuals(false);
-
-                        // Neues Tile highlighten
-                        hitTileView.UpdateVisuals(true);
-                        currentlyHoveredTile = hitTileView;
-                    }
-                }
-                else {
-                    // Wir haben etwas getroffen, aber kein HexTileView
-                    ClearHoveredTile();
-                }
-            }
-            else {
-                // Nichts getroffen oder Maus außerhalb – ggf. das alte Hover-Tile zurücksetzen
+            
+            if (!Physics.Raycast(ray, out RaycastHit hit, 1000f))
+            {
                 ClearHoveredTile();
+                return;
             }
-        }
+            
+            HexTileView hitTileView = hit.collider.GetComponentInParent<HexTileView>();
 
-        private void ClearHoveredTile() {
-            if (currentlyHoveredTile != null) {
-                currentlyHoveredTile.UpdateVisuals(false);
-                currentlyHoveredTile = null;
+            if (hitTileView == null)
+            {
+                ClearHoveredTile();
+                return;
+            }
+            
+            if (hitTileView != _currentlyHoveredTile)
+            {
+                if (_currentlyHoveredTile != null)
+                    _currentlyHoveredTile.UpdateVisuals(false);
+                
+                hitTileView.UpdateVisuals(true);
+                _currentlyHoveredTile = hitTileView;
             }
         }
 
         /// <summary>
-        /// Beispielhafte Umrechnung von 3D-Koords in Weltposition für "flache" Hex.
+        /// Clears the hover effect from the currently hovered tile.
         /// </summary>
-        private Vector3 CalculateWorldPosition((int, int, int) coord, Vector3 origin) {
-            float x = _hexGrid.tileRadius * 3f / 2f * coord.Item1;
-            float z = _hexGrid.tileRadius * Mathf.Sqrt(3) * (coord.Item2 + coord.Item1 / 2f);
-            // -> Die dritte Koordinate (coord.Item3) benutzen wir als "Stockwerk" (Höhe)
-            return new Vector3(x, coord.Item3 * _hexGrid.tileHeight, z) + origin;
+        private void ClearHoveredTile()
+        {
+            if (_currentlyHoveredTile != null)
+            {
+                _currentlyHoveredTile.UpdateVisuals(false);
+                _currentlyHoveredTile = null;
+            }
         }
 
         /// <summary>
-        /// Blendet alle Tiles eines bestimmten "Stockwerks" ein oder aus,
-        /// damit ein Raycast ggf. "durch" die höheren Stockwerke gehen kann.
+        /// Calculates the world position of a tile based on its axial coordinates.
         /// </summary>
-        public void SetFloorVisibility(int floorLevel, bool visible) {
-            foreach (var kvp in _tileViews) {
-                var c = kvp.Key; // -> (q, r, h)
-                var tileView = kvp.Value; // -> Das passende Tile
-                if (c.Item3 == floorLevel) {
-                    tileView.gameObject.SetActive(visible);
-                }
-            }
-
-            // Wenn wir gerade ein Tile ausblenden, das aktuell gehighlightet war,
-            // sollten wir das Hover zurücksetzen:
-            if (currentlyHoveredTile != null &&
-                currentlyHoveredTile.FloorLevel == floorLevel &&
-                !visible) {
-                ClearHoveredTile();
-            }
+        private Vector3 CalculateWorldPosition((int, int, int) coord, Vector3 origin)
+        {
+            float x = _hexGrid.TileRadius * 3f / 2f * coord.Item1;
+            float z = _hexGrid.TileRadius * Mathf.Sqrt(3) * (coord.Item2 + coord.Item1 / 2f);
+            return new Vector3(x, coord.Item3 * _hexGrid.TileHeight, z) + origin;
         }
     }
 }

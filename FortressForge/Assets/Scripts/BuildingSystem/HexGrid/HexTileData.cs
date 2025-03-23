@@ -1,17 +1,20 @@
 using UnityEngine;
 
-namespace FortressForge.BuildingSystem.HexGrid {
+namespace FortressForge.BuildingSystem.HexGrid
+{
     /// <summary>
-    /// Reine Daten pro Feld. Kann beliebig erweitert werden 
-    /// (z.B. Terrain-Typ, Einheit, Gebäude, etc.)
+    /// Pure data per field. Can be extended arbitrarily
+    /// (e.g. terrain type, unit, building, etc.)
     /// </summary>
-    public class HexTileData {
-        public (int, int, int) hexCoord; // q, r, h
-        public bool isOccupied;
+    public class HexTileData
+    {
+        public (int, int, int) HexCoord; // q, r, h
+        public bool IsOccupied;
 
-        public HexTileData((int, int, int) hexCoord) {
-            this.hexCoord = hexCoord;
-            isOccupied = false;
+        public HexTileData((int, int, int) hexCoord)
+        {
+            this.HexCoord = hexCoord;
+            IsOccupied = false;
         }
     }
 }
