@@ -85,6 +85,7 @@ namespace FortressForge.EconomyManager
                     {   
                         // Disable building and remove from produced value
                         consumer.Item1.Disable();
+                        resourceChanges.Remove(consumer);
                         Debug.Log($"Disabled {consumer.Item1} due to negative {resourceType} balance.");
                         
                         foreach (var resourceFromChange in consumer.Item2)
