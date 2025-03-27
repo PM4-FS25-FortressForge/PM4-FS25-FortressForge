@@ -15,9 +15,10 @@ namespace FortressForge.BuildingSystem.HexGrid
     /// </summary>
     public class HexGridData
     {
-        public int GridId { get; private set; }
         public Vector3 Origin { get; private set; }
-        public string OwnerId { get; set; }
+        public int Id { get; set; }
+
+        public List<string> PlayerIds = new();
 
         /// <summary>
         /// The size of the hex tiles are defined here, so that in the future different
@@ -34,9 +35,9 @@ namespace FortressForge.BuildingSystem.HexGrid
         /// </summary>
         public Dictionary<(int, int, int), HexTileData> AllTiles => _tiles;
 
-        public HexGridData(int gridId, Vector3 origin, int radius, int height, float tileSize, float tileHeight)
+        public HexGridData(int id, Vector3 origin, int radius, int height, float tileSize, float tileHeight)
         {
-            this.GridId = gridId;
+            Id = id;
             this.Origin = origin;
             TileRadius = tileSize;
             this.TileHeight = tileHeight;
@@ -54,6 +55,11 @@ namespace FortressForge.BuildingSystem.HexGrid
                     }
                 }
             }
+        }
+        
+        public void AddPlayer(string playerId)
+        {
+            PlayerIds.Add(playerId);
         }
 
         public bool ValidateBuildingPlacement((int, int, int) hexCoord, BaseBuilding building)

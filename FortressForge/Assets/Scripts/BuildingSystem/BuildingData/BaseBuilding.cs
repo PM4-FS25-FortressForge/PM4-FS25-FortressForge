@@ -1,9 +1,9 @@
 using System.Collections.Generic;
+using FortressForge.Serializables;
 using UnityEngine;
 
 namespace FortressForge.BuildingSystem.BuildingData
 {
-    [CreateAssetMenu(fileName = "New Building", menuName = "Building System/Building")]
     public abstract class BaseBuilding : ScriptableObject
     {
         [Header("Shape Data")] public List<ShapeData> shapeData;

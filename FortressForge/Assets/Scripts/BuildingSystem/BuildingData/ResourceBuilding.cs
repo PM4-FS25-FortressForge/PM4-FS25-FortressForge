@@ -2,10 +2,10 @@ using UnityEngine;
 
 namespace FortressForge.BuildingSystem.BuildingData
 {
-    [CreateAssetMenu(fileName = "New Building", menuName = "RessourceBuilding")]
+    [CreateAssetMenu(fileName = "New Building", menuName = "Buildings/ResourceBuilding")]
     public class ResourceBuilding : BaseBuilding
     {
-        [Header("Ressource Data")] public RessourceType ressourceType;
+        [Header("Resource Data")] public RessourceType ressourceType;
         public int ressourcePerTick;
     }
 }
