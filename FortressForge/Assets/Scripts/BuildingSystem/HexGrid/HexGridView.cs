@@ -70,12 +70,14 @@ namespace FortressForge.BuildingSystem.HexGrid
         private void SetTileVisibility(HexTileView tileObj, bool canRender)
         {
             Renderer rend = tileObj.GetComponent<Renderer>();
-            if (rend != null) {
+            if (rend != null)
+            {
                 rend.enabled = canRender;
             }
             
             Collider col = tileObj.GetComponent<Collider>();
-            if (col != null) {
+            if (col != null)
+            {
                 col.enabled = canRender;
             }
         }
@@ -87,7 +89,8 @@ namespace FortressForge.BuildingSystem.HexGrid
         {
             Vector3 worldPos = CalculateWorldPosition(coord, _hexGrid.Origin);
 
-            if (!_tileViews.ContainsKey(coord)) {
+            if (!_tileViews.ContainsKey(coord))
+            {
                 GameObject tileObj = Instantiate(
                     _tilePrefab,
                     worldPos,
@@ -168,11 +171,36 @@ namespace FortressForge.BuildingSystem.HexGrid
         /// <summary>
         /// Calculates the world position of a tile based on its axial coordinates.
         /// </summary>
-        private Vector3 CalculateWorldPosition((int, int, int) coord, Vector3 origin)
+        public Vector3 CalculateWorldPosition((int, int, int) coord, Vector3 origin)
         {
             float x = _hexGrid.TileRadius * 3f / 2f * coord.Item1;
             float z = _hexGrid.TileRadius * Mathf.Sqrt(3) * (coord.Item2 + coord.Item1 / 2f);
             return new Vector3(x, coord.Item3 * _hexGrid.TileHeight, z) + origin;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public (int, int, int) WorldPositionToHexCoord(Vector3 worldPosition)
+        {
+            // Convert world position to hex grid axial coordinates
+            float x = worldPosition.x / (_hexGrid.TileRadius * 3f / 2f);
+            float z = worldPosition.z / (_hexGrid.TileRadius * Mathf.Sqrt(3));
+
+            int q = Mathf.RoundToInt(x);
+            int r = Mathf.RoundToInt(z - (q / 2f)); // Adjust for hex grid layout
+
+            return (q, r, 0); // Assuming h (height) is 0 for ground-level placement
+        }
+
+        public Vector3 GetMouseWorldPosition()
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out RaycastHit hit))
+            {
+                return hit.point;
+            }
+            return Vector3.zero;
         }
     }
 }

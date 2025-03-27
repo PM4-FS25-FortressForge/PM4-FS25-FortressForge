@@ -68,7 +68,6 @@ namespace FortressForge.BuildingSystem.HexGrid
                     return false;
                 }
             }
-
             return true;
         }
 
