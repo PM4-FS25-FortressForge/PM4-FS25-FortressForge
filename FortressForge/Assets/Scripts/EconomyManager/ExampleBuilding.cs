@@ -1,6 +1,4 @@
-﻿// IronMine.cs
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using NUnit.Framework.Constraints;
 using UnityEngine;
@@ -25,29 +23,11 @@ namespace FortressForge.EconomyManager
                 { ResourceType.Iron, 100 },
                 { ResourceType.Power, -50 }
             };
-
         }
 
         public void Disable()
         {
             _enabled = false;
-        }
-
-        private void Start()
-        {
-            _economyManager = FindFirstObjectByType<EconomyManager>();
-            if (_economyManager != null)
-            {
-                _economyManager.RegisterActor(this);
-            }
-        }
-
-        private void OnDestroy()
-        {
-            if (_economyManager != null)
-            {
-                _economyManager.RemoveActor(this);
-            }
         }
     }
 }
