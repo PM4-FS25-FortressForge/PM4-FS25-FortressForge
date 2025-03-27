@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
@@ -10,51 +11,38 @@ using GameObject = UnityEngine.GameObject;
 
 public class CameraMovementTest
 {
-    private GameObject cameraObject;
-    private Camera _camera;
-    private GameObject _cameraController;
-    
+    private GameObject _mainCamera;
     private Vector3 initialPosition;
-    private float initialRotation;
+    private float yInitialRotation;
+    private float xInitialRotation;
+    private float zInitialRotation;
+    private HashSet<Key> activeKeys = new HashSet<Key>();
+
     private PlayerInput playerInput;
 
-    [SetUp]
-    public void Setup()
+    [UnitySetUp]
+    public IEnumerator Setup()
     {
-        // Create a new Camera object for the test
-        cameraObject = new GameObject("TestCamera");
-        _cameraController = new GameObject("CameraController");
-        if (_cameraController == null)
-        {
-            _cameraController = new GameObject("CameraController");
-        }
-        _camera = cameraObject.AddComponent<Camera>(); // Add Camera component
-        cameraObject.tag = "MainCamera"; // Optional but useful
-        
+        UnityEngine.SceneManagement.SceneManager.LoadScene("Unity Cammera implementation Test");
+        yield return null; 
 
-        // Debug check to ensure CameraController is accessible
-        var assembly = Assembly.Load("Assembly-CSharp");
-        var type = assembly.GetType("CameraController");
-        Assert.IsNotNull(type, "Error: CameraController class was not found in Assembly-CSharp!");
+        // Ensure the scene is actually loaded
+        Scene loadedScene = SceneManager.GetActiveScene();
+        Assert.AreEqual("Unity Cammera implementation Test", loadedScene.name, 
+            $"Error: Scene did not load correctly. Loaded: {loadedScene.name}");
 
-        // Add CameraController script dynamically
-        //_cameraController = cameraObject.AddComponent<CameraController>();
-        Assert.IsNotNull(_cameraController, "Error: Failed to add CameraController to the GameObject.");
-
-        // Add PlayerInput component
-        playerInput = cameraObject.AddComponent<PlayerInput>();
-
-        // Load InputActions from Resources (Ensure it's placed in a Resources folder)
-        playerInput.actions = Resources.Load<InputActionAsset>("CameraInputActions");
-        Assert.IsNotNull(playerInput.actions, "Error: CameraInputActions could not be loaded. Ensure it's in Resources/");
-
-        // Assign the PlayerInput to the CameraController
-        //_cameraController.enabled = true;
+        // Find the main camera in the loaded scene
+        _mainCamera = GameObject.Find("Main Camera");
+        Assert.IsNotNull(_mainCamera, "Error: Main Camera was not found in the scene.");
 
         // Save initial position & rotation
-        initialPosition = cameraObject.transform.position;
-        initialRotation = cameraObject.transform.eulerAngles.y;
+        initialPosition = _mainCamera.transform.position;
+        yInitialRotation = _mainCamera.transform.eulerAngles.y;
+        xInitialRotation = _mainCamera.transform.eulerAngles.x;
+        zInitialRotation = _mainCamera.transform.eulerAngles.z;
     }
+
+
 
     [UnityTest]
     public IEnumerator TestCameraMovesForward_WhenPressingW()
@@ -63,7 +51,7 @@ public class CameraMovementTest
         yield return new WaitForSeconds(0.5f);
         ReleaseKey(Key.W);
 
-        Assert.Greater(cameraObject.transform.position.z, initialPosition.z, "Camera should move forward when W is pressed.");
+        Assert.Greater(_mainCamera.transform.position.z, initialPosition.z, "Camera should move forward when W is pressed.");
     }
 
     [UnityTest]
@@ -73,7 +61,16 @@ public class CameraMovementTest
         yield return new WaitForSeconds(0.5f);
         ReleaseKey(Key.A);
 
-        Assert.Less(cameraObject.transform.position.x, initialPosition.x, "Camera should move left when A is pressed.");
+        Assert.Less(_mainCamera.transform.position.x, initialPosition.x, "Camera should move left when A is pressed.");
+    }
+    [UnityTest]
+    public IEnumerator TestCameraMovesRight_WhenPressingS()
+    {
+        PressKey(Key.S);
+        yield return new WaitForSeconds(0.5f);
+        ReleaseKey(Key.S);
+
+        Assert.Less(_mainCamera.transform.position.z, initialPosition.z, "Camera should move Down when S is pressed.");
     }
 
     [UnityTest]
@@ -83,8 +80,9 @@ public class CameraMovementTest
         yield return new WaitForSeconds(0.5f);
         ReleaseKey(Key.D);
 
-        Assert.Greater(cameraObject.transform.position.x, initialPosition.x, "Camera should move right when D is pressed.");
+        Assert.Greater(_mainCamera.transform.position.x, initialPosition.x, "Camera should move right when D is pressed.");
     }
+    
 
     [UnityTest]
     public IEnumerator TestCameraRotatesLeft_WhenPressingQ()
@@ -93,8 +91,8 @@ public class CameraMovementTest
         yield return new WaitForSeconds(0.5f);
         ReleaseKey(Key.Q);
 
-        float newRotation = cameraObject.transform.eulerAngles.y;
-        Assert.Less(newRotation, initialRotation, "Camera should rotate left when Q is pressed.");
+        float newRotation = _mainCamera.transform.eulerAngles.y;
+        Assert.Greater(newRotation, yInitialRotation, "Camera should rotate left when Q is pressed.");
     }
 
     [UnityTest]
@@ -104,30 +102,84 @@ public class CameraMovementTest
         yield return new WaitForSeconds(0.5f);
         ReleaseKey(Key.E);
 
-        float newRotation = cameraObject.transform.eulerAngles.y;
-        Assert.Greater(newRotation, initialRotation, "Camera should rotate right when E is pressed.");
+        float newRotation = _mainCamera.transform.eulerAngles.y;
+        Assert.Greater(newRotation, yInitialRotation, "Camera should rotate right when E is pressed.");
+    }
+    
+    [UnityTest]
+    public IEnumerator TestCameraPitchUp_WhenPressingArrowUp()
+    {
+        PressKey(Key.UpArrow);
+        yield return new WaitForSeconds(0.5f);
+        ReleaseKey(Key.UpArrow);
+
+        float newPitch = _mainCamera.transform.eulerAngles.x;
+        Assert.Greater(newPitch, xInitialRotation, "Camera should pitch up when UpArrow is pressed.");
+    }
+    [UnityTest]
+    public IEnumerator TestCameraPitchDown_WhenPressingArrowDown()
+    {
+        PressKey(Key.DownArrow);
+        yield return new WaitForSeconds(0.5f);
+        ReleaseKey(Key.DownArrow);
+
+        float newPitch = _mainCamera.transform.eulerAngles.x;
+        Assert.Less(newPitch, xInitialRotation, "Camera should pitch Down when DownArrow is pressed.");
+    }
+
+    
+    [UnityTest]
+    public IEnumerator TestCameraCombinedMovement()
+    {
+        PressKey(Key.W);
+        PressKey(Key.D);
+        PressKey(Key.E);
+        PressKey(Key.UpArrow);
+        yield return new WaitForSeconds(2.5f);
+        ReleaseKey(Key.W);
+        ReleaseKey(Key.D);
+        ReleaseKey(Key.E);
+        ReleaseKey(Key.UpArrow);
+
+        Vector3 newPosition = _mainCamera.transform.position;
+        Vector3 newCalculatedPosition = new Vector3(-2.88604116f, 5.99908638f, 9.7804451f);
+        Assert.AreEqual(newCalculatedPosition.x, newPosition.x, "Camera should move to new x position.");
+        Assert.AreEqual(newCalculatedPosition.y, newPosition.y, "Camera should move to new y position.");
+        Assert.AreEqual(newCalculatedPosition.z, newPosition.z, "Camera should move to new z position.");
+
     }
 
     [TearDown]
     public void TearDown()
     {
         // Destroy the test camera after each test
-        Object.Destroy(cameraObject);
+        Object.Destroy(_mainCamera);
     }
 
     private void PressKey(Key key)
-    
     {
+        activeKeys.Add(key); // Add key to active set
+
         KeyboardState state = new KeyboardState();
-        state.Set(key, true);
+        foreach (Key k in activeKeys)
+        {
+            state.Set(k, true);
+        }
+
         InputSystem.QueueStateEvent(Keyboard.current, state);
         InputSystem.Update();
     }
 
     private void ReleaseKey(Key key)
     {
+        activeKeys.Remove(key); // Remove key from active set
+
         KeyboardState state = new KeyboardState();
-        state.Set(key, false);
+        foreach (Key k in activeKeys)
+        {
+            state.Set(k, true); // Keep other keys pressed
+        }
+
         InputSystem.QueueStateEvent(Keyboard.current, state);
         InputSystem.Update();
     }

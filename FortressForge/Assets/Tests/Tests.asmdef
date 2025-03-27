@@ -6,5 +6,6 @@
     ],
     "optionalUnityReferences": [
         "TestAssemblies"
-    ]
+    ],
+    "namespace": ["testslol"]
 }
