@@ -18,7 +18,7 @@ namespace FortressForge.EconomyManager
         /// Initializes the economy manager and starts periodic economy updates.
         /// Registers default actors for demonstration.
         /// </summary>
-        public void init()
+        public void Init()
         {
             // Call update resource each second
             InvokeRepeating(nameof(_economySystem.UpdateEconomy), 0, RESOURCE_UPDATE_INTERVAL);
