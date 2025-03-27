@@ -6,7 +6,7 @@ using FortressForge.BuildingSystem.BuildingData;
 public class ButtonManager : MonoBehaviour
 {
     public List<Button> buildingButtons;
-    public List<BaseBuilding> availableBuildings;
+    public List<GameObject> availableBuildings;
     
     public PlayerController playerController;
 
@@ -14,7 +14,7 @@ public class ButtonManager : MonoBehaviour
     {
         for (int i = 0; i < buildingButtons.Count; i++)
         {
-            buildingButtons[i].onClick.AddListener(() => SelectBuilding(index));
+            buildingButtons[i].onClick.AddListener(() => SelectBuilding(i));
         }
     }
 
@@ -22,7 +22,7 @@ public class ButtonManager : MonoBehaviour
     {
         if (index >= 0 && index < availableBuildings.Count)
         {
-            playerController.SetSelectedBuilding(availableBuildings[index]);
+            playerController.PreviewSelectedBuilding(availableBuildings[index]);
         }
     }
 }
