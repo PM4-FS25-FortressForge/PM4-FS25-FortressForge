@@ -26,11 +26,15 @@ namespace FortressForge.EconomyManager
         /// <summary>
         /// Initializes the economy system with default values for all resource types.
         /// </summary>
-        public EconomySystem()
+        public EconomySystem(Dictionary<ResourceType, float> maxValues = null)
         {
             foreach (ResourceType type in _allResourceTypes)
             {
-                _currentResources[type] = new Resource(type);
+                float max = maxValues != null && maxValues.TryGetValue(type, out var value)
+                    ? value
+                    : float.MaxValue;
+
+                _currentResources[type] = new Resource(type, max);
             }
         }
 

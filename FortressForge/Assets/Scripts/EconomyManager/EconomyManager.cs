@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace FortressForge.EconomyManager
@@ -12,7 +13,7 @@ namespace FortressForge.EconomyManager
         private const float RESOURCE_UPDATE_INTERVAL = 1f;
 
         // Core economy system logic container
-        private readonly EconomySystem _economySystem = new EconomySystem();
+        private EconomySystem _economySystem;
 
         /// <summary>
         /// Initializes the economy manager and starts periodic economy updates.
@@ -20,6 +21,14 @@ namespace FortressForge.EconomyManager
         /// </summary>
         public void Init()
         {
+            // Example for max value application
+            var maxValues = new Dictionary<ResourceType, float>
+            {
+                { ResourceType.Power, 0f }
+            };
+            
+            _economySystem = new EconomySystem(maxValues);
+            
             // Call update resource each second
             InvokeRepeating(nameof(_economySystem.UpdateEconomy), 0, RESOURCE_UPDATE_INTERVAL);
 
