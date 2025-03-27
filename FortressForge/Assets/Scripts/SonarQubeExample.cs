@@ -1,6 +1,6 @@
 using System;
 
-namespace SonarQubeTest
+namespace FortressForge
 {
     public class SonarQubeExample
     {
