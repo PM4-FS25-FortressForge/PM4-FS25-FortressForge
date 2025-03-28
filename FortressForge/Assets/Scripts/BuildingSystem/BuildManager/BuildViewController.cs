@@ -78,7 +78,6 @@ namespace FortressForge.BuildingSystem.BuildManager
                 // Place the final building at the correct position
                 Instantiate(_selectedBuildingTemplate.buildingPrefab, _previewBuilding.transform.position, _previewBuilding.transform.rotation);
                 BaseBuildingTemplate copy = Instantiate(_selectedBuildingTemplate);
-                copy.DoStuff();
                 _placedBuildings.Add(copy); // TODO this will add the same object multiple times, it needs to be different
                 hexGridView.UpdateHexGridView();
             }
