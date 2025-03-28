@@ -36,7 +36,7 @@ namespace FortressForge.BuildingSystem.HexTile
 
             Q = Mathf.RoundToInt(x);
             R = Mathf.RoundToInt(z - (Q / 2f)); // Adjust for hex grid layout
-            H = 0; // Assuming h (height) is 0 for ground-level placement
+            H = (int) (worldPosition.y / TileHeight); // Assuming h (height) is 0 for ground-level placement TODO add object height transformation
         }
         
         /// <summary>

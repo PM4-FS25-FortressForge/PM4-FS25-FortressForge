@@ -1518,7 +1518,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _hexGridConfiguration: {fileID: 11400000, guid: 4db0b0d18baaa5747b0639afa305dced, type: 2}
   _gameStartConfiguration: {fileID: 11400000, guid: 8c5e56cc0c67a1f4e9e168c329893944, type: 2}
-  _otherTilePrefab: {fileID: 1187330201112678143, guid: d22a0ce999be4cc4c838e7ccd738ba95, type: 3}
+  _otherTilePrefab: {fileID: 8461799468503079714, guid: d22a0ce999be4cc4c838e7ccd738ba95, type: 3}
 --- !u!4 &1149923579
 Transform:
   m_ObjectHideFlags: 0

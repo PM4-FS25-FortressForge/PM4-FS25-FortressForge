@@ -40,7 +40,7 @@ namespace FortressForge.BuildingSystem.HexGrid
             TileRadius = tileSize;
             TileHeight = tileHeight;
 
-            for (int h = 0; h < height; h++)
+            for (int h = 0; h < height; h++) // TODO instead of precreating for each height consider creating on demand
             {
                 for (int q = -radius; q <= radius; q++)
                 {
