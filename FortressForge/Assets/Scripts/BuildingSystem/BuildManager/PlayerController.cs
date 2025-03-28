@@ -52,7 +52,7 @@ public class PlayerController : MonoBehaviour
         worldPos.x -= 300f;
         worldPos.z -= 300f; // TODO: Adjust this with Fabios changes
         
-        (int, int, int) hexCoord = hexGridView.WorldPositionToHexCoord(worldPos);
+        HexTileCoordinates hexCoord = hexGridView.WorldPositionToHexCoord(worldPos);
         Debug.Log(hexCoord);
 
         Vector3 snappedPos = hexGridView.CalculateWorldPosition(hexCoord, hexGridView.transform.position);
@@ -67,7 +67,7 @@ public class PlayerController : MonoBehaviour
         Vector3 worldPos = _previewBuilding.transform.position;
         worldPos.x -= 300f;
         worldPos.z -= 300f; // TODO: Adjust this with Fabios changes
-        (int, int, int) hexCoord = hexGridView.WorldPositionToHexCoord(worldPos);
+        HexTileCoordinates hexCoord = hexGridView.WorldPositionToHexCoord(worldPos);
 
         if (hexGridData.ValidateBuildingPlacement(hexCoord, _selectedBuilding))
         {

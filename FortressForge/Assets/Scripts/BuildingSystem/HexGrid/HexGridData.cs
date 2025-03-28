@@ -19,29 +19,24 @@ namespace FortressForge.BuildingSystem.HexGrid
         public Vector3 Origin { get; private set; }
         public int Id { get; set; }
 
-        public List<string> PlayerIds = new();
+        public readonly List<string> PlayerIds = new();
 
         /// <summary>
         /// The size of the hex tiles are defined here, so that in the future different
         /// tile sizes for different players are possible (e.g. for AI).
         /// </summary>
-        public float TileRadius { get; private set; }
+        public readonly float TileRadius; // TODO TileRadius is available here and in HexGridConfiguration, consider always using one or making both readonly
 
-        public float TileHeight { get; private set; }
-
-        private readonly Dictionary<(int, int, int), HexTileData> _tiles = new();
-
-        /// <summary>
-        /// Returns a list of all tiles in the grid.
-        /// </summary>
-        public Dictionary<(int, int, int), HexTileData> AllTiles => _tiles;
+        public readonly float TileHeight;
+        
+        public readonly Dictionary<HexTileCoordinates, HexTileData> TileMap = new();
 
         public HexGridData(int id, Vector3 origin, int radius, int height, float tileSize, float tileHeight)
         {
             Id = id;
-            this.Origin = origin;
+            Origin = origin;
             TileRadius = tileSize;
-            this.TileHeight = tileHeight;
+            TileHeight = tileHeight;
 
             for (int h = 0; h < height; h++)
             {
@@ -51,8 +46,7 @@ namespace FortressForge.BuildingSystem.HexGrid
                     int r2 = Math.Min(radius, -q + radius);
                     for (int r = r1; r <= r2; r++)
                     {
-                        (int, int, int) coord = (q, r, h);
-                        _tiles[coord] = new HexTileData(coord);
+                        TileMap[new HexTileCoordinates(q, r, h)] = new HexTileData();
                     }
                 }
             }
@@ -63,43 +57,18 @@ namespace FortressForge.BuildingSystem.HexGrid
             PlayerIds.Add(playerId);
         }
 
-        public bool ValidateBuildingPlacement((int, int, int) hexCoord, BaseBuilding building)
+        public bool ValidateBuildingPlacement(HexTileCoordinates hexCoord, BaseBuilding building)
         {
             foreach (var kvp in building.shapeData)
             {
-                (int, int, int) coord = (kvp.r, kvp.q, kvp.h);
-                HexTileData tileData = GetTileData((coord.Item1 + hexCoord.Item1, coord.Item2 + hexCoord.Item2,
-                    coord.Item3 + hexCoord.Item3));
-                if (tileData == null || tileData.IsOccupied)
+                var coord = new HexTileCoordinates(kvp.q, kvp.r, kvp.h);
+                HexTileData tileCoordinates = TileMap[hexCoord + coord];
+                if (tileCoordinates == null || tileCoordinates.IsOccupied)
                     return false;
-                tileData.IsOccupied = true;
+                tileCoordinates.IsOccupied = true; // Todo move this to a better place
             }
             
             return true;
-        }
-
-        /// <summary>
-        /// Gets the data of a specific hex tile.
-        /// </summary>
-        public HexTileData GetTileData((int, int, int) hexCoord)
-        {
-            if (_tiles.TryGetValue(hexCoord, out HexTileData data))
-            {
-                return data;
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Sets (or overwrites) the data of a specific hex tile.
-        /// </summary>
-        public void SetTileData((int, int, int) hexCoord, HexTileData newData)
-        {
-            if (_tiles.ContainsKey(hexCoord))
-            {
-                _tiles[hexCoord] = newData;
-            }
         }
     }
 }

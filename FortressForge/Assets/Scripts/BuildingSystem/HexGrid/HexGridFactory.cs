@@ -18,7 +18,7 @@ namespace FortressForge.BuildingSystem.HexGrid
             GameObject go = new GameObject("HexGridView");
             HexGridView hexGridView = go.AddComponent<HexGridView>();
             
-            hexGridView.BuildGridView(tilePrefab, hexGridData);
+            hexGridView.Initialize(tilePrefab, hexGridData);
             
             return (hexGridData, hexGridView);
         }
