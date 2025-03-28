@@ -113,8 +113,8 @@ namespace FortressForge.UI.Manager
         {
             if (oldView == lobbyViewDoc)
             {
-                if (_startGameButton != null) _startGameButton.clicked -= StartGame;
-                if (_joinGameButton != null) _joinGameButton.clicked -= JoinGame;
+                _startGameButton?.UnregisterCallback((ClickEvent _) => StartGame());
+                _joinGameButton?.UnregisterCallback((ClickEvent _) => JoinGame());
             }
             else if (oldView == gameRoomViewDoc)
             {
