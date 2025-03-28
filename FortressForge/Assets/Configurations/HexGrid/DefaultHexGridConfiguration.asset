@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bd8eafe93cd69942805e81a38e3fa5d, type: 3}
   m_Name: DefaultHexGridConfiguration
   m_EditorClassIdentifier: 
-  Radius: 8
+  Radius: 10
   Height: 2
   TileSize: 10
   TileHeight: 10

@@ -10,7 +10,7 @@ namespace FortressForge.BuildingSystem.HexGrid
     /// </summary>
     public class HexGridView : MonoBehaviour
     {
-        private HexGridData _hexGrid;
+        public HexGridData _hexGrid; // TODO reduce visibility
         private GameObject _tilePrefab;
         private readonly Dictionary<HexTileCoordinates, HexTileView> _tileViews = new ();
         private HexTileView _currentlyHoveredTile;
@@ -85,7 +85,7 @@ namespace FortressForge.BuildingSystem.HexGrid
         /// </summary>
         private HexTileView InitializeTile(HexTileData tileData, HexTileCoordinates coord)
         {
-            Vector3 worldPos = CalculateWorldPosition(coord, _hexGrid.Origin);
+            Vector3 worldPos = coord.GetWorldPosition();
 
             if (!_tileViews.ContainsKey(coord))
             {
@@ -122,31 +122,6 @@ namespace FortressForge.BuildingSystem.HexGrid
             }
             
             return false;
-        }
-
-        /// <summary>
-        /// Calculates the world position of a tile based on its axial coordinates.
-        /// </summary>
-        public Vector3 CalculateWorldPosition(HexTileCoordinates coord, Vector3 origin)
-        {
-            float x = _hexGrid.TileRadius * 3f / 2f * coord.Q;
-            float z = _hexGrid.TileRadius * Mathf.Sqrt(3) * (coord.R + coord.Q / 2f);
-            return new Vector3(x, coord.H * _hexGrid.TileHeight, z) + origin;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public HexTileCoordinates WorldPositionToHexCoord(Vector3 worldPosition) // TODO make sure to use custom axial coordinates
-        { 
-            // Convert world position to hex grid axial coordinates
-            float x = worldPosition.x / (_hexGrid.TileRadius * 3f / 2f); // TODO throws exception regularly
-            float z = worldPosition.z / (_hexGrid.TileRadius * Mathf.Sqrt(3));
-
-            int q = Mathf.RoundToInt(x);
-            int r = Mathf.RoundToInt(z - (q / 2f)); // Adjust for hex grid layout
-
-            return new HexTileCoordinates(q, r, 0); // Assuming h (height) is 0 for ground-level placement
         }
 
         public Vector3 GetMouseWorldPosition()

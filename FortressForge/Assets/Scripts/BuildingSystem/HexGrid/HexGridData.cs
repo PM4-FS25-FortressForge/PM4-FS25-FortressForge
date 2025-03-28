@@ -19,6 +19,7 @@ namespace FortressForge.BuildingSystem.HexGrid
         public Vector3 Origin { get; private set; }
         public int Id { get; set; }
 
+        // Players that own this grid
         public readonly List<string> PlayerIds = new();
 
         /// <summary>
@@ -46,7 +47,7 @@ namespace FortressForge.BuildingSystem.HexGrid
                     int r2 = Math.Min(radius, -q + radius);
                     for (int r = r1; r <= r2; r++)
                     {
-                        TileMap[new HexTileCoordinates(q, r, h)] = new HexTileData();
+                        TileMap[new HexTileCoordinates(q, r, h) + Origin] = new HexTileData();
                     }
                 }
             }

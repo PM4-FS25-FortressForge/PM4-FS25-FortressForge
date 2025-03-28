@@ -9,6 +9,9 @@ namespace FortressForge.BuildingSystem.HexGrid
     /// </summary>
     public struct HexTileCoordinates : IEquatable<HexTileCoordinates>
     {
+        public static float TileRadius;
+        public static float TileHeight;
+        
         // Axial + height coordinate
         public int Q { get; private set; }
         public int R { get; private set; }
@@ -24,6 +27,32 @@ namespace FortressForge.BuildingSystem.HexGrid
             Q = q;
             R = r;
             H = height;
+        }
+        
+        public HexTileCoordinates(Vector3 worldPosition) // TODO make sure to use custom axial coordinates
+        { 
+            // Convert world position to hex grid axial coordinates
+            float x = worldPosition.x / (TileRadius * 3f / 2f); // TODO throws exception regularly
+            float z = worldPosition.z / (TileRadius * Mathf.Sqrt(3));
+
+            Q = Mathf.RoundToInt(x);
+            R = Mathf.RoundToInt(z - (Q / 2f)); // Adjust for hex grid layout
+            H = 0; // Assuming h (height) is 0 for ground-level placement
+        }
+        
+        /// <summary>
+        /// Calculates the world position of a tile based on its axial coordinates.
+        /// </summary>
+        public Vector3 GetWorldPosition(Vector3 origin)
+        {
+            float x = TileRadius * 3f / 2f * Q;
+            float z = TileRadius * Mathf.Sqrt(3) * (R + Q / 2f);
+            return new Vector3(x, H * TileHeight, z) + origin;
+        }
+        
+        public Vector3 GetWorldPosition()
+        {
+            return GetWorldPosition(Vector3.zero);
         }
         
         public bool Equals(HexTileCoordinates other)
@@ -59,6 +88,18 @@ namespace FortressForge.BuildingSystem.HexGrid
         public static HexTileCoordinates operator -(HexTileCoordinates a, HexTileCoordinates b)
         {
             return new HexTileCoordinates(a.Q - b.Q, a.R - b.R, a.H - b.H);
+        }
+        
+        public static HexTileCoordinates operator +(HexTileCoordinates a, Vector3 b)
+        {
+            var c = new HexTileCoordinates(b);
+            return a + c;
+        }
+
+        public static HexTileCoordinates operator -(HexTileCoordinates a, Vector3 b)
+        {
+            var c = new HexTileCoordinates(b);
+            return a - c;
         }
     }
 }

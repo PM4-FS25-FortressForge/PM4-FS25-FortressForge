@@ -49,25 +49,19 @@ public class PlayerController : MonoBehaviour
     private void MovePreviewObject()
     {
         Vector3 worldPos = hexGridView.GetMouseWorldPosition();
-        worldPos.x -= 300f;
-        worldPos.z -= 300f; // TODO: Adjust this with Fabios changes
-        
-        HexTileCoordinates hexCoord = hexGridView.WorldPositionToHexCoord(worldPos);
+
+        var hexCoord = new HexTileCoordinates(worldPos);
         Debug.Log(hexCoord);
 
-        Vector3 snappedPos = hexGridView.CalculateWorldPosition(hexCoord, hexGridView.transform.position);
+        Vector3 snappedPos = hexCoord.GetWorldPosition();
         Debug.Log(snappedPos);
-        snappedPos.x += 300f;
-        snappedPos.z += 300f;
         _previewBuilding.transform.position = snappedPos;
     }
 
     private void TryPlaceBuilding()
     {
         Vector3 worldPos = _previewBuilding.transform.position;
-        worldPos.x -= 300f;
-        worldPos.z -= 300f; // TODO: Adjust this with Fabios changes
-        HexTileCoordinates hexCoord = hexGridView.WorldPositionToHexCoord(worldPos);
+        HexTileCoordinates hexCoord = new HexTileCoordinates(worldPos);
 
         if (hexGridData.ValidateBuildingPlacement(hexCoord, _selectedBuilding))
         {

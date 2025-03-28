@@ -14,7 +14,7 @@ namespace FortressForge.BuildingSystem.HexGrid
     /// </summary>
     public class HexGridManager : MonoBehaviour
     {
-        private readonly List<(HexGridData, HexGridView)> _allGrids = new ();
+        private readonly List<(HexGridData data, HexGridView view)> _allGrids = new ();
 
         [Header("Player HexGridConfiguration")] [SerializeField]
         private HexGridConfiguration _hexGridConfiguration;
@@ -26,10 +26,11 @@ namespace FortressForge.BuildingSystem.HexGrid
 
         private void Start()
         {
+            HexTileCoordinates.TileRadius = _hexGridConfiguration.Radius; // TODO move this to a better place or find alternative
+            HexTileCoordinates.TileHeight = _hexGridConfiguration.Height;
             InitializeHexGridForPlayers(_gameStartConfiguration, _hexGridConfiguration);
         }
-
-
+        
         public void InitializeHexGridForPlayers(GameStartConfiguration gameStartConfiguration, HexGridConfiguration hexGridConfiguration)
         {
             // Create a hex grid for each starting position
@@ -54,12 +55,10 @@ namespace FortressForge.BuildingSystem.HexGrid
                 var playerId = gameStartConfiguration.PlayerIdsHexGridIdTuplesList[i].PlayerId;
                 var hexGridId = gameStartConfiguration.PlayerIdsHexGridIdTuplesList[i].HexGridId;
                 
-                var (data, _) = GetGridById(hexGridId);
-                data.AddPlayer(playerId);
+                _allGrids[hexGridId].data.AddPlayer(playerId);
             }
             
-            
-            // Add Buttonmanager
+            // Add Buttonmanager TODO replace this with a more robust approach
             var _gameManager = new GameObject("GameManager");
 
             var buttonManager = _gameManager.AddComponent<ButtonManager>();
@@ -72,14 +71,6 @@ namespace FortressForge.BuildingSystem.HexGrid
             buttonManager.availableBuildings.Add(_otherTilePrefab);
 
             buttonManager.playerController = playerController;
-        }
-
-        /// <summary>
-        /// Returns the HexGrid with the specified ID.
-        /// </summary>
-        private (HexGridData, HexGridView) GetGridById(int id)
-        {
-            return _allGrids[id];
         }
     }
 }
