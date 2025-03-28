@@ -44,7 +44,7 @@ namespace FortressForge.BuildingSystem.HexGrid
                 _renderer.material = HighlightMaterial;
             else
             {
-                _renderer.material = _tileData.IsOccupied ? OccupiedMaterial : FreeMaterial;
+                _renderer.material = _tileData.IsOccupied ? OccupiedMaterial : FreeMaterial; // TODO: Throws NullReferenceException in some cases check out why
             }
         }
     }

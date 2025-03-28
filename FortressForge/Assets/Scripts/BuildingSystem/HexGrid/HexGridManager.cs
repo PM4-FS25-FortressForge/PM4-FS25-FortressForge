@@ -31,7 +31,8 @@ namespace FortressForge.BuildingSystem.HexGrid
         /// Creates a new HexGrid with the specified size and origin.
         /// OwnerId can be a player name, a network ID, etc.
         /// </summary>
-        public HexGridData CreateHexGrid(Vector3 origin, int radius, int height, string ownerId, float tileSize, float tileHeight) {
+        public HexGridData CreateHexGrid(Vector3 origin, int radius, int height, string ownerId, float tileSize, float tileHeight) 
+        {
             HexGridData newGrid = new HexGridData(_nextGridId, origin, radius, height, tileSize, tileHeight)
                 {OwnerId = ownerId};
 

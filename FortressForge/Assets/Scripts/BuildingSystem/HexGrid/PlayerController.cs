@@ -14,7 +14,12 @@ public class PlayerController : MonoBehaviour
 
     public void PreviewSelectedBuilding(GameObject building)
     {
-        _previewBuilding = building;
+        _selectedBuilding = new ResourceBuilding();
+        _selectedBuilding.buildingPrefab = building;
+        _selectedBuilding.shapeData = new System.Collections.Generic.List<ShapeData>
+        {
+            new ShapeData { r = 0, q = 0, h = 0 } // TODO: Adjust so this is taken from building directly
+        };
 
         if (_previewBuilding != null)
         {
@@ -43,6 +48,10 @@ public class PlayerController : MonoBehaviour
     private void MovePreviewObject()
     {
         Vector3 worldPos = hexGridView.GetMouseWorldPosition();
+        worldPos.x -= 300f;
+        worldPos.z -= 300f;
+        Debug.Log(worldPos);
+        
         (int, int, int) hexCoord = hexGridView.WorldPositionToHexCoord(worldPos);
 
         Vector3 snappedPos = hexGridView.CalculateWorldPosition(hexCoord, hexGridView.transform.position);

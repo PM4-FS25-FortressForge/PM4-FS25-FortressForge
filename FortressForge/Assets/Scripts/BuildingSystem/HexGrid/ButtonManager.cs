@@ -5,8 +5,8 @@ using FortressForge.BuildingSystem.BuildingData;
 
 public class ButtonManager : MonoBehaviour
 {
-    public List<Button> buildingButtons;
-    public List<GameObject> availableBuildings;
+    public List<Button> buildingButtons = new();
+    public List<GameObject> availableBuildings = new();
     
     public PlayerController playerController;
 
@@ -14,15 +14,18 @@ public class ButtonManager : MonoBehaviour
     {
         for (int i = 0; i < buildingButtons.Count; i++)
         {
-            buildingButtons[i].onClick.AddListener(() => SelectBuilding(i));
+            var index = i; // TODO: This is needed, check out why
+            buildingButtons[i].onClick.AddListener(() => SelectBuilding(index));
         }
     }
 
     void SelectBuilding(int index)
     {
-        if (index >= 0 && index < availableBuildings.Count)
+        if (index >= availableBuildings.Count)
         {
-            playerController.PreviewSelectedBuilding(availableBuildings[index]);
+            Debug.LogError("Index out of range.");
+            return;
         }
+        playerController.PreviewSelectedBuilding(availableBuildings[index]);
     }
 }

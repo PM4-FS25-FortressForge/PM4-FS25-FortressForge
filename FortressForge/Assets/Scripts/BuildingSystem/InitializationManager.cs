@@ -14,7 +14,8 @@ namespace FortressForge.BuildingSystem
     {
         [Header("Referenzen für das GridView")] [SerializeField]
         private GameObject _tilePrefab; // Prefab, das pro Hexfeld instanziert wird
-
+        [Header("Referenzen für das GridView")] [SerializeField]
+        private GameObject _otherTilePrefab;
         private GameObject _gameManager;
         
         void Start()
@@ -36,22 +37,6 @@ namespace FortressForge.BuildingSystem
             gridView1.transform.SetParent(transform);
             gridView1.BuildGridView(_tilePrefab, grid1);
             
-            // Add Buttonmanager
-            _gameManager = new GameObject("GameManager");
-            
-            var buttonManager = _gameManager.AddComponent<ButtonManager>();
-            
-            buttonManager.buildingButtons.Add(new GameObject("Button").AddComponent<Button>());
-            var bigPrefab = _tilePrefab;
-            bigPrefab.transform.localScale = new Vector3(2, 2, 1);
-            var playerController = _gameManager.AddComponent<PlayerController>();
-            playerController.hexGridData = grid1;
-            playerController.hexGridView = gridView1;
-            
-            buttonManager.availableBuildings.Add(bigPrefab);
-            
-            buttonManager.playerController = playerController;
-            
             // 4) Grid für Spieler 2 erstellen
             HexGridData grid2 = HexGridManager.Instance.CreateHexGrid(
                 new Vector3(300, 0, 300),
@@ -68,6 +53,19 @@ namespace FortressForge.BuildingSystem
                 Quaternion.identity);
             gridView2.transform.SetParent(transform);
             gridView2.BuildGridView(_tilePrefab, grid2);
+            
+            // Add Buttonmanager
+            _gameManager = new GameObject("GameManager");
+            
+            var buttonManager = _gameManager.AddComponent<ButtonManager>();
+            buttonManager.buildingButtons.Add(GameObject.Find("Button").GetComponent<Button>());
+            var playerController = _gameManager.AddComponent<PlayerController>();
+            playerController.hexGridData = grid2;
+            playerController.hexGridView = gridView2;
+            
+            buttonManager.availableBuildings.Add(_otherTilePrefab);
+            
+            buttonManager.playerController = playerController;
         }
     }
 }
