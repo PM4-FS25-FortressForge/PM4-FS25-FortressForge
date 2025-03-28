@@ -41,7 +41,6 @@ namespace FortressForge.UI.Manager
 
         private void OnEnable()
         {
-            // disable the game room view
             gameRoomViewDoc.gameObject.SetActive(false);
 
             ShowView(lobbyViewDoc);
@@ -175,7 +174,7 @@ namespace FortressForge.UI.Manager
         /// <param name="ip">The IP address of the server in the IPV4 format</param>
         private void JoinServer(string ip)
         {
-            ShowLoadingAnimation(true); // Ladeanimation starten
+            ShowLoadingAnimation(true);
             InstanceFinder.ClientManager.StartConnection(ip);
             InstanceFinder.ClientManager.OnClientConnectionState += OnClientConnected;
         }
@@ -334,7 +333,7 @@ namespace FortressForge.UI.Manager
 
             if (playerNameField != null)
             {
-                playerNameField.value = _currentPlayerName; // Setzt den gespeicherten Namen zurück
+                playerNameField.value = _currentPlayerName;
             }
         }
 
