@@ -15,7 +15,7 @@ namespace FortressForge.BuildingSystem.HoverController
             if (mainCamera == null) return;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             
-            if (!Physics.Raycast(ray, out RaycastHit hit, raycastDistance))
+            if (!Physics.Raycast(ray, out RaycastHit hit, raycastDistance)) // TODO combine with other raycast method in HexGrid
             {
                 ClearHoveredTile();
                 return;

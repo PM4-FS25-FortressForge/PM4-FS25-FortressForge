@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using FortressForge.BuildingSystem.BuildingData;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -8,18 +9,18 @@ namespace FortressForge.BuildingSystem.BuildManager
 {
     public class ButtonManager : MonoBehaviour
     {
-        public List<Button> buildingButtons = new();
-        public List<BaseBuildingTemplate> availableBuildings = new();
+        public Dropdown dropdown;
+        public List<BaseBuildingTemplate> availableBuildings;
     
-        [FormerlySerializedAs("playerController")] public BuildViewController buildViewController;
+        public BuildViewController buildViewController;
 
-        void Start()
+        //TODO add init method 
+        
+        public void Init()
         {
-            for (int i = 0; i < buildingButtons.Count; i++)
-            {
-                var index = i; // TODO: This is needed, check out why
-                buildingButtons[i].onClick.AddListener(() => SelectBuilding(index));
-            }
+            dropdown.ClearOptions();
+            dropdown.AddOptions(availableBuildings.Select(b => b.name).ToList());
+            dropdown.onValueChanged.AddListener(SelectBuilding);
         }
 
         void SelectBuilding(int index)
@@ -29,6 +30,7 @@ namespace FortressForge.BuildingSystem.BuildManager
                 Debug.LogError("Index out of range.");
                 return;
             }
+
             buildViewController.PreviewSelectedBuilding(availableBuildings[index]);
         }
     }

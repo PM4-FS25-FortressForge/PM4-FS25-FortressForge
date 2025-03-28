@@ -24,7 +24,8 @@ namespace FortressForge.BuildingSystem.HexGrid
         [Header("Player GameStartConfiguration")] [SerializeField]
         private GameStartConfiguration _gameStartConfiguration;
 
-        public BaseBuildingTemplate _otherTilePrefab; // TODO remove after refactor
+        public List<BaseBuildingTemplate> _otherTilePrefab; // TODO remove after refactor
+        public Dropdown superTollesDropdown; // TODO remove after refactor
 
         private void Start()
         {
@@ -65,13 +66,14 @@ namespace FortressForge.BuildingSystem.HexGrid
             var _gameManager = new GameObject("GameManager");
 
             var buttonManager = _gameManager.AddComponent<ButtonManager>();
-            buttonManager.buildingButtons.Add(GameObject.Find("Button").GetComponent<Button>());
+            buttonManager.dropdown = superTollesDropdown;
             var playerController = _gameManager.AddComponent<BuildViewController>();
             var grid1 = _allGrids[0];
-            playerController.hexGridData = grid1.Item1;
-            playerController.hexGridView = grid1.Item2;
+            playerController.hexGridData = grid1.data;
+            playerController.hexGridView = grid1.view;
 
-            buttonManager.availableBuildings.Add(_otherTilePrefab);
+            buttonManager.availableBuildings = _otherTilePrefab;
+            buttonManager.Init();
 
             buttonManager.buildViewController = playerController;
         }
