@@ -63,14 +63,14 @@ namespace FortressForge.BuildingSystem.HexGrid
 
             var buttonManager = _gameManager.AddComponent<ButtonManager>();
             buttonManager.buildingButtons.Add(GameObject.Find("Button").GetComponent<Button>());
-            var playerController = _gameManager.AddComponent<PlayerController>();
+            var playerController = _gameManager.AddComponent<BuildViewController>();
             var grid1 = _allGrids[0];
             playerController.hexGridData = grid1.Item1;
             playerController.hexGridView = grid1.Item2;
 
             buttonManager.availableBuildings.Add(_otherTilePrefab);
 
-            buttonManager.playerController = playerController;
+            buttonManager.buildViewController = playerController;
         }
     }
 }

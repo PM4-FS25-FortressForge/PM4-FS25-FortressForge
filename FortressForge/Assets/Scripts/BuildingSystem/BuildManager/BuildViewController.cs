@@ -1,25 +1,26 @@
+using System.Collections.Generic;
 using UnityEngine;
 using FortressForge.BuildingSystem.HexGrid;
 using FortressForge.BuildingSystem.BuildingData;
 using FortressForge.Serializables;
 
-public class PlayerController : MonoBehaviour
+public class BuildViewController : MonoBehaviour
 {
     public HexGridView hexGridView;
     public HexGridData hexGridData;
 
-    private BaseBuilding _selectedBuilding;
+    private BaseBuildingTemplate _selectedBuildingTemplate;
     private GameObject _previewBuilding;
 
     private bool _isPreviewMode = false;
 
     public void PreviewSelectedBuilding(GameObject building)
     {
-        _selectedBuilding = new ResourceBuilding();
-        _selectedBuilding.buildingPrefab = building;
-        _selectedBuilding.shapeData = new System.Collections.Generic.List<ShapeData>
+        _selectedBuildingTemplate = new ResourceBuildingTemplate();
+        _selectedBuildingTemplate.buildingPrefab = building;
+        _selectedBuildingTemplate.shapeData = new List<HexTileCoordinates>
         {
-            new ShapeData { r = 0, q = 0, h = 0 } // TODO: Adjust so this is taken from building directly
+            new HexTileCoordinates(0,0,0) // TODO: Adjust so this is taken from building directly
         };
 
         if (_previewBuilding != null)
@@ -28,7 +29,7 @@ public class PlayerController : MonoBehaviour
         }
 
         // Instantiate the building's prefab for preview
-        _previewBuilding = Instantiate(_selectedBuilding.buildingPrefab);
+        _previewBuilding = Instantiate(_selectedBuildingTemplate.buildingPrefab);
         _isPreviewMode = true;
     }
 
@@ -51,10 +52,9 @@ public class PlayerController : MonoBehaviour
         Vector3 worldPos = hexGridView.GetMouseWorldPosition();
 
         var hexCoord = new HexTileCoordinates(worldPos);
-        Debug.Log(hexCoord);
 
         Vector3 snappedPos = hexCoord.GetWorldPosition();
-        Debug.Log(snappedPos);
+        
         _previewBuilding.transform.position = snappedPos;
     }
 
@@ -63,21 +63,21 @@ public class PlayerController : MonoBehaviour
         Vector3 worldPos = _previewBuilding.transform.position;
         HexTileCoordinates hexCoord = new HexTileCoordinates(worldPos);
 
-        if (hexGridData.ValidateBuildingPlacement(hexCoord, _selectedBuilding))
+        if (hexGridData.ValidateBuildingPlacement(hexCoord, _selectedBuildingTemplate))
         {
             // Place the final building at the correct position
-            Instantiate(_selectedBuilding.buildingPrefab, _previewBuilding.transform.position, Quaternion.identity);
+            Instantiate(_selectedBuildingTemplate.buildingPrefab, _previewBuilding.transform.position, Quaternion.identity);
             
             _isPreviewMode = false;
             Destroy(_previewBuilding);
-            _selectedBuilding = null;
+            _selectedBuildingTemplate = null;
         }
         else
         {
             // If placement is invalid, destroy the preview
             _isPreviewMode = false;
             Destroy(_previewBuilding);
-            _selectedBuilding = null;
+            _selectedBuildingTemplate = null;
         }
     }   
 }

@@ -58,11 +58,10 @@ namespace FortressForge.BuildingSystem.HexGrid
             PlayerIds.Add(playerId);
         }
 
-        public bool ValidateBuildingPlacement(HexTileCoordinates hexCoord, BaseBuilding building)
+        public bool ValidateBuildingPlacement(HexTileCoordinates hexCoord, BaseBuildingTemplate buildingTemplate)
         {
-            foreach (var kvp in building.shapeData)
+            foreach (var coord in buildingTemplate.shapeData)
             {
-                var coord = new HexTileCoordinates(kvp.q, kvp.r, kvp.h);
                 HexTileData tileCoordinates = TileMap[hexCoord + coord];
                 if (tileCoordinates == null || tileCoordinates.IsOccupied)
                     return false;

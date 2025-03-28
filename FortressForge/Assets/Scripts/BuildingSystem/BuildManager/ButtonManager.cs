@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace FortressForge.BuildingSystem.BuildManager
@@ -9,7 +10,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         public List<Button> buildingButtons = new();
         public List<GameObject> availableBuildings = new();
     
-        public PlayerController playerController;
+        [FormerlySerializedAs("playerController")] public BuildViewController buildViewController;
 
         void Start()
         {
@@ -27,7 +28,7 @@ namespace FortressForge.BuildingSystem.BuildManager
                 Debug.LogError("Index out of range.");
                 return;
             }
-            playerController.PreviewSelectedBuilding(availableBuildings[index]);
+            buildViewController.PreviewSelectedBuilding(availableBuildings[index]);
         }
     }
 }

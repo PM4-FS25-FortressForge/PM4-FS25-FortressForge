@@ -5,18 +5,18 @@ namespace FortressForge.BuildingSystem.BuildingInstance
 {
     public abstract class BuildingInstance : MonoBehaviour
     {
-        protected BaseBuilding buildingData;
+        protected BaseBuildingTemplate BuildingTemplate;
 
         public int CurrentHealth;
         public bool IsActive;
 
-        public virtual void Initialize(BaseBuilding buildingData)
+        public virtual void Initialize(BaseBuildingTemplate buildingTemplateTemplate)
         {
-            this.buildingData = buildingData;
+            BuildingTemplate = buildingTemplateTemplate;
 
-            if (buildingData != null)
+            if (buildingTemplateTemplate != null)
             {
-                CurrentHealth = buildingData.maxHealth;
+                CurrentHealth = buildingTemplateTemplate.maxHealth;
             }
         }
     }
