@@ -1,4 +1,4 @@
-using System;
+/*using System;
 using System.Collections.Generic;
 using FortressForge.BuildingSystem.HexGrid;
 using UnityEngine;
@@ -14,10 +14,12 @@ namespace FortressForge.BuildingSystem
     {
         [Header("Referenzen für das GridView")] [SerializeField]
         private GameObject _tilePrefab; // Prefab, das pro Hexfeld instanziert wird
+
         [Header("Referenzen für das GridView")] [SerializeField]
         private GameObject _otherTilePrefab;
+
         private GameObject _gameManager;
-        
+
         void Start()
         {
             // 1) Grid für Spieler 1 erstellen
@@ -36,7 +38,7 @@ namespace FortressForge.BuildingSystem
                 Quaternion.identity);
             gridView1.transform.SetParent(transform);
             gridView1.BuildGridView(_tilePrefab, grid1);
-            
+
             // 4) Grid für Spieler 2 erstellen
             HexGridData grid2 = HexGridManager.Instance.CreateHexGrid(
                 new Vector3(300, 0, 300),
@@ -53,19 +55,7 @@ namespace FortressForge.BuildingSystem
                 Quaternion.identity);
             gridView2.transform.SetParent(transform);
             gridView2.BuildGridView(_tilePrefab, grid2);
-            
-            // Add Buttonmanager
-            _gameManager = new GameObject("GameManager");
-            
-            var buttonManager = _gameManager.AddComponent<ButtonManager>();
-            buttonManager.buildingButtons.Add(GameObject.Find("Button").GetComponent<Button>());
-            var playerController = _gameManager.AddComponent<PlayerController>();
-            playerController.hexGridData = grid2;
-            playerController.hexGridView = gridView2;
-            
-            buttonManager.availableBuildings.Add(_otherTilePrefab);
-            
-            buttonManager.playerController = playerController;
+
         }
     }
-}
+}*/

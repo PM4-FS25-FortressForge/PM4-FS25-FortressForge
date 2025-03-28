@@ -95,7 +95,7 @@ namespace FortressForge.BuildingSystem.HexGrid
                     _tilePrefab,
                     worldPos,
                     _tilePrefab.transform.rotation,
-                    this.transform
+                    transform
                 );
 
                 HexTileView tileView = tileObj.GetComponent<HexTileView>();
@@ -124,48 +124,6 @@ namespace FortressForge.BuildingSystem.HexGrid
             }
             
             return false;
-        }
-
-        
-        private void Update()
-        {
-            if (Camera.main == null) return;
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            
-            if (!Physics.Raycast(ray, out RaycastHit hit, 1000f))
-            {
-                ClearHoveredTile();
-                return;
-            }
-            
-            HexTileView hitTileView = hit.collider.GetComponentInParent<HexTileView>();
-
-            if (hitTileView == null)
-            {
-                ClearHoveredTile();
-                return;
-            }
-            
-            if (hitTileView != _currentlyHoveredTile)
-            {
-                if (_currentlyHoveredTile != null)
-                    _currentlyHoveredTile.UpdateVisuals(false);
-                
-                hitTileView.UpdateVisuals(true);
-                _currentlyHoveredTile = hitTileView;
-            }
-        }
-
-        /// <summary>
-        /// Clears the hover effect from the currently hovered tile.
-        /// </summary>
-        private void ClearHoveredTile()
-        {
-            if (_currentlyHoveredTile != null)
-            {
-                _currentlyHoveredTile.UpdateVisuals(false);
-                _currentlyHoveredTile = null;
-            }
         }
 
         /// <summary>

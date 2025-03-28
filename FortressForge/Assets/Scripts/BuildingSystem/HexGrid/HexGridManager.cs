@@ -1,5 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
+using FortressForge.Serializables;
+using UnityEngine.UI;
 
 namespace FortressForge.BuildingSystem.HexGrid
 {
@@ -11,57 +13,72 @@ namespace FortressForge.BuildingSystem.HexGrid
     /// </summary>
     public class HexGridManager : MonoBehaviour
     {
-        public static HexGridManager Instance { get; private set; }
+        private readonly List<(HexGridData, HexGridView)> _allGrids = new ();
+
+        [Header("Player HexGridConfiguration")] [SerializeField]
+        private HexGridConfiguration _hexGridConfiguration;
         
-        private readonly Dictionary<int, HexGridData> _allGrids = new Dictionary<int, HexGridData>();
+        [Header("Player GameStartConfiguration")] [SerializeField]
+        private GameStartConfiguration _gameStartConfiguration;
 
-        private int _nextGridId = 0;
+        public GameObject _otherTilePrefab; // TODO remove after refactor
 
-        private void Awake()
+        private void Start()
         {
-            if (Instance != null && Instance != this) {
-                Destroy(gameObject);
-            }
-            else {
-                Instance = this;
-            }
+            InitializeHexGridForPlayers(_gameStartConfiguration, _hexGridConfiguration);
         }
 
-        /// <summary>
-        /// Creates a new HexGrid with the specified size and origin.
-        /// OwnerId can be a player name, a network ID, etc.
-        /// </summary>
-        public HexGridData CreateHexGrid(Vector3 origin, int radius, int height, string ownerId, float tileSize, float tileHeight) 
+
+        public void InitializeHexGridForPlayers(GameStartConfiguration gameStartConfiguration, HexGridConfiguration hexGridConfiguration)
         {
-            HexGridData newGrid = new HexGridData(_nextGridId, origin, radius, height, tileSize, tileHeight)
-                {OwnerId = ownerId};
+            // Create a hex grid for each starting position
+            for (int i = 0; i < gameStartConfiguration.PlayerIdsHexGridIdTuplesList.Count; i++)
+            {
+                var (data, view) = HexGridFactory.CreateHexGrid(
+                    id: i,
+                    origin: gameStartConfiguration.HexGridOrigins[i],
+                    radius: hexGridConfiguration.Radius,
+                    height: hexGridConfiguration.Height,
+                    tileSize: hexGridConfiguration.TileSize,
+                    tileHeight: hexGridConfiguration.TileHeight,
+                    tilePrefab: hexGridConfiguration.TilePrefab
+                );
+                
+                _allGrids.Add((data, view));
+            }
+            
+            // Assign each player to their respective hex grid(s)
+            for (int i = 0; i < gameStartConfiguration.PlayerIdsHexGridIdTuplesList.Count; i++)
+            {
+                var playerId = gameStartConfiguration.PlayerIdsHexGridIdTuplesList[i].PlayerId;
+                var hexGridId = gameStartConfiguration.PlayerIdsHexGridIdTuplesList[i].HexGridId;
+                
+                var (data, _) = GetGridById(hexGridId);
+                data.AddPlayer(playerId);
+            }
+            
+            
+            // Add Buttonmanager
+            var _gameManager = new GameObject("GameManager");
 
-            _allGrids.Add(_nextGridId, newGrid);
-            _nextGridId++;
+            var buttonManager = _gameManager.AddComponent<ButtonManager>();
+            buttonManager.buildingButtons.Add(GameObject.Find("Button").GetComponent<Button>());
+            var playerController = _gameManager.AddComponent<PlayerController>();
+            var grid1 = _allGrids[0];
+            playerController.hexGridData = grid1.Item1;
+            playerController.hexGridView = grid1.Item2;
 
-            return newGrid;
+            buttonManager.availableBuildings.Add(_otherTilePrefab);
+
+            buttonManager.playerController = playerController;
         }
 
         /// <summary>
         /// Returns the HexGrid with the specified ID.
         /// </summary>
-        public HexGridData GetGridById(int gridId)
+        private (HexGridData, HexGridView) GetGridById(int id)
         {
-            return _allGrids.GetValueOrDefault(gridId, null);
-        }
-        
-        /// <summary>
-        /// Returns the HexGrid with the specified owner ID.
-        /// </summary>
-        public HexGridData GetGridByOwnerId(string ownerId)
-        {
-            foreach (var grid in _allGrids.Values) {
-                if (grid.OwnerId == ownerId) {
-                    return grid;
-                }
-            }
-
-            return null;
+            return _allGrids[id];
         }
     }
 }

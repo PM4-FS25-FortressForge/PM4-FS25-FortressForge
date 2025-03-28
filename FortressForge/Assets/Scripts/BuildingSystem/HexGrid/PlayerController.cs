@@ -1,6 +1,7 @@
 using UnityEngine;
 using FortressForge.BuildingSystem.HexGrid;
 using FortressForge.BuildingSystem.BuildingData;
+using FortressForge.Serializables;
 
 public class PlayerController : MonoBehaviour
 {
@@ -55,6 +56,9 @@ public class PlayerController : MonoBehaviour
         Debug.Log(hexCoord);
 
         Vector3 snappedPos = hexGridView.CalculateWorldPosition(hexCoord, hexGridView.transform.position);
+        Debug.Log(snappedPos);
+        snappedPos.x += 300f;
+        snappedPos.z += 300f;
         _previewBuilding.transform.position = snappedPos;
     }
 
