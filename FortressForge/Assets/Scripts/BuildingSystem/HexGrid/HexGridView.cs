@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using System.Collections.Generic;
+using FortressForge.BuildingSystem.HexTile;
 
 namespace FortressForge.BuildingSystem.HexGrid
 {
@@ -12,7 +13,7 @@ namespace FortressForge.BuildingSystem.HexGrid
     {
         public HexGridData _hexGrid; // TODO reduce visibility
         private GameObject _tilePrefab;
-        private readonly Dictionary<HexTileCoordinates, HexTileView> _tileViews = new ();
+        private readonly Dictionary<HexTileCoordinate, HexTileView> _tileViews = new ();
         private HexTileView _currentlyHoveredTile;
 
         /// <summary>
@@ -83,7 +84,7 @@ namespace FortressForge.BuildingSystem.HexGrid
         /// <summary>
         /// Initializes the HexTileView script (if present) and stores it in the dictionary.
         /// </summary>
-        private HexTileView InitializeTile(HexTileData tileData, HexTileCoordinates coord)
+        private HexTileView InitializeTile(HexTileData tileData, HexTileCoordinate coord)
         {
             Vector3 worldPos = coord.GetWorldPosition();
 
@@ -110,12 +111,12 @@ namespace FortressForge.BuildingSystem.HexGrid
         /// It should be rendered if the tile is at ground level (h = 0) or
         /// if the tile below it is occupied.
         /// </summary>
-        private bool ShouldRenderTile(HexTileCoordinates coord)
+        private bool ShouldRenderTile(HexTileCoordinate coord)
         {
             if (coord.H == 0)
                 return true;
             
-            var belowCoord = new HexTileCoordinates(coord.Q, coord.R, coord.H - 1);
+            var belowCoord = new HexTileCoordinate(coord.Q, coord.R, coord.H - 1);
             if (_hexGrid.TileMap.TryGetValue(belowCoord, out HexTileData belowTileData))
             {
                 return belowTileData.IsOccupied;

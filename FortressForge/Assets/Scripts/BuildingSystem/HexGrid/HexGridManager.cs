@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using FortressForge.BuildingSystem.BuildManager;
+using FortressForge.BuildingSystem.HexTile;
 using FortressForge.Serializables;
 using UnityEngine.UI;
 
@@ -26,8 +27,8 @@ namespace FortressForge.BuildingSystem.HexGrid
 
         private void Start()
         {
-            HexTileCoordinates.TileRadius = _hexGridConfiguration.Radius; // TODO move this to a better place or find alternative
-            HexTileCoordinates.TileHeight = _hexGridConfiguration.Height;
+            HexTileCoordinate.TileRadius = _hexGridConfiguration.Radius; // TODO move this to a better place or find alternative
+            HexTileCoordinate.TileHeight = _hexGridConfiguration.Height;
             InitializeHexGridForPlayers(_gameStartConfiguration, _hexGridConfiguration);
         }
         

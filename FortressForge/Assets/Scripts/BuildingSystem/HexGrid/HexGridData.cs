@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using System.Collections.Generic;
 using FortressForge.BuildingSystem.BuildingData;
+using FortressForge.BuildingSystem.HexTile;
 using UnityEngine.Tilemaps;
 
 namespace FortressForge.BuildingSystem.HexGrid
@@ -30,7 +31,7 @@ namespace FortressForge.BuildingSystem.HexGrid
 
         public readonly float TileHeight;
         
-        public readonly Dictionary<HexTileCoordinates, HexTileData> TileMap = new();
+        public readonly Dictionary<HexTileCoordinate, HexTileData> TileMap = new();
 
         public HexGridData(int id, Vector3 origin, int radius, int height, float tileSize, float tileHeight)
         {
@@ -47,7 +48,7 @@ namespace FortressForge.BuildingSystem.HexGrid
                     int r2 = Math.Min(radius, -q + radius);
                     for (int r = r1; r <= r2; r++)
                     {
-                        TileMap[new HexTileCoordinates(q, r, h) + Origin] = new HexTileData();
+                        TileMap[new HexTileCoordinate(q, r, h) + Origin] = new HexTileData();
                     }
                 }
             }
@@ -58,7 +59,7 @@ namespace FortressForge.BuildingSystem.HexGrid
             PlayerIds.Add(playerId);
         }
 
-        public bool ValidateBuildingPlacement(HexTileCoordinates hexCoord, BaseBuildingTemplate buildingTemplate)
+        public bool ValidateBuildingPlacement(HexTileCoordinate hexCoord, BaseBuildingTemplate buildingTemplate)
         {
             foreach (var coord in buildingTemplate.shapeData)
             {

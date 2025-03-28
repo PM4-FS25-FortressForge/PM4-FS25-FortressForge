@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using FortressForge.BuildingSystem.HexGrid;
+using FortressForge.BuildingSystem.HexTile;
 using FortressForge.Serializables;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -12,7 +13,7 @@ namespace FortressForge.BuildingSystem.BuildingData
         /// Information about the shape of the building, in the form of a list of HexTileCoordinates.
         /// </summary>
         [Header("Shape Data")] 
-        public List<HexTileCoordinates> shapeData = new();
+        public List<HexTileCoordinate> shapeData = new();
 
         public GameObject buildingPrefab;
 

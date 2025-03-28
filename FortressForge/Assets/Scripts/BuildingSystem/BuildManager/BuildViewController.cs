@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using FortressForge.BuildingSystem.HexGrid;
 using FortressForge.BuildingSystem.BuildingData;
-using FortressForge.Serializables;
+using FortressForge.BuildingSystem.HexTile;
 
 public class BuildViewController : MonoBehaviour
 {
@@ -11,6 +11,7 @@ public class BuildViewController : MonoBehaviour
 
     private BaseBuildingTemplate _selectedBuildingTemplate;
     private GameObject _previewBuilding;
+    private List<BaseBuildingTemplate> _placedBuildings = new();
 
     private bool _isPreviewMode = false;
 
@@ -18,9 +19,9 @@ public class BuildViewController : MonoBehaviour
     {
         _selectedBuildingTemplate = new ResourceBuildingTemplate();
         _selectedBuildingTemplate.buildingPrefab = building;
-        _selectedBuildingTemplate.shapeData = new List<HexTileCoordinates>
+        _selectedBuildingTemplate.shapeData = new List<HexTileCoordinate>
         {
-            new HexTileCoordinates(0,0,0) // TODO: Adjust so this is taken from building directly
+            new HexTileCoordinate(0,0,0) // TODO: Adjust so this is taken from building directly
         };
 
         if (_previewBuilding != null)
@@ -40,9 +41,17 @@ public class BuildViewController : MonoBehaviour
         {
             MovePreviewObject();
             
-            if (Input.GetMouseButtonDown(0)) // First click to place
+            if (Input.GetMouseButtonDown(0)) // First click to place // TODO consider using onclick events
             {
                 TryPlaceBuilding();
+            }
+            else if (Input.GetMouseButtonDown(1)) // Right click to cancel
+            {
+                ExitBuildMode();
+            }
+            else if (Input.GetKeyDown(KeyCode.R)) // Rotate
+            {
+                RotateObject(60f);
             }
         }
     }
@@ -51,7 +60,7 @@ public class BuildViewController : MonoBehaviour
     {
         Vector3 worldPos = hexGridView.GetMouseWorldPosition();
 
-        var hexCoord = new HexTileCoordinates(worldPos);
+        var hexCoord = new HexTileCoordinate(worldPos);
 
         Vector3 snappedPos = hexCoord.GetWorldPosition();
         
@@ -61,23 +70,37 @@ public class BuildViewController : MonoBehaviour
     private void TryPlaceBuilding()
     {
         Vector3 worldPos = _previewBuilding.transform.position;
-        HexTileCoordinates hexCoord = new HexTileCoordinates(worldPos);
+        HexTileCoordinate hexCoord = new HexTileCoordinate(worldPos);
 
         if (hexGridData.ValidateBuildingPlacement(hexCoord, _selectedBuildingTemplate))
         {
             // Place the final building at the correct position
-            Instantiate(_selectedBuildingTemplate.buildingPrefab, _previewBuilding.transform.position, Quaternion.identity);
+            Instantiate(_selectedBuildingTemplate.buildingPrefab, _previewBuilding.transform.position, _previewBuilding.transform.rotation);
             
-            _isPreviewMode = false;
-            Destroy(_previewBuilding);
-            _selectedBuildingTemplate = null;
+            _placedBuildings.Add(_selectedBuildingTemplate);
         }
-        else
+    }
+
+    private void ExitBuildMode()
+    {
+        // If placement is invalid, destroy the preview
+        _isPreviewMode = false;
+        Destroy(_previewBuilding);
+        _selectedBuildingTemplate = null;
+    }
+    
+    private void RotateObject(float angle)
+    {
+        if (_previewBuilding != null)
         {
-            // If placement is invalid, destroy the preview
-            _isPreviewMode = false;
-            Destroy(_previewBuilding);
-            _selectedBuildingTemplate = null;
+            // Get the current rotation around the Y-axis
+            Vector3 currentRotation = _previewBuilding.transform.eulerAngles;
+
+            // Increment the current rotation by the specified angle around the Y-axis
+            currentRotation.y += angle;
+
+            // Apply the new rotation while keeping other axes unchanged
+            _previewBuilding.transform.rotation = Quaternion.Euler(currentRotation);
         }
-    }   
+    }
 }

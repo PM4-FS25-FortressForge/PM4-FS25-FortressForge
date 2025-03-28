@@ -4,6 +4,5 @@ namespace FortressForge.BuildingSystem.BuildingInstance
 {
     public class WeaponBuildingInstance : BuildingInstance
     {
-
     }
 }
