@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using System.Collections.Generic;
 using FortressForge.BuildingSystem.BuildingData;
+using UnityEngine.Tilemaps;
 
 namespace FortressForge.BuildingSystem.HexGrid
 {
@@ -64,10 +65,10 @@ namespace FortressForge.BuildingSystem.HexGrid
                 HexTileData tileData = GetTileData((coord.Item1 + hexCoord.Item1, coord.Item2 + hexCoord.Item2,
                     coord.Item3 + hexCoord.Item3));
                 if (tileData == null || tileData.IsOccupied)
-                {
                     return false;
-                }
+                tileData.IsOccupied = true;
             }
+            
             return true;
         }
 

@@ -181,10 +181,10 @@ namespace FortressForge.BuildingSystem.HexGrid
         /// <summary>
         /// 
         /// </summary>
-        public (int, int, int) WorldPositionToHexCoord(Vector3 worldPosition)
-        {
+        public (int, int, int) WorldPositionToHexCoord(Vector3 worldPosition) // TODO make sure to use custom axial coordinates
+        { 
             // Convert world position to hex grid axial coordinates
-            float x = worldPosition.x / (_hexGrid.TileRadius * 3f / 2f);
+            float x = worldPosition.x / (_hexGrid.TileRadius * 3f / 2f); // TODO throws exception regularly
             float z = worldPosition.z / (_hexGrid.TileRadius * Mathf.Sqrt(3));
 
             int q = Mathf.RoundToInt(x);
