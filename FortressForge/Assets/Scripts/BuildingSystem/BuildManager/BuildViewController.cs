@@ -17,11 +17,10 @@ namespace FortressForge.BuildingSystem.BuildManager
 
         private bool _isPreviewMode = false;
 
-        public void PreviewSelectedBuilding(GameObject building)
+        public void PreviewSelectedBuilding(BaseBuildingTemplate building)
         {
-            _selectedBuildingTemplate = new ResourceBuildingTemplate();
-            _selectedBuildingTemplate.buildingPrefab = building;
-            _selectedBuildingTemplate.shapeData = new List<HexTileCoordinate>
+            _selectedBuildingTemplate = building;
+            _selectedBuildingTemplate.ShapeData = new List<HexTileCoordinate>
             {
                 new HexTileCoordinate(0,0,0) // TODO: Adjust so this is taken from building directly
             };
@@ -78,8 +77,9 @@ namespace FortressForge.BuildingSystem.BuildManager
             {
                 // Place the final building at the correct position
                 Instantiate(_selectedBuildingTemplate.buildingPrefab, _previewBuilding.transform.position, _previewBuilding.transform.rotation);
-            
-                _placedBuildings.Add(_selectedBuildingTemplate);
+                BaseBuildingTemplate copy = Instantiate(_selectedBuildingTemplate);
+                copy.DoStuff();
+                _placedBuildings.Add(copy); // TODO this will add the same object multiple times, it needs to be different
                 hexGridView.UpdateHexGridView();
             }
         }

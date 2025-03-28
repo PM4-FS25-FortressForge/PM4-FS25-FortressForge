@@ -12,12 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef29358a93271754a96b453372866827, type: 3}
   m_Name: Mine
   m_EditorClassIdentifier: 
-  shapeData:
-  - q: 0
-    r: 0
-    h: 0
+  buildingPrefab: {fileID: 8461799468503079714, guid: d22a0ce999be4cc4c838e7ccd738ba95, type: 3}
   name: Mine
-  metallCost: 100
+  metalCost: 0
   maxHealth: 1000
   ressourceType: 0
   ressourcePerTick: 1

@@ -61,7 +61,7 @@ namespace FortressForge.BuildingSystem.HexGrid
 
         public bool ValidateBuildingPlacement(HexTileCoordinate hexCoord, BaseBuildingTemplate buildingTemplate)
         {
-            foreach (var coord in buildingTemplate.shapeData)
+            foreach (var coord in buildingTemplate.ShapeData)
             {
                 HexTileData tileCoordinates = TileMap[hexCoord + coord];
                 if (tileCoordinates == null || tileCoordinates.IsOccupied)

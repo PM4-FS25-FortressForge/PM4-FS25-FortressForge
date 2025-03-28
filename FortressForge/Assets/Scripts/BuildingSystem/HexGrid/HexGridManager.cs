@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using FortressForge.BuildingSystem.BuildingData;
 using FortressForge.BuildingSystem.BuildManager;
 using FortressForge.BuildingSystem.HexTile;
 using FortressForge.Serializables;
@@ -23,7 +24,7 @@ namespace FortressForge.BuildingSystem.HexGrid
         [Header("Player GameStartConfiguration")] [SerializeField]
         private GameStartConfiguration _gameStartConfiguration;
 
-        public GameObject _otherTilePrefab; // TODO remove after refactor
+        public BaseBuildingTemplate _otherTilePrefab; // TODO remove after refactor
 
         private void Start()
         {

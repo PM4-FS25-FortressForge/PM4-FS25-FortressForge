@@ -201,7 +201,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 250715941}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &250715941
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1518,7 +1530,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _hexGridConfiguration: {fileID: 11400000, guid: 4db0b0d18baaa5747b0639afa305dced, type: 2}
   _gameStartConfiguration: {fileID: 11400000, guid: 8c5e56cc0c67a1f4e9e168c329893944, type: 2}
-  _otherTilePrefab: {fileID: 8461799468503079714, guid: d22a0ce999be4cc4c838e7ccd738ba95, type: 3}
+  _otherTilePrefab: {fileID: 11400000, guid: de8eeb04020297a4790e752b8f95080c, type: 2}
 --- !u!4 &1149923579
 Transform:
   m_ObjectHideFlags: 0

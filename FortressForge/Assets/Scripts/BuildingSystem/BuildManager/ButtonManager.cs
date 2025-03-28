@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using FortressForge.BuildingSystem.BuildingData;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
@@ -8,7 +9,7 @@ namespace FortressForge.BuildingSystem.BuildManager
     public class ButtonManager : MonoBehaviour
     {
         public List<Button> buildingButtons = new();
-        public List<GameObject> availableBuildings = new();
+        public List<BaseBuildingTemplate> availableBuildings = new();
     
         [FormerlySerializedAs("playerController")] public BuildViewController buildViewController;
 

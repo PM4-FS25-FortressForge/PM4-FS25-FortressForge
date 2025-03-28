@@ -13,12 +13,17 @@ namespace FortressForge.BuildingSystem.BuildingData
         /// Information about the shape of the building, in the form of a list of HexTileCoordinates.
         /// </summary>
         [Header("Shape Data")] 
-        public List<HexTileCoordinate> shapeData = new();
+        public List<HexTileCoordinate> ShapeData = new();
 
         public GameObject buildingPrefab;
 
         [Header("Building Data")] public string name;
         public int metalCost;
         public int maxHealth;
+
+        public void DoStuff()
+        {
+            Debug.Log("Doing stuff");
+        }
     }
 }
