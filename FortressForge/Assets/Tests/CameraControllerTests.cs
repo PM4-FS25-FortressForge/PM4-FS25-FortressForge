@@ -9,17 +9,41 @@ using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 using GameObject = UnityEngine.GameObject;
 
+/// <summary>
+/// This class contains unit tests for the CameraController class in Unity.
+/// The tests verify camera movement, rotation, and zoom functionality 
+/// based on keyboard input.
+/// </summary>
+/// <remarks>
+/// To run these tests successfully, ensure that the Unity Camera 
+/// Implementation Test Scene is loaded in the Unity Editor.
+/// </remarks>
+/// <example>
+/// <para>Setup Instructions:</para>
+/// <list type="bullet">
+///   <item>Manually open the "Unity Camera Implementation Test" scene.</item>
+///   <item>If the tests fail due to a missing scene, go to Unity Editor:</item>
+///   <item>File &gt; Build Settings &gt; Add Open Scenes.</item>
+/// </list>
+/// </example>
+/// <para>
+/// Each test simulates key presses using Unity's Input System and verifies 
+/// that the camera reacts correctly. The movement, zoom and rotation limits 
+/// are also validated.
+/// </para>
+/// <author>Hoferlev</author>
+/// <version>1.0</version>
+
 public class CameraControllerTest
 {
     private GameObject _mainCamera;
-    private Vector3 initialPosition;
-    private float yInitialRotation;
-    private float xInitialRotation;
-    private float zInitialRotation;
-    private float initialZoom;
-    private HashSet<Key> activeKeys = new HashSet<Key>();
-
-    private PlayerInput playerInput;
+    private Vector3 _initialPosition;
+    private float _yInitialRotation;
+    private float _xInitialRotation;
+    private float _zInitialRotation;
+    private float _initialZoom;
+    private HashSet<Key> _activeKeys = new HashSet<Key>();
+    private PlayerInput _playerInput;
 
     [UnitySetUp]
     public IEnumerator Setup()
@@ -38,10 +62,10 @@ public class CameraControllerTest
         Assert.IsNotNull(_mainCamera, "Error: Main Camera was not found in the scene.");
 
         // Save initial position & rotation
-        initialPosition = _mainCamera.transform.position;
-        yInitialRotation = _mainCamera.transform.eulerAngles.y;
-        xInitialRotation = _mainCamera.transform.eulerAngles.x;
-        zInitialRotation = _mainCamera.transform.eulerAngles.z;
+        _initialPosition = _mainCamera.transform.position;
+        _yInitialRotation = _mainCamera.transform.eulerAngles.y;
+        _xInitialRotation = _mainCamera.transform.eulerAngles.x;
+        _zInitialRotation = _mainCamera.transform.eulerAngles.z;
     }
 
 
@@ -53,7 +77,7 @@ public class CameraControllerTest
         yield return new WaitForSeconds(0.5f);
         ReleaseKey(Key.W);
 
-        Assert.Greater(_mainCamera.transform.position.z, initialPosition.z, "Camera should move forward when W is pressed.");
+        Assert.Greater(_mainCamera.transform.position.z, _initialPosition.z, "Camera should move forward when W is pressed.");
     }
 
     [UnityTest]
@@ -63,7 +87,7 @@ public class CameraControllerTest
         yield return new WaitForSeconds(0.5f);
         ReleaseKey(Key.A);
 
-        Assert.Less(_mainCamera.transform.position.x, initialPosition.x, "Camera should move left when A is pressed.");
+        Assert.Less(_mainCamera.transform.position.x, _initialPosition.x, "Camera should move left when A is pressed.");
     }
     [UnityTest]
     public IEnumerator TestCameraMovesRight_WhenPressingS()
@@ -72,7 +96,7 @@ public class CameraControllerTest
         yield return new WaitForSeconds(0.5f);
         ReleaseKey(Key.S);
 
-        Assert.Less(_mainCamera.transform.position.z, initialPosition.z, "Camera should move Down when S is pressed.");
+        Assert.Less(_mainCamera.transform.position.z, _initialPosition.z, "Camera should move Down when S is pressed.");
     }
 
     [UnityTest]
@@ -82,10 +106,9 @@ public class CameraControllerTest
         yield return new WaitForSeconds(0.5f);
         ReleaseKey(Key.D);
 
-        Assert.Greater(_mainCamera.transform.position.x, initialPosition.x, "Camera should move right when D is pressed.");
+        Assert.Greater(_mainCamera.transform.position.x, _initialPosition.x, "Camera should move right when D is pressed.");
     }
     
-
     [UnityTest]
     public IEnumerator TestCameraRotatesLeft_WhenPressingQ()
     {
@@ -94,7 +117,7 @@ public class CameraControllerTest
         ReleaseKey(Key.Q);
 
         float newRotation = _mainCamera.transform.eulerAngles.y;
-        Assert.Greater(newRotation, yInitialRotation, "Camera should rotate left when Q is pressed.");
+        Assert.Greater(newRotation, _yInitialRotation, "Camera should rotate left when Q is pressed.");
     }
 
     [UnityTest]
@@ -105,7 +128,7 @@ public class CameraControllerTest
         ReleaseKey(Key.E);
 
         float newRotation = _mainCamera.transform.eulerAngles.y;
-        Assert.Greater(newRotation, yInitialRotation, "Camera should rotate right when E is pressed.");
+        Assert.Greater(newRotation, _yInitialRotation, "Camera should rotate right when E is pressed.");
     }
     
     [UnityTest]
@@ -116,7 +139,7 @@ public class CameraControllerTest
         ReleaseKey(Key.UpArrow);
 
         float newPitch = _mainCamera.transform.eulerAngles.x;
-        Assert.Greater(newPitch, xInitialRotation, "Camera should pitch up when UpArrow is pressed.");
+        Assert.Greater(newPitch, _xInitialRotation, "Camera should pitch up when UpArrow is pressed.");
     }
     [UnityTest]
     public IEnumerator TestCameraPitchDown_WhenPressingArrowDown()
@@ -126,7 +149,7 @@ public class CameraControllerTest
         ReleaseKey(Key.DownArrow);
 
         float newPitch = _mainCamera.transform.eulerAngles.x;
-        Assert.Less(newPitch, xInitialRotation, "Camera should pitch Down when DownArrow is pressed.");
+        Assert.Less(newPitch, _xInitialRotation, "Camera should pitch Down when DownArrow is pressed.");
     }
     
     [UnityTest]
@@ -242,10 +265,10 @@ public class CameraControllerTest
 
     private void PressKey(Key key)
     {
-        activeKeys.Add(key); // Add key to active set
+        _activeKeys.Add(key); // Add key to active set
 
         KeyboardState state = new KeyboardState();
-        foreach (Key k in activeKeys)
+        foreach (Key k in _activeKeys)
         {
             state.Set(k, true);
         }
@@ -256,10 +279,10 @@ public class CameraControllerTest
 
     private void ReleaseKey(Key key)
     {
-        activeKeys.Remove(key); // Remove key from active set
+        _activeKeys.Remove(key); // Remove key from active set
 
         KeyboardState state = new KeyboardState();
-        foreach (Key k in activeKeys)
+        foreach (Key k in _activeKeys)
         {
             state.Set(k, true); // Keep other keys pressed
         }
