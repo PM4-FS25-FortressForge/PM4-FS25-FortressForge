@@ -47,11 +47,11 @@ jobs:
           license: 'Personal'
           username: '${{ secrets.UNITY_USERNAME }}'
           password: '${{ secrets.UNITY_PASSWORD }}'
-#      - name: Add Build Pipeline Package
-#        working-directory: ${{ env.UNITY_PROJECT_PATH }}
-#        run: |
-#          sudo npm install -g openupm-cli
-#          openupm add com.virtualmaker.buildalon
+      - name: Add Build Pipeline Package
+        working-directory: ${{ env.UNITY_PROJECT_PATH }}
+        run: |
+          sudo npm install -g openupm-cli
+          openupm add com.virtualmaker.buildalon
       - uses: buildalon/unity-action@v1
         name: Project Validation
         with:
