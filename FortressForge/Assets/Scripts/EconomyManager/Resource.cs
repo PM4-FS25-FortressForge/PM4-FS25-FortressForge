@@ -26,12 +26,17 @@ namespace FortressForge.EconomyManager
             get => _currentAmount;
             set
             {
+                if (value < 0)
+                {
+                    Debug.LogError($"[Resource] {_type} attempted to go below 0. Value: {value}");
+                    throw new System.ArgumentOutOfRangeException(nameof(value), $"[Resource] {_type} cannot go below 0.");
+                }
                 if (value > MaxAmount)
                 {
                     Debug.Log($"[Resource] { _type } exceeded max ({value} > {MaxAmount}). Clamping.");
                     _currentAmount = MaxAmount;
                 }
-                else
+                else 
                 {
                     _currentAmount = value;
                 }
