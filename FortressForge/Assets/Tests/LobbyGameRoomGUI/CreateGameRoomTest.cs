@@ -1,0 +1,267 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using FishNet;
+using FishNet.Connection;
+using FishNet.Managing;
+using FortressForge.Network;
+using NUnit.Framework;
+using UnityEngine;
+using UnityEngine.TestTools;
+using UnityEngine.UIElements;
+
+namespace Tests.LobbyGameRoomGUI
+{
+    /// <summary>
+    /// This test class is used to test the creation of a game room and the UI elements that are part of it. It also tests the ability to join an existing game room.
+    /// </summary>
+    [TestFixture]
+    public class CreateGameRoomTest : LobbyGameRoomBaseSetup
+    {
+        [UnitySetUp]
+        public override IEnumerator SetUp()
+        {
+            yield return base.SetUp();
+        }
+
+        [UnityTest]
+        public IEnumerator GameRoomCompleteTest()
+        {
+            yield return OpenGameRoom();
+
+            yield return new WaitForSeconds(1f);
+
+            List<PlayerClient> playerNames = BuildPlayerClients(new List<string> { "TestString" });
+
+            yield return TestPlayerList(playerNames);
+
+            yield return new WaitForSeconds(1f);
+
+            yield return StartClientForFishnet();
+            yield return new WaitForSeconds(1f);
+            yield return StartClientForFishnet();
+            yield return new WaitForSeconds(1f);
+            yield return StartClientForFishnet("NetworkManagerClientToBeRemoved");
+
+            yield return new WaitForSeconds(1f);
+
+            Dictionary<int, NetworkConnection> connectedClients = InstanceFinder.NetworkManager.ServerManager.Clients;
+
+            Assert.AreEqual(4, connectedClients.Count, "Amount of connected clients is not correct!");
+
+            yield return new WaitForSeconds(1f);
+
+            List<PlayerClient> playerNames2 = BuildPlayerClients(new List<string>
+                { "TestString", "TestString", "TestString", "TestString" });
+
+            yield return TestPlayerList(playerNames2);
+
+            yield return new WaitForSeconds(1f);
+
+            RemoveNetworkManagerClients(false, "NetworkManagerClientToBeRemoved");
+
+            yield return new WaitForSeconds(1f);
+
+            List<PlayerClient> playerNames23 = BuildPlayerClients(new List<string>
+                { "TestString", "TestString", "TestString" });
+
+            yield return TestPlayerList(playerNames23);
+
+            RemoveNetworkManagerClients(true);
+
+            yield return CloseGameRoom();
+        }
+
+        /// <summary>
+        /// Opens the game room
+        /// </summary>
+        /// <returns>An IEnumerator for the Unity Test</returns>
+        private IEnumerator OpenGameRoom()
+        {
+            Button startGameButton = LobbyMenuRoot.Q<Button>("StartGameButton");
+            Assert.NotNull(startGameButton, "StartGameButton not found!");
+
+            Assert.IsFalse(CheckForGameObjectActive("GameRoomView"),
+                "GameRoomView was found! It should not be active yet!");
+
+            Label gameRoomTitle = LobbyMenuRoot.Q<Label>("Header");
+            Assert.NotNull(gameRoomTitle, "TitleLabel not found!");
+
+            CheckTextField(LobbyMenuRoot.Q<TextField>("PlayerNameTextField"));
+
+            Assert.IsFalse(IsFishNetServerRunning(), "FishNet server is running! It should not be running yet!");
+
+            SendClickEvent(startGameButton);
+
+            yield return new WaitForSeconds(1f);
+
+            Assert.IsTrue(CheckForGameObjectActive("GameRoomView"),
+                "GameRoomView was not found! It should be active now!");
+            Assert.IsFalse(CheckForGameObjectActive("LobbyMenu"), "LobbyMenu was found! It should not be active yet!");
+
+            Assert.IsTrue(IsFishNetServerRunning(), "FishNet server is not running!");
+
+            yield return null;
+        }
+
+        /// <summary>
+        /// Tests the player list
+        /// </summary>
+        /// <param name="playerNames">The names of the players</param>
+        /// <returns>An IEnumerator for the Unity Test</returns>
+        private IEnumerator TestPlayerList(List<PlayerClient> playerNames)
+        {
+            VisualElement gameRoomRoot = GetGameRoomRoot();
+            Assert.NotNull(gameRoomRoot, "GameRoomRoot not found!");
+
+            ListView playerList = gameRoomRoot.Q<ListView>("PlayerList");
+            Assert.NotNull(playerList, "PlayerList not found!");
+
+            Assert.NotNull(playerList.itemsSource, "ItemsSource not found!");
+
+            Assert.Greater(playerList.itemsSource.Count, 0, "PlayerList is empty!");
+
+            Assert.AreEqual(playerNames.Count, playerList.itemsSource.Count,
+                "PlayerList has the wrong amount of players!");
+
+            for (int i = 0; i < playerList.itemsSource.Count; i++)
+            {
+                Assert.AreEqual(playerNames[i], playerList.itemsSource[i], "PlayerList has the wrong player names!");
+            }
+
+            yield return null;
+        }
+
+        /// <summary>
+        /// Closes the game room
+        /// </summary>
+        /// <returns>An IEnumerator for the Unity Test</returns>
+        private static IEnumerator CloseGameRoom()
+        {
+            Button returnToLobbyButton = GetRoot("GameRoomView").Q<Button>("ExitButton");
+            Assert.NotNull(returnToLobbyButton, "ExitButton not found!");
+
+            SendClickEvent(returnToLobbyButton);
+
+            Assert.IsTrue(CheckForGameObjectActive("LobbyMenu"), "LobbyMenu was not found! It should be active now!");
+            Assert.IsFalse(CheckForGameObjectActive("GameRoomView"),
+                "GameRoomView was found! It should not be active yet!");
+
+            yield return new WaitForSeconds(1f);
+
+            Assert.IsFalse(IsFishNetServerRunning(), "FishNet server is running! It should not be running anymore!");
+
+            yield return null;
+        }
+
+        /// <summary>
+        /// Starts a client for FishNet
+        /// </summary>
+        /// <param name="specificName">The specific name of the client</param>
+        /// <returns>An IEnumerator for the Unity Test</returns>
+        private IEnumerator StartClientForFishnet(string specificName = "NetworkManagerClient")
+        {
+            GameObject networkManagerPrefab = Resources.Load<GameObject>("Prefabs/NetworkManager");
+            Assert.IsNotNull(networkManagerPrefab, "NetworkManager prefab not found!");
+
+            GameObject networkManagerObject = Object.Instantiate(networkManagerPrefab);
+            Assert.IsNotNull(networkManagerObject, "NetworkManager object not found!");
+            networkManagerObject.name = specificName;
+
+            NetworkManager networkManager = networkManagerObject.GetComponent<NetworkManager>();
+            Assert.IsNotNull(networkManager, "NetworkManager not found!");
+
+            networkManager.ClientManager.StartConnection();
+
+            yield return new WaitUntil(() => networkManager.ClientManager.Started);
+        }
+
+        /// <summary>
+        /// Removes the network manager clients
+        /// </summary>
+        /// <param name="removeAll">True if all clients should be removed, false if only one should be removed</param>
+        /// <param name="specificName">The specific name of the client, if no specific name is given, the default name is used</param>
+        private void RemoveNetworkManagerClients(bool removeAll, string specificName = "NetworkManagerClient")
+        {
+            NetworkManager[] networkManagerObjects =
+                Object.FindObjectsByType<NetworkManager>(FindObjectsSortMode.None);
+            foreach (NetworkManager networkManagerObject in networkManagerObjects)
+            {
+                if (networkManagerObject.name != specificName)
+                {
+                    continue;
+                }
+
+                Object.Destroy(networkManagerObject.gameObject);
+                if (!removeAll)
+                {
+                    break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the root of a UI document
+        /// </summary>
+        /// <param name="uiDocumentName">The name of the UI document</param>
+        /// <returns>The root of the UI document</returns>
+        private static VisualElement GetRoot(string uiDocumentName)
+        {
+            GameObject uiDocumentObject = GameObject.Find(uiDocumentName);
+            UIDocument uiDocumentSub = uiDocumentObject.GetComponent<UIDocument>();
+            if (uiDocumentSub != null)
+            {
+                return uiDocumentSub.rootVisualElement;
+            }
+
+            Debug.LogError("UI Document not found!");
+            return null;
+        }
+
+        /// <summary>
+        /// Checks if a game object is active
+        /// </summary>
+        /// <param name="gameObjectName">The name of the game object</param>
+        /// <returns> True if the game object is active, false otherwise</returns>
+        private static bool CheckForGameObjectActive(string gameObjectName)
+        {
+            GameObject gameObject = GameObject.Find(gameObjectName);
+            return gameObject != null && gameObject.activeSelf;
+        }
+
+        /// <summary>
+        /// Checks if the FishNet server is running
+        /// </summary>
+        /// <returns> True if the FishNet server is running, false otherwise</returns>
+        private static bool IsFishNetServerRunning()
+        {
+            NetworkManager networkManager = InstanceFinder.NetworkManager;
+            Assert.IsNotNull(networkManager, "NetworkManager not found!");
+            return networkManager.ServerManager.AnyServerStarted();
+        }
+
+        /// <summary>
+        /// Sends a click event to a button
+        /// </summary>
+        /// <param name="button">The button to send the click event to</param>
+        private static void SendClickEvent(Button button)
+        {
+            ClickEvent clickEvent = new();
+            clickEvent.target = button;
+            button.SendEvent(clickEvent);
+        }
+
+        /// <summary>
+        /// Builds a list of player clients
+        /// </summary>
+        /// <param name="playerNames"> The names of the players</param>
+        /// <returns> A list of player clients</returns>
+        private List<PlayerClient> BuildPlayerClients(List<string> playerNames)
+        {
+            List<PlayerClient> playerClients = playerNames
+                .Select((playerName, idCounter) => new PlayerClient(playerName, idCounter, true))
+                .ToList();
+            return playerClients;
+        }
+    }
+}
