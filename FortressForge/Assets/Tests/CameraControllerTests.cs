@@ -42,12 +42,13 @@ public class CameraControllerTest
     private float _xInitialRotation;
     private float _zInitialRotation;
     private float _initialZoom;
-    private HashSet<Key> _activeKeys = new HashSet<Key>();
+    private HashSet<Key> _activeKeys;
     private PlayerInput _playerInput;
 
     [UnitySetUp]
     public IEnumerator Setup()
     {
+        _activeKeys = new HashSet<Key>(); //Reset the active keys
         string testScene = "Unity Cammera implementation Test";
         UnityEngine.SceneManagement.SceneManager.LoadScene(testScene);
         yield return null; 
@@ -77,7 +78,8 @@ public class CameraControllerTest
         yield return new WaitForSeconds(0.5f);
         ReleaseKey(Key.W);
 
-        Assert.Greater(_mainCamera.transform.position.z, _initialPosition.z, "Camera should move forward when W is pressed.");
+        Assert.IsTrue(false);
+        //Assert.Greater(_mainCamera.transform.position.z, _initialPosition.z, "Camera should move forward when W is pressed.");
     }
 
     [UnityTest]
@@ -263,7 +265,7 @@ public class CameraControllerTest
         Object.Destroy(_mainCamera);
     }
 
-    private void PressKey(Key key)
+    private void PressKey(Key key)      //Can handle multiple keys at the same time (Only presses the key down)
     {
         _activeKeys.Add(key); // Add key to active set
 
@@ -277,7 +279,7 @@ public class CameraControllerTest
         InputSystem.Update();
     }
 
-    private void ReleaseKey(Key key)
+    private void ReleaseKey(Key key)    //Can handle multiple keys at the same time (Only released the key down)
     {
         _activeKeys.Remove(key); // Remove key from active set
 
