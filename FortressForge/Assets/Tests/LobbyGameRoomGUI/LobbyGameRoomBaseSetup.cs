@@ -50,6 +50,22 @@ namespace Tests.LobbyGameRoomGUI
             textField.value = TEST_STRING;
             Assert.IsTrue(textField.value.Length > 0, "TextField is empty!");
             Assert.AreEqual(TEST_STRING, textField.value, "TextField value is empty!");
+            
+            CheckIfVisualElementExistsDisplayed(textField);
+        }
+
+        /// <summary>
+        /// Checks if a Visual Element exists and is visible
+        /// </summary>
+        /// <param name="element">The Visual Element to check</param>
+        protected void CheckIfVisualElementExistsDisplayed(VisualElement element)
+        {
+            Assert.NotNull(element, "❌ VisualElement not found!");
+            
+            Assert.IsTrue(element.resolvedStyle.display != DisplayStyle.None, "❌ VisualElement is not visible!");
+            Assert.IsTrue(element.enabledInHierarchy, "❌ VisualElement is not enabled!");
+            Assert.NotZero((int) element.worldBound.height, "❌ VisualElement has no world bound height!");
+            Assert.NotZero((int) element.worldBound.width, "❌ VisualElement has no world bound width!");
         }
     }
 }

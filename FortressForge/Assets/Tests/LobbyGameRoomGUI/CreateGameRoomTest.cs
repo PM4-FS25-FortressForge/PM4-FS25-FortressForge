@@ -8,11 +8,13 @@ using FishNet.Managing;
 using FishNet.Managing.Scened;
 using FishNet.Transporting;
 using FortressForge.Network;
+using FortressForge.UI;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.UIElements;
 using Object = UnityEngine.Object;
+using WaitForSeconds = UnityEngine.WaitForSeconds;
 
 namespace Tests.LobbyGameRoomGUI
 {
@@ -140,6 +142,162 @@ namespace Tests.LobbyGameRoomGUI
             InstanceFinder.ServerManager.StopConnection(true);
         }
 
+        [UnityTest]
+        public IEnumerator TestPasswordDisplayInGameRoom()
+        {
+            const string password = "TestPassword";
+
+            TextField passwordField = LobbyMenuRoot.Q<TextField>("create-password-text-input");
+            Assert.NotNull(passwordField, "PasswordField not found!");
+            passwordField.value = password;
+
+            yield return OpenGameRoom();
+
+            yield return new WaitForSeconds(1f);
+
+            Label passwordSettingsLabel = GetGameRoomRoot().Q<Label>("PasswordSettings");
+            Assert.NotNull(passwordSettingsLabel, "PasswordSettingsLabel not found!");
+
+            Assert.AreEqual(password, passwordSettingsLabel.text, "Password is not displayed correctly!");
+
+            InstanceFinder.ServerManager.StopConnection(true);
+
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator TestGameRoomVisualElements()
+        {
+            yield return OpenGameRoom();
+
+            yield return new WaitForSeconds(0.1f);
+
+            Label titleLabel = GetGameRoomRoot().Q<Label>("TitleLabel");
+            CheckIfVisualElementExistsDisplayed(titleLabel);
+
+            VisualElement hostOptions = GetGameRoomRoot().Q<VisualElement>("HostOptions");
+            CheckIfVisualElementExistsDisplayed(hostOptions);
+
+            ListView playerList = GetGameRoomRoot().Q<ListView>("PlayerList");
+            CheckIfVisualElementExistsDisplayed(playerList);
+
+            Label passwordSettingsLabel = GetGameRoomRoot().Q<Label>("PasswordSettings");
+            CheckIfVisualElementExistsDisplayed(passwordSettingsLabel);
+
+            VisualElement passwordContainer = GetGameRoomRoot().Q<VisualElement>("PasswordContainer");
+            CheckIfVisualElementExistsDisplayed(passwordContainer);
+
+            VisualElement ipContainer = GetGameRoomRoot().Q<VisualElement>("IPContainer");
+            CheckIfVisualElementExistsDisplayed(ipContainer);
+
+            Label ipSettingsLabel = GetGameRoomRoot().Q<Label>("IPSettings");
+            CheckIfVisualElementExistsDisplayed(ipSettingsLabel);
+
+            Button startMatchButton = GetGameRoomRoot().Q<Button>("StartMatchButton");
+            CheckIfVisualElementExistsDisplayed(startMatchButton);
+
+            Button exitButton = GetGameRoomRoot().Q<Button>("ExitButton");
+            CheckIfVisualElementExistsDisplayed(exitButton);
+
+            InstanceFinder.ServerManager.StopConnection(true);
+
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator TestHostOptions()
+        {
+            yield return OpenGameRoom();
+
+            yield return new WaitForSeconds(0.1f);
+
+            VisualElement hostOptions = GetGameRoomRoot().Q<VisualElement>("HostOptions");
+            CheckIfVisualElementExistsDisplayed(hostOptions);
+
+            Label titleLabelHost = GetGameRoomRoot().Q<Label>("TitleLabel");
+            Assert.AreEqual("Game Room (Host)", titleLabelHost.text, "❌ TitleLabel is not correct!");
+
+            GameObject uiDocumentObject = GameObject.Find("GameRoomView");
+            GameRoomView gameRoomView = uiDocumentObject.GetComponent<GameRoomView>();
+            gameRoomView.SetupGameRoom(false, "TestPassword", "TestIP");
+
+            yield return new WaitForSeconds(0.1f);
+
+            Assert.Zero((int)hostOptions.worldBound.height, "❌ HostOptions is visible! It should not be visible!");
+            Assert.Zero((int)hostOptions.worldBound.width, "❌ HostOptions is visible! It should not be visible!");
+
+            Label titleLabelClient = GetGameRoomRoot().Q<Label>("TitleLabel");
+            Assert.AreEqual("Game Room (Client)", titleLabelClient.text, "❌ TitleLabel is not correct!");
+
+            InstanceFinder.ServerManager.StopConnection(true);
+
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator TestPlayerList()
+        {
+            yield return OpenGameRoom();
+
+            yield return new WaitForSeconds(0.1f);
+
+            GameObject uiDocumentObject = GameObject.Find("GameRoomView");
+            GameRoomView gameRoomView = uiDocumentObject.GetComponent<GameRoomView>();
+
+            PlayerClient host = new PlayerClient("TestString", 0, true);
+
+            List<PlayerClient> players = gameRoomView.GetPlayers();
+            // list should contain only the host
+            Assert.AreEqual(1, players.Count, "❌ Player list is not correct! It should contain only the host!");
+            Assert.IsTrue(players[0].IsHost, "❌ Player list is not correct! Host is not host!");
+            Assert.AreEqual(host.GetPlayerId(), players[0].GetPlayerId(),
+                "❌ Player list is not correct! Host id is not correct!");
+            Assert.AreEqual(host.GetPlayerName(), players[0].GetPlayerName(),
+                "❌ Player list is not correct! Host name is not correct!");
+
+            PlayerClient player1 = new("TestString1", 1, false);
+            PlayerClient player2 = new("TestString2", 2, false);
+            PlayerClient player3 = new("TestString3", 3, false);
+
+            List<PlayerClient> testPlayers = new() { player1, player2 };
+            gameRoomView.SetPlayers(new List<PlayerClient>(testPlayers));
+
+            players = gameRoomView.GetPlayers();
+            Assert.IsTrue(ComparePlayerClientLists(testPlayers, players),
+                "❌ Player list is not correct! It does not match the test list!");
+
+            gameRoomView.AddPlayerToList(player3);
+            players = gameRoomView.GetPlayers();
+            testPlayers.Add(player3);
+            Assert.IsTrue(ComparePlayerClientLists(testPlayers, players),
+                "❌ Player list is not correct! It does not match the test list!");
+
+            gameRoomView.RemovePlayerFromListById(1);
+            players = gameRoomView.GetPlayers();
+            testPlayers.RemoveAt(0);
+            Assert.IsTrue(ComparePlayerClientLists(testPlayers, players),
+                "❌ Player list is not correct! It does not match the test list!");
+
+            yield return TestPlayerList(testPlayers);
+
+            InstanceFinder.ServerManager.StopConnection(true);
+
+            yield return null;
+        }
+
+        /// <summary>
+        /// Compares two lists of player clients
+        /// </summary>
+        /// <param name="list1">The first list of player clients</param>
+        /// <param name="list2">The second list of player clients</param>
+        /// <returns>True if the lists are equal, false otherwise</returns>
+        private bool ComparePlayerClientLists(List<PlayerClient> list1, List<PlayerClient> list2)
+        {
+            if (list1 == null || list2 == null || list1.Count != list2.Count) return false;
+
+            return !list1.Where((t, i) => !t.Equals(list2[i])).Any();
+        }
+
         /// <summary>
         /// Opens the game room
         /// </summary>
@@ -151,9 +309,6 @@ namespace Tests.LobbyGameRoomGUI
 
             Assert.IsFalse(CheckForGameObjectActive("GameRoomView"),
                 "GameRoomView was found! It should not be active yet!");
-
-            Label gameRoomTitle = LobbyMenuRoot.Q<Label>("Header");
-            Assert.NotNull(gameRoomTitle, "TitleLabel not found!");
 
             CheckTextField(LobbyMenuRoot.Q<TextField>("PlayerNameTextField"));
 
@@ -195,6 +350,16 @@ namespace Tests.LobbyGameRoomGUI
             for (int i = 0; i < playerList.itemsSource.Count; i++)
             {
                 Assert.AreEqual(playerNames[i], playerList.itemsSource[i], "PlayerList has the wrong player names!");
+            }
+
+            List<VisualElement> labels = gameRoomRoot.Query<VisualElement>(className: "unity-list-view__item").ToList();
+            Assert.AreEqual(playerNames.Count, labels.Count, "Amount of labels is not correct!");
+            for (int i = 0; i < labels.Count; i++)
+            {
+                Label label2 = labels[i] as Label;
+                Assert.IsNotNull(label2, "Label not found!");
+                string playerName = playerNames[i].GetPlayerId() + " " + playerNames[i].GetPlayerName();
+                Assert.AreEqual(playerName, label2.text, "Player name is not correct!");
             }
 
             yield return null;

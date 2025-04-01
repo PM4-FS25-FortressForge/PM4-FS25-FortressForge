@@ -36,9 +36,10 @@ namespace Tests.LobbyGameRoomGUI
         }
 
         [UnityTest]
-        public IEnumerator CreateServerPasswortInputFieldTest()
+        public IEnumerator HeaderUITest()
         {
-            CheckTextField(LobbyMenuRoot.Q<TextField>("create-password-text-input"));
+            Label gameRoomTitle = LobbyMenuRoot.Q<Label>("Header");
+            Assert.NotNull(gameRoomTitle, "TitleLabel not found!");
 
             yield return null;
         }
@@ -46,6 +47,10 @@ namespace Tests.LobbyGameRoomGUI
         [UnityTest]
         public IEnumerator CreateServerMaxPlayersSliderInputTest()
         {
+            ChangeActiveTab(CREATE_TAB_VIEW);
+            
+            yield return new WaitForSeconds(0.1f);
+            
             SliderInt createServerMaxPlayersSlider = LobbyMenuRoot.Q<SliderInt>("max-player-amount");
             Assert.NotNull(createServerMaxPlayersSlider, "❌ CreateServerMaxPlayersSlider not found!");
 
@@ -68,6 +73,10 @@ namespace Tests.LobbyGameRoomGUI
         [UnityTest]
         public IEnumerator CheckTabViewChange()
         {
+            ChangeActiveTab(CREATE_TAB_VIEW);
+            
+            yield return new WaitForSeconds(0.01f);
+            
             CheckTabViewVisibility(CREATE_TAB_VIEW, true);
             CheckTabViewVisibility(JOIN_TAB_VIEW, false);
             CheckTabViewVisibility(IP_JOIN_TAB_VIEW, false);
@@ -87,6 +96,38 @@ namespace Tests.LobbyGameRoomGUI
             CheckTabViewVisibility(IP_JOIN_TAB_VIEW, true);
             CheckTabViewVisibility(CREATE_TAB_VIEW, false);
             CheckTabViewVisibility(JOIN_TAB_VIEW, false);
+
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator IPTabFieldsTest()
+        {
+            ChangeActiveTab(IP_JOIN_TAB_VIEW);
+            
+            yield return new WaitForSeconds(0.1f);
+            
+            CheckTextField(LobbyMenuRoot.Q<TextField>("ip-join-text-input"));
+
+            CheckTextField(LobbyMenuRoot.Q<TextField>("password-join-text-input"));
+
+            CheckIfVisualElementExistsDisplayed(LobbyMenuRoot.Q("JoinGameButton"));
+
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator CreateTabFieldsTest()
+        {
+            ChangeActiveTab(CREATE_TAB_VIEW);
+            
+            yield return new WaitForSeconds(0.1f);
+            
+            CheckTextField(LobbyMenuRoot.Q<TextField>("create-password-text-input"));
+
+            CheckIfVisualElementExistsDisplayed(LobbyMenuRoot.Q("max-player-amount"));
+            
+            CheckIfVisualElementExistsDisplayed(LobbyMenuRoot.Q("StartGameButton"));
 
             yield return null;
         }
