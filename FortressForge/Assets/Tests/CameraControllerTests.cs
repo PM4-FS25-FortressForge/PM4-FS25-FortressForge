@@ -78,8 +78,7 @@ public class CameraControllerTest
         yield return new WaitForSeconds(0.5f);
         ReleaseKey(Key.W);
 
-        Assert.IsTrue(false);
-        //Assert.Greater(_mainCamera.transform.position.z, _initialPosition.z, "Camera should move forward when W is pressed.");
+        Assert.Greater(_mainCamera.transform.position.z, _initialPosition.z, "Camera should move forward when W is pressed.");
     }
 
     [UnityTest]
