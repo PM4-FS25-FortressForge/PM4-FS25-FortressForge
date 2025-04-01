@@ -8,70 +8,84 @@ using UnityEngine.UIElements;
 
 namespace FortressForge.Network
 {
+    /// <summary>
+    /// Synchronises the game room between the server and the clients
+    /// </summary>
     public class GameRoomSynchronisation : NetworkBehaviour
     {
+        /// <summary>
+        /// Called when the client starts
+        /// </summary>
         public override void OnStartClient()
         {
             base.OnStartClient();
 
-            if (IsOwner)
-            {
-                var viewManager = GameObject.Find("ViewManager").GetComponent<ViewManager>();
-                PlayerClient player = viewManager.GetPlayerClient();
-                player.SetPlayerId(OwnerId);
-                InformServerAboutNewPlayer(player);
+            if (!IsOwner) return;
+            ViewManager viewManager = GameObject.Find("ViewManager").GetComponent<ViewManager>();
+            PlayerClient player = viewManager.GetPlayerClient();
+            player.SetPlayerId(OwnerId);
+            InformServerAboutNewPlayer(player);
 
-                ServerManager.OnRemoteConnectionState += (connectionId, state) =>
-                {
-                    // check if a client has disconnected if so remove the player from the list
-                    if (state.ConnectionState == RemoteConnectionState.Stopped)
-                    {
-                        InformServerAboutPlayerLeaving(connectionId.ClientId);
-                    }
-                };
-            }
-            else
+            ServerManager.OnRemoteConnectionState += (connectionId, state) =>
             {
-                //SetupGameRoom(false, "Client");
-                //gameObject.GetComponent<GameRoomSyncronisation>().enabled = false;
-            }
+                if (state.ConnectionState == RemoteConnectionState.Stopped)
+                {
+                    InformServerAboutPlayerLeaving(connectionId.ClientId);
+                }
+            };
         }
 
+        /// <summary>
+        /// Inform the server about a new player
+        /// </summary>
+        /// <param name="player">The player to inform the server about</param>
         [ServerRpc]
         private void InformServerAboutNewPlayer(PlayerClient player)
         {
-            UIDocument gameRoomView = GameObject.Find("GameRoomView").GetComponent<UIDocument>();
-            gameRoomView.GetComponent<GameRoomView>().AddPlayerToList(player);
-            List<PlayerClient> players = gameRoomView.GetComponent<GameRoomView>().GetPlayers();
+            GameRoomView gameRoomView = GetGameRoomViewUIDocument();
+            gameRoomView.AddPlayerToList(player);
+            List<PlayerClient> players = gameRoomView.GetPlayers();
             InformClientsAboutNewPlayer(players);
         }
 
+        /// <summary>
+        /// Inform the clients about a new player
+        /// </summary>
+        /// <param name="players">The list of players to inform the clients about</param>
         [ObserversRpc]
         private void InformClientsAboutNewPlayer(List<PlayerClient> players)
         {
-            UIDocument gameRoomView = GameObject.Find("GameRoomView").GetComponent<UIDocument>();
-            gameRoomView.GetComponent<GameRoomView>().SetPlayers(players);
+            GetGameRoomViewUIDocument().SetPlayers(players);
         }
 
+        /// <summary>
+        /// Inform the server about a player leaving
+        /// </summary>
+        /// <param name="playerId">The ID of the player that left</param>
         [ServerRpc]
         private void InformServerAboutPlayerLeaving(int playerId)
         {
-            UIDocument gameRoomView = GameObject.Find("GameRoomView").GetComponent<UIDocument>();
-            gameRoomView.GetComponent<GameRoomView>().RemovePlayerFromListById(playerId);
-            InformOversersAboutPlayerLeaving(playerId);
+            GetGameRoomViewUIDocument().RemovePlayerFromListById(playerId);
+            InformObserversAboutPlayerLeaving(playerId);
         }
 
+        /// <summary>
+        /// Inform the observers about a player leaving
+        /// </summary>
+        /// <param name="playerId">The ID of the player that left</param>
         [ObserversRpc]
-        private void InformOversersAboutPlayerLeaving(int playerId)
+        private void InformObserversAboutPlayerLeaving(int playerId)
         {
-            UIDocument gameRoomView = GameObject.Find("GameRoomView").GetComponent<UIDocument>();
-            gameRoomView.GetComponent<GameRoomView>().RemovePlayerFromListById(playerId);
+            GetGameRoomViewUIDocument().RemovePlayerFromListById(playerId);
         }
 
-        private void AddPlayerToRoom(PlayerClient player)
+        /// <summary>
+        /// Get the GameRoomView from the UIDocument
+        /// </summary>
+        /// <returns>The GameRoomView Object</returns>
+        private GameRoomView GetGameRoomViewUIDocument()
         {
-            UIDocument gameRoomView = GameObject.Find("GameRoomView").GetComponent<UIDocument>();
-            gameRoomView.GetComponent<GameRoomView>().AddPlayerToList(player);
+            return GameObject.Find("GameRoomView").GetComponent<UIDocument>().GetComponent<GameRoomView>();
         }
     }
 }
