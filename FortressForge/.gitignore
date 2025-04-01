@@ -77,3 +77,5 @@ crashlytics-build.properties
 
 # seems to be generated from building for Android
 /.utmp/*
+# Manual addition for non Template inclusions
+.vsconfig

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace FortressForge.BuildingSystem.BuildingData
+namespace FortressForge.Serializables
 {
     [System.Serializable]
     public struct ShapeData
