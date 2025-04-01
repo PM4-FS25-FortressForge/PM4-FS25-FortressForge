@@ -8,46 +8,46 @@ namespace FortressForge.Network
     public class PlayerClient
     {
         //  These 3 field have!!! to be public for the fishnet serializer to work otherwise they won't be serialized
-        public string playerName;
-        public int playerId;
-        public bool isHost;
+        public readonly string PlayerName;
+        public int PlayerId;
+        public readonly bool IsHost;
 
         /// <summary>
         ///  Default constructor needed for the serializer
         /// </summary>
         public PlayerClient()
         {
-            playerName = "DefaultPlayer";
-            playerId = GeneratePlayerId();
-            isHost = false;
+            PlayerName = "DefaultPlayer";
+            PlayerId = GeneratePlayerId();
+            IsHost = false;
         }
 
         public PlayerClient(string playerName, int playerId, bool isHost)
         {
-            this.playerName = playerName;
-            this.playerId = playerId;
-            this.isHost = isHost;
+            PlayerName = playerName;
+            PlayerId = playerId;
+            IsHost = isHost;
         }
 
         public PlayerClient(string playerName, int playerId)
         {
-            this.playerName = playerName;
-            this.playerId = playerId;
-            isHost = false;
+            PlayerName = playerName;
+            PlayerId = playerId;
+            IsHost = false;
         }
 
         public PlayerClient(string playerName)
         {
-            this.playerName = playerName;
-            playerId = GeneratePlayerId();
-            isHost = false;
+            PlayerName = playerName;
+            PlayerId = GeneratePlayerId();
+            IsHost = false;
         }
 
         public PlayerClient(string playerName, bool isHost)
         {
-            this.playerName = playerName;
-            playerId = GeneratePlayerId();
-            this.isHost = isHost;
+            PlayerName = playerName;
+            PlayerId = GeneratePlayerId();
+            IsHost = isHost;
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace FortressForge.Network
         /// <returns>The players name</returns>
         public string GetPlayerName()
         {
-            return playerName;
+            return PlayerName;
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace FortressForge.Network
         /// <returns>The players ID</returns>
         public int GetPlayerId()
         {
-            return playerId;
+            return PlayerId;
         }
 
         /// <summary>
@@ -74,16 +74,16 @@ namespace FortressForge.Network
         /// <param name="playerIdParam">The players ID</param>
         public void SetPlayerId(int playerIdParam)
         {
-            playerId = playerIdParam;
+            PlayerId = playerIdParam;
         }
 
         /// <summary>
         /// Get if the player is the host
         /// </summary>
         /// <returns>True if the player is the host</returns>
-        public bool IsHost()
+        public bool GetIsHost()
         {
-            return isHost;
+            return IsHost;
         }
 
         /// <summary>
@@ -101,7 +101,22 @@ namespace FortressForge.Network
         /// <returns>A string representation of the player</returns>
         public override string ToString()
         {
-            return "Player Name: " + playerName + " Player Id: " + playerId + " Is Host: " + isHost;
+            return "Player Name: " + PlayerName + " Player Id: " + PlayerId + " Is Host: " + IsHost;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is PlayerClient player)
+            {
+                return PlayerName == player.PlayerName && PlayerId == player.PlayerId && IsHost == player.IsHost;
+            }
+
+            return false;
+        }
+        
+        public override int GetHashCode()
+        {
+            return PlayerName.GetHashCode() + PlayerId.GetHashCode() + IsHost.GetHashCode();
         }
     }
 }
