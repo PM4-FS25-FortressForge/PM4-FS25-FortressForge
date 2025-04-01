@@ -17,6 +17,7 @@ namespace FortressForge.UI.Manager
         [SerializeField] private UIDocument lobbyViewDoc;
         [SerializeField] private UIDocument gameRoomViewDoc;
         [SerializeField] private string nextScene = "HexGridTest";
+        [SerializeField] private string lobbyScene = "LobbyScene";
 
         private UIDocument _currentView;
         private GameRoomView _gameRoomView;
@@ -137,9 +138,10 @@ namespace FortressForge.UI.Manager
         /// </summary>
         private void StartServer()
         {
-            InstanceFinder.ServerManager.StartConnection();
-            InstanceFinder.ClientManager.StartConnection();
             _serverIP = GetLocalIPAddress();
+            InstanceFinder.TransportManager.Transport.SetServerBindAddress(_serverIP, IPAddressType.IPv4);
+            InstanceFinder.ServerManager.StartConnection();
+            InstanceFinder.ClientManager.StartConnection(_serverIP);
             Debug.Log("✅ Server gestartet auf: " + _serverIP);
         }
 
@@ -234,8 +236,7 @@ namespace FortressForge.UI.Manager
         {
             BootstrapSceneManager sceneManager = FindAnyObjectByType<BootstrapSceneManager>();
             sceneManager.LoadScene(nextScene);
-            sceneManager.UnloadScene("LobbyScene");
-            // Todo: Add checks if there are enough players to start the match or not to many players
+            sceneManager.UnloadScene(lobbyScene);
         }
 
         /// <summary>
