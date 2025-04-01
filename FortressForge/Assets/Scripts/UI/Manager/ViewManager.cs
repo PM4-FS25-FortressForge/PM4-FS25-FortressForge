@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using FishNet;
-using FishNet.Managing.Scened;
 using FishNet.Transporting;
 using FortressForge.Network;
 using UnityEngine;
@@ -18,7 +17,7 @@ namespace FortressForge.UI.Manager
         [SerializeField] private UIDocument lobbyViewDoc;
         [SerializeField] private UIDocument gameRoomViewDoc;
         [SerializeField] private string nextScene = "HexGridTest";
-        
+
         private UIDocument _currentView;
         private GameRoomView _gameRoomView;
 
@@ -32,10 +31,6 @@ namespace FortressForge.UI.Manager
         private const float SHAKESTRENGTH = 5f;
 
         private string _serverIP = "127.0.0.1";
-        private string _serverPassword = "";
-        private List<string> _playerList = new();
-
-        private List<string> _addresses = new();
 
         private PlayerClient _playerClient;
 
@@ -58,7 +53,6 @@ namespace FortressForge.UI.Manager
             if (_currentView != null)
             {
                 _currentView.gameObject.SetActive(false);
-                //UnregisterEvents(_currentView);
             }
 
             newView.gameObject.SetActive(true);
@@ -80,7 +74,7 @@ namespace FortressForge.UI.Manager
         /// </summary>
         private void SetupLobbyButtons()
         {
-            var lobbyRoot = lobbyViewDoc.rootVisualElement;
+            VisualElement lobbyRoot = lobbyViewDoc.rootVisualElement;
 
             _startGameButton = lobbyRoot.Q<Button>("StartGameButton");
             _joinGameButton = lobbyRoot.Q<Button>("JoinGameButton");
@@ -95,7 +89,7 @@ namespace FortressForge.UI.Manager
         /// </summary>
         private void SetupGameRoomButtons()
         {
-            var gameRoomRoot = gameRoomViewDoc.rootVisualElement;
+            VisualElement gameRoomRoot = gameRoomViewDoc.rootVisualElement;
             _returnToLobbyButton = gameRoomRoot.Q<Button>("ExitButton");
 
             _returnToLobbyButton?.RegisterCallback((ClickEvent _) => ReturnToLobby());
@@ -105,39 +99,20 @@ namespace FortressForge.UI.Manager
         }
 
         /// <summary>
-        ///  Remove the event listeners to avoid problems when switching between ui Documents
-        /// </summary>
-        /// <param name="oldView">The view to remove the events from</param>
-        private void UnregisterEvents(UIDocument oldView)
-        {
-            if (oldView == lobbyViewDoc)
-            {
-                _startGameButton?.UnregisterCallback((ClickEvent _) => StartGame());
-                _joinGameButton?.UnregisterCallback((ClickEvent _) => JoinGame());
-            }
-            else if (oldView == gameRoomViewDoc)
-            {
-                if (_returnToLobbyButton != null) _returnToLobbyButton.clicked -= ReturnToLobby;
-            }
-        }
-
-        /// <summary>
         ///  Create a new game room
         /// </summary>
         private void StartGame()
         {
             Debug.Log("🎮 Spiel wird gestartet!");
-            var playerName = GetPlayerName();
-            var password = GetPassword();
+            string playerName = GetPlayerName();
+            string password = GetPassword();
 
             if (!ValidatePlayerName(playerName)) return;
 
             _playerClient = new PlayerClient(playerName, true);
-
-            _serverPassword = password;
             StartServer();
 
-            EnterGameRoom(true, playerName, password, _serverIP);
+            EnterGameRoom(true, password, _serverIP);
         }
 
         /// <summary>
@@ -145,13 +120,13 @@ namespace FortressForge.UI.Manager
         /// </summary>
         private void JoinGame()
         {
-            var playerName = GetPlayerName();
+            string playerName = GetPlayerName();
             if (!ValidateJoinIPGameFields()) return;
 
             _playerClient = new PlayerClient(playerName);
 
-            var ipField = lobbyViewDoc.rootVisualElement.Q<TextField>("ip-join-text-input");
-            var passwordField = lobbyViewDoc.rootVisualElement.Q<TextField>("ip-join-text-input");
+            TextField ipField = lobbyViewDoc.rootVisualElement.Q<TextField>("ip-join-text-input");
+            TextField passwordField = lobbyViewDoc.rootVisualElement.Q<TextField>("ip-join-text-input");
             string enteredIP = ipField?.value ?? "";
             string enteredPassword = passwordField?.value ?? "";
             JoinServer(enteredIP);
@@ -203,10 +178,14 @@ namespace FortressForge.UI.Manager
             InstanceFinder.ClientManager.OnClientConnectionState += OnServerEndedConnection;
         }
 
+        /// <summary>
+        /// Event when the server ended the connection
+        /// </summary>
+        /// <param name="args">The connection state arguments</param>
         private void OnServerEndedConnection(ClientConnectionStateArgs args)
         {
             InstanceFinder.ClientManager.OnClientConnectionState -= OnServerEndedConnection;
-            var stoppedStates = new HashSet<LocalConnectionState>
+            HashSet<LocalConnectionState> stoppedStates = new()
             {
                 LocalConnectionState.StoppedError,
                 LocalConnectionState.StoppedClosed,
@@ -214,11 +193,10 @@ namespace FortressForge.UI.Manager
                 LocalConnectionState.Stopping
             };
 
-            if (stoppedStates.Contains(args.ConnectionState))
-            {
-                Debug.Log("❌ Verbindung zum Server verloren! ClientConnection");
-                ShowView(lobbyViewDoc);
-            }
+            if (!stoppedStates.Contains(args.ConnectionState)) return;
+            
+            Debug.Log("❌ Verbindung zum Server verloren! ClientConnection");
+            ShowView(lobbyViewDoc);
         }
 
         /// <summary>
@@ -227,7 +205,7 @@ namespace FortressForge.UI.Manager
         /// <param name="duration">The duration in milliseconds to show the error</param>
         private void ShowConnectionError(int duration = 1000)
         {
-            var ipField = lobbyViewDoc.rootVisualElement.Q<TextField>("ip-join-text-input");
+            TextField ipField = lobbyViewDoc.rootVisualElement.Q<TextField>("ip-join-text-input");
 
             if (ipField != null)
             {
@@ -254,7 +232,10 @@ namespace FortressForge.UI.Manager
         /// </summary>
         private void StartMatch()
         {
-            InstanceFinder.SceneManager.LoadGlobalScenes(new SceneLoadData(nextScene));
+            BootstrapSceneManager sceneManager = FindAnyObjectByType<BootstrapSceneManager>();
+            sceneManager.LoadScene(nextScene);
+            sceneManager.UnloadScene("LobbyScene");
+            // Todo: Add checks if there are enough players to start the match or not to many players
         }
 
         /// <summary>
@@ -263,7 +244,7 @@ namespace FortressForge.UI.Manager
         /// <returns>The player name</returns>
         private string GetPlayerName()
         {
-            var playerNameField = lobbyViewDoc.rootVisualElement.Q<TextField>("PlayerNameTextField");
+            TextField playerNameField = lobbyViewDoc.rootVisualElement.Q<TextField>("PlayerNameTextField");
 
             _currentPlayerName = playerNameField == null ? "" : GetStringFromInputField(playerNameField);
             return _currentPlayerName;
@@ -283,10 +264,9 @@ namespace FortressForge.UI.Manager
         /// Show the game room view, the permissions depend on the host status of the player set in the parameter
         /// </summary>
         /// <param name="isHost">true if the player is the host, false if the player is a client</param>
-        /// <param name="playerName">The name of the player</param>
         /// <param name="password">The password for the game room</param>
         /// <param name="serverIP">The IP of the server</param>
-        private void EnterGameRoom(bool isHost, string playerName, string password = "", string serverIP = "")
+        private void EnterGameRoom(bool isHost, string password = "", string serverIP = "")
         {
             ShowView(gameRoomViewDoc);
 
@@ -300,7 +280,7 @@ namespace FortressForge.UI.Manager
                 }
             }
 
-            _gameRoomView.SetupGameRoom(isHost, playerName, password, serverIP);
+            _gameRoomView.SetupGameRoom(isHost, password, serverIP);
         }
 
         /// <summary>
@@ -329,7 +309,7 @@ namespace FortressForge.UI.Manager
         /// </summary>
         private void RestorePlayerName()
         {
-            var playerNameField = lobbyViewDoc.rootVisualElement.Q<TextField>("PlayerNameTextField");
+            TextField playerNameField = lobbyViewDoc.rootVisualElement.Q<TextField>("PlayerNameTextField");
 
             if (playerNameField != null)
             {
@@ -342,11 +322,11 @@ namespace FortressForge.UI.Manager
         /// </summary>
         private void ShakeLobbyContainer()
         {
-            var lobbyContainer = lobbyViewDoc.rootVisualElement.Q<VisualElement>("Lobby_Transparent_Back");
+            VisualElement lobbyContainer = lobbyViewDoc.rootVisualElement.Q<VisualElement>("Lobby_Transparent_Back");
 
             if (lobbyContainer == null) return;
 
-            var originalPosition = lobbyContainer.transform.position;
+            Vector3 originalPosition = lobbyContainer.transform.position;
 
             lobbyContainer.schedule.Execute(() =>
             {
@@ -388,7 +368,7 @@ namespace FortressForge.UI.Manager
         {
             if (inputField == null) return;
 
-            var textFieldStyle = inputField.Q("unity-text-input").style;
+            IStyle textFieldStyle = inputField.Q("unity-text-input").style;
 
             textFieldStyle.borderBottomColor = new StyleColor(Color.red);
             textFieldStyle.borderLeftColor = new StyleColor(Color.red);
@@ -424,7 +404,7 @@ namespace FortressForge.UI.Manager
         /// <returns>True if all fields are valid, false if at least one field is invalid</returns>
         private bool ValidateJoinIPGameFields()
         {
-            var playerName = GetPlayerName();
+            string playerName = GetPlayerName();
             return ValidatePlayerName(playerName) && CheckIPAddressField();
         }
 
@@ -434,8 +414,8 @@ namespace FortressForge.UI.Manager
         /// <returns>True if the IP address in the IP address field is valid, false otherwise</returns>
         private bool CheckIPAddressField()
         {
-            var ipAddressField = lobbyViewDoc.rootVisualElement.Q<TextField>("ip-join-text-input");
-            var ipAddress = GetStringFromInputField(ipAddressField);
+            TextField ipAddressField = lobbyViewDoc.rootVisualElement.Q<TextField>("ip-join-text-input");
+            string ipAddress = GetStringFromInputField(ipAddressField);
 
             if (ValidateIPAddress(ipAddress)) return true;
 
@@ -463,7 +443,7 @@ namespace FortressForge.UI.Manager
         /// <returns></returns>
         private string GetPassword()
         {
-            var passwordField = lobbyViewDoc.rootVisualElement.Q<TextField>("create-password-text-input");
+            TextField passwordField = lobbyViewDoc.rootVisualElement.Q<TextField>("create-password-text-input");
             return GetStringFromInputField(passwordField);
         }
 
@@ -475,7 +455,7 @@ namespace FortressForge.UI.Manager
         {
             string localIP = "127.0.0.1";
 
-            foreach (var ip in Dns.GetHostAddresses(Dns.GetHostName()))
+            foreach (IPAddress ip in Dns.GetHostAddresses(Dns.GetHostName()))
             {
                 if (ip.AddressFamily != System.Net.Sockets.AddressFamily.InterNetwork) continue;
                 localIP = ip.ToString();
@@ -491,7 +471,7 @@ namespace FortressForge.UI.Manager
         /// <param name="show">true to show the loading animation, false to hide it</param>
         private void ShowLoadingAnimation(bool show)
         {
-            var loadingSpinner = lobbyViewDoc.rootVisualElement.Q<VisualElement>("LoadingSpinner");
+            VisualElement loadingSpinner = lobbyViewDoc.rootVisualElement.Q<VisualElement>("LoadingSpinner");
 
             if (loadingSpinner != null)
             {
