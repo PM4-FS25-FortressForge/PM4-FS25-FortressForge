@@ -9,7 +9,7 @@ namespace Tests.Network
         [Test]
         public void TestEmptyPlayerClient()
         {
-            PlayerClient player = new PlayerClient();
+            PlayerClient player = new ();
             Assert.AreEqual("DefaultPlayer", player.GetPlayerName());
             Assert.GreaterOrEqual(player.GetPlayerId(), 0);
             Assert.LessOrEqual(player.GetPlayerId(), 100000);
@@ -19,7 +19,7 @@ namespace Tests.Network
         [Test]
         public void TestPlayerClientFull()
         {
-            PlayerClient player = new PlayerClient("TestPlayer", 1, true);
+            PlayerClient player = new ("TestPlayer", 1, true);
             Assert.AreEqual("TestPlayer", player.GetPlayerName());
             Assert.AreEqual(1, player.GetPlayerId());
             Assert.AreEqual(true, player.GetIsHost());
@@ -28,7 +28,7 @@ namespace Tests.Network
         [Test]
         public void TestPlayerClientWithoutHost()
         {
-            PlayerClient player = new PlayerClient("TestPlayer", 1);
+            PlayerClient player = new ("TestPlayer", 1);
             Assert.AreEqual("TestPlayer", player.GetPlayerName());
             Assert.AreEqual(1, player.GetPlayerId());
             Assert.AreEqual(false, player.GetIsHost());
@@ -37,7 +37,7 @@ namespace Tests.Network
         [Test]
         public void TestPlayerClientWithoutId()
         {
-            PlayerClient player = new PlayerClient("TestPlayer");
+            PlayerClient player = new ("TestPlayer");
             Assert.AreEqual("TestPlayer", player.GetPlayerName());
             Assert.GreaterOrEqual(player.GetPlayerId(), 0);
             Assert.LessOrEqual(player.GetPlayerId(), 100000);
@@ -47,7 +47,7 @@ namespace Tests.Network
         [Test]
         public void TestPlayerClientOnlyName()
         {
-            PlayerClient player = new PlayerClient("TestPlayer");
+            PlayerClient player = new ("TestPlayer");
             Assert.AreEqual("TestPlayer", player.GetPlayerName());
             Assert.GreaterOrEqual(player.GetPlayerId(), 0);
             Assert.LessOrEqual(player.GetPlayerId(), 100000);

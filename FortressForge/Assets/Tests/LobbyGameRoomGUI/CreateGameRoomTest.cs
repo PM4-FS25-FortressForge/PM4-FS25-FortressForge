@@ -1,14 +1,18 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using FishNet;
 using FishNet.Connection;
 using FishNet.Managing;
+using FishNet.Managing.Scened;
+using FishNet.Transporting;
 using FortressForge.Network;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.UIElements;
+using Object = UnityEngine.Object;
 
 namespace Tests.LobbyGameRoomGUI
 {
@@ -70,6 +74,70 @@ namespace Tests.LobbyGameRoomGUI
             RemoveNetworkManagerClients(true);
 
             yield return CloseGameRoom();
+        }
+
+        [UnityTest]
+        public IEnumerator TestGameRoomStartMatch()
+        {
+            yield return OpenGameRoom();
+
+            yield return new WaitForSeconds(1f);
+
+            Assert.IsTrue(SceneManager.GetScene("LobbyScene").isLoaded, "LobbyScene is not loaded!");
+
+            Button startMatchButton = GetGameRoomRoot().Q<Button>("StartMatchButton");
+            Assert.NotNull(startMatchButton, "StartMatchButton not found!");
+
+            SendClickEvent(startMatchButton);
+
+            yield return new WaitForSeconds(1f);
+
+            Assert.IsFalse(SceneManager.GetScene("LobbyScene").isLoaded, "LobbyScene is still loaded!");
+
+            RemoveNetworkManagerClients(true, "NetworkManager");
+        }
+
+        [UnityTest]
+        public IEnumerator TestServerExitGameRoom()
+        {
+            yield return OpenGameRoom();
+
+            yield return new WaitForSeconds(1f);
+
+            yield return StartClientForFishnet();
+            yield return new WaitForSeconds(1f);
+
+            Button exitGameRoomButton = GetGameRoomRoot().Q<Button>("ExitButton");
+            Assert.NotNull(exitGameRoomButton, "ExitButton not found!");
+
+            SendClickEvent(exitGameRoomButton);
+
+            yield return new WaitForSeconds(1f);
+
+            yield return CheckAllNetworkManagers();
+
+            Assert.IsTrue(CheckForGameObjectActive("LobbyMenu"), "LobbyMenu was not found! It should be active now!");
+            Assert.IsFalse(CheckForGameObjectActive("GameRoomView"),
+                "GameRoomView was found! It should not be active yet!");
+
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator TestIPDisplayInGameRoom()
+        {
+            yield return OpenGameRoom();
+
+            yield return new WaitForSeconds(1f);
+
+            Label ipSettingsLabel = GetGameRoomRoot().Q<Label>("IPSettings");
+            Assert.NotNull(ipSettingsLabel, "IPSettingsLabel not found!");
+
+            string serverIP = InstanceFinder.TransportManager.Transport.GetServerBindAddress(IPAddressType.IPv4);
+
+            Assert.AreEqual(serverIP, ipSettingsLabel.text, "Server IP is not displayed correctly!");
+
+            InstanceFinder.ServerManager.StopConnection(true);
         }
 
         /// <summary>
@@ -171,9 +239,14 @@ namespace Tests.LobbyGameRoomGUI
             NetworkManager networkManager = networkManagerObject.GetComponent<NetworkManager>();
             Assert.IsNotNull(networkManager, "NetworkManager not found!");
 
-            networkManager.ClientManager.StartConnection();
+            string ipAddress = InstanceFinder.TransportManager.Transport.GetServerBindAddress(IPAddressType.IPv4);
+            networkManager.ClientManager.StartConnection(ipAddress);
 
-            yield return new WaitUntil(() => networkManager.ClientManager.Started);
+            yield return new WaitUntil(
+                () => networkManager.ClientManager.Started,
+                new TimeSpan(0, 0, 10),
+                () => Assert.IsTrue(networkManager.ClientManager.Started, "Client started timeout")
+            );
         }
 
         /// <summary>
@@ -262,6 +335,23 @@ namespace Tests.LobbyGameRoomGUI
                 .Select((playerName, idCounter) => new PlayerClient(playerName, idCounter, true))
                 .ToList();
             return playerClients;
+        }
+
+        /// <summary>
+        /// Checks all network managers if the server or client are running
+        /// </summary>
+        /// <returns>An IEnumerator for the Unity Test</returns>
+        private IEnumerator CheckAllNetworkManagers()
+        {
+            NetworkManager[] networkManagerObjects =
+                Object.FindObjectsByType<NetworkManager>(FindObjectsSortMode.None);
+            foreach (NetworkManager networkManagerObject in networkManagerObjects)
+            {
+                Assert.IsFalse(networkManagerObject.ServerManager.AnyServerStarted(), "Server is running!");
+                Assert.IsFalse(networkManagerObject.ClientManager.Started, "Client is running!");
+            }
+
+            yield return null;
         }
     }
 }
