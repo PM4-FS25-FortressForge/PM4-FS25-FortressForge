@@ -61,9 +61,9 @@ namespace FortressForge.BuildingSystem.BuildManager
         {
             Vector3 worldPos = hexGridView.GetMouseWorldPosition();
 
-            var hexCoord = new HexTileCoordinate(worldPos);
+            var hexCoord = new HexTileCoordinate(worldPos, hexGridData.TileRadius, hexGridData.TileHeight);
 
-            Vector3 snappedPos = hexCoord.GetWorldPosition();
+            Vector3 snappedPos = hexCoord.GetWorldPosition(hexGridData.TileRadius, hexGridData.TileHeight);
         
             _previewBuilding.transform.position = snappedPos;
         }
@@ -71,7 +71,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         private void TryPlaceBuilding()
         {
             Vector3 worldPos = _previewBuilding.transform.position;
-            HexTileCoordinate hexCoord = new HexTileCoordinate(worldPos);
+            HexTileCoordinate hexCoord = new HexTileCoordinate(worldPos, hexGridData.TileRadius, hexGridData.TileHeight);
 
             if (hexGridData.ValidateBuildingPlacement(hexCoord, _selectedBuildingTemplate))
             {

@@ -48,7 +48,7 @@ namespace FortressForge.BuildingSystem.HexGrid
                     int r2 = Math.Min(radius, -q + radius);
                     for (int r = r1; r <= r2; r++)
                     {
-                        TileMap[new HexTileCoordinate(q, r, h) + Origin] = new HexTileData();
+                        TileMap[new HexTileCoordinate(q, r, h) + new HexTileCoordinate(Origin, TileRadius, TileHeight)] = new HexTileData();
                     }
                 }
             }

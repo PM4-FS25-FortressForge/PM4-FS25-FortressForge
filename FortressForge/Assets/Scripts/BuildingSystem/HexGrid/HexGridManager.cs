@@ -28,10 +28,7 @@ namespace FortressForge.BuildingSystem.HexGrid
         public Dropdown superTollesDropdown; // TODO remove after refactor
 
         private void Start()
-        {
-            HexTileCoordinate.TileRadius = _hexGridConfiguration.Radius; // TODO move this to a better place or find alternative
-            HexTileCoordinate.TileHeight = _hexGridConfiguration.Height;
-            
+        {   
             InitializeHexGridForPlayers(_gameStartConfiguration, _hexGridConfiguration);
         }
         
