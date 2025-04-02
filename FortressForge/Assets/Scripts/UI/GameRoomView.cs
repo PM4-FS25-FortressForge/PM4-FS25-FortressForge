@@ -41,7 +41,7 @@ namespace FortressForge.UI
             {
                 if (i >= 0 && i < _players.Count && e is Label label)
                 {
-                    label.text = _players[i].GetPlayerId() + " " + _players[i].GetPlayerName();
+                    label.text = _players[i].PlayerID + " " + _players[i].PlayerName;
                 }
             };
             _playerList.makeItem = makeItem;
@@ -109,7 +109,7 @@ namespace FortressForge.UI
         /// <param name="playerId">The ID of the player to remove</param>
         public void RemovePlayerFromListById(int playerId)
         {
-            PlayerClient player = _players.Find(p => p.GetPlayerId() == playerId);
+            PlayerClient player = _players.Find(p => p.PlayerID == playerId);
             if (player != null)
             {
                 RemovePlayerFromList(player);

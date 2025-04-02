@@ -22,7 +22,7 @@ namespace Tests.LobbyGameRoomGUI
     /// This test class is used to test the creation of a game room and the UI elements that are part of it. It also tests the ability to join an existing game room.
     /// </summary>
     [TestFixture]
-    public class CreateGameRoomTest : LobbyGameRoomBaseSetup
+    public class CreateGameRoomTest : LobbyGameRoomTestBaseSetup
     {
         [UnitySetUp]
         public override IEnumerator SetUp()
@@ -250,9 +250,9 @@ namespace Tests.LobbyGameRoomGUI
             // list should contain only the host
             Assert.AreEqual(1, players.Count, "❌ Player list is not correct! It should contain only the host!");
             Assert.IsTrue(players[0].IsHost, "❌ Player list is not correct! Host is not host!");
-            Assert.AreEqual(host.GetPlayerId(), players[0].GetPlayerId(),
+            Assert.AreEqual(host.PlayerID, players[0].PlayerID,
                 "❌ Player list is not correct! Host id is not correct!");
-            Assert.AreEqual(host.GetPlayerName(), players[0].GetPlayerName(),
+            Assert.AreEqual(host.PlayerName, players[0].PlayerName,
                 "❌ Player list is not correct! Host name is not correct!");
 
             PlayerClient player1 = new("TestString1", 1, false);
@@ -358,7 +358,7 @@ namespace Tests.LobbyGameRoomGUI
             {
                 Label label2 = labels[i] as Label;
                 Assert.IsNotNull(label2, "Label not found!");
-                string playerName = playerNames[i].GetPlayerId() + " " + playerNames[i].GetPlayerName();
+                string playerName = playerNames[i].PlayerID + " " + playerNames[i].PlayerName;
                 Assert.AreEqual(playerName, label2.text, "Player name is not correct!");
             }
 

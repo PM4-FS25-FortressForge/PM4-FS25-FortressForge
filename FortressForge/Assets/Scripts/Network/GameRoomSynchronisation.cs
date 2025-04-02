@@ -23,7 +23,7 @@ namespace FortressForge.Network
             if (!IsOwner) return;
             ViewManager viewManager = GameObject.Find("ViewManager").GetComponent<ViewManager>();
             PlayerClient player = viewManager.GetPlayerClient();
-            player.SetPlayerId(OwnerId);
+            player.PlayerID = OwnerId;
             InformServerAboutNewPlayer(player);
 
             ServerManager.OnRemoteConnectionState += (connectionId, state) =>

@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 
 namespace Tests.LobbyGameRoomGUI
 {
-    public class LobbyGameRoomBaseSetup
+    public class LobbyGameRoomTestBaseSetup
     {
         protected VisualElement LobbyMenuRoot;
         private const string TEST_STRING = "TestString";

@@ -29,7 +29,7 @@ namespace FortressForge.UI.Manager
 
         private string _currentPlayerName = "";
 
-        private const float SHAKESTRENGTH = 5f;
+        private const float SHAKE_STRENGTH = 5f;
 
         private string _serverIP = "127.0.0.1";
 
@@ -331,17 +331,17 @@ namespace FortressForge.UI.Manager
 
             lobbyContainer.schedule.Execute(() =>
             {
-                lobbyContainer.transform.position = originalPosition + new Vector3(SHAKESTRENGTH, 0, 0);
+                lobbyContainer.transform.position = originalPosition + new Vector3(SHAKE_STRENGTH, 0, 0);
             }).StartingIn(50);
 
             lobbyContainer.schedule.Execute(() =>
             {
-                lobbyContainer.transform.position = originalPosition - new Vector3(SHAKESTRENGTH, 0, 0);
+                lobbyContainer.transform.position = originalPosition - new Vector3(SHAKE_STRENGTH, 0, 0);
             }).StartingIn(100);
 
             lobbyContainer.schedule.Execute(() =>
             {
-                lobbyContainer.transform.position = originalPosition + new Vector3(SHAKESTRENGTH / 2, 0, 0);
+                lobbyContainer.transform.position = originalPosition + new Vector3(SHAKE_STRENGTH / 2, 0, 0);
             }).StartingIn(150);
 
             lobbyContainer.schedule.Execute(() => { lobbyContainer.transform.position = originalPosition; })

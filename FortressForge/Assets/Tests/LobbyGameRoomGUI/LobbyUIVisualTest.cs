@@ -7,7 +7,7 @@ using UnityEngine.UIElements;
 namespace Tests.LobbyGameRoomGUI
 {
     [TestFixture]
-    public class LobbyUIVisualTest : LobbyGameRoomBaseSetup
+    public class LobbyUIVisualTest : LobbyGameRoomTestBaseSetup
     {
         private const string CREATE_TAB_VIEW = "Create-Tab";
         private const string JOIN_TAB_VIEW = "Join-Tab";
