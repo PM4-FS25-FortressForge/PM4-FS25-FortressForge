@@ -6,7 +6,8 @@
         "UnityEditor.TestRunner",
         "FortressForge",
         "Unity.InputSystem",
-        "FishNet.Runtime"
+        "FishNet.Runtime",
+        "Assembly-CSharp"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
