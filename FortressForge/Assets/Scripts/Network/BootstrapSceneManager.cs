@@ -38,4 +38,4 @@ namespace FortressForge.Network
             InstanceFinder.SceneManager.UnloadGlobalScenes(sceneUnloadData);
         }
     }
-}
+} 
