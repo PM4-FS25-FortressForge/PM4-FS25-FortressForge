@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using System.Collections.Generic;
 using FortressForge.BuildingSystem.HexTile;
+using FortressForge.BuildingSystem.HoverController;
 
 namespace FortressForge.BuildingSystem.HexGrid
 {
@@ -23,11 +24,12 @@ namespace FortressForge.BuildingSystem.HexGrid
         {
             _tilePrefab = tilePrefab;
             _hexGrid = hexGrid;
+            _hexGrid.OnNewTileCreated += HandleNewTileCreated;
 
             if (_hexGrid == null || _tilePrefab == null)
                 throw new InvalidOperationException("HexGridView: Invalid reference to HexGrid or TilePrefab.");
             
-            InitializeHexGridView2();
+            InitializeHexGridView();
         }
 
         /// <summary>
@@ -45,11 +47,17 @@ namespace FortressForge.BuildingSystem.HexGrid
                 SetTileVisibility(hexTileView, canRender);
             }
         }
+        
+        private void HandleNewTileCreated(HexTileData hexData, HexTileCoordinate newCoords)
+        {
+            InitializeTile(hexData, newCoords);
+            UpdateHexGridView();
+        }
 
         /// <summary>
         /// Initializes the HexTileViews for all tiles in the HexGrid.  
         /// </summary>
-        private void InitializeHexGridView2()
+        private void InitializeHexGridView()
         {
             foreach (var kvp in _hexGrid.TileMap)
             {
@@ -86,7 +94,7 @@ namespace FortressForge.BuildingSystem.HexGrid
         /// </summary>
         private HexTileView InitializeTile(HexTileData tileData, HexTileCoordinate coord)
         {
-            Vector3 worldPos = coord.GetWorldPosition(_hexGrid.Origin, _hexGrid.TileRadius, _hexGrid.TileHeight);
+            Vector3 worldPos = coord.GetWorldPosition();
 
             if (!_tileViews.ContainsKey(coord))
             {
@@ -125,14 +133,14 @@ namespace FortressForge.BuildingSystem.HexGrid
             return false;
         }
 
-        public Vector3 GetMouseWorldPosition()
+        public HexTileCoordinate GetCurrentlyHoveredHexTileCoordinate()
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit hit))
+            if (GetComponent<HexGridHoverController>().CurrentlyHoveredTile != null)
             {
-                return hit.point;
+                return GetComponent<HexGridHoverController>().CurrentlyHoveredTile.HexTileCoordinate;
             }
-            return Vector3.zero;
+            
+            return default;
         }
     }
 }

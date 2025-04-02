@@ -1,3 +1,4 @@
+using FortressForge.BuildingSystem.HexTile;
 using UnityEngine;
 
 namespace FortressForge.BuildingSystem.HexGrid
@@ -7,6 +8,8 @@ namespace FortressForge.BuildingSystem.HexGrid
     /// </summary>
     public class HexTileView : MonoBehaviour
     {
+        public HexTileCoordinate HexTileCoordinate { get; set; }
+        
         private HexTileData _tileCoordinates;
 
         public Material FreeMaterial;
@@ -21,6 +24,7 @@ namespace FortressForge.BuildingSystem.HexGrid
         /// <param name="data"></param>
         public void Init(HexTileData data)
         {
+            HexTileCoordinate = data.HexTileCoordinate;
             _tileCoordinates = data;
             _renderer = GetComponentInChildren<MeshRenderer>(); // TODO: Check if we can remove this GetComponent call and not use MonoBehaviour
             UpdateVisuals();

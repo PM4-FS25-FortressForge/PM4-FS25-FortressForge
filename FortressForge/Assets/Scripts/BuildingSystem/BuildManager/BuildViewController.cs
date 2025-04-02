@@ -35,7 +35,7 @@ namespace FortressForge.BuildingSystem.BuildManager
             _isPreviewMode = true;
         }
 
-        void Update()
+        void Update() // TODO Input Controller benutzen
         {
             // Move preview
             if (_isPreviewMode && _previewBuilding != null)
@@ -59,27 +59,23 @@ namespace FortressForge.BuildingSystem.BuildManager
 
         private void MovePreviewObject()
         {
-            Vector3 worldPos = hexGridView.GetMouseWorldPosition();
-
-            var hexCoord = new HexTileCoordinate(worldPos, hexGridData.TileRadius, hexGridData.TileHeight);
-
-            Vector3 snappedPos = hexCoord.GetWorldPosition(hexGridData.TileRadius, hexGridData.TileHeight);
-        
-            _previewBuilding.transform.position = snappedPos;
+            if (hexGridView.GetCurrentlyHoveredHexTileCoordinate() != default)
+            {
+                Vector3 snappedPos = hexGridView.GetCurrentlyHoveredHexTileCoordinate().GetWorldPosition();
+                _previewBuilding.transform.position = snappedPos;
+            }
         }
 
         private void TryPlaceBuilding()
         {
-            Vector3 worldPos = _previewBuilding.transform.position;
-            HexTileCoordinate hexCoord = new HexTileCoordinate(worldPos, hexGridData.TileRadius, hexGridData.TileHeight);
+            HexTileCoordinate hexCoord = hexGridView.GetCurrentlyHoveredHexTileCoordinate();
 
-            if (hexGridData.ValidateBuildingPlacement(hexCoord, _selectedBuildingTemplate))
+            if (hexGridData.ValidateBuildingPlacement(hexCoord, _selectedBuildingTemplate) && hexCoord != default)
             {
                 // Place the final building at the correct position
                 Instantiate(_selectedBuildingTemplate.buildingPrefab, _previewBuilding.transform.position, _previewBuilding.transform.rotation);
                 BaseBuildingTemplate copy = Instantiate(_selectedBuildingTemplate);
                 _placedBuildings.Add(copy); // TODO this will add the same object multiple times, it needs to be different
-                hexGridView.UpdateHexGridView();
             }
         }
 

@@ -20,6 +20,8 @@ namespace FortressForge.BuildingSystem.HexGrid
         public Vector3 Origin { get; private set; }
         public int Id { get; set; }
 
+        public readonly int MaxBuildHeight;
+
         // Players that own this grid
         public readonly List<string> PlayerIds = new();
 
@@ -32,24 +34,27 @@ namespace FortressForge.BuildingSystem.HexGrid
         public readonly float TileHeight;
         
         public readonly Dictionary<HexTileCoordinate, HexTileData> TileMap = new();
+        
+        public event Action<HexTileData, HexTileCoordinate> OnNewTileCreated;
 
-        public HexGridData(int id, Vector3 origin, int radius, int height, float tileSize, float tileHeight)
+        public HexGridData(int id, Vector3 origin, int radius, int maxBuildHight, float tileSize, float tileHeight)
         {
             Id = id;
             Origin = origin;
+            MaxBuildHeight = maxBuildHight;
             TileRadius = tileSize;
             TileHeight = tileHeight;
-
-            for (int h = 0; h < height; h++) // TODO instead of precreating for each height consider creating on demand
+            
+            for (int q = -radius; q <= radius; q++)
             {
-                for (int q = -radius; q <= radius; q++)
+                int r1 = Math.Max(-radius, -q - radius);
+                int r2 = Math.Min(radius, -q + radius);
+                for (int r = r1; r <= r2; r++)
                 {
-                    int r1 = Math.Max(-radius, -q - radius);
-                    int r2 = Math.Min(radius, -q + radius);
-                    for (int r = r1; r <= r2; r++)
-                    {
-                        TileMap[new HexTileCoordinate(q, r, h) + new HexTileCoordinate(Origin, TileRadius, TileHeight)] = new HexTileData();
-                    }
+                    HexTileCoordinate newHexCoords = new HexTileCoordinate(q, r, 0) +
+                                                     HexTileCoordinate.GetHexTileCoordinateFromWorldPosition(Origin);
+                                                     
+                    TileMap[newHexCoords] = new HexTileData(newHexCoords);
                 }
             }
         }
@@ -63,13 +68,34 @@ namespace FortressForge.BuildingSystem.HexGrid
         {
             foreach (var coord in buildingTemplate.ShapeData)
             {
-                HexTileData tileCoordinates = TileMap[hexCoord + coord];
-                if (tileCoordinates == null || tileCoordinates.IsOccupied)
+                TileMap.TryGetValue((hexCoord + coord), out var tileData);
+                if (tileData == null || tileData.IsOccupied)
+                {
+                    Debug.Log("Placement failed");
                     return false;
-                tileCoordinates.IsOccupied = true; // Todo move this to a better place
+                }
+                   
+                UpdateHexTileData(hexCoord);
             }
             
+            Debug.Log("Placement succeeded");
             return true;
+        }
+
+        private void UpdateHexTileData(HexTileCoordinate hexCoord)
+        {
+            TileMap[hexCoord].IsOccupied = true;
+            
+            // unlock tile above
+            TileMap.TryGetValue(hexCoord + new HexTileCoordinate(0, 0, 1), out var tileData);
+
+            if (tileData == null && hexCoord.H + 1 <= MaxBuildHeight)
+            {
+                HexTileCoordinate newHexCoords = hexCoord + new HexTileCoordinate(0, 0, 1);
+                HexTileData hexTileData = new HexTileData(newHexCoords);
+                TileMap[newHexCoords] = hexTileData;
+                OnNewTileCreated?.Invoke(hexTileData, newHexCoords); // UpdateHexGridView
+            }
         }
     }
 }

@@ -28,7 +28,8 @@ namespace FortressForge.BuildingSystem.HexGrid
         public Dropdown superTollesDropdown; // TODO remove after refactor
 
         private void Start()
-        {   
+        {
+            HexTileCoordinate.Init(_hexGridConfiguration.Radius, _hexGridConfiguration.TileHeight, Vector3.zero);
             InitializeHexGridForPlayers(_gameStartConfiguration, _hexGridConfiguration);
         }
         
@@ -41,7 +42,7 @@ namespace FortressForge.BuildingSystem.HexGrid
                     id: i,
                     origin: gameStartConfiguration.HexGridOrigins[i],
                     radius: hexGridConfiguration.Radius,
-                    height: hexGridConfiguration.Height,
+                    maxBuildHight: hexGridConfiguration.MaxBuildHeight,
                     tileSize: hexGridConfiguration.TileSize,
                     tileHeight: hexGridConfiguration.TileHeight,
                     tilePrefab: hexGridConfiguration.TilePrefab

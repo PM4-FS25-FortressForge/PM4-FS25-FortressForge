@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: DefaultHexGridConfiguration
   m_EditorClassIdentifier: 
   Radius: 10
-  Height: 2
+  MaxBuildHeight: 5
   TileSize: 10
   TileHeight: 10
   TilePrefab: {fileID: 7043267529827262319, guid: 6979b1251d850564c89e5097e6152600, type: 3}
