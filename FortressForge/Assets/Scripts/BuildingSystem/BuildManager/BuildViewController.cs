@@ -19,7 +19,7 @@ namespace FortressForge.BuildingSystem.BuildManager
 
         public void PreviewSelectedBuilding(BaseBuildingTemplate building)
         {
-            _selectedBuildingTemplate = building;
+            _selectedBuildingTemplate = Instantiate(building);
             _selectedBuildingTemplate.ShapeData = new List<HexTileCoordinate>
             {
                 new HexTileCoordinate(0,0,0) // TODO: Adjust so this is taken from building directly
