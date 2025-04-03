@@ -54,8 +54,8 @@ namespace Tests.Hexgrid
             HexGridData gridData = new HexGridData(
                 id: 1,
                 origin: Vector3.zero,
-                radius: 7, // TODO hit fabio
-                maxBuildHight: 5,
+                radius: 7, 
+                maxBuildHight: 5,// TODO hit fabio
                 tileSize: 1f,
                 tileHeight: 2f
             );
