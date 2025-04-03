@@ -65,6 +65,12 @@ jobs:
           args: '-runTests -batchmode -testPlatform EditMode -testResults "${{ github.workspace }}/Logs/EditMode-test-results.xml"'
           log-name: 'EditMode-Tests'
       - uses: buildalon/unity-action@v1
+        name: ${{ matrix.build-target }}-Editor-Tests
+        with:
+          build-target: '${{ matrix.build-target }}'
+          args: '-runTests -batchmode -testPlatform PlayMode -testResults "${{ github.workspace }}/Logs/PlayMode-test-results.xml"'
+          log-name: 'PlayMode-Tests'
+      - uses: buildalon/unity-action@v1
         name: '${{ matrix.build-target }}-Build'
         with:
           log-name: '${{ matrix.build-target }}-Build'
