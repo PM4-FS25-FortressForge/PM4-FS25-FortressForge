@@ -27,7 +27,7 @@ namespace FortressForge.BuildingSystem.HexGrid
         public List<BaseBuildingTemplate> _otherTilePrefab; 
         public Dropdown superTollesDropdown; 
 
-        private void Start()
+        private void Awake()
         {
             InitializeHexGridForPlayers(_gameStartConfiguration, _hexGridConfiguration);
         }
