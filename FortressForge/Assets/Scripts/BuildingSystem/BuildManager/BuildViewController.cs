@@ -61,7 +61,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         {
             if (hexGridView.GetCurrentlyHoveredHexTileCoordinate() != default)
             {
-                Vector3 snappedPos = hexGridView.GetCurrentlyHoveredHexTileCoordinate().GetWorldPosition();
+                Vector3 snappedPos = hexGridView.GetCurrentlyHoveredHexTileCoordinate().GetWorldPosition(hexGridData.TileRadius, hexGridData.TileHeight);
                 _previewBuilding.transform.position = snappedPos;
             }
         }

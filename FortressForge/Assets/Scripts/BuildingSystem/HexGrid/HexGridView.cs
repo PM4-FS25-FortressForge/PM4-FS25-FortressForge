@@ -94,7 +94,7 @@ namespace FortressForge.BuildingSystem.HexGrid
         /// </summary>
         private HexTileView InitializeTile(HexTileData tileData, HexTileCoordinate coord)
         {
-            Vector3 worldPos = coord.GetWorldPosition();
+            Vector3 worldPos = coord.GetWorldPosition(_hexGrid.TileRadius, _hexGrid.TileHeight);
 
             if (!_tileViews.ContainsKey(coord))
             {

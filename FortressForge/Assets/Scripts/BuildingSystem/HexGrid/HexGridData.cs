@@ -52,7 +52,7 @@ namespace FortressForge.BuildingSystem.HexGrid
                 for (int r = r1; r <= r2; r++)
                 {
                     HexTileCoordinate newHexCoords = new HexTileCoordinate(q, r, 0) +
-                                                     HexTileCoordinate.GetHexTileCoordinateFromWorldPosition(Origin);
+                        new HexTileCoordinate(TileRadius, TileHeight, origin);
                                                      
                     TileMap[newHexCoords] = new HexTileData(newHexCoords);
                 }
