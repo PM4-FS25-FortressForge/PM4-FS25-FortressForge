@@ -3,6 +3,7 @@ using FortressForge.BuildingSystem.BuildingData;
 using FortressForge.BuildingSystem.HexGrid;
 using FortressForge.BuildingSystem.HexTile;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace FortressForge.BuildingSystem.BuildManager
 {
@@ -31,7 +32,7 @@ namespace FortressForge.BuildingSystem.BuildManager
             }
 
             // Instantiate the building's prefab for preview
-            _previewBuilding = Instantiate(_selectedBuildingTemplate.buildingPrefab);
+            _previewBuilding = Instantiate(_selectedBuildingTemplate.BuildingPrefab);
             _isPreviewMode = true;
         }
 
@@ -59,21 +60,21 @@ namespace FortressForge.BuildingSystem.BuildManager
 
         private void MovePreviewObject()
         {
-            if (hexGridView.GetCurrentlyHoveredHexTileCoordinate() != default)
+            if (HexGridView.GetCurrentlyHoveredHexTileCoordinate() != default)
             {
-                Vector3 snappedPos = hexGridView.GetCurrentlyHoveredHexTileCoordinate().GetWorldPosition(hexGridData.TileRadius, hexGridData.TileHeight);
+                Vector3 snappedPos = HexGridView.GetCurrentlyHoveredHexTileCoordinate().GetWorldPosition(HexGridData.TileRadius, HexGridData.TileHeight);
                 _previewBuilding.transform.position = snappedPos;
             }
         }
 
         private void TryPlaceBuilding()
         {
-            HexTileCoordinate hexCoord = hexGridView.GetCurrentlyHoveredHexTileCoordinate();
+            HexTileCoordinate hexCoord = HexGridView.GetCurrentlyHoveredHexTileCoordinate();
 
-            if (hexGridData.ValidateBuildingPlacement(hexCoord, _selectedBuildingTemplate) && hexCoord != default)
+            if (HexGridData.ValidateBuildingPlacement(hexCoord, _selectedBuildingTemplate) && hexCoord != default)
             {
                 // Place the final building at the correct position
-                Instantiate(_selectedBuildingTemplate.buildingPrefab, _previewBuilding.transform.position, _previewBuilding.transform.rotation);
+                Instantiate(_selectedBuildingTemplate.BuildingPrefab, _previewBuilding.transform.position, _previewBuilding.transform.rotation);
                 BaseBuildingTemplate copy = Instantiate(_selectedBuildingTemplate);
                 _placedBuildings.Add(copy); // TODO this will add the same object multiple times, it needs to be different
             }

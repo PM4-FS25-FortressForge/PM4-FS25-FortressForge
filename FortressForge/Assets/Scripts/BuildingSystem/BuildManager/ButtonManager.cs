@@ -16,20 +16,20 @@ namespace FortressForge.BuildingSystem.BuildManager
         
         public void Init()
         {
-            dropdown.ClearOptions();
-            dropdown.AddOptions(availableBuildings.Select(b => b.name).ToList());
-            dropdown.onValueChanged.AddListener(SelectBuilding);
+            Dropdown.ClearOptions();
+            Dropdown.AddOptions(AvailableBuildings.Select(b => b.name).ToList());
+            Dropdown.onValueChanged.AddListener(SelectBuilding);
         }
 
         void SelectBuilding(int index)
         {
-            if (index >= availableBuildings.Count)
+            if (index >= AvailableBuildings.Count)
             {
                 Debug.LogError("Index out of range.");
                 return;
             }
 
-            buildViewController.PreviewSelectedBuilding(availableBuildings[index]);
+            BuildViewController.PreviewSelectedBuilding(AvailableBuildings[index]);
         }
     }
 }
