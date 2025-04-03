@@ -284,13 +284,6 @@ namespace Tests.LobbyGameRoomGUI
 
             yield return null;
         }
-        
-        [UnityTest]
-        public IEnumerator TestFailTest()
-        {
-            Assert.IsTrue(false);
-            yield return null;
-        }
 
         /// <summary>
         /// Compares two lists of player clients
