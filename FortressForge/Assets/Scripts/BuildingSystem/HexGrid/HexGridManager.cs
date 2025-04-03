@@ -29,7 +29,6 @@ namespace FortressForge.BuildingSystem.HexGrid
 
         private void Start()
         {
-            HexTileCoordinate.Init(_hexGridConfiguration.Radius, _hexGridConfiguration.TileHeight, Vector3.zero);
             InitializeHexGridForPlayers(_gameStartConfiguration, _hexGridConfiguration);
         }
         
