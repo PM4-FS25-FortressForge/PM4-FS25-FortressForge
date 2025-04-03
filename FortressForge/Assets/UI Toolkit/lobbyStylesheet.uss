@@ -1,0 +1,89 @@
+.header {
+    font-size: 40px;
+}
+
+*{
+    color: rgb(255, 255, 255);
+    -unity-font-definition: url("project://database/Assets/UI%20Toolkit/Fonts/RisingSun-Black.otf?fileID=12800000&guid=79332651dbfdb144a9d958bcba5e2bef&type=3#RisingSun-Black");
+}
+
+.background-container {
+    background-size: cover;
+    background-position: center; 
+}
+
+.lobbyTransparent {
+    opacity: 1;
+    background-color: rgba(132, 125, 125, 0.88);
+    border-radius: 10px;
+    margin: 5% 5% 5% 5%;
+}
+
+.transparentGrey {
+    opacity: 1;
+    background-color: rgba(132, 125, 125, 0.88);
+    border-radius: 10px;
+}
+
+.unity-tab__header {
+    background-color: rgba(132, 125, 125, 0.88);
+    border-radius: 10px;
+    font-size: 20px;
+    transition: all 0.4s ease-in-out;
+    opacity: 0.6;
+    border-bottom-width: 2px;
+    margin-right: 2px;
+}
+
+.unity-tab__header:hover  {
+    cursor: arrow;
+}
+
+.unity-tab-view__header-container {
+    padding-left: 10px;
+}
+
+.unity-tab__header:checked {
+    background-color: rgba(132, 125, 125, 0.88);
+    /* border it should be round on top and connet to the tab content */
+    border-radius: 10px 10px 0 0;
+    opacity: 1;
+}
+
+.unity-tab__header-underline {
+    display: none;
+}
+
+#unity-text-input{
+    background-color: rgba(164, 157, 157, 0.88);
+    border-radius: 10px;
+}
+
+#PlayerNameContainer {
+    width: 50%;
+}
+
+#ip-join-text-input {
+    margin: 0;
+    padding: 5px;
+}
+
+.tab-body-container {
+    height: 100%;
+    flex-grow: 1;
+    margin-bottom: 1%;
+    padding-bottom: 0.5%;
+}
+
+#create-tab {
+    flex-grow: 1;
+}
+
+.enter-button {
+    margin-top: auto;
+    border-radius: 10px;
+}
+
+.unity-tab-view__content-container, .unity-tab__content-container  {
+    flex-grow: 1;
+}

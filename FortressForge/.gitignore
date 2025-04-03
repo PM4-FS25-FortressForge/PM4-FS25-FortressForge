@@ -75,5 +75,7 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
+# seems to be generated from building for Android
+/.utmp/*
 # Manual addition for non Template inclusions
 .vsconfig

@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/LobbyScene.unity
+    guid: 9e256b5b875cfc6438cb20e50db8eb13
+  - enabled: 1
     path: Assets/Scenes/Unity Cammera implementation Test.unity
     guid: 20fd2a6261fdc234f935e1cda2ad329c
   - enabled: 1
