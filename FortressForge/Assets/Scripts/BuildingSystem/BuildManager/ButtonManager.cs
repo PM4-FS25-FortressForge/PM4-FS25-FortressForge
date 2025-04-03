@@ -9,10 +9,10 @@ namespace FortressForge.BuildingSystem.BuildManager
 {
     public class ButtonManager : MonoBehaviour
     {
-        public Dropdown dropdown;
-        public List<BaseBuildingTemplate> availableBuildings;
+        public Dropdown Dropdown;
+        public List<BaseBuildingTemplate> AvailableBuildings;
     
-        public BuildViewController buildViewController;
+        public BuildViewController  BuildViewController;
         
         public void Init()
         {
