@@ -24,8 +24,8 @@ namespace FortressForge.BuildingSystem.HexGrid
         [Header("Player GameStartConfiguration")] [SerializeField]
         private GameStartConfiguration _gameStartConfiguration;
 
-        public List<BaseBuildingTemplate> _otherTilePrefab; // TODO remove after refactor
-        public Dropdown superTollesDropdown; // TODO remove after refactor
+        public List<BaseBuildingTemplate> _otherTilePrefab; 
+        public Dropdown superTollesDropdown; 
 
         private void Start()
         {

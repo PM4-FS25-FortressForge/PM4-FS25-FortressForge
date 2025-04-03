@@ -104,41 +104,65 @@ namespace FortressForge.BuildingSystem.HexTile
             return GetWorldPosition(Vector3.zero, tileRadius, tileHeight);
         }
         
+        /// <summary>
+        /// Gets the world position of this hex tile using a default offset.
+        /// </summary>
         public Vector3 GetWorldPosition()
         {
             return GetWorldPosition(Vector3.zero, _tileRadius, _tileHeight);
         }
         
+        /// <summary>
+        /// Determines whether the current <see cref="HexTileCoordinate"/> is equal to another <see cref="HexTileCoordinate"/>.
+        /// </summary>
         public bool Equals(HexTileCoordinate other)
         {
             return Q == other.Q && R == other.R && H == other.H;
         }
 
+        /// <summary>
+        /// Determines whether this <see cref="HexTileCoordinate"/> is equal to another object.
+        /// </summary>
         public override bool Equals(object obj)
         {
             return obj is HexTileCoordinate other && Equals(other);
         }
 
+        /// <summary>
+        /// Returns a hash code for this <see cref="HexTileCoordinate"/> based on its Q, R, and H values.
+        /// </summary>
         public override int GetHashCode()
         {
             return HashCode.Combine(Q, R, H);
         }
 
+        /// <summary>
+        /// Determines whether two <see cref="HexTileCoordinate"/> instances are equal.
+        /// </summary>
         public static bool operator ==(HexTileCoordinate a, HexTileCoordinate b)
         {
             return a.Equals(b);
         }
 
+        /// <summary>
+        /// Determines whether two <see cref="HexTileCoordinate"/> instances are not equal.
+        /// </summary>
         public static bool operator !=(HexTileCoordinate a, HexTileCoordinate b)
         {
             return !a.Equals(b);
         }
         
+        /// <summary>
+        /// Adds two <see cref="HexTileCoordinate"/> instances, combining their Q, R, and H values.
+        /// </summary>
         public static HexTileCoordinate operator +(HexTileCoordinate a, HexTileCoordinate b)
         {
             return new HexTileCoordinate(a.Q + b.Q, a.R + b.R, a.H + b.H);
         }
 
+        /// <summary>
+        /// Subtracts one <see cref="HexTileCoordinate"/> from another, subtracting their Q, R, and H values.
+        /// </summary>
         public static HexTileCoordinate operator -(HexTileCoordinate a, HexTileCoordinate b)
         {
             return new HexTileCoordinate(a.Q - b.Q, a.R - b.R, a.H - b.H);

@@ -13,8 +13,6 @@ namespace FortressForge.BuildingSystem.BuildManager
         public List<BaseBuildingTemplate> availableBuildings;
     
         public BuildViewController buildViewController;
-
-        //TODO add init method 
         
         public void Init()
         {

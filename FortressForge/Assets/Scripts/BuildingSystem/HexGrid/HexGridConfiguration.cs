@@ -6,7 +6,7 @@ namespace FortressForge
     public class HexGridConfiguration : ScriptableObject
     {
         [Header("HexGrid Konfiguration")]
-        public int Radius; // TODO Currently this doesnt influence the tile size
+        public int Radius;
         public int MaxBuildHeight;
         public float TileSize;
         public float TileHeight;
