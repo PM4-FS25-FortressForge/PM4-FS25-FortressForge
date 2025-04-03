@@ -1,6 +1,25 @@
 {
     "name": "Tests",
-    "optionalUnityReferences": [
-        "TestAssemblies"
-    ]
+    "rootNamespace": "",
+    "references": [
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "FortressForge",
+        "Unity.InputSystem",
+        "FishNet.Runtime",
+        "Assembly-CSharp"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

@@ -1,0 +1,32 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI%20Toolkit/lobbyStylesheet.uss?fileID=7433441132597879392&amp;guid=306c43f48d4333c4dbcb261909cb3581&amp;type=3#lobbyStylesheet" />
+    <engine:VisualElement name="Background_Container" class="background-container" style="flex-grow: 1; background-color: rgb(0, 0, 0); background-image: url(&quot;project://database/Assets/UI%20Toolkit/Background_Images/Lobby_Background_Img.png?fileID=2800000&amp;guid=3157a3171ba3f124d804dcf1dff9bd59&amp;type=3#Lobby_Background_Img&quot;);">
+        <engine:VisualElement name="Lobby_Transparent_Back" class="lobbyTransparent" style="flex-grow: 1; background-color: rgba(53, 34, 34, 0.88); min-height: 20px;">
+            <engine:Label text="Lobby" name="Header" class="header" style="position: relative; top: 0; left: 0; right: 0; bottom: 0; padding-left: 1%;" />
+            <engine:VisualElement name="PlayerNameContainer" class="lobbyTransparent" style="transform-origin: 10% 10%; margin-left: 1%; margin-top: 0; margin-bottom: 1%; margin-right: 1%; padding-left: 1%; min-height: 45px;">
+                <engine:TextField label="Spieler Namen" placeholder-text="Namen" name="PlayerNameTextField" class="lobby-text-input" />
+            </engine:VisualElement>
+            <engine:TabView style="margin-left: 1%; margin-right: 1%; height: 100%; min-height: 20px;">
+                <engine:Tab label="Create" name="Create-Tab" class="tab-container" style="flex-grow: 1;">
+                    <engine:VisualElement class="transparentGrey tab-body-container" style="min-height: 50px;">
+                        <engine:TextField label="Passwort" placeholder-text="************" name="create-password-text-input" class="transparentGrey" />
+                        <engine:SliderInt label="Maximal Anzahl Spieler" value="2" high-value="10" name="max-player-amount" low-value="2" show-input-field="true" inverted="false" style="width: 30%;" />
+                        <engine:Button text="Spiel eröffnen" name="StartGameButton" class="enter-button" />
+                    </engine:VisualElement>
+                </engine:Tab>
+                <engine:Tab label="Join" name="Join-Tab" class="tab-container">
+                    <engine:Button text="Button" name="RefreshLobbyListButton" />
+                    <engine:ListView name="open-lobby-list" class="transparentGrey" />
+                </engine:Tab>
+                <engine:Tab label="IP-Join" name="IP-Join" class="tab-container" style="flex-grow: 1;">
+                    <engine:VisualElement class="transparentGrey tab-body-container" style="flex-grow: 1;">
+                        <engine:TextField label="IP-Adresse" placeholder-text="XXX.XXX.XX.XX" name="ip-join-text-input" class="transparentGrey" />
+                        <engine:TextField label="Passwort" placeholder-text="*************" name="password-join-text-input" class="transparentGrey" />
+                        <engine:Button text="Spiel Beitreten" name="JoinGameButton" class="enter-button" />
+                        <engine:VisualElement name="LoadingSpinner" class="loading-spinner" style="display: none; width: 30px; height: 30px; background-image: url(&quot;project://database/Assets/UI%20Toolkit/Background_Images/loading.gif?fileID=2800000&amp;guid=6ba043f8f42e4914a978d8832100447a&amp;type=3#loading&quot;); background-size: cover;" />
+                    </engine:VisualElement>
+                </engine:Tab>
+            </engine:TabView>
+        </engine:VisualElement>
+    </engine:VisualElement>
+</engine:UXML>
