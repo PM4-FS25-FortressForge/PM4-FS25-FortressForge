@@ -127,7 +127,7 @@ namespace FortressForge.UI.Manager
             _playerClient = new PlayerClient(playerName);
 
             TextField ipField = lobbyViewDoc.rootVisualElement.Q<TextField>("ip-join-text-input");
-            TextField passwordField = lobbyViewDoc.rootVisualElement.Q<TextField>("ip-join-text-input");
+            TextField passwordField = lobbyViewDoc.rootVisualElement.Q<TextField>("create-password-text-input");
             string enteredIP = ipField?.value ?? "";
             string enteredPassword = passwordField?.value ?? "";
             JoinServer(enteredIP);
