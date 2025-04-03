@@ -54,7 +54,7 @@ namespace Tests.Hexgrid
             HexGridData gridData = new HexGridData(
                 id: 1,
                 origin: Vector3.zero,
-                radius: 6,
+                radius: 7,
                 maxBuildHight: 5,
                 tileSize: 1f,
                 tileHeight: 2f
