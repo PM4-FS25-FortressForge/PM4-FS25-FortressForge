@@ -4,7 +4,10 @@
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "FortressForge"
+        "FortressForge",
+        "Unity.InputSystem",
+        "FishNet.Runtime",
+        "Assembly-CSharp"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
