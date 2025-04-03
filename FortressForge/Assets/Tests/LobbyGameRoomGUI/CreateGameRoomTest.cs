@@ -246,7 +246,7 @@ namespace Tests.LobbyGameRoomGUI
 
             PlayerClient host = new PlayerClient("TestString", 0, true);
 
-            List<PlayerClient> players = gameRoomView.GetPlayers();
+            List<PlayerClient> players = gameRoomView.PlayersList;
             // list should contain only the host
             Assert.AreEqual(1, players.Count, "❌ Player list is not correct! It should contain only the host!");
             Assert.IsTrue(players[0].IsHost, "❌ Player list is not correct! Host is not host!");
@@ -260,20 +260,20 @@ namespace Tests.LobbyGameRoomGUI
             PlayerClient player3 = new("TestString3", 3, false);
 
             List<PlayerClient> testPlayers = new() { player1, player2 };
-            gameRoomView.SetPlayers(new List<PlayerClient>(testPlayers));
+            gameRoomView.PlayersList = new List<PlayerClient>(testPlayers);
 
-            players = gameRoomView.GetPlayers();
+            players = gameRoomView.PlayersList;
             Assert.IsTrue(ComparePlayerClientLists(testPlayers, players),
                 "❌ Player list is not correct! It does not match the test list!");
 
             gameRoomView.AddPlayerToList(player3);
-            players = gameRoomView.GetPlayers();
+            players = gameRoomView.PlayersList;
             testPlayers.Add(player3);
             Assert.IsTrue(ComparePlayerClientLists(testPlayers, players),
                 "❌ Player list is not correct! It does not match the test list!");
 
             gameRoomView.RemovePlayerFromListById(1);
-            players = gameRoomView.GetPlayers();
+            players = gameRoomView.PlayersList;
             testPlayers.RemoveAt(0);
             Assert.IsTrue(ComparePlayerClientLists(testPlayers, players),
                 "❌ Player list is not correct! It does not match the test list!");

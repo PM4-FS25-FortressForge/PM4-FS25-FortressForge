@@ -44,7 +44,7 @@ namespace FortressForge.Network
         {
             GameRoomView gameRoomView = GetGameRoomViewUIDocument();
             gameRoomView.AddPlayerToList(player);
-            List<PlayerClient> players = gameRoomView.GetPlayers();
+            List<PlayerClient> players = gameRoomView.PlayersList;
             InformClientsAboutNewPlayer(players);
         }
 
@@ -55,7 +55,7 @@ namespace FortressForge.Network
         [ObserversRpc]
         private void InformClientsAboutNewPlayer(List<PlayerClient> players)
         {
-            GetGameRoomViewUIDocument().SetPlayers(players);
+            GetGameRoomViewUIDocument().PlayersList = players;
         }
 
         /// <summary>

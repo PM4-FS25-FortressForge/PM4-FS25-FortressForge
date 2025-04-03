@@ -19,7 +19,17 @@ namespace FortressForge.UI
         private VisualElement _ipContainer;
         private Label _ipSettingsLabel;
 
-        private List<PlayerClient> _players;
+        private List<PlayerClient> _players = new();
+
+        public List<PlayerClient> PlayersList
+        {
+            get => _players;
+            set
+            {
+                _players = value;
+                PopulatePlayerList();
+            }
+        }
         
         private void OnEnable()
         {
@@ -114,25 +124,6 @@ namespace FortressForge.UI
             {
                 RemovePlayerFromList(player);
             }
-        }
-
-        /// <summary>
-        /// Get the players in the game room
-        /// </summary>
-        /// <returns>The players in the game room</returns>
-        public List<PlayerClient> GetPlayers()
-        {
-            return _players;
-        }
-
-        /// <summary>
-        /// Set the players in the game room
-        /// </summary>
-        /// <param name="players">The players in the game room</param>
-        public void SetPlayers(List<PlayerClient> players)
-        {
-            _players = players;
-            PopulatePlayerList();
         }
     }
 }
