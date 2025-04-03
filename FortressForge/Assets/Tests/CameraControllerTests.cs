@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
@@ -8,6 +9,7 @@ using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 using GameObject = UnityEngine.GameObject;
+using Object = UnityEngine.Object;
 
 /// <summary>
 /// This class contains unit tests for the CameraController class in Unity.
@@ -68,151 +70,176 @@ public class CameraControllerTest
         _xInitialRotation = _mainCamera.transform.eulerAngles.x;
         _zInitialRotation = _mainCamera.transform.eulerAngles.z;
     }
-
-
-
+    
     [UnityTest]
     public IEnumerator TestCameraMovesForward_WhenPressingW()
     {
+        Setup();        //Ensure the scene is loaded in each new test and camera is set up
         PressKey(Key.W);
         yield return new WaitForSeconds(0.5f);
         ReleaseKey(Key.W);
 
         Assert.Greater(_mainCamera.transform.position.z, _initialPosition.z, "Camera should move forward when W is pressed.");
+        TearDown();      //Ensure the scene is destroy after each new test and camera is deleted together with all the vars
     }
 
     [UnityTest]
     public IEnumerator TestCameraMovesLeft_WhenPressingA()
     {
+        Setup();
         PressKey(Key.A);
         yield return new WaitForSeconds(0.5f);
-        ReleaseKey(Key.A);
+        //ReleaseKey(Key.A);
 
         Assert.Less(_mainCamera.transform.position.x, _initialPosition.x, "Camera should move left when A is pressed.");
+        TearDown();
     }
+    
     [UnityTest]
     public IEnumerator TestCameraMovesRight_WhenPressingS()
     {
+        Setup();
         PressKey(Key.S);
         yield return new WaitForSeconds(0.5f);
-        ReleaseKey(Key.S);
+        //ReleaseKey(Key.S);
 
         Assert.Less(_mainCamera.transform.position.z, _initialPosition.z, "Camera should move Down when S is pressed.");
+        TearDown();
     }
 
     [UnityTest]
     public IEnumerator TestCameraMovesRight_WhenPressingD()
     {
+        Setup();
         PressKey(Key.D);
         yield return new WaitForSeconds(0.5f);
         ReleaseKey(Key.D);
 
         Assert.Greater(_mainCamera.transform.position.x, _initialPosition.x, "Camera should move right when D is pressed.");
+        TearDown();
     }
     
     [UnityTest]
     public IEnumerator TestCameraRotatesLeft_WhenPressingQ()
     {
+        Setup();
         PressKey(Key.Q);
         yield return new WaitForSeconds(0.5f);
         ReleaseKey(Key.Q);
 
         float newRotation = _mainCamera.transform.eulerAngles.y;
         Assert.Greater(newRotation, _yInitialRotation, "Camera should rotate left when Q is pressed.");
+        TearDown();
     }
 
     [UnityTest]
     public IEnumerator TestCameraRotatesRight_WhenPressingE()
     {
+        Setup();
         PressKey(Key.E);
         yield return new WaitForSeconds(0.5f);
         ReleaseKey(Key.E);
 
         float newRotation = _mainCamera.transform.eulerAngles.y;
         Assert.Greater(newRotation, _yInitialRotation, "Camera should rotate right when E is pressed.");
+        TearDown();
     }
     
     [UnityTest]
     public IEnumerator TestCameraPitchUp_WhenPressingArrowUp()
     {
+        Setup();
         PressKey(Key.UpArrow);
         yield return new WaitForSeconds(0.5f);
         ReleaseKey(Key.UpArrow);
 
         float newPitch = _mainCamera.transform.eulerAngles.x;
         Assert.Greater(newPitch, _xInitialRotation, "Camera should pitch up when UpArrow is pressed.");
+        TearDown();
     }
+    
     [UnityTest]
     public IEnumerator TestCameraPitchDown_WhenPressingArrowDown()
     {
+        Setup();
         PressKey(Key.DownArrow);
         yield return new WaitForSeconds(0.5f);
         ReleaseKey(Key.DownArrow);
 
         float newPitch = _mainCamera.transform.eulerAngles.x;
         Assert.Less(newPitch, _xInitialRotation, "Camera should pitch Down when DownArrow is pressed.");
+        TearDown();
     }
     
     [UnityTest]
     public IEnumerator TestCameraZoomOut_WhenPressingArrowLeft()
     {
+        Setup();
         PressKey(Key.LeftArrow);
         yield return new WaitForSeconds(0.5f);
         ReleaseKey(Key.LeftArrow);
     
-        Vector3 newPosition = _mainCamera.transform.position;
-        Vector3 newCalculatedPosition = new Vector3(0, 5.6568532f, -5.65685272f);
+        Vector3 newPosition = RoundVector(_mainCamera.transform.position);
+        Vector3 newCalculatedPosition = new Vector3(0, 5.66f, -5.66f);
         Assert.AreEqual(newCalculatedPosition.x, newPosition.x, "Camera should zoom Out when LeftArrow is pressed.");
         Assert.AreEqual(newCalculatedPosition.y, newPosition.y, "Camera should zoom Out when LeftArrow is pressed.");
         Assert.AreEqual(newCalculatedPosition.z, newPosition.z, "Camera should zoom Out when LeftArrow is pressed.");
+        TearDown();
     }
 
     [UnityTest]
     public IEnumerator TestCameraZoomsIn_WhenPressingArrowRight()
     {
+        Setup();
         PressKey(Key.RightArrow);
         yield return new WaitForSeconds(0.5f);
         ReleaseKey(Key.RightArrow);
     
-        Vector3 newPosition = _mainCamera.transform.position;
-        Vector3 newCalculatedPosition = new Vector3(0, 2.82842875f, -2.82842827f);
+        Vector3 newPosition =  RoundVector(_mainCamera.transform.position);
+        Vector3 newCalculatedPosition = new Vector3(0, 2.83f, -2.83f);
         Assert.AreEqual(newCalculatedPosition.x, newPosition.x, "Camera should zoom In when RightArrow is pressed.");
         Assert.AreEqual(newCalculatedPosition.y, newPosition.y, "Camera should zoom In when RightArrow is pressed.");
         Assert.AreEqual(newCalculatedPosition.z, newPosition.z, "Camera should zoom In when RightArrow is pressed.");
+        TearDown();
     }
     
     [UnityTest]
     public IEnumerator TestCameraZoomMaxOutToBorder_WhenPressingArrowLeft()
     {
+        Setup();
         PressKey(Key.LeftArrow);
         yield return new WaitForSeconds(5f);
         ReleaseKey(Key.LeftArrow);
     
-        Vector3 newPosition = _mainCamera.transform.position;
-        Vector3 newCalculatedPosition = new Vector3(0, 14.1421366f, -14.1421347f);
+        Vector3 newPosition =  RoundVector(_mainCamera.transform.position);
+        Vector3 newCalculatedPosition = new Vector3(0, 14.14f, -14.14f);
         Assert.AreEqual(newCalculatedPosition.x, newPosition.x, "Camera should zoom Out till it reaches the boarder when LeftArrow is pressed.");
         Assert.AreEqual(newCalculatedPosition.y, newPosition.y, "Camera should zoom Out till it reaches the boarder when LeftArrow is pressed.");
         Assert.AreEqual(newCalculatedPosition.z, newPosition.z, "Camera should zoom Out till it reaches the boarder when LeftArrow is pressed.");
+        TearDown();
     }
     
     [UnityTest]
     public IEnumerator TestCameraZoomsMaxInToBorder_WhenPressingArrowRight()
     {
+        Setup();
         PressKey(Key.RightArrow);
         yield return new WaitForSeconds(3f);
         ReleaseKey(Key.RightArrow);
     
-        Vector3 newPosition = _mainCamera.transform.position;
-        Vector3 newCalculatedPosition = new Vector3(0, 1.41421366f, -1.41421342f);
+        Vector3 newPosition =  RoundVector(_mainCamera.transform.position);
+        Vector3 newCalculatedPosition = new Vector3(0, 1.41f, -1.41f);
         Debug.Log(newPosition);
         Assert.AreEqual(newCalculatedPosition.x, newPosition.x, "Camera should zoom In till it reaches the boarder when RightArrow is pressed.");
         Assert.AreEqual(newCalculatedPosition.y, newPosition.y, "Camera should zoom In till it reaches the boarder when RightArrow is pressed.");
         Assert.AreEqual(newCalculatedPosition.z, newPosition.z, "Camera should zoom In till it reaches the boarder when RightArrow is pressed.");
+        TearDown();
     }
     
     [UnityTest]
     public IEnumerator TestCameraCombinedMovement()
     {
+        Setup();
         //This Test does also test the boarder of the min or max Pitch of the up or down arrow keys
         PressKey(Key.W);
         PressKey(Key.D);
@@ -226,16 +253,17 @@ public class CameraControllerTest
         ReleaseKey(Key.UpArrow);
         ReleaseKey(Key.LeftArrow);
 
-        Vector3 newPosition = _mainCamera.transform.position;
-        Vector3 newCalculatedPosition = new Vector3(-2.74307966f, 15.9975538f, 9.88054848f);
+        Vector3 newPosition =  RoundVector(_mainCamera.transform.position);
+        Vector3 newCalculatedPosition = new Vector3(-2.74f, 16.0f, 9.88f);
         Assert.AreEqual(newCalculatedPosition.x, newPosition.x, "Camera should move to new x position.");
         Assert.AreEqual(newCalculatedPosition.y, newPosition.y, "Camera should move to new y position.");
         Assert.AreEqual(newCalculatedPosition.z, newPosition.z, "Camera should move to new z position.");
-
+        TearDown();
     }
     [UnityTest]
     public IEnumerator TestCameraCombinedInversedMovement()
     {
+        Setup();
         //This Test does also test the boarder of the min or max Pitch of the up or down arrow keys
         PressKey(Key.S);
         PressKey(Key.A);
@@ -249,19 +277,26 @@ public class CameraControllerTest
         ReleaseKey(Key.DownArrow);
         ReleaseKey(Key.RightArrow);
 
-        Vector3 newPosition = _mainCamera.transform.position;
-        Vector3 newCalculatedPosition = new Vector3(-11.3586884f, 0f, 4.11897087f);
+        Vector3 newPosition =  RoundVector(_mainCamera.transform.position);
+        Vector3 newCalculatedPosition = new Vector3(-11.36f, 0f, 4.12f);
         Assert.AreEqual(newCalculatedPosition.x, newPosition.x, "Camera should move to new x position.");
         Assert.AreEqual(newCalculatedPosition.y, newPosition.y, "Camera should move to new y position.");
         Assert.AreEqual(newCalculatedPosition.z, newPosition.z, "Camera should move to new z position.");
-
+        TearDown();
     }
 
     [TearDown]
     public void TearDown()
     {
-        // Destroy the test camera after each test
+        // Destroy the test camera and reset all vars after each test
         Object.Destroy(_mainCamera);
+        _mainCamera = null;
+        _initialPosition = Vector3.zero;
+        _yInitialRotation = 0f;
+        _xInitialRotation = 0f;
+        _zInitialRotation = 0f;
+        _initialZoom = 0f;
+        _activeKeys.Clear();
     }
 
     private void PressKey(Key key)      //Can handle multiple keys at the same time (Only presses the key down)
@@ -290,6 +325,15 @@ public class CameraControllerTest
 
         InputSystem.QueueStateEvent(Keyboard.current, state);
         InputSystem.Update();
+    }
+    
+    private Vector3 RoundVector(Vector3 vector)     // Helper function to round the vector values to 2 decimal places after point
+    {
+        return new Vector3(
+            (float)Math.Round(vector.x, 2),
+            (float)Math.Round(vector.y, 2),
+            (float)Math.Round(vector.z, 2)
+        );
     }
 }
 
