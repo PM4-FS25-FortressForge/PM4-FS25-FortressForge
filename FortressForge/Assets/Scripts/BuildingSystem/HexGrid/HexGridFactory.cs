@@ -1,3 +1,4 @@
+using FortressForge.BuildingSystem.HoverController;
 using UnityEngine;
 
 namespace FortressForge.BuildingSystem.HexGrid
@@ -8,18 +9,18 @@ namespace FortressForge.BuildingSystem.HexGrid
             int id,
             Vector3 origin,
             int radius,
-            int height,
+            int maxBuildHight,
             float tileSize,
             float tileHeight,
             GameObject tilePrefab)
         {
-            HexGridData hexGridData = new HexGridData(id, origin, radius, height, tileSize, tileHeight);
+            HexGridData hexGridData = new HexGridData(id, origin, radius, maxBuildHight, tileSize, tileHeight);
             
             GameObject go = new GameObject("HexGridView");
+            go.AddComponent<HexGridHoverController>();
             HexGridView hexGridView = go.AddComponent<HexGridView>();
-            
-            hexGridView.BuildGridView(tilePrefab, hexGridData);
-            
+            hexGridView.Initialize(tilePrefab, hexGridData);
+
             return (hexGridData, hexGridView);
         }
     }

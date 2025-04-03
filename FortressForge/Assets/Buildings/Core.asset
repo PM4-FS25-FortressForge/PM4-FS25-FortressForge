@@ -12,29 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a724c598079413096e2f62eeecb9dd4, type: 3}
   m_Name: Core
   m_EditorClassIdentifier: 
-  shapeData:
-  - r: 0
-    q: 0
-    h: 0
-  - r: 1
-    q: 0
-    h: 0
-  - r: 1
-    q: 1
-    h: 0
-  - r: 0
-    q: 1
-    h: 0
-  - r: -1
-    q: 0
-    h: 0
-  - r: -1
-    q: -1
-    h: 0
-  - r: 0
-    q: -1
-    h: 0
   buildingPrefab: {fileID: 0}
   name: 
-  metallCost: 0
+  metalCost: 0
   maxHealth: 0

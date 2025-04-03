@@ -235,8 +235,8 @@ namespace FortressForge.UI.Manager
         private void StartMatch()
         {
             BootstrapSceneManager sceneManager = FindAnyObjectByType<BootstrapSceneManager>();
-            sceneManager.LoadScene(nextScene);
             sceneManager.UnloadScene(lobbyScene);
+            sceneManager.LoadScene(nextScene);
         }
 
         /// <summary>

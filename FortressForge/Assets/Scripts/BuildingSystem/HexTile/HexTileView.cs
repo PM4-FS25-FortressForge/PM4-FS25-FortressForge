@@ -1,13 +1,16 @@
+using FortressForge.BuildingSystem.HexTile;
 using UnityEngine;
 
 namespace FortressForge.BuildingSystem.HexGrid
 {
     /// <summary>
-    /// Represents the visual representation of a HexTileData.
+    /// Represents the visual representation of a HexTile.
     /// </summary>
     public class HexTileView : MonoBehaviour
     {
-        private HexTileData _tileData;
+        public HexTileCoordinate HexTileCoordinate { get; set; }
+        
+        private HexTileData _tileCoordinates;
 
         public Material FreeMaterial;
         public Material OccupiedMaterial;
@@ -21,8 +24,9 @@ namespace FortressForge.BuildingSystem.HexGrid
         /// <param name="data"></param>
         public void Init(HexTileData data)
         {
-            _tileData = data;
-            _renderer = GetComponentInChildren<MeshRenderer>();
+            HexTileCoordinate = data.HexTileCoordinate;
+            _tileCoordinates = data;
+            _renderer = GetComponentInChildren<MeshRenderer>(); // TODO: Check if we can remove this GetComponent call and not use MonoBehaviour
             UpdateVisuals();
         }
 
@@ -31,7 +35,7 @@ namespace FortressForge.BuildingSystem.HexGrid
         /// </summary>
         public void UpdateVisuals()
         {
-            _renderer.material = _tileData.IsOccupied ? OccupiedMaterial : FreeMaterial;
+            _renderer.material = _tileCoordinates.IsOccupied ? OccupiedMaterial : FreeMaterial;
         }
 
         /// <summary>
@@ -44,7 +48,7 @@ namespace FortressForge.BuildingSystem.HexGrid
                 _renderer.material = HighlightMaterial;
             else
             {
-                _renderer.material = _tileData.IsOccupied ? OccupiedMaterial : FreeMaterial;
+                _renderer.material = _tileCoordinates.IsOccupied ? OccupiedMaterial : FreeMaterial; // TODO: Throws NullReferenceException in some cases check out why
             }
         }
     }

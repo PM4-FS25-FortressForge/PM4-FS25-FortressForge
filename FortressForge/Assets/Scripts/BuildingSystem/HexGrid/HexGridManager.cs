@@ -1,6 +1,10 @@
 using UnityEngine;
 using System.Collections.Generic;
+using FortressForge.BuildingSystem.BuildingData;
+using FortressForge.BuildingSystem.BuildManager;
+using FortressForge.BuildingSystem.HexTile;
 using FortressForge.Serializables;
+using UnityEngine.UI;
 
 namespace FortressForge.BuildingSystem.HexGrid
 {
@@ -12,20 +16,22 @@ namespace FortressForge.BuildingSystem.HexGrid
     /// </summary>
     public class HexGridManager : MonoBehaviour
     {
-        private readonly List<(HexGridData, HexGridView)> _allGrids = new ();
+        private readonly List<(HexGridData data, HexGridView view)> _allGrids = new ();
 
         [Header("Player HexGridConfiguration")] [SerializeField]
         private HexGridConfiguration _hexGridConfiguration;
         
         [Header("Player GameStartConfiguration")] [SerializeField]
         private GameStartConfiguration _gameStartConfiguration;
-        
-        private void Start()
+
+        public List<BaseBuildingTemplate> _otherTilePrefab; 
+        public Dropdown superTollesDropdown; 
+
+        private void Awake()
         {
             InitializeHexGridForPlayers(_gameStartConfiguration, _hexGridConfiguration);
         }
-
-
+        
         public void InitializeHexGridForPlayers(GameStartConfiguration gameStartConfiguration, HexGridConfiguration hexGridConfiguration)
         {
             // Create a hex grid for each starting position
@@ -35,7 +41,7 @@ namespace FortressForge.BuildingSystem.HexGrid
                     id: i,
                     origin: gameStartConfiguration.HexGridOrigins[i],
                     radius: hexGridConfiguration.Radius,
-                    height: hexGridConfiguration.Height,
+                    maxBuildHight: hexGridConfiguration.MaxBuildHeight,
                     tileSize: hexGridConfiguration.TileSize,
                     tileHeight: hexGridConfiguration.TileHeight,
                     tilePrefab: hexGridConfiguration.TilePrefab
@@ -50,17 +56,23 @@ namespace FortressForge.BuildingSystem.HexGrid
                 var playerId = gameStartConfiguration.PlayerIdsHexGridIdTuplesList[i].PlayerId;
                 var hexGridId = gameStartConfiguration.PlayerIdsHexGridIdTuplesList[i].HexGridId;
                 
-                var (data, _) = GetGridById(hexGridId);
-                data.AddPlayer(playerId);
+                _allGrids[hexGridId].data.AddPlayer(playerId);
             }
-        }
+            
+            // Add Buttonmanager TODO replace this with a more robust approach
+            var _gameManager = new GameObject("GameManager");
 
-        /// <summary>
-        /// Returns the HexGrid with the specified ID.
-        /// </summary>
-        private (HexGridData, HexGridView) GetGridById(int id)
-        {
-            return _allGrids[id];
+            var buttonManager = _gameManager.AddComponent<ButtonManager>();
+            buttonManager.Dropdown = superTollesDropdown;
+            var playerController = _gameManager.AddComponent<BuildViewController>();
+            var grid1 = _allGrids[0];
+            playerController.HexGridData = grid1.data;
+            playerController.HexGridView = grid1.view;
+
+            buttonManager.AvailableBuildings = _otherTilePrefab;
+            buttonManager.Init();
+
+            buttonManager.BuildViewController = playerController;
         }
     }
 }

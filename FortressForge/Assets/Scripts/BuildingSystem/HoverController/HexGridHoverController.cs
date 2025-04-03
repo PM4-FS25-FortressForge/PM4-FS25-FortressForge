@@ -5,17 +5,16 @@ namespace FortressForge.BuildingSystem.HoverController
 {
     public class HexGridHoverController : MonoBehaviour
     {
-        [SerializeField] private Camera mainCamera;
         [SerializeField] private float raycastDistance = 1000f;
 
-        private HexTileView _currentlyHoveredTile;
+        public HexTileView CurrentlyHoveredTile { get; set; }
 
         private void Update()
         {
-            if (mainCamera == null) return;
+            if (Camera.main == null) return;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             
-            if (!Physics.Raycast(ray, out RaycastHit hit, raycastDistance))
+            if (!Physics.Raycast(ray, out RaycastHit hit, raycastDistance)) // TODO combine with other raycast method in HexGrid
             {
                 ClearHoveredTile();
                 return;
@@ -29,13 +28,13 @@ namespace FortressForge.BuildingSystem.HoverController
                 return;
             }
             
-            if (hitTileView != _currentlyHoveredTile)
+            if (hitTileView != CurrentlyHoveredTile)
             {
-                if (_currentlyHoveredTile != null)
-                    _currentlyHoveredTile.UpdateVisuals(false);
+                if (CurrentlyHoveredTile != null)
+                    CurrentlyHoveredTile.UpdateVisuals(false);
                 
                 hitTileView.UpdateVisuals(true);
-                _currentlyHoveredTile = hitTileView;
+                CurrentlyHoveredTile = hitTileView;
             }
         }
 
@@ -44,10 +43,10 @@ namespace FortressForge.BuildingSystem.HoverController
         /// </summary>
         private void ClearHoveredTile()
         {
-            if (_currentlyHoveredTile != null)
+            if (CurrentlyHoveredTile != null)
             {
-                _currentlyHoveredTile.UpdateVisuals(false);
-                _currentlyHoveredTile = null;
+                CurrentlyHoveredTile.UpdateVisuals(false);
+                CurrentlyHoveredTile = null;
             }
         }
     }

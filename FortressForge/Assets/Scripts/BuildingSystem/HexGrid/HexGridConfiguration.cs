@@ -7,7 +7,7 @@ namespace FortressForge
     {
         [Header("HexGrid Konfiguration")]
         public int Radius;
-        public int Height;
+        public int MaxBuildHeight;
         public float TileSize;
         public float TileHeight;
         
