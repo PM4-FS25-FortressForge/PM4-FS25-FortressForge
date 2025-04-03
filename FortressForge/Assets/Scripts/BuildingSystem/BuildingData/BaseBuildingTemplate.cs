@@ -17,9 +17,9 @@ namespace FortressForge.BuildingSystem.BuildingData
 
         public GameObject buildingPrefab;
 
-        [Header("Building Data")] public string name;
-        public int metalCost;
-        public int maxHealth;
+        [Header("Building Data")] public string Name;
+        public int MetalCost;
+        public int MaxHealth;
 
         public void DoStuff()
         {
