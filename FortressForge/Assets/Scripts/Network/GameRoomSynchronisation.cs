@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Transporting;
 using FortressForge.UI;
@@ -26,13 +27,27 @@ namespace FortressForge.Network
             player.PlayerID = OwnerId;
             InformServerAboutNewPlayer(player);
 
-            ServerManager.OnRemoteConnectionState += (connectionId, state) =>
+            ServerManager.OnRemoteConnectionState += HandleRemoteConnectionState;
+        }
+        
+        public override void OnStopClient()
+        {
+            base.OnStopClient();
+            ServerManager.OnRemoteConnectionState -= HandleRemoteConnectionState;
+        }
+        
+        
+        /// <summary>
+        /// Handle the remote connection state
+        /// </summary>
+        /// <param name="connection">The connection to handle</param>
+        /// <param name="state">The state of the connection</param>
+        private void HandleRemoteConnectionState(NetworkConnection connection, RemoteConnectionStateArgs state)
+        {
+            if (state.ConnectionState == RemoteConnectionState.Stopped)
             {
-                if (state.ConnectionState == RemoteConnectionState.Stopped)
-                {
-                    InformServerAboutPlayerLeaving(connectionId.ClientId);
-                }
-            };
+                InformServerAboutPlayerLeaving(connection.ClientId);
+            }
         }
 
         /// <summary>
