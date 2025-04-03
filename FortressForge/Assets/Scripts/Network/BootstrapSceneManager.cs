@@ -20,9 +20,13 @@ namespace FortressForge.Network
         /// <param name="sceneName">The name of the scene to load</param>
         public void LoadScene(string sceneName)
         {
-            if (!InstanceFinder.IsServerStarted) return;
-            
-            SceneLoadData sceneLoadData = new (sceneName);
+            if (!InstanceFinder.IsServerStarted)
+            {
+                Debug.Log("Server not started. Cannot load scene.");
+                return;
+            }
+
+            SceneLoadData sceneLoadData = new(sceneName);
             InstanceFinder.SceneManager.LoadGlobalScenes(sceneLoadData);
         }
 
@@ -32,10 +36,14 @@ namespace FortressForge.Network
         /// <param name="sceneName">The name of the scene to unload</param>
         public void UnloadScene(string sceneName)
         {
-            if (!InstanceFinder.IsServerStarted) return;
-            
-            SceneUnloadData sceneUnloadData = new (sceneName);
+            if (!InstanceFinder.IsServerStarted)
+            {
+                Debug.Log("Server not started. Cannot unload scene.");
+                return;
+            }
+
+            SceneUnloadData sceneUnloadData = new(sceneName);
             InstanceFinder.SceneManager.UnloadGlobalScenes(sceneUnloadData);
         }
     }
-} 
+}
