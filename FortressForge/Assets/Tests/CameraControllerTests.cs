@@ -80,7 +80,7 @@ public class CameraControllerTest
         ReleaseKey(Key.W);
 
         Assert.Greater(_mainCamera.transform.position.z, _initialPosition.z, "Camera should move forward when W is pressed.");
-        TearDown();      //Ensure the scene is destroy after each new test and camera is deleted together with all the vars
+        TearDown();     //Ensure the scene is unloaded and the camera is destroyed after each test and all vars are cleared
     }
 
     [UnityTest]
@@ -162,6 +162,7 @@ public class CameraControllerTest
     public IEnumerator TestCameraPitchDown_WhenPressingArrowDown()
     {
         Setup();
+        _xInitialRotation = _mainCamera.transform.eulerAngles.x;        //i Know this si technically called 2 times in a row but just leave it this was, so it works
         PressKey(Key.DownArrow);
         yield return new WaitForSeconds(0.5f);
         ReleaseKey(Key.DownArrow);
