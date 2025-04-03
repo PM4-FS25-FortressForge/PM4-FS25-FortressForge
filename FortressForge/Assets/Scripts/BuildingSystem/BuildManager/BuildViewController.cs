@@ -8,8 +8,8 @@ namespace FortressForge.BuildingSystem.BuildManager
 {
     public class BuildViewController : MonoBehaviour
     {
-        public HexGridView hexGridView;
-        public HexGridData hexGridData;
+        public HexGridView HexGridView;
+        public HexGridData HexGridData;
 
         private BaseBuildingTemplate _selectedBuildingTemplate;
         private GameObject _previewBuilding;
