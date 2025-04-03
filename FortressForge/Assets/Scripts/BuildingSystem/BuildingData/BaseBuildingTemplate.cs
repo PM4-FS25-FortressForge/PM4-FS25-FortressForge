@@ -15,7 +15,7 @@ namespace FortressForge.BuildingSystem.BuildingData
         [Header("Shape Data")] 
         public List<HexTileCoordinate> ShapeData = new();
 
-        public GameObject buildingPrefab;
+        public GameObject BuildingPrefab;
 
         [Header("Building Data")] public string Name;
         public int MetalCost;
