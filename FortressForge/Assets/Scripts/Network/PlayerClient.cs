@@ -23,31 +23,10 @@ namespace FortressForge.Network
             IsHost = false;
         }
 
-        public PlayerClient(string playerName, int playerId, bool isHost)
+        public PlayerClient(string playerName = "DefaultPlayer", int? playerId = null, bool isHost = false)
         {
             PlayerName = playerName;
-            PlayerID = playerId;
-            IsHost = isHost;
-        }
-
-        public PlayerClient(string playerName, int playerId)
-        {
-            PlayerName = playerName;
-            PlayerID = playerId;
-            IsHost = false;
-        }
-
-        public PlayerClient(string playerName)
-        {
-            PlayerName = playerName;
-            PlayerID = GeneratePlayerId();
-            IsHost = false;
-        }
-
-        public PlayerClient(string playerName, bool isHost)
-        {
-            PlayerName = playerName;
-            PlayerID = GeneratePlayerId();
+            PlayerID = playerId ?? GeneratePlayerId();
             IsHost = isHost;
         }
 

@@ -110,7 +110,7 @@ namespace FortressForge.UI.Manager
 
             if (!ValidatePlayerName(playerName)) return;
 
-            _playerClient = new PlayerClient(playerName, true);
+            _playerClient = new PlayerClient(playerName, null, true);
             StartServer();
 
             EnterGameRoom(true, password, _serverIP);
