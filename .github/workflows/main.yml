@@ -23,7 +23,7 @@ concurrency:
 jobs:
   build:
     env:
-      UNITY_PROJECT_PATH: ''
+      UNITY_PROJECT_PATH: 'FortressForge'  # Make sure this path is correct
     runs-on: self-hosted
     strategy:
       matrix:
@@ -39,30 +39,6 @@ jobs:
           lfs: true
           fetch-depth: 0  # Important for SonarQube to get all history
           submodules: 'recursive'
-      
-      # SonarQube Setup - Before Unity Build
-      - name: Set up JDK 17
-        uses: actions/setup-java@v1
-        with:
-          java-version: 1.17
-
-      - name: Cache SonarQube packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-      
-      # Begin SonarQube Analysis
-      - name: Begin SonarQube Analysis
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          dotnet sonarscanner begin /k:"FortressForge" \
-            /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
-            /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}" \
-            /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
-            /d:sonar.scanner.scanAll=false
       
       # Unity Build Process (Your Existing Steps)
       - uses: buildalon/unity-setup@v1
@@ -110,13 +86,47 @@ jobs:
           build-target: '${{ matrix.build-target }}'
           args: '-quit -batchmode -executeMethod Buildalon.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild${{ matrix.build-args }}'
       
-      # End SonarQube Analysis
-      - name: End SonarQube Analysis
-        if: always()  # Run even if previous steps fail
+      # SonarQube Analysis (after build)
+      - name: Set up JDK 17 for SonarQube
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.17
+
+      - name: Install SonarQube Scanner
+        run: |
+          wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip
+          unzip sonar-scanner-cli-4.8.0.2856-linux.zip
+          mv sonar-scanner-4.8.0.2856-linux sonar-scanner
+
+      - name: Run SonarQube Analysis
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+          # Create a sonar-project.properties file for Unity project
+          cat > sonar-project.properties << EOF
+          sonar.projectKey=FortressForge
+          sonar.projectName=FortressForge
+          sonar.projectVersion=1.0
+          
+          # Sources - adjust paths as needed for your project structure
+          sonar.sources=${{ env.UNITY_PROJECT_PATH }}/Assets/Scripts
+          sonar.sourceEncoding=UTF-8
+          
+          # C# specific settings
+          sonar.language=cs
+          
+          # Use test results from Unity tests
+          sonar.cs.nunit.reportsPaths=${{ github.workspace }}/Logs/EditMode-test-results.xml,${{ github.workspace }}/Logs/PlayMode-test-results.xml
+          
+          # Exclusions
+          sonar.exclusions=${{ env.UNITY_PROJECT_PATH }}/Assets/Plugins/**/*,${{ env.UNITY_PROJECT_PATH }}/Assets/Tests/**/*,**/*.meta
+          EOF
+          
+          # Run the scanner directly
+          ./sonar-scanner/bin/sonar-scanner \
+            -Dsonar.host.url="${{ secrets.SONAR_HOST_URL }}" \
+            -Dsonar.login="${{ secrets.SONAR_TOKEN }}" \
+            -Dsonar.projectBaseDir="${PWD}"
 
       - uses: actions/upload-artifact@v4
         id: upload-artifact
