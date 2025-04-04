@@ -16,31 +16,15 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Install GLIBC 2.28
-        run: |
-          apt update && apt install -y build-essential manpages-dev
-          wget http://ftp.gnu.org/gnu/libc/glibc-2.28.tar.gz
-          tar -xvzf glibc-2.28.tar.gz
-          cd glibc-2.28
-          mkdir build && cd build
-          ../configure --prefix=/opt/glibc-2.28
-          make -j$(nproc)
-          make install
-          echo "LD_LIBRARY_PATH=/opt/glibc-2.28/lib:$LD_LIBRARY_PATH" >> $GITHUB_ENV
-
       - name: Install JDK 11 for SonarScanner .NET
         run: apt update && apt install -y openjdk-11-jre-headless=11.0.11+9-0ubuntu2~18.04
-
       - name: Install SonarScanner .NET
         run: $DOTNET_ROOT/dotnet tool install dotnet-sonarscanner --tool-path ../sonarscanner --version 5.3.1
-
       - name: Cache Library
         uses: actions/cache@v4
         with:
           path: Library
           key: Library-2020.3.17
-
       - name: Activate unity and generate solution file
         continue-on-error: true
         env:
@@ -48,9 +32,9 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
           UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
         run: |
+          # first line is needed because doesn't do everything the first time...
           unity-editor -username $UNITY_EMAIL -password $UNITY_PASSWORD -serial $UNITY_SERIAL -nographics -batchmode -logFile /dev/stdout -projectPath . -executeMethod UnityEditor.SyncVS.SyncSolution -quit
           unity-editor -username $UNITY_EMAIL -password $UNITY_PASSWORD -serial $UNITY_SERIAL -nographics -batchmode -logFile /dev/stdout -projectPath . -executeMethod UnityEditor.SyncVS.SyncSolution -quit
-
       - name: Build and scan project
         env:
           FrameworkPathOverride: '/opt/unity/Editor/Data/MonoBleedingEdge/bin'
@@ -58,5 +42,5 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: |
           ../sonarscanner/dotnet-sonarscanner begin /k:"FortressForge" /d:sonar.login="$SONAR_TOKEN" /d:sonar.host.url="$SONAR_HOST_URL"
-          $DOTNET_ROOT/dotnet build FortressForge.sln
-          ../sonarscanner/dotnet-sonarscanner end /d:sonar.login="$SONAR_TOKEN" 
+          $DOTNET_ROOT/dotnet build PM4-FS25-FortressForge.sln
+          ../sonarscanner/dotnet-sonarscanner end /d:sonar.login="$SONAR_TOKEN"
