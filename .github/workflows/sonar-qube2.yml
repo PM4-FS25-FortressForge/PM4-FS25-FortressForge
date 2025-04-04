@@ -1,68 +1,47 @@
-name: SonarQube Scan
+name: Build
 
 on:
-  pull_request:
+  push:
     branches:
       - main
 
+
 jobs:
-  runAllTests:
-    name: ${{ matrix.unityVersion }} integration tests
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    strategy:
-      fail-fast: false
-      matrix:
-        testMode:
-          - editmode
-        unityVersion:
-          - 6000.0.37f1
+  build:
+    name: Build
+    runs-on: windows-latest
     steps:
-      - name: Checkout Unity project repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v2
         with:
-          repository: "PM4-FS25-FortressForge/PM4-FS25-FortressForge"
-          fetch-depth: 0
-          ref: main
-          token: ${{ secrets.PAT_ACTION }}
-
-      - name: Cache Project
-        uses: actions/cache@v3
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
         with:
-          path: Library
-          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
-          restore-keys: |
-            Library-
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+          java-version: 1.11
+      - name: Cache SonarQube packages
+        uses: actions/cache@v1
         with:
-          node-version: 18
-
-      - name: Install openupm-cli
-        run: npm install -g openupm-cli
-
-      - name: Setup .NET Core
-        uses: actions/setup-dotnet@v3
+          path: ~\sonar\cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+      - name: Cache SonarQube scanner
+        id: cache-sonar-scanner
+        uses: actions/cache@v1
         with:
-          dotnet-version: '6.0.x'
-
-      - name: Setup SonarScanner for .NET
-        run: dotnet tool install --global dotnet-sonarscanner
-
-      - name: Begin SonarQube Analysis
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          path: .\.sonar\scanner
+          key: ${{ runner.os }}-sonar-scanner
+          restore-keys: ${{ runner.os }}-sonar-scanner
+      - name: Install SonarQube scanner
+        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+        shell: powershell
         run: |
-          dotnet-sonarscanner begin /k:"FortressForge" /d:sonar.host.url="${{ env.SONAR_HOST_URL }}" /d:sonar.login="${{ env.SONAR_TOKEN }}"
-
-      - name: Build Solution
-        run: |
-          dotnet-build FortressForge.sln --no-incremental
-
-
-      - name: End SonarQube Analysis
+          New-Item -Path .\.sonar\scanner -ItemType Directory
+          dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
+      - name: Build and analyze
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: dotnet-sonarscanner end /d:sonar.login="${{ env.SONAR_TOKEN }}"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+        shell: powershell
+        run: |
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"FortressForge" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}"
+          dotnet build
+          .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
