@@ -52,11 +52,6 @@ jobs:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
-
-      - name: Install SonarScanner
-        run: |
-          mkdir -p .sonar/scanner
-          dotnet tool install --global dotnet-sonarscanner
       
       # Begin SonarQube Analysis
       - name: Begin SonarQube Analysis
