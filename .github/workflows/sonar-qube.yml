@@ -41,7 +41,7 @@ jobs:
         run: npm install -g openupm-cli
       - name: Add core with current branch as package
         run: |
-          cd unity-project
+          cd FortressForge
           openupm add com.readyplayerme.core@https://github.com/readyplayerme/rpm-unity-sdk-core.git#${{ github.ref_name }}
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
