@@ -60,7 +60,7 @@ jobs:
       - name: Build Solution
         run: |
           # Ensure the Unity project generates the .sln and .csproj files before this step
-          msbuild /p:Configuration=Release
+          msbuild FortressForge.sln /p:Configuration=Release /t:Rebuild
 
       - name: End SonarQube Analysis
         env:
