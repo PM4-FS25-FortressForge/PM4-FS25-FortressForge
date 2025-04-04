@@ -11,7 +11,7 @@ jobs:
   sonarqube-check:
     runs-on: self-hosted
     env:
-      DOTNET_ROOT: '/home/ubuntu/.dotnet/dotnet'  # Update this path to your .NET 6 or later SDK installation
+      DOTNET_ROOT: '/home/ubuntu/.dotnet/sdk/6.0.428'  # Update this path to your .NET 6 or later SDK installation
       JAVA_HOME: '/usr/lib/jvm/java-17-openjdk-amd64'
       PATH: '${JAVA_HOME}/bin:${PATH}:${HOME}/.dotnet/tools'
     steps:
