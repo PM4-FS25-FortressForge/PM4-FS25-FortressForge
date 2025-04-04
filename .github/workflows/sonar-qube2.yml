@@ -55,14 +55,14 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: |
-          dotnet-sonarscanner.MSBuild.exe begin /k:"FortressForge" /d:sonar.host.url="${{ env.SONAR_HOST_URL }}" /d:sonar.login="${{ env.SONAR_TOKEN }}"
+          dotnet-sonarscanner begin /k:"FortressForge" /d:sonar.host.url="${{ env.SONAR_HOST_URL }}" /d:sonar.login="${{ env.SONAR_TOKEN }}"
 
       - name: Build Solution
         run: |
-          # Ensure the Unity project generates the .sln and .csproj files before this step
-          MSBuild.exe FortressForge.sln /p:Configuration=Release /t:Rebuild
+          dotnet-build FortressForge.sln --no-incremental
+
 
       - name: End SonarQube Analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: dotnet-sonarscanner.MSBuild.exe end /d:sonar.login="${{ env.SONAR_TOKEN }}"
+        run: dotnet-sonarscanner end /d:sonar.login="${{ env.SONAR_TOKEN }}"
