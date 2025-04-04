@@ -1,5 +1,4 @@
-
-name: SonarCloud Scan Alternative
+name: SonarQube Scan
 
 on:
   pull_request:
@@ -19,13 +18,14 @@ jobs:
         unityVersion:
           - 6000.0.37f1
     steps:
-      - name: Checkout empty unity project repository
+      - name: Checkout Unity project repository
         uses: actions/checkout@v4
         with:
           repository: "PM4-FS25-FortressForge/PM4-FS25-FortressForge"
           fetch-depth: 0
           ref: main
           token: ${{ secrets.PAT_ACTION }}
+
       - name: Cache Project
         uses: actions/cache@v3
         with:
@@ -33,25 +33,36 @@ jobs:
           key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
           restore-keys: |
             Library-
-      - name: Get npm
+
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
+
       - name: Install openupm-cli
         run: npm install -g openupm-cli
-      - name: Add core with current branch as package
-        run: |
-          cd FortressForge
-          openupm add com.readyplayerme.core@https://github.com/readyplayerme/rpm-unity-sdk-core.git#${{ github.ref_name }}
-      - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v4.2
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: Setup SonarScanner for .NET
+        run: dotnet tool install --global dotnet-sonarscanner
+
+      - name: Begin SonarQube Analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        with:
-          args: >
-            -Dsonar.organization=FortressForge
-            -Dsonar.projectKey=FortressForge
-            -Dsonar.sources=FortressForge
-            -Dsonar.token=${{ secrets.SONAR_TOKEN }}
-      
+        run: |
+          dotnet-sonarscanner begin /k:"FortressForge" /d:sonar.host.url="${{ env.SONAR_HOST_URL }}" /d:sonar.login="${{ env.SONAR_TOKEN }}"
+
+      - name: Build Solution
+        run: |
+          # Ensure the Unity project generates the .sln and .csproj files before this step
+          msbuild /p:Configuration=Release
+
+      - name: End SonarQube Analysis
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: dotnet-sonarscanner end /d:sonar.login="${{ env.SONAR_TOKEN }}"
