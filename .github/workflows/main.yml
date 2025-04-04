@@ -57,17 +57,11 @@ jobs:
         run: |
           npx openupm-cli add com.virtualmaker.buildalon
           openupm add com.virtualmaker.buildalon
-
       # Setup SonarQube analysis before running tests/builds
       - name: Set up JDK 17 for SonarQube
         uses: actions/setup-java@v1
         with:
           java-version: 1.17
-
-      - name: Install SonarScanner for .NET
-        run: |
-          dotnet tool install --global dotnet-sonarscanner
-
       - name: Begin SonarQube Analysis
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -81,7 +75,6 @@ jobs:
             /d:sonar.exclusions="${{ env.UNITY_PROJECT_PATH }}/Assets/Plugins/**/*,${{ env.UNITY_PROJECT_PATH }}/Assets/Tests/**/*,**/*.meta" \
             /d:sonar.cs.analyzer.projectOutPaths="${{ github.workspace }}/**/*.dll" \
             /d:sonar.verbose=true
-
       # Run Unity validation and tests
       - uses: buildalon/unity-action@v1
         name: Project Validation
@@ -117,14 +110,12 @@ jobs:
           echo "Looking for compiled assemblies..."
           find ${{ env.UNITY_PROJECT_PATH }}/Library -name "Assembly-CSharp.dll" | tee assemblies.txt
           cat assemblies.txt
-
       # Complete SonarQube analysis
       - name: End SonarQube Analysis
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
-
       # Upload artifacts
       - uses: actions/upload-artifact@v4
         id: upload-artifact
@@ -140,17 +131,14 @@ jobs:
             ${{ env.UNITY_PROJECT_PATH }}/Builds/StandaloneLinux64/**/*.x86_64
             ${{ env.UNITY_PROJECT_PATH }}/Builds/StandaloneLinux64/**/*.so
             ${{ env.UNITY_PROJECT_PATH }}/Builds/StandaloneLinux64/**/*_Data/
-
       - name: Clean Artifacts
         if: always()
         shell: pwsh
         run: |
           # Clean Logs
           Get-ChildItem -Path "${{ env.UNITY_PROJECT_PATH }}" -File -Filter "*.log" -Recurse | Remove-Item -Force
-
           $artifacts = "${{ env.UNITY_PROJECT_PATH }}/Builds"
           Write-Host "::debug::Build artifacts path: $artifacts"
-
           if (Test-Path -Path $artifacts) {
             try {
               Remove-Item $artifacts -Recurse -Force
