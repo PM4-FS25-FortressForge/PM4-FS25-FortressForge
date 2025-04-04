@@ -22,10 +22,10 @@ jobs:
       - name: Checkout empty unity project repository
         uses: actions/checkout@v4
         with:
-          repository: "readyplayerme/rpm-unity-empty-project"
+          repository: "PM4-FS25-FortressForge/PM4-FS25-FortressForge"
           fetch-depth: 0
           ref: main
-          token: ${{ secrets.DEV_SDK_TOKEN }}
+          token: ${{ secrets.PAT_ACTION }}
       - name: Cache Project
         uses: actions/cache@v3
         with:
