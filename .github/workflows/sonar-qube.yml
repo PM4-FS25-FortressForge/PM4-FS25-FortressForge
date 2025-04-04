@@ -59,4 +59,4 @@ jobs:
         run: |
           ../sonarscanner/dotnet-sonarscanner begin /k:"FortressForge" /d:sonar.login="$SONAR_TOKEN" /d:sonar.host.url="$SONAR_HOST_URL"
           $DOTNET_ROOT/dotnet build FortressForge.sln
-          ../sonarscanner/dotnet-sonarscanner end /d:sonar.login="$SONAR_TOKEN"
+          ../sonarscanner/dotnet-sonarscanner end /d:sonar.login="$SONAR_TOKEN" 
