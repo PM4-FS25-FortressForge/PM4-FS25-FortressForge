@@ -1,50 +1,54 @@
-name: sonarqube-check
+
+name: SonarCloud Scan
+
 on:
-  push:
-    branches:
-      - 'main'
   pull_request:
     branches:
-      - 'main'
-  workflow_dispatch:
+      - main
+
 jobs:
-  sonarqube-check:
-    runs-on: self-hosted
-    env:
-      DOTNET_ROOT: '/path/to/your/dotnet/sdk'  # Update this path to your .NET 6 or later SDK installation
-      JAVA_HOME: '/usr/lib/jvm/java-17-openjdk-amd64'
-      PATH: '${JAVA_HOME}/bin:${PATH}:${HOME}/.dotnet/tools'
+  runAllTests:
+    name: ${{ matrix.unityVersion }} integration tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        testMode:
+          - editmode
+        unityVersion:
+          - 2021.3.32f1
     steps:
-      - name: Checkout repository
+      - name: Checkout empty unity project repository
         uses: actions/checkout@v4
-      - name: Install JDK 17 for SonarScanner .NET
-        run: |
-          sudo apt update
-          sudo apt install -y openjdk-17-jre-headless
-      - name: Install SonarScanner .NET
-        run: |
-          dotnet tool install --global dotnet-sonarscanner --version 10.1.1
-          echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
-      - name: Cache Library
-        uses: actions/cache@v4
+        with:
+          repository: "readyplayerme/rpm-unity-empty-project"
+          fetch-depth: 0
+          ref: main
+          token: ${{ secrets.DEV_SDK_TOKEN }}
+      - name: Cache Project
+        uses: actions/cache@v3
         with:
           path: Library
-          key: Library-2020.3.17
-      - name: Activate Unity and generate solution file
-        continue-on-error: true
+          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-
+      - name: Get npm
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install openupm-cli
+        run: npm install -g openupm-cli
+      - name: Add core with current branch as package
+        run: openupm add com.readyplayerme.core@https://github.com/readyplayerme/rpm-unity-sdk-core.git#${{ github.ref_name }}
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
         env:
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
-        run: |
-          unity-editor -username $UNITY_EMAIL -password $UNITY_PASSWORD -serial $UNITY_SERIAL -nographics -batchmode -logFile /dev/stdout -projectPath . -executeMethod UnityEditor.SyncVS.SyncSolution -quit
-          unity-editor -username $UNITY_EMAIL -password $UNITY_PASSWORD -serial $UNITY_SERIAL -nographics -batchmode -logFile /dev/stdout -projectPath . -executeMethod UnityEditor.SyncVS.SyncSolution -quit
-      - name: Build and scan project
-        env:
-          FrameworkPathOverride: '/opt/unity/Editor/Data/MonoBleedingEdge/bin'
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: |
-          dotnet-sonarscanner begin /k:"FortressForge" /d:sonar.login="$SONAR_TOKEN" /d:sonar.host.url="$SONAR_HOST_URL"
-          dotnet build PM4-FS25-FortressForge.sln
-          dotnet-sonarscanner end /d:sonar.login="$SONAR_TOKEN"
+        with:
+          args: >
+            -Dsonar.organization=readyplayerme
+            -Dsonar.projectKey=readyplayerme_rpm-unity-sdk-core
+            -Dsonar.sources=.
+            -Dsonar.token=${{ secrets.SONAR_TOKEN }}
