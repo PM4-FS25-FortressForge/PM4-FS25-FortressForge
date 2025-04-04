@@ -40,7 +40,7 @@ jobs:
           fetch-depth: 0  # Important for SonarQube to get all history
           submodules: 'recursive'
       
-      # Unity Build Process (Your Existing Steps)
+      # Unity Build Process
       - uses: buildalon/unity-setup@v1
         with:
           build-targets: '${{ matrix.build-target }}'
@@ -58,6 +58,31 @@ jobs:
           npx openupm-cli add com.virtualmaker.buildalon
           openupm add com.virtualmaker.buildalon
 
+      # Setup SonarQube analysis before running tests/builds
+      - name: Set up JDK 17 for SonarQube
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.17
+
+      - name: Install SonarScanner for .NET
+        run: |
+          dotnet tool install --global dotnet-sonarscanner
+
+      - name: Begin SonarQube Analysis
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          dotnet sonarscanner begin \
+            /k:"FortressForge" \
+            /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}" \
+            /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
+            /d:sonar.cs.nunit.reportsPaths="${{ github.workspace }}/Logs/EditMode-test-results.xml" \
+            /d:sonar.sources="${{ env.UNITY_PROJECT_PATH }}/Assets/Scripts" \
+            /d:sonar.exclusions="${{ env.UNITY_PROJECT_PATH }}/Assets/Plugins/**/*,${{ env.UNITY_PROJECT_PATH }}/Assets/Tests/**/*,**/*.meta" \
+            /d:sonar.cs.analyzer.projectOutPaths="${{ github.workspace }}/**/*.dll" \
+            /d:sonar.verbose=true
+
+      # Run Unity validation and tests
       - uses: buildalon/unity-action@v1
         name: Project Validation
         with:
@@ -85,49 +110,22 @@ jobs:
           log-name: '${{ matrix.build-target }}-Build'
           build-target: '${{ matrix.build-target }}'
           args: '-quit -batchmode -executeMethod Buildalon.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild${{ matrix.build-args }}'
-      
-      # SonarQube Analysis (after build)
-      - name: Set up JDK 17 for SonarQube
-        uses: actions/setup-java@v1
-        with:
-          java-version: 1.17
 
-      - name: Install SonarQube Scanner
+      # Find Assembly-CSharp.dll for analyzing
+      - name: Find compiled assemblies
         run: |
-          wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip
-          unzip sonar-scanner-cli-4.8.0.2856-linux.zip
-          mv sonar-scanner-4.8.0.2856-linux sonar-scanner
+          echo "Looking for compiled assemblies..."
+          find ${{ env.UNITY_PROJECT_PATH }}/Library -name "Assembly-CSharp.dll" | tee assemblies.txt
+          cat assemblies.txt
 
-      - name: Run SonarQube Analysis
+      # Complete SonarQube analysis
+      - name: End SonarQube Analysis
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Create a sonar-project.properties file for Unity project
-          cat > sonar-project.properties << EOF
-          sonar.projectKey=FortressForge
-          sonar.projectName=FortressForge
-          sonar.projectVersion=1.0
-          
-          # Sources - adjust paths as needed for your project structure
-          sonar.sources=${{ env.UNITY_PROJECT_PATH }}/Assets/Scripts
-          sonar.sourceEncoding=UTF-8
-          
-          # C# specific settings
-          sonar.language=cs
-          
-          # Use test results from Unity tests
-          sonar.cs.nunit.reportsPaths=${{ github.workspace }}/Logs/EditMode-test-results.xml,${{ github.workspace }}/Logs/PlayMode-test-results.xml
-          
-          # Exclusions
-          sonar.exclusions=${{ env.UNITY_PROJECT_PATH }}/Assets/Plugins/**/*,${{ env.UNITY_PROJECT_PATH }}/Assets/Tests/**/*,**/*.meta
-          EOF
-          
-          # Run the scanner directly
-          ./sonar-scanner/bin/sonar-scanner \
-            -Dsonar.host.url="${{ secrets.SONAR_HOST_URL }}" \
-            -Dsonar.login="${{ secrets.SONAR_TOKEN }}" \
-            -Dsonar.projectBaseDir="${PWD}"
+          dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
 
+      # Upload artifacts
       - uses: actions/upload-artifact@v4
         id: upload-artifact
         name: 'Upload ${{ matrix.build-target }} Artifacts'
