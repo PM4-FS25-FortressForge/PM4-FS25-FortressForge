@@ -9,19 +9,18 @@ on:
   workflow_dispatch:
 jobs:
   sonarqube-check:
-    runs-on: ubuntu-latest
-    container: unityci/editor:ubuntu-2020.3.17f1-base-0
+    runs-on: self-hosted
     env:
       DOTNET_ROOT: '/opt/unity/Editor/Data/NetCore/Sdk-2.2.107'
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Install JDK 11 for SonarScanner .NET
         run: apt update && apt install -y openjdk-11-jre-headless=11.0.11+9-0ubuntu2~18.04
       - name: Install SonarScanner .NET
         run: $DOTNET_ROOT/dotnet tool install dotnet-sonarscanner --tool-path ../sonarscanner --version 5.3.1
       - name: Cache Library
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: Library
           key: Library-2020.3.17
