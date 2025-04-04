@@ -13,7 +13,7 @@ jobs:
     env:
       DOTNET_ROOT: '/home/ubuntu/.dotnet/sdk/6.0.428'  # Update this path to your .NET 6 or later SDK installation
       JAVA_HOME: '/usr/lib/jvm/java-17-openjdk-amd64'
-      PATH: '${JAVA_HOME}/bin:${PATH}:${HOME}/.dotnet/tools'
+      PATH: '${PATH}:${HOME}/.dotnet/tools'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
