@@ -1,5 +1,10 @@
 using UnityEngine;
 using System.Collections.Generic;
+using FortressForge.BuildingSystem.BuildingData;
+using FortressForge.BuildingSystem.BuildManager;
+using FortressForge.BuildingSystem.HexTile;
+using FortressForge.Serializables;
+using UnityEngine.UI;
 
 namespace FortressForge.BuildingSystem.HexGrid
 {
@@ -11,56 +16,63 @@ namespace FortressForge.BuildingSystem.HexGrid
     /// </summary>
     public class HexGridManager : MonoBehaviour
     {
-        public static HexGridManager Instance { get; private set; }
-        
-        private readonly Dictionary<int, HexGridData> _allGrids = new Dictionary<int, HexGridData>();
+        private readonly List<(HexGridData data, HexGridView view)> _allGrids = new ();
 
-        private int _nextGridId = 0;
+        [Header("Player HexGridConfiguration")] [SerializeField]
+        private HexGridConfiguration _hexGridConfiguration;
+        
+        [Header("Player GameStartConfiguration")] [SerializeField]
+        private GameStartConfiguration _gameStartConfiguration;
+
+        public List<BaseBuildingTemplate> _otherTilePrefab; 
+        public Dropdown superTollesDropdown; 
 
         private void Awake()
         {
-            if (Instance != null && Instance != this) {
-                Destroy(gameObject);
-            }
-            else {
-                Instance = this;
-            }
-        }
-
-        /// <summary>
-        /// Creates a new HexGrid with the specified size and origin.
-        /// OwnerId can be a player name, a network ID, etc.
-        /// </summary>
-        public HexGridData CreateHexGrid(Vector3 origin, int radius, int height, string ownerId, float tileSize, float tileHeight) {
-            HexGridData newGrid = new HexGridData(_nextGridId, origin, radius, height, tileSize, tileHeight)
-                {OwnerId = ownerId};
-
-            _allGrids.Add(_nextGridId, newGrid);
-            _nextGridId++;
-
-            return newGrid;
-        }
-
-        /// <summary>
-        /// Returns the HexGrid with the specified ID.
-        /// </summary>
-        public HexGridData GetGridById(int gridId)
-        {
-            return _allGrids.GetValueOrDefault(gridId, null);
+            InitializeHexGridForPlayers(_gameStartConfiguration, _hexGridConfiguration);
         }
         
-        /// <summary>
-        /// Returns the HexGrid with the specified owner ID.
-        /// </summary>
-        public HexGridData GetGridByOwnerId(string ownerId)
+        public void InitializeHexGridForPlayers(GameStartConfiguration gameStartConfiguration, HexGridConfiguration hexGridConfiguration)
         {
-            foreach (var grid in _allGrids.Values) {
-                if (grid.OwnerId == ownerId) {
-                    return grid;
-                }
+            // Create a hex grid for each starting position
+            for (int i = 0; i < gameStartConfiguration.PlayerIdsHexGridIdTuplesList.Count; i++)
+            {
+                var (data, view) = HexGridFactory.CreateHexGrid(
+                    id: i,
+                    origin: gameStartConfiguration.HexGridOrigins[i],
+                    radius: hexGridConfiguration.Radius,
+                    maxBuildHight: hexGridConfiguration.MaxBuildHeight,
+                    tileSize: hexGridConfiguration.TileSize,
+                    tileHeight: hexGridConfiguration.TileHeight,
+                    tilePrefab: hexGridConfiguration.TilePrefab
+                );
+                
+                _allGrids.Add((data, view));
             }
+            
+            // Assign each player to their respective hex grid(s)
+            for (int i = 0; i < gameStartConfiguration.PlayerIdsHexGridIdTuplesList.Count; i++)
+            {
+                var playerId = gameStartConfiguration.PlayerIdsHexGridIdTuplesList[i].PlayerId;
+                var hexGridId = gameStartConfiguration.PlayerIdsHexGridIdTuplesList[i].HexGridId;
+                
+                _allGrids[hexGridId].data.AddPlayer(playerId);
+            }
+            
+            // Add Buttonmanager TODO replace this with a more robust approach
+            var _gameManager = new GameObject("GameManager");
 
-            return null;
+            var buttonManager = _gameManager.AddComponent<ButtonManager>();
+            buttonManager.Dropdown = superTollesDropdown;
+            var playerController = _gameManager.AddComponent<BuildViewController>();
+            var grid1 = _allGrids[0];
+            playerController.HexGridData = grid1.data;
+            playerController.HexGridView = grid1.view;
+
+            buttonManager.AvailableBuildings = _otherTilePrefab;
+            buttonManager.Init();
+
+            buttonManager.BuildViewController = playerController;
         }
     }
 }
