@@ -64,6 +64,9 @@ namespace FortressForge.BuildingSystem.HexGrid
             PlayerIds.Add(playerId);
         }
 
+        /// <summary>
+        /// Validates a tile if its already occupied, then if not Marks it as occupied and creates the tile above if needed.
+        /// </summary>
         public bool ValidateBuildingPlacement(HexTileCoordinate hexCoord, BaseBuildingTemplate buildingTemplate)
         {
             foreach (var coord in buildingTemplate.ShapeData)
@@ -82,6 +85,11 @@ namespace FortressForge.BuildingSystem.HexGrid
             return true;
         }
 
+        /// <summary>
+        /// Updates the specified hex tile by marking it as occupied and unlocking the tile directly above it.
+        /// If the tile above does not exist and is within the maximum build height,
+        /// a new tile is created and added to the tile map, and the OnNewTileCreated event is triggered.
+        /// </summary>
         private void UpdateHexTileData(HexTileCoordinate hexCoord)
         {
             TileMap[hexCoord].IsOccupied = true;
