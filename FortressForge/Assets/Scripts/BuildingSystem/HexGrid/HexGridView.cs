@@ -12,7 +12,7 @@ namespace FortressForge.BuildingSystem.HexGrid
     /// </summary>
     public class HexGridView : MonoBehaviour
     {
-        public HexGridData _hexGrid; // TODO reduce visibility
+        private HexGridData _hexGrid; // TODO reduce visibility
         private GameObject _tilePrefab;
         private readonly Dictionary<HexTileCoordinate, HexTileView> _tileViews = new ();
         private HexTileView _currentlyHoveredTile;

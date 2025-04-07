@@ -29,7 +29,7 @@ namespace FortressForge.BuildingSystem.HexGrid
         /// The size of the hex tiles are defined here, so that in the future different
         /// tile sizes for different players are possible (e.g. for AI).
         /// </summary>
-        public readonly float TileRadius; // TODO TileRadius is available here and in HexGridConfiguration, consider always using one or making both readonly
+        public readonly float TileRadius;
 
         public readonly float TileHeight;
         
@@ -94,7 +94,7 @@ namespace FortressForge.BuildingSystem.HexGrid
                 HexTileCoordinate newHexCoords = hexCoord + new HexTileCoordinate(0, 0, 1);
                 HexTileData hexTileData = new HexTileData(newHexCoords);
                 TileMap[newHexCoords] = hexTileData;
-                OnNewTileCreated?.Invoke(hexTileData, newHexCoords); // UpdateHexGridView
+                OnNewTileCreated?.Invoke(hexTileData, newHexCoords); 
             }
         }
     }

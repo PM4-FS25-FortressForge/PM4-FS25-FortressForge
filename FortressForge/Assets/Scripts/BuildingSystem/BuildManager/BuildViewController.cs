@@ -23,7 +23,7 @@ namespace FortressForge.BuildingSystem.BuildManager
             _selectedBuildingTemplate = Instantiate(building);
             _selectedBuildingTemplate.ShapeData = new List<HexTileCoordinate>
             {
-                new HexTileCoordinate(0,0,0) // TODO: Adjust so this is taken from building directly
+                new HexTileCoordinate(0,0,0) // TODO: Adjust so this is taken from  (shapeData) directly 
             };
 
             if (_previewBuilding != null)
@@ -76,7 +76,8 @@ namespace FortressForge.BuildingSystem.BuildManager
                 // Place the final building at the correct position
                 Instantiate(_selectedBuildingTemplate.BuildingPrefab, _previewBuilding.transform.position, _previewBuilding.transform.rotation);
                 BaseBuildingTemplate copy = Instantiate(_selectedBuildingTemplate);
-                _placedBuildings.Add(copy); // TODO this will add the same object multiple times, it needs to be different
+                _placedBuildings.Add(copy);
+                ExitBuildMode();
             }
         }
 
