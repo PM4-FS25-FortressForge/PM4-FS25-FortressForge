@@ -348,7 +348,7 @@ MonoBehaviour:
   m_DefaultControlScheme: 
   m_DefaultActionMap: CameraControls
   m_SplitScreenIndex: -1
-  m_Camera: {fileID: 0}
+  m_Camera: {fileID: 1546958354}
 --- !u!114 &1546958351
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -363,14 +363,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   yaw: 0
   pitch: 45
-  distance: 6
+  zoom: 6
   targetPosition: {x: 0, y: 0, z: 0}
   moveSpeed: 5
-  RotationSpeed: 50
-  PitchSpeed: 40
-  ZoomSpeed: 2
+  rotationSpeed: 50
+  pitchSpeed: 40
+  zoomSpeed: 2
   pitchLimits: {x: 89, y: 0}
-  distanceLimits: {x: 0.5, y: 25}
+  zoomLimits: {x: 2, y: 20}
 --- !u!114 &1546958352
 MonoBehaviour:
   m_ObjectHideFlags: 0
