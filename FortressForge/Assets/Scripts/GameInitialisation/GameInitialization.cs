@@ -41,7 +41,7 @@ namespace FortressForge.GameInitialization
                     id: i,
                     origin: _gameStartConfiguration.HexGridOrigins[i],
                     radius: _hexGridConfiguration.Radius,
-                    maxBuildHight: _hexGridConfiguration.MaxBuildHeight,
+                    maxBuildHeight: _hexGridConfiguration.MaxBuildHeight,
                     tileSize: _hexGridConfiguration.TileSize,
                     tileHeight: _hexGridConfiguration.TileHeight,
                     tilePrefab: _hexGridConfiguration.TilePrefab
