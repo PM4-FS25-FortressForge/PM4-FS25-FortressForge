@@ -20,7 +20,7 @@ namespace FortressForge.BuildingSystem.HexGrid
         private GameInitializer _gameInitializer;
 
         public List<BaseBuildingTemplate> _otherTilePrefab;
-        public Dropdown superTollesDropdown;
+        public Dropdown gridSelectionDropdown;
 
         /// <summary>
         /// Retrieves the GameInitializer reference and initializes hex grids for players
