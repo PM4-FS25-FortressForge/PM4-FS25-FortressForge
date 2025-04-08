@@ -1,78 +1,68 @@
 using FortressForge.BuildingSystem.HexGrid;
-using FortressForge.BuildingSystem.HoverController;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace FortressForge.GameInitialization
 {
     /// <summary>
-    /// Responsible for initializing the game by setting up hex grids for each player.
+    /// Responsible for initializing the hex grid system for players at the start of the game.
+    /// This includes creating hex grids and assigning players to their respective grids
+    /// based on the game start configuration.
     /// </summary>
-    public class GameInitializer
+    public class GameInitializer : MonoBehaviour
     {
-        /// <summary>
-        /// Initializes the game for the given teams.
-        /// </summary>
-        /// <param name="teams">List of teams to initialize the game for.</param>
-        /// <param name="availableBuildings">List of available buildings.</param>
-        /// <param name="availableTechnologies">List of available technologies.</param>
-        /// <param name="selectedMap">The selected game map.</param>
-        public void InitializeGame(List<Team> teams, List<string> availableBuildings, List<string> availableTechnologies, string selectedMap)
-        {
-            // Set available buildings and technologies
-            SetAvailableBuildings(availableBuildings);
-            SetAvailableTechnologies(availableTechnologies);
-            SelectGameMap(selectedMap);
+        [Header("Player HexGridConfiguration")] [SerializeField]
+        private HexGridConfiguration _hexGridConfiguration;
 
-            foreach (var team in teams)
+        [Header("Player GameStartConfiguration")] [SerializeField]
+        private GameStartConfiguration _gameStartConfiguration;
+
+        private readonly List<(HexGridData data, HexGridView view)> _allGrids = new();
+        
+        /// <summary>
+        /// Initializes the hex grid system for all players by creating the grids
+        /// and assigning players to their respective grids.
+        /// </summary>
+        public void InitializeHexGridForPlayers()
+        {
+            CreateHexGrids();
+            AssignPlayersToHexGrids();
+        }
+
+        /// <summary>
+        /// Creates hex grids for all players based on the game start configuration
+        /// and adds them to the internal list of grids.
+        /// </summary>
+        private void CreateHexGrids()
+        {
+            for (int i = 0; i < _gameStartConfiguration.PlayerIdsHexGridIdTuplesList.Count; i++)
             {
-                foreach (var player in team.Players)
-                {
-                    InitializeHexGridsForPlayer(player);
-                }
+                var (data, view) = HexGridFactory.CreateHexGrid(
+                    id: i,
+                    origin: _gameStartConfiguration.HexGridOrigins[i],
+                    radius: _hexGridConfiguration.Radius,
+                    maxBuildHight: _hexGridConfiguration.MaxBuildHeight,
+                    tileSize: _hexGridConfiguration.TileSize,
+                    tileHeight: _hexGridConfiguration.TileHeight,
+                    tilePrefab: _hexGridConfiguration.TilePrefab
+                );
+
+                _allGrids.Add((data, view));
             }
         }
 
         /// <summary>
-        /// Initializes hex grids for the given player.
+        /// Assigns players to their respective hex grids based on the game start configuration.
         /// </summary>
-        /// <param name="player">The player to initialize hex grids for.</param>
-        private void InitializeHexGridsForPlayer(Player player)
+        private void AssignPlayersToHexGrids()
         {
-            player.HexGrids = new List<HexGridData> { new HexGridData(0, new Vector3(), 0, 0, 0, 0) };
-
-            foreach (var hexGrid in player.HexGrids)
+            for (int i = 0; i < _gameStartConfiguration.PlayerIdsHexGridIdTuplesList.Count; i++)
             {
-                var hexGridHoverController = new GameObject("HexGridHoverController").AddComponent<HexGridHoverController>();
-                hexGridHoverController.CurrentlyHoveredTile = null;
+                var playerId = _gameStartConfiguration.PlayerIdsHexGridIdTuplesList[i].PlayerId;
+                var hexGridId = _gameStartConfiguration.PlayerIdsHexGridIdTuplesList[i].HexGridId;
+
+                _allGrids[hexGridId].data.AddPlayer(playerId);
             }
-        }
-
-        /// <summary>
-        /// Sets the available buildings for the game.
-        /// </summary>
-        /// <param name="availableBuildings">List of available buildings.</param>
-        private void SetAvailableBuildings(List<string> availableBuildings)
-        {
-            // Implementation to set available buildings
-        }
-
-        /// <summary>
-        /// Sets the available technologies for the game.
-        /// </summary>
-        /// <param name="availableTechnologies">List of available technologies.</param>
-        private void SetAvailableTechnologies(List<string> availableTechnologies)
-        {
-            // Implementation to set available technologies
-        }
-
-        /// <summary>
-        /// Selects the game map.
-        /// </summary>
-        /// <param name="selectedMap">The selected game map.</param>
-        private void SelectGameMap(string selectedMap)
-        {
-            // Implementation to select the game map
         }
     }
 }
