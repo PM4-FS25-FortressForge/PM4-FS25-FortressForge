@@ -1,19 +1,53 @@
-name: Build
+
+name: SonarCloud Scan
+
 on:
-  push:
+  pull_request:
     branches:
       - main
+
 jobs:
-  sonarqube:
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    name: SonarQube
-    runs-on: self-hosted
+  runAllTests:
+    name: ${{ matrix.unityVersion }} integration tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        testMode:
+          - editmode
+        unityVersion:
+          - 6000.0.37f1
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout empty unity project repository
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          repository: "PM4-FS25-FortressForge/PM4-FS25-FortressForge"
+          fetch-depth: 0
+          ref: main
+          token: ${{ secrets.PAT_ACTION }}
+      - name: Cache Project
+        uses: actions/cache@v3
+        with:
+          path: Library
+          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-
+      - name: Get npm
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install openupm-cli
+        run: npm install -g openupm-cli
       - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v5
+        uses: SonarSource/sonarqube-scan-action@v4.2
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        with:
+          args: >
+            -Dsonar.organization=FortressForge
+            -Dsonar.projectKey=FortressForge
+            -Dsonar.sources=FortressForge
+            -Dsonar.token=${{ secrets.SONAR_TOKEN }}
+      

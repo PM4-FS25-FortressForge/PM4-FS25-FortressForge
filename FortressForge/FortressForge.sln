@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FishNet.Runtime", "FishNet.Runtime.csproj", "{be4367b0-4510-382a-1790-ec963ce382c3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FishNet.Codegen.Cecil", "FishNet.Codegen.Cecil.csproj", "{599f49c2-a5e3-f24e-a110-06c83e1a563b}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Edgegap", "Edgegap.csproj", "{cc3feb9d-52c7-a1a1-9903-cd5b5c70e1fa}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameKit.Dependencies", "GameKit.Dependencies.csproj", "{1a6622e4-1b69-fb8b-674a-bf1efc4887b2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{90adaa54-795c-121d-4c35-7fa096646c05}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.FishNet.Codegen", "Unity.FishNet.Codegen.csproj", "{574a4136-659e-55b7-9afd-79decaa25729}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FortressForge", "FortressForge.csproj", "{cd427127-f474-941d-d335-b22024619428}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests.csproj", "{e2aa12a6-0670-44b5-e2a8-2a84e7a4333d}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FishNet.Demos", "FishNet.Demos.csproj", "{4682755d-d53b-d874-5dd1-6fdf234f4ddd}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{be4367b0-4510-382a-1790-ec963ce382c3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{be4367b0-4510-382a-1790-ec963ce382c3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{599f49c2-a5e3-f24e-a110-06c83e1a563b}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{599f49c2-a5e3-f24e-a110-06c83e1a563b}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{cc3feb9d-52c7-a1a1-9903-cd5b5c70e1fa}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{cc3feb9d-52c7-a1a1-9903-cd5b5c70e1fa}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1a6622e4-1b69-fb8b-674a-bf1efc4887b2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1a6622e4-1b69-fb8b-674a-bf1efc4887b2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90adaa54-795c-121d-4c35-7fa096646c05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90adaa54-795c-121d-4c35-7fa096646c05}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{574a4136-659e-55b7-9afd-79decaa25729}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{574a4136-659e-55b7-9afd-79decaa25729}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{cd427127-f474-941d-d335-b22024619428}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{cd427127-f474-941d-d335-b22024619428}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{e2aa12a6-0670-44b5-e2a8-2a84e7a4333d}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{e2aa12a6-0670-44b5-e2a8-2a84e7a4333d}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4682755d-d53b-d874-5dd1-6fdf234f4ddd}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4682755d-d53b-d874-5dd1-6fdf234f4ddd}.Debug|Any CPU.Build.0 = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

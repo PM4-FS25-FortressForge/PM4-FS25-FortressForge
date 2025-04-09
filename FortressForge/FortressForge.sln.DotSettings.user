@@ -1,0 +1,13 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=32fa2ef4_002D32e3_002D4581_002D90cc_002Dfdfdf0e5bf1a/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="EconomySystemTest" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::E2AA12A6-0670-44B5-E2A8-2A84E7A4333D::.NETFramework,Version=v4.7.1::Tests.EconomyManager.EconomySystemTest&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=a27c36ab_002D761f_002D44dc_002D895d_002D0501c454427a/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="EconomySystem_DisablesActor_InOrder #3" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::E2AA12A6-0670-44B5-E2A8-2A84E7A4333D::.NETFramework,Version=v4.7.1::Tests.EconomyManager.EconomySystemTest&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
