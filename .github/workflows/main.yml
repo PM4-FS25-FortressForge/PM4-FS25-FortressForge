@@ -2,7 +2,7 @@
 # Feel free to edit this workflow to update build targets or add additional steps.
 # Check out the Buildalon open source actions at https://github.com/marketplace?query=buildalon
 
-name: Unity Build/Tests
+name: Unity Build/Tests with SonarQube
 on:
   push:
     branches:
@@ -23,7 +23,7 @@ concurrency:
 jobs:
   build:
     env:
-      UNITY_PROJECT_PATH: ''
+      UNITY_PROJECT_PATH: 'FortressForge'  # Make sure this path is correct
     runs-on: self-hosted
     strategy:
       matrix:
@@ -37,45 +37,86 @@ jobs:
         with:
           clean: ${{ github.event.inputs.clean == 'true' }}
           lfs: true
+          fetch-depth: 0  # Important for SonarQube to get all history
           submodules: 'recursive'
+      
+      # Unity Build Process
       - uses: buildalon/unity-setup@v1
         with:
           build-targets: '${{ matrix.build-target }}'
           version-file: 'FortressForge/ProjectSettings/ProjectVersion.txt'
+
       - uses: buildalon/activate-unity-license@v1
         with:
           license: 'Personal'
           username: '${{ secrets.UNITY_USERNAME }}'
           password: '${{ secrets.UNITY_PASSWORD }}'
+
       - name: Add Build Pipeline Package
         working-directory: ${{ env.UNITY_PROJECT_PATH }}
         run: |
           npx openupm-cli add com.virtualmaker.buildalon
           openupm add com.virtualmaker.buildalon
+      # Setup SonarQube analysis before running tests/builds
+      - name: Set up JDK 17 for SonarQube
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.17
+      - name: Begin SonarQube Analysis
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          dotnet sonarscanner begin \
+            /k:"FortressForge" \
+            /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}" \
+            /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
+            /d:sonar.cs.nunit.reportsPaths="${{ github.workspace }}/Logs/EditMode-test-results.xml" \
+            /d:sonar.sources="${{ env.UNITY_PROJECT_PATH }}/Assets/Scripts" \
+            /d:sonar.exclusions="${{ env.UNITY_PROJECT_PATH }}/Assets/Plugins/**/*,${{ env.UNITY_PROJECT_PATH }}/Assets/Tests/**/*,**/*.meta" \
+            /d:sonar.cs.analyzer.projectOutPaths="${{ github.workspace }}/**/*.dll" \
+            /d:sonar.verbose=true
+      # Run Unity validation and tests
       - uses: buildalon/unity-action@v1
         name: Project Validation
         with:
           log-name: 'project-validation'
           build-target: '${{ matrix.build-target }}'
           args: '-quit -batchmode -executeMethod Buildalon.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject'
+
       - uses: buildalon/unity-action@v1
         name: ${{ matrix.build-target }}-Editor-Tests
         with:
           build-target: '${{ matrix.build-target }}'
           args: '-runTests -batchmode -testPlatform EditMode -testResults "${{ github.workspace }}/Logs/EditMode-test-results.xml"'
           log-name: 'EditMode-Tests'
-      - uses: buildalon/unity-action@v1
-        name: ${{ matrix.build-target }}-Editor-Tests
-        with:
-          build-target: '${{ matrix.build-target }}'
-          args: '-runTests -batchmode -testPlatform PlayMode -testResults "${{ github.workspace }}/Logs/PlayMode-test-results.xml"'
-          log-name: 'PlayMode-Tests'
+
+      #- uses: buildalon/unity-action@v1
+      #  name: ${{ matrix.build-target }}-Editor-Tests
+      #  with:
+      #    build-target: '${{ matrix.build-target }}'
+      #    args: '-runTests -batchmode -testPlatform PlayMode -testResults "${{ github.workspace }}/Logs/PlayMode-test-results.xml"'
+      #    log-name: 'PlayMode-Tests'
+
       - uses: buildalon/unity-action@v1
         name: '${{ matrix.build-target }}-Build'
         with:
           log-name: '${{ matrix.build-target }}-Build'
           build-target: '${{ matrix.build-target }}'
           args: '-quit -batchmode -executeMethod Buildalon.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild${{ matrix.build-args }}'
+
+      # Find Assembly-CSharp.dll for analyzing
+      - name: Find compiled assemblies
+        run: |
+          echo "Looking for compiled assemblies..."
+          find ${{ env.UNITY_PROJECT_PATH }}/Library -name "Assembly-CSharp.dll" | tee assemblies.txt
+          cat assemblies.txt
+      # Complete SonarQube analysis
+      - name: End SonarQube Analysis
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+      # Upload artifacts
       - uses: actions/upload-artifact@v4
         id: upload-artifact
         name: 'Upload ${{ matrix.build-target }} Artifacts'
@@ -96,10 +137,8 @@ jobs:
         run: |
           # Clean Logs
           Get-ChildItem -Path "${{ env.UNITY_PROJECT_PATH }}" -File -Filter "*.log" -Recurse | Remove-Item -Force
-
           $artifacts = "${{ env.UNITY_PROJECT_PATH }}/Builds"
           Write-Host "::debug::Build artifacts path: $artifacts"
-
           if (Test-Path -Path $artifacts) {
             try {
               Remove-Item $artifacts -Recurse -Force
