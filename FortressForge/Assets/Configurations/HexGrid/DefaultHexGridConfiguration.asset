@@ -16,4 +16,4 @@ MonoBehaviour:
   MaxBuildHeight: 5
   TileSize: 10
   TileHeight: 10
-  TilePrefab: {fileID: 7043267529827262319, guid: 6979b1251d850564c89e5097e6152600, type: 3}
+  TilePrefab: {fileID: 1713196536830722668, guid: 72362361af6bac54e8d1c8804d9c1b41, type: 3}
