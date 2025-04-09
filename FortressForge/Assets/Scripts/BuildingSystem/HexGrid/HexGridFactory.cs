@@ -9,12 +9,12 @@ namespace FortressForge.BuildingSystem.HexGrid
             int id,
             Vector3 origin,
             int radius,
-            int maxBuildHight,
+            int maxBuildHeight,
             float tileSize,
             float tileHeight,
             GameObject tilePrefab)
         {
-            HexGridData hexGridData = new HexGridData(id, origin, radius, maxBuildHight, tileSize, tileHeight);
+            HexGridData hexGridData = new HexGridData(id, origin, radius, maxBuildHeight, tileSize, tileHeight);
             
             GameObject go = new GameObject("HexGridView");
             go.AddComponent<HexGridHoverController>();
