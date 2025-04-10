@@ -53,7 +53,7 @@ namespace FortressForge.BuildingSystem.BuildingData
             Debug.Log($"{Name} has been disabled.");
         }
 
-        public virtual Dictionary<ResourceType, float> GetBuildCost() // TODO add usage 
+        public virtual Dictionary<ResourceType, float> GetBuildCost()
         {
             return _buildCost;
         } 
