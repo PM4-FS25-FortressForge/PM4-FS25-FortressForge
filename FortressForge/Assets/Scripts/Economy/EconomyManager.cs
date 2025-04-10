@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using FortressForge.BuildingSystem.BuildManager;
 using UnityEngine;
 
-namespace FortressForge.EconomyManager
+namespace FortressForge.Economy
 {
     /// <summary>
     /// Unity MonoBehaviour responsible for managing the runtime lifecycle of the economy system.
@@ -19,7 +20,7 @@ namespace FortressForge.EconomyManager
         /// Initializes the economy manager and starts periodic economy updates.
         /// Registers default actors for demonstration.
         /// </summary>
-        public void Init()
+        public void Init(BuildViewController buildViewController, MonoBehaviour parent)
         {
             // Example for max value application
             var maxValues = new Dictionary<ResourceType, float>
@@ -27,14 +28,15 @@ namespace FortressForge.EconomyManager
                 { ResourceType.Power, 0f }
             };
             
-            _economySystem = new EconomySystem(maxValues);
+            _economySystem = new EconomySystem(buildViewController, maxValues);
             
             // Call update resource each second
-            InvokeRepeating(nameof(_economySystem.UpdateEconomy), 0, RESOURCE_UPDATE_INTERVAL);
+            InvokeRepeating(nameof(UpdateEconomy), 0, RESOURCE_UPDATE_INTERVAL);
+        }
 
-            // Example actor registrations
-            _economySystem.RegisterActor(gameObject.AddComponent<IronMine>());
-            _economySystem.RegisterActor(gameObject.AddComponent<IronMine>());
+        private void UpdateEconomy()
+        {
+            _economySystem.UpdateEconomy();
         }
     }
 }

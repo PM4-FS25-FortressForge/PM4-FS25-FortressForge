@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ad156cbb789edb4489d0d9e206747c9, type: 3}
   m_Name: Mortar
   m_EditorClassIdentifier: 
-  buildingPrefab: {fileID: 8421781907833339578, guid: c3df0ce681d76cf409ef6cf14794e8a1, type: 3}
-  name: Mortar
-  metalCost: 0
-  maxHealth: 0
+  BuildingPrefab: {fileID: 8421781907833339578, guid: c3df0ce681d76cf409ef6cf14794e8a1, type: 3}
+  Name: Mortar
+  MetalCost: 0
+  MaxHealth: 0
   baseDamage: 0
   reloadSpeed: 0
+  resourceCost: -50
+  resourceType: 0

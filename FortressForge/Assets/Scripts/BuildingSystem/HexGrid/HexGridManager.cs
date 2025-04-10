@@ -16,18 +16,15 @@ namespace FortressForge.BuildingSystem.HexGrid
     /// </summary>
     public class HexGridManager : MonoBehaviour
     {
-        private readonly List<(HexGridData data, HexGridView view)> _allGrids = new ();
+        public List<(HexGridData data, HexGridView view)> AllGrids { get; } = new();
 
         [Header("Player HexGridConfiguration")] [SerializeField]
         private HexGridConfiguration _hexGridConfiguration;
         
         [Header("Player GameStartConfiguration")] [SerializeField]
         private GameStartConfiguration _gameStartConfiguration;
-
-        public List<BaseBuildingTemplate> _otherTilePrefab; 
-        public Dropdown superTollesDropdown; 
-
-        private void Awake()
+        
+        private void Awake()    
         {
             InitializeHexGridForPlayers(_gameStartConfiguration, _hexGridConfiguration);
         }
@@ -47,7 +44,7 @@ namespace FortressForge.BuildingSystem.HexGrid
                     tilePrefab: hexGridConfiguration.TilePrefab
                 );
                 
-                _allGrids.Add((data, view));
+                AllGrids.Add((data, view));
             }
             
             // Assign each player to their respective hex grid(s)
@@ -56,23 +53,8 @@ namespace FortressForge.BuildingSystem.HexGrid
                 var playerId = gameStartConfiguration.PlayerIdsHexGridIdTuplesList[i].PlayerId;
                 var hexGridId = gameStartConfiguration.PlayerIdsHexGridIdTuplesList[i].HexGridId;
                 
-                _allGrids[hexGridId].data.AddPlayer(playerId);
+                AllGrids[hexGridId].data.AddPlayer(playerId);
             }
-            
-            // Add Buttonmanager TODO replace this with a more robust approach
-            var _gameManager = new GameObject("GameManager");
-
-            var buttonManager = _gameManager.AddComponent<ButtonManager>();
-            buttonManager.Dropdown = superTollesDropdown;
-            var playerController = _gameManager.AddComponent<BuildViewController>();
-            var grid1 = _allGrids[0];
-            playerController.HexGridData = grid1.data;
-            playerController.HexGridView = grid1.view;
-
-            buttonManager.AvailableBuildings = _otherTilePrefab;
-            buttonManager.Init();
-
-            buttonManager.BuildViewController = playerController;
         }
     }
 }

@@ -1,30 +1,36 @@
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using FortressForge.BuildingSystem.BuildingData;
 using FortressForge.BuildingSystem.HexGrid;
 using FortressForge.BuildingSystem.HexTile;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace FortressForge.BuildingSystem.BuildManager
 {
     public class BuildViewController : MonoBehaviour
     {
-        public HexGridView HexGridView;
-        public HexGridData HexGridData;
+        private readonly List<BaseBuildingTemplate> _placedBuildings = new();
+        public ReadOnlyCollection<BaseBuildingTemplate> PlacedBuildings { get; private set; }
+
+        private HexGridView _hexGridView;
+        private HexGridData _hexGridData;
 
         private BaseBuildingTemplate _selectedBuildingTemplate;
         private GameObject _previewBuilding;
-        private List<BaseBuildingTemplate> _placedBuildings = new();
 
         private bool _isPreviewMode = false;
+        
+        public void Init(HexGridView hexGridView, HexGridData hexGridData)
+        {
+            PlacedBuildings = _placedBuildings.AsReadOnly();
+            
+            _hexGridView = hexGridView;
+            _hexGridData = hexGridData;
+        }
 
         public void PreviewSelectedBuilding(BaseBuildingTemplate building)
         {
             _selectedBuildingTemplate = Instantiate(building);
-            _selectedBuildingTemplate.ShapeData = new List<HexTileCoordinate>
-            {
-                new HexTileCoordinate(0,0,0) // TODO: Adjust so this is taken from building directly
-            };
 
             if (_previewBuilding != null)
             {
@@ -60,24 +66,29 @@ namespace FortressForge.BuildingSystem.BuildManager
 
         private void MovePreviewObject()
         {
-            if (HexGridView.GetCurrentlyHoveredHexTileCoordinate() != default)
+            if (_hexGridView.GetCurrentlyHoveredHexTileCoordinate() != default)
             {
-                Vector3 snappedPos = HexGridView.GetCurrentlyHoveredHexTileCoordinate().GetWorldPosition(HexGridData.TileRadius, HexGridData.TileHeight);
+                Vector3 snappedPos = _hexGridView.GetCurrentlyHoveredHexTileCoordinate().GetWorldPosition(_hexGridData.TileRadius, _hexGridData.TileHeight);
                 _previewBuilding.transform.position = snappedPos;
             }
         }
 
         private void TryPlaceBuilding()
         {
-            HexTileCoordinate hexCoord = HexGridView.GetCurrentlyHoveredHexTileCoordinate();
+            HexTileCoordinate hexCoord = _hexGridView.GetCurrentlyHoveredHexTileCoordinate();
 
-            if (HexGridData.ValidateBuildingPlacement(hexCoord, _selectedBuildingTemplate) && hexCoord != default)
+            if (_hexGridData.ValidateBuildingPlacement(hexCoord, _selectedBuildingTemplate) && hexCoord != default)
             {
                 // Place the final building at the correct position
-                Instantiate(_selectedBuildingTemplate.BuildingPrefab, _previewBuilding.transform.position, _previewBuilding.transform.rotation);
-                BaseBuildingTemplate copy = Instantiate(_selectedBuildingTemplate);
-                _placedBuildings.Add(copy); // TODO this will add the same object multiple times, it needs to be different
+                PlaceBuilding();
             }
+        }
+
+        private void PlaceBuilding()
+        {
+            Instantiate(_selectedBuildingTemplate.BuildingPrefab, _previewBuilding.transform.position, _previewBuilding.transform.rotation);
+            BaseBuildingTemplate copy = Instantiate(_selectedBuildingTemplate);
+            _placedBuildings.Add(copy); // TODO this will add the same object multiple times, it needs to be different
         }
 
         private void ExitBuildMode()
