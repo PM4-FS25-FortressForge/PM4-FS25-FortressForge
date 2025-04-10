@@ -80,10 +80,10 @@ namespace FortressForge.BuildingSystem.BuildManager
             HexTileCoordinate hexCoord = _hexGridView.GetCurrentlyHoveredHexTileCoordinate();
 
             // Check if enough resources are available and pay 
-            if (!_economySystem.PayResourceIfSufficient(_selectedBuildingTemplate.GetBuildCost())) return; // TODO: this should be accessed after the placement is validated
+            if (!_economySystem.PayResourceIfSufficient(_selectedBuildingTemplate.GetBuildCost())) return; // TODO: this should be accessed after the placement is validated, move this down when validate buildings function are detached more completely from the placement
             
             if (!_hexGridData.ValidateBuildingPlacement(hexCoord, _selectedBuildingTemplate) ||
-                hexCoord == default) return; // TODO: THis method does more then just validate the placement, consider renaming
+                hexCoord == default) return; 
                 
             // Place the final building at the correct position
             PlaceBuilding();
