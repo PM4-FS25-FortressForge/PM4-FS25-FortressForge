@@ -28,7 +28,7 @@ using UnityEngine.InputSystem;
 /// ------------------------------------------------------------------------------------------------------------
 /// </summary>
 
-namespace FortressForge.Camera
+namespace FortressForge.CameraControll
 {
 
     public class CameraController : MonoBehaviour
