@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using FortressForge.BuildingSystem.BuildingData;
 using FortressForge.BuildingSystem.BuildManager;
 using UnityEngine;
 
@@ -22,18 +23,18 @@ namespace FortressForge.Economy
 
         // List of all active resource-producing or consuming actors.
         private ReadOnlyCollection<IEconomyActor> EconomyActors => new (
-            _buildViewController.PlacedBuildings.Cast<IEconomyActor>().ToList()
+            _buildingManager.PlacedBuildings.Cast<IEconomyActor>().ToList()
         );
         
         private readonly Dictionary<ResourceType, Resource> _currentResources = new();
-        private readonly BuildViewController _buildViewController;
+        private readonly BuildingManager _buildingManager;
 
         /// <summary>
         /// Initializes the economy system with default values for all resource types.
         /// </summary>
-        public EconomySystem(BuildViewController buildViewController, Dictionary<ResourceType, float> maxValues = null)
+        public EconomySystem(BuildingManager buildingManager, Dictionary<ResourceType, float> maxValues = null)
         {
-            _buildViewController = buildViewController;
+            _buildingManager = buildingManager;
             
             foreach (ResourceType type in _allResourceTypes)
             {
@@ -67,6 +68,25 @@ namespace FortressForge.Economy
         }
 
         /// <summary>
+        /// Attempts to deduct specified resources from the current resources.
+        /// </summary>
+        /// <param name="resourceCosts">The resource amount.</param>
+        /// <returns>True if there are sufficient resources.</returns>
+        public bool PayResourceIfSufficient(Dictionary<ResourceType, float> resourceCosts)
+        {
+            if (resourceCosts.Any(resource => 
+                    _currentResources[resource.Key].CurrentAmount < resource.Value))
+                return false;
+            
+            foreach (var resource in resourceCosts)
+            {
+                _currentResources[resource.Key].CurrentAmount -= resource.Value;
+            }
+            
+            return true;
+        }
+
+        /// <summary>
         /// Disables actors that cause negative resource balances until all resources are non-negative.
         /// This modifies the newResources dictionary in-place.
         /// </summary>
@@ -90,7 +110,9 @@ namespace FortressForge.Economy
                     {
                         if (newResources[resourceType] >= 0) break;
 
+                        // Disable must disable or reduce building drain
                         consumer.Item1.Disable();
+                        
                         resourceChanges.Remove(consumer);
                         Debug.Log($"Disabled {consumer.Item1} due to negative {resourceType} balance.");
 

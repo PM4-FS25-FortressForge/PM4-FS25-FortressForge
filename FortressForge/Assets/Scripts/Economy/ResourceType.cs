@@ -14,6 +14,11 @@
         /// <summary>
         /// Represents electrical energy, often generated or consumed by buildings.
         /// </summary>
-        Power
+        Power,
+        
+        /// <summary>
+        /// A basic building material, often used in construction.
+        /// </summary>
+        Wood,
     }
 }
