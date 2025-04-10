@@ -75,14 +75,14 @@ namespace FortressForge.BuildingSystem.HexGrid
                     return false;
                 }
 
-                UpdateHexTileData(hexCoord);
+                OccupyHexTile(hexCoord + coord);
             }
             
             Debug.Log("Placement succeeded");
             return true;
         }
 
-        private void UpdateHexTileData(HexTileCoordinate hexCoord)
+        private void OccupyHexTile(HexTileCoordinate hexCoord)
         {
             TileMap[hexCoord].IsOccupied = true;
             

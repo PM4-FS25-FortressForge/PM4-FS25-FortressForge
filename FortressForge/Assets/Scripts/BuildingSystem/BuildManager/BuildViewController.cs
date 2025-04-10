@@ -68,10 +68,17 @@ namespace FortressForge.BuildingSystem.BuildManager
 
         private void MovePreviewObject()
         {
-            if (_hexGridView.GetCurrentlyHoveredHexTileCoordinate() != default)
+            var currentlyHoveredHexTileCoordinate = _hexGridView.GetCurrentlyHoveredHexTileCoordinate();
+            if (currentlyHoveredHexTileCoordinate != default) // TODO default is wrong, use null, adjust after action changes
             {
-                Vector3 snappedPos = _hexGridView.GetCurrentlyHoveredHexTileCoordinate().GetWorldPosition(_hexGridData.TileRadius, _hexGridData.TileHeight);
-                _previewBuilding.transform.position = snappedPos;
+                Vector3 snappedPos = currentlyHoveredHexTileCoordinate.GetWorldPosition(_hexGridData.TileRadius, _hexGridData.TileHeight);
+                
+                // Apply rotation to the preview building tiles
+                float currentRotationY = _previewBuilding.transform.eulerAngles.y;
+                List<HexTileCoordinate> rotatedShapeData = RotateByAngle(_selectedBuildingTemplate.ShapeData, (int) currentRotationY);
+                
+                Vector3 rotatedAvgPos = GetAveragePosition(rotatedShapeData);
+                _previewBuilding.transform.position = snappedPos + rotatedAvgPos; 
             }
         }
 
@@ -80,7 +87,8 @@ namespace FortressForge.BuildingSystem.BuildManager
             HexTileCoordinate hexCoord = _hexGridView.GetCurrentlyHoveredHexTileCoordinate();
 
             // Check if enough resources are available and pay 
-            if (!_economySystem.PayResourceIfSufficient(_selectedBuildingTemplate.GetBuildCost())) return; // TODO: this should be accessed after the placement is validated, move this down when validate buildings function are detached more completely from the placement
+            if (!_economySystem.PayResourceIfSufficient(_selectedBuildingTemplate.GetBuildCost())) 
+                return; // TODO: this should be accessed after the placement is validated, move this down when validate buildings function are detached more completely from the placement
             
             if (!_hexGridData.ValidateBuildingPlacement(hexCoord, _selectedBuildingTemplate) ||
                 hexCoord == default) return; 
@@ -106,17 +114,52 @@ namespace FortressForge.BuildingSystem.BuildManager
     
         private void RotateObject(float angle)
         {
-            if (_previewBuilding != null)
+            if (_previewBuilding == null) return;
+            
+            // Get the current rotation around the Y-axis
+            Vector3 currentRotation = _previewBuilding.transform.eulerAngles;
+
+            // Increment the current rotation by the specified angle around the Y-axis
+            currentRotation.y += angle;
+
+            // Apply the new rotation while keeping other axes unchanged
+            _previewBuilding.transform.rotation = Quaternion.Euler(currentRotation);
+        }
+
+        private Vector3 GetAveragePosition(List<HexTileCoordinate> hexTileCoordinates)
+        {
+            // Calculate the average position of the hex tile coordinates
+            Vector3 averagePosition = Vector3.zero;
+            foreach (HexTileCoordinate hexTileCoordinate in hexTileCoordinates)
             {
-                // Get the current rotation around the Y-axis
-                Vector3 currentRotation = _previewBuilding.transform.eulerAngles;
-
-                // Increment the current rotation by the specified angle around the Y-axis
-                currentRotation.y += angle;
-
-                // Apply the new rotation while keeping other axes unchanged
-                _previewBuilding.transform.rotation = Quaternion.Euler(currentRotation);
+                averagePosition += hexTileCoordinate.GetWorldPosition(_hexGridData.TileRadius, _hexGridData.TileHeight);
             }
+            
+            averagePosition /= hexTileCoordinates.Count;
+            return averagePosition;
+        }
+
+        public List<HexTileCoordinate> RotateByAngle(List<HexTileCoordinate> hexTileCoordinates, int angle)
+        {
+            var rotatedHexTileCoordinates = new List<HexTileCoordinate>(hexTileCoordinates.Count);
+            foreach (var hexTileCoordinate in hexTileCoordinates)
+            {
+                int t = (((-angle / 60) % 6) + 6) % 6; // make sure it's between 0 and 5, also handles negative angles
+
+                int q = hexTileCoordinate.Q;
+                int r = hexTileCoordinate.R;
+
+                for (int i = 0; i < t; i++)
+                {
+                    int temp = q;
+                    q = -r;
+                    r = temp + r;
+                }
+                
+                rotatedHexTileCoordinates.Add(new HexTileCoordinate(q, r, hexTileCoordinate.H));
+            }
+            
+            return rotatedHexTileCoordinates;
         }
     }
 }
