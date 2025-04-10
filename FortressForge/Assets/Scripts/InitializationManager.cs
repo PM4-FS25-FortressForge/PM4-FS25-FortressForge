@@ -22,17 +22,20 @@ namespace FortressForge
         
         private void Start()
         {
-            // Add ButtonManager and BuildViewController // TODO currently this is only done for one player
+            // Add ButtonManager, EconomyManager and BuildViewController // TODO currently this is only done for one player
+            var buildingManager = new BuildingManager();
+            
+            var economyManager = gameObject.AddComponent<Economy.EconomyManager>();
+            economyManager.Init(buildingManager);
+            
             var grid1 = hexGridManager.AllGrids[0]; // TODO tmp assignment
             
             var buildViewController = gameObject.AddComponent<BuildViewController>();
-            buildViewController.Init(grid1.view, grid1.data);
+            buildViewController.Init(grid1.view, grid1.data, economyManager.EconomySystem, buildingManager);
+            
+            
             var buttonManager = gameObject.AddComponent<ButtonManager>(); 
             buttonManager.Init(buildingDropdown, availableBuildings, buildViewController);
-            
-            // Initialize EconomyManager for one Player
-            var economyManager = gameObject.AddComponent<Economy.EconomyManager>();
-            economyManager.Init(buildViewController, this);
         }
     }
 }

@@ -22,13 +22,23 @@ namespace FortressForge.BuildingSystem.BuildingData
         public string Name;
         public int MetalCost;
         public int MaxHealth; 
+        
+        [Header("Resource Data")]
         protected Dictionary<ResourceType, float> _resourceChange = new();
         protected Dictionary<ResourceType, float> _buildCost = new();
         protected bool _enabled = true;
-
-        public void DoStuff()
+        
+        [Header("Resource Data")] 
+        public float resourceRate;
+        public ResourceType resourceRateType;
+        public float resourceCost;
+        public ResourceType resourceCostType;
+        
+        
+        public void Awake()
         {
-            Debug.Log("Doing stuff");
+            _resourceChange[resourceRateType] = resourceRate;
+            _buildCost[resourceCostType] = resourceCost;
         }
         
         public virtual Dictionary<ResourceType, float> GetNetResourceChange()
@@ -46,6 +56,6 @@ namespace FortressForge.BuildingSystem.BuildingData
         public virtual Dictionary<ResourceType, float> GetBuildCost() // TODO add usage 
         {
             return _buildCost;
-        }
+        } 
     }
 }

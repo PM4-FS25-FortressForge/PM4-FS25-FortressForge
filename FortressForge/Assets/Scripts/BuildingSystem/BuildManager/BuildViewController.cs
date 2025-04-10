@@ -1,31 +1,33 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Resources;
 using FortressForge.BuildingSystem.BuildingData;
 using FortressForge.BuildingSystem.HexGrid;
 using FortressForge.BuildingSystem.HexTile;
+using FortressForge.Economy;
 using UnityEngine;
 
 namespace FortressForge.BuildingSystem.BuildManager
 {
     public class BuildViewController : MonoBehaviour
     {
-        private readonly List<BaseBuildingTemplate> _placedBuildings = new();
-        public ReadOnlyCollection<BaseBuildingTemplate> PlacedBuildings { get; private set; }
 
         private HexGridView _hexGridView;
         private HexGridData _hexGridData;
+        private EconomySystem _economySystem;
+        private BuildingManager _buildingManager;
 
         private BaseBuildingTemplate _selectedBuildingTemplate;
         private GameObject _previewBuilding;
 
         private bool _isPreviewMode = false;
         
-        public void Init(HexGridView hexGridView, HexGridData hexGridData)
+        public void Init(HexGridView hexGridView, HexGridData hexGridData, EconomySystem economySystem, BuildingManager buildingManager)
         {
-            PlacedBuildings = _placedBuildings.AsReadOnly();
-            
             _hexGridView = hexGridView;
             _hexGridData = hexGridData;
+            _economySystem = economySystem;
+            _buildingManager = buildingManager;
         }
 
         public void PreviewSelectedBuilding(BaseBuildingTemplate building)
@@ -83,18 +85,21 @@ namespace FortressForge.BuildingSystem.BuildManager
         {
             HexTileCoordinate hexCoord = _hexGridView.GetCurrentlyHoveredHexTileCoordinate();
 
-            if (_hexGridData.ValidateBuildingPlacement(hexCoord, _selectedBuildingTemplate) && hexCoord != default)
-            {
-                // Place the final building at the correct position
-                PlaceBuilding();
-            }
+            // Check if enough resources are available and pay 
+            if (!_economySystem.PayResourceIfSufficient(_selectedBuildingTemplate.GetBuildCost())) return; // TODO: this should be accessed after the placement is validated
+            
+            if (!_hexGridData.ValidateBuildingPlacement(hexCoord, _selectedBuildingTemplate) ||
+                hexCoord == default) return; // TODO: THis method does more then just validate the placement, consider renaming
+                
+            // Place the final building at the correct position
+            PlaceBuilding();
         }
 
         private void PlaceBuilding()
         {
             Instantiate(_selectedBuildingTemplate.BuildingPrefab, _previewBuilding.transform.position, _previewBuilding.transform.rotation);
             BaseBuildingTemplate copy = Instantiate(_selectedBuildingTemplate);
-            _placedBuildings.Add(copy);
+            _buildingManager.AddBuilding(copy);
         }
 
         /// <summary>

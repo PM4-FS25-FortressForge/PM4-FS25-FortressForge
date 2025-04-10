@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
+using FortressForge.BuildingSystem.BuildingData;
 using FortressForge.BuildingSystem.BuildManager;
 using UnityEngine;
 
@@ -11,6 +13,8 @@ namespace FortressForge.Economy
     /// </summary>
     public class EconomyManager : MonoBehaviour
     {
+        public EconomySystem EconomySystem => _economySystem;
+        
         private const float RESOURCE_UPDATE_INTERVAL = 1f;
 
         // Core economy system logic container
@@ -20,7 +24,7 @@ namespace FortressForge.Economy
         /// Initializes the economy manager and starts periodic economy updates.
         /// Registers default actors for demonstration.
         /// </summary>
-        public void Init(BuildViewController buildViewController, MonoBehaviour parent)
+        public void Init(BuildingManager buildingManager)
         {
             // Example for max value application
             var maxValues = new Dictionary<ResourceType, float>
@@ -28,7 +32,7 @@ namespace FortressForge.Economy
                 { ResourceType.Power, 0f }
             };
             
-            _economySystem = new EconomySystem(buildViewController, maxValues);
+            _economySystem = new EconomySystem(buildingManager, maxValues);
             
             // Call update resource each second
             InvokeRepeating(nameof(UpdateEconomy), 0, RESOURCE_UPDATE_INTERVAL);
