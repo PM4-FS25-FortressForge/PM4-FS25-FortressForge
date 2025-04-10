@@ -182,4 +182,84 @@ public class CameraController : MonoBehaviour
         }
         return desiredButtonAction; 
     }
+    
+    /// <summary>
+    /// Sets the yaw rotation angle of the camera (in degrees).
+    /// </summary>
+    public void SetYaw(float newYaw)
+    {
+        yaw = newYaw;
+    }
+
+    /// <summary>
+    /// Sets the pitch rotation angle of the camera (in degrees).
+    /// </summary>
+    public void SetPitch(float newPitch)
+    {
+        pitch = newPitch;
+    }
+
+    /// <summary>
+    /// Sets the zoom distance from the camera to the target.
+    /// </summary>
+    public void SetZoom(float newZoom)
+    {
+        zoom = newZoom;
+    }
+
+    /// <summary>
+    /// Sets the position the camera is looking at.
+    /// </summary>
+    public void SetTargetPosition(Vector3 newTargetPosition)
+    {
+        targetPosition = newTargetPosition;
+    }
+
+    /// <summary>
+    /// Sets the movement speed of the camera.
+    /// </summary>
+    public void SetMoveSpeed(float newMoveSpeed)
+    {
+        moveSpeed = newMoveSpeed;
+    }
+
+    /// <summary>
+    /// Sets the rotation speed of the camera (yaw).
+    /// </summary>
+    public void SetRotationSpeed(float newRotationSpeed)
+    {
+        rotationSpeed = newRotationSpeed;
+    }
+
+    /// <summary>
+    /// Sets the pitch rotation speed of the camera.
+    /// </summary>
+    public void SetPitchSpeed(float newPitchSpeed)
+    {
+        pitchSpeed = newPitchSpeed;
+    }
+
+    /// <summary>
+    /// Sets the speed at which the camera zooms in and out.
+    /// </summary>
+    public void SetZoomSpeed(float newZoomSpeed)
+    {
+        zoomSpeed = newZoomSpeed;
+    }
+
+    /// <summary>
+    /// Sets the pitch angle limits to prevent flipping (X: max, Y: min).
+    /// </summary>
+    public void SetPitchLimits(Vector2 newPitchLimits)
+    {
+        pitchLimits = newPitchLimits;
+    }
+
+    /// <summary>
+    /// Sets the zoom distance limits (X: min, Y: max).
+    /// </summary>
+    public void SetZoomLimits(Vector2 newZoomLimits)
+    {
+        zoomLimits = newZoomLimits;
+    }
 }
