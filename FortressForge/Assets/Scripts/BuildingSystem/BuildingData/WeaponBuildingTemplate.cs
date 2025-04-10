@@ -1,3 +1,5 @@
+using System;
+using FortressForge.Economy;
 using UnityEngine;
 
 namespace FortressForge.BuildingSystem.BuildingData
@@ -7,5 +9,13 @@ namespace FortressForge.BuildingSystem.BuildingData
     {
         [Header("Weapon Data")] public int baseDamage;
         public float reloadSpeed;
+        
+        public float resourceCost;
+        public ResourceType resourceType;
+        
+        public void Awake()
+        {
+            _resourceChange[resourceType] = resourceCost;
+        }
     }
 }

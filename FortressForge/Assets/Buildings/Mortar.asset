@@ -18,3 +18,5 @@ MonoBehaviour:
   MaxHealth: 0
   baseDamage: 0
   reloadSpeed: 0
+  resourceCost: -50
+  resourceType: 0
