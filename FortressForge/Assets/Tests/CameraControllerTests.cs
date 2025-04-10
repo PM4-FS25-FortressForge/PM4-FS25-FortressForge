@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
 using FortressForge.CameraControll;
 using NUnit.Framework;
 using UnityEngine;
@@ -103,7 +102,7 @@ public class CameraControllerTest
     public IEnumerator TestCameraMovesForward_WhenPressingW()
     {
         Setup();        //Ensure the scene is loaded in each new test and camera is set up
-        SetInitialCameraValuesForEachTest();
+        SetInitialCameraValuesForEachTest();    //Ensure the camera is set to the initial values for each test
         
         PressKey(Key.W);
         yield return new WaitForSeconds(0.5f);
@@ -116,50 +115,50 @@ public class CameraControllerTest
     [UnityTest]
     public IEnumerator TestCameraMovesLeft_WhenPressingA()
     {
-        Setup();
-        SetInitialCameraValuesForEachTest();
+        Setup();    //Ensure the scene is loaded in each new test and camera is set up
+        SetInitialCameraValuesForEachTest();    //Ensure the camera is set to the initial values for each test    
 
         PressKey(Key.A);
         yield return new WaitForSeconds(0.5f);
         ReleaseKey(Key.A);
 
         Assert.Less(_mainCamera.transform.position.x, _initialPosition.x, "Camera should move left when A is pressed.");
-        TearDown();
+        TearDown();     //Ensure the scene is unloaded and the camera is destroyed after each test and all vars are cleared
     }
     
     [UnityTest]
     public IEnumerator TestCameraMovesRight_WhenPressingS()
     {
-        Setup();
-        SetInitialCameraValuesForEachTest();
+        Setup();    //Ensure the scene is loaded in each new test and camera is set up
+        SetInitialCameraValuesForEachTest();    //Ensure the camera is set to the initial values for each test
 
         PressKey(Key.S);
         yield return new WaitForSeconds(0.5f);
         ReleaseKey(Key.S);
 
         Assert.Less(_mainCamera.transform.position.z, _initialPosition.z, "Camera should move Down when S is pressed.");
-        TearDown();
+        TearDown();     //Ensure the scene is unloaded and the camera is destroyed after each test and all vars are cleared
     }
 
     [UnityTest]
     public IEnumerator TestCameraMovesRight_WhenPressingD()
     {
-        Setup();
-        SetInitialCameraValuesForEachTest();
+        Setup();    //Ensure the scene is loaded in each new test and camera is set up
+        SetInitialCameraValuesForEachTest();    //Ensure the camera is set to the initial values for each test
 
         PressKey(Key.D);
         yield return new WaitForSeconds(0.5f);
         ReleaseKey(Key.D);
 
         Assert.Greater(_mainCamera.transform.position.x, _initialPosition.x, "Camera should move right when D is pressed.");
-        TearDown();
+        TearDown();     //Ensure the scene is unloaded and the camera is destroyed after each test and all vars are cleared
     }
     
     [UnityTest]
     public IEnumerator TestCameraRotatesLeft_WhenPressingQ()
     {
-        Setup();
-        SetInitialCameraValuesForEachTest();
+        Setup();    //Ensure the scene is loaded in each new test and camera is set up
+        SetInitialCameraValuesForEachTest();    //Ensure the camera is set to the initial values for each test
 
         PressKey(Key.Q);
         yield return new WaitForSeconds(0.5f);
@@ -167,14 +166,14 @@ public class CameraControllerTest
 
         float newRotation = _mainCamera.transform.eulerAngles.y;
         Assert.Greater(newRotation, _yInitialRotation, "Camera should rotate left when Q is pressed.");
-        TearDown();
+        TearDown();     //Ensure the scene is unloaded and the camera is destroyed after each test and all vars are cleared
     }
 
     [UnityTest]
     public IEnumerator TestCameraRotatesRight_WhenPressingE()
     {
-        Setup();
-        SetInitialCameraValuesForEachTest();
+        Setup();    //Ensure the scene is loaded in each new test and camera is set up
+        SetInitialCameraValuesForEachTest();    //Ensure the camera is set to the initial values for each test
 
         PressKey(Key.E);
         yield return new WaitForSeconds(0.5f);
@@ -182,14 +181,14 @@ public class CameraControllerTest
 
         float newRotation = _mainCamera.transform.eulerAngles.y;
         Assert.Greater(newRotation, _yInitialRotation, "Camera should rotate right when E is pressed.");
-        TearDown();
+        TearDown();     //Ensure the scene is unloaded and the camera is destroyed after each test and all vars are cleared
     }
     
     [UnityTest]
     public IEnumerator TestCameraPitchUp_WhenPressingArrowUp()
     {
-        Setup();
-        SetInitialCameraValuesForEachTest();
+        Setup();    //Ensure the scene is loaded in each new test and camera is set up
+        SetInitialCameraValuesForEachTest();    //Ensure the camera is set to the initial values for each test
 
         PressKey(Key.UpArrow);
         yield return new WaitForSeconds(0.5f);
@@ -197,107 +196,107 @@ public class CameraControllerTest
 
         float newPitch = _mainCamera.transform.eulerAngles.x;
         Assert.Greater(newPitch, _xInitialRotation, "Camera should pitch up when UpArrow is pressed.");
-        TearDown();
+        TearDown();     //Ensure the scene is unloaded and the camera is destroyed after each test and all vars are cleared
     }
     
     [UnityTest]
     public IEnumerator TestCameraPitchDown_WhenPressingArrowDown()
     {
-        Setup();
-        SetInitialCameraValuesForEachTest();
+        Setup();    //Ensure the scene is loaded in each new test and camera is set up
+        SetInitialCameraValuesForEachTest();    //Ensure the camera is set to the initial values for each test
 
-        _xInitialRotation = _mainCamera.transform.eulerAngles.x;        //i Know this si technically called 2 times in a row but just leave it this was, so it works
+        _xInitialRotation = _mainCamera.transform.eulerAngles.x;        //i Know this is technically called 2 times in a row but just leave it this way, so it works
         PressKey(Key.DownArrow);
         yield return new WaitForSeconds(0.5f);
         ReleaseKey(Key.DownArrow);
 
         float newPitch = _mainCamera.transform.eulerAngles.x;
         Assert.Less(newPitch, _xInitialRotation, "Camera should pitch Down when DownArrow is pressed.");
-        TearDown();
+        TearDown();     //Ensure the scene is unloaded and the camera is destroyed after each test and all vars are cleared
     }
     
     [UnityTest]
     public IEnumerator TestCameraZoomOut_WhenPressingArrowLeft()
     {
         Vector3 newCalculatedPosition = new Vector3(0, 5.66f, -5.66f);
-        Setup();
-        SetInitialCameraValuesForEachTest();
+        Setup();    //Ensure the scene is loaded in each new test and camera is set up
+        SetInitialCameraValuesForEachTest();    //Ensure the camera is set to the initial values for each test
 
         PressKey(Key.LeftArrow);
-        yield return new WaitUntil(
-                () => CompareVektors(newCalculatedPosition, false), 
+        yield return new WaitUntil(     //Structure is used to wait until the camera has moved to the new position or teming out after realistic time
+                () => CompareCameraPosition(newCalculatedPosition, false), 
             new TimeSpan(0,0,0,0,600),
-            () => Assert.True(CompareVektors(newCalculatedPosition, false), "Camera should zoom Out when LeftArrow is pressed." + PrintFailedTestMsg(newCalculatedPosition))
+            () => Assert.True(CompareCameraPosition(newCalculatedPosition, false), "Camera should zoom Out when LeftArrow is pressed." + PrintFailedTestMsg(newCalculatedPosition))
         );
         ReleaseKey(Key.LeftArrow);
 
-        Assert.True(CompareVektors(newCalculatedPosition, false), "Camera should zoom Out when LeftArrow is pressed." + PrintFailedTestMsg(newCalculatedPosition));
-        TearDown();
+        Assert.True(CompareCameraPosition(newCalculatedPosition, false), "Camera should zoom Out when LeftArrow is pressed." + PrintFailedTestMsg(newCalculatedPosition));
+        TearDown();     //Ensure the scene is unloaded and the camera is destroyed after each test and all vars are cleared
     }
 
     [UnityTest]
     public IEnumerator TestCameraZoomsIn_WhenPressingArrowRight()
     {
         Vector3 newCalculatedPosition = new Vector3(0, 2.83f, -2.83f);
-        Setup();
-        SetInitialCameraValuesForEachTest();
+        Setup();    //Ensure the scene is loaded in each new test and camera is set up
+        SetInitialCameraValuesForEachTest();    //Ensure the camera is set to the initial values for each test
 
         PressKey(Key.RightArrow);
-        yield return new WaitUntil(
-            () => CompareVektors(newCalculatedPosition, true), 
+        yield return new WaitUntil( //Structure is used to wait until the camera has moved to the new position or teming out after realistic time
+            () => CompareCameraPosition(newCalculatedPosition, true), 
             new TimeSpan(0,0,0,0,600),
-            () => Assert.True(CompareVektors(newCalculatedPosition, true), "Camera should zoom In when RightArrow is pressed." + PrintFailedTestMsg(newCalculatedPosition))
+            () => Assert.True(CompareCameraPosition(newCalculatedPosition, true), "Camera should zoom In when RightArrow is pressed." + PrintFailedTestMsg(newCalculatedPosition))
         );
         ReleaseKey(Key.RightArrow);
         
-        Assert.True(CompareVektors(newCalculatedPosition, true), "Camera should zoom Out In RightArrow is pressed." + PrintFailedTestMsg(newCalculatedPosition));
-        TearDown();
+        Assert.True(CompareCameraPosition(newCalculatedPosition, true), "Camera should zoom Out In RightArrow is pressed." + PrintFailedTestMsg(newCalculatedPosition));
+        TearDown();     //Ensure the scene is unloaded and the camera is destroyed after each test and all vars are cleared
     }
     
     [UnityTest]
     public IEnumerator TestCameraZoomMaxOutToBorder_WhenPressingArrowLeft()
     {
         Vector3 newCalculatedPosition = new Vector3(0, 14.1f, -14.1f);
-        Setup();
-        SetInitialCameraValuesForEachTest();
+        Setup();    //Ensure the scene is loaded in each new test and camera is set up
+        SetInitialCameraValuesForEachTest();    //Ensure the camera is set to the initial values for each test
 
         PressKey(Key.LeftArrow);
-        yield return new WaitUntil(
-            () => CompareVektors(newCalculatedPosition, false), 
+        yield return new WaitUntil( //Structure is used to wait until the camera has moved to the new position or teming out after realistic time
+            () => CompareCameraPosition(newCalculatedPosition, false), 
             new TimeSpan(0,0,0,5,600),
-            () => Assert.True(CompareVektors(newCalculatedPosition, false), "Camera should zoom Out till it reaches the boarder when LeftArrow is pressed" + PrintFailedTestMsg(newCalculatedPosition))
+            () => Assert.True(CompareCameraPosition(newCalculatedPosition, false), "Camera should zoom Out till it reaches the boarder when LeftArrow is pressed" + PrintFailedTestMsg(newCalculatedPosition))
         );
         ReleaseKey(Key.LeftArrow);
     
-        Assert.True(CompareVektors(newCalculatedPosition, false), "Camera should zoom Out till it reaches the boarder when LeftArrow is pressed" + PrintFailedTestMsg(newCalculatedPosition));
-        TearDown();
+        Assert.True(CompareCameraPosition(newCalculatedPosition, false), "Camera should zoom Out till it reaches the boarder when LeftArrow is pressed" + PrintFailedTestMsg(newCalculatedPosition));
+        TearDown();     //Ensure the scene is unloaded and the camera is destroyed after each test and all vars are cleared
     }
     
     [UnityTest]
     public IEnumerator TestCameraZoomsMaxInToBorder_WhenPressingArrowRight()
     {
         Vector3 newCalculatedPosition = new Vector3(0, 1.42f, -1.42f);
-        Setup();
-        SetInitialCameraValuesForEachTest();
+        Setup();    //Ensure the scene is loaded in each new test and camera is set up
+        SetInitialCameraValuesForEachTest();    //Ensure the camera is set to the initial values for each test
 
         PressKey(Key.RightArrow);
-        yield return new WaitUntil(
-            () => CompareVektors(newCalculatedPosition, true), 
+        yield return new WaitUntil( //Structure is used to wait until the camera has moved to the new position or teming out after realistic time
+            () => CompareCameraPosition(newCalculatedPosition, true), 
             new TimeSpan(0,0,0,3,0),
-            () => Assert.True(CompareVektors(newCalculatedPosition, true), "Camera should zoom In till it reaches the boarder when RightArrow is pressed" + PrintFailedTestMsg(newCalculatedPosition))
+            () => Assert.True(CompareCameraPosition(newCalculatedPosition, true), "Camera should zoom In till it reaches the boarder when RightArrow is pressed" + PrintFailedTestMsg(newCalculatedPosition))
         );
         ReleaseKey(Key.RightArrow);
     
-        Assert.True(CompareVektors(newCalculatedPosition, true), "Camera should zoom In till it reaches the boarder when RightArrow is pressed" + PrintFailedTestMsg(newCalculatedPosition));
-        TearDown();
+        Assert.True(CompareCameraPosition(newCalculatedPosition, true), "Camera should zoom In till it reaches the boarder when RightArrow is pressed" + PrintFailedTestMsg(newCalculatedPosition));
+        TearDown();     //Ensure the scene is unloaded and the camera is destroyed after each test and all vars are cleared
     }
     
     [UnityTest]
     public IEnumerator TestCameraCombinedMovement()
     {
         Vector3 newCalculatedPosition = new Vector3(-2.74f, 16.0f, 9.88f);
-        Setup();
-        SetInitialCameraValuesForEachTest();
+        Setup();    //Ensure the scene is loaded in each new test and camera is set up
+        SetInitialCameraValuesForEachTest();    //Ensure the camera is set to the initial values for each test
 
         //This Test does also test the boarder of the min or max Pitch of the up or down arrow keys
         PressKey(Key.W);
@@ -305,10 +304,10 @@ public class CameraControllerTest
         PressKey(Key.E);
         PressKey(Key.UpArrow);
         PressKey(Key.LeftArrow);
-        yield return new WaitUntil(
-            () => CompareVektors(newCalculatedPosition, false), 
+        yield return new WaitUntil( //Structure is used to wait until the camera has moved to the new position or teming out after realistic time
+            () => CompareCameraPosition(newCalculatedPosition, false), 
             new TimeSpan(0,0,0,2,500),
-            () => Assert.True(CompareVektors(newCalculatedPosition, false), "Camera should move to new position moving with W A S D UpArrow LeftArrow Keys." + PrintFailedTestMsg(newCalculatedPosition))
+            () => Assert.True(CompareCameraPosition(newCalculatedPosition, false), "Camera should move to new position moving with W A S D UpArrow LeftArrow Keys." + PrintFailedTestMsg(newCalculatedPosition))
         );
         ReleaseKey(Key.W);
         ReleaseKey(Key.D);
@@ -316,15 +315,16 @@ public class CameraControllerTest
         ReleaseKey(Key.UpArrow);
         ReleaseKey(Key.LeftArrow);
 
-        Assert.True(CompareVektors(newCalculatedPosition, false), "Camera should move to new position moving with W D E UpArrow LeftArrow Keys." + PrintFailedTestMsg(newCalculatedPosition));
-        TearDown();
+        Assert.True(CompareCameraPosition(newCalculatedPosition, false), "Camera should move to new position moving with W D E UpArrow LeftArrow Keys." + PrintFailedTestMsg(newCalculatedPosition));
+        TearDown();     //Ensure the scene is unloaded and the camera is destroyed after each test and all vars are cleared
     }
+    
     [UnityTest]
     public IEnumerator TestCameraCombinedInversedMovement()
     {
         Vector3 newCalculatedPosition = new Vector3(-11.36f, 0f, 4.12f);
-        Setup();
-        SetInitialCameraValuesForEachTest();
+        Setup();    //Ensure the scene is loaded in each new test and camera is set up
+        SetInitialCameraValuesForEachTest();    //Ensure the camera is set to the initial values for each test
 
         //This Test does also test the boarder of the min or max Pitch of the up or down arrow keys
         PressKey(Key.S);
@@ -332,10 +332,10 @@ public class CameraControllerTest
         PressKey(Key.Q);
         PressKey(Key.DownArrow);
         PressKey(Key.RightArrow);
-        yield return new WaitUntil(
-            () => CompareVektors(newCalculatedPosition, false), 
+        yield return new WaitUntil( //Structure is used to wait until the camera has moved to the new position or teming out after realistic time
+            () => CompareCameraPosition(newCalculatedPosition, false), 
             new TimeSpan(0,0,0,2,500),
-            () => Assert.True(CompareVektors(newCalculatedPosition, false), "Camera should move to new position moving with S A Q DownArrow RightArrow Keys." + PrintFailedTestMsg(newCalculatedPosition))
+            () => Assert.True(CompareCameraPosition(newCalculatedPosition, false), "Camera should move to new position moving with S A Q DownArrow RightArrow Keys." + PrintFailedTestMsg(newCalculatedPosition))
         );
         ReleaseKey(Key.S);
         ReleaseKey(Key.A);
@@ -343,8 +343,8 @@ public class CameraControllerTest
         ReleaseKey(Key.DownArrow);
         ReleaseKey(Key.RightArrow);
 
-        Assert.True(CompareVektors(newCalculatedPosition, false), "Camera should move to new position moving with W A S D UpArrow LeftArrow Keys." + PrintFailedTestMsg(newCalculatedPosition));
-        TearDown();
+        Assert.True(CompareCameraPosition(newCalculatedPosition, false), "Camera should move to new position moving with W A S D UpArrow LeftArrow Keys." + PrintFailedTestMsg(newCalculatedPosition));
+        TearDown();     //Ensure the scene is unloaded and the camera is destroyed after each test and all vars are cleared
     }
 
     /// <summary>
@@ -352,7 +352,7 @@ public class CameraControllerTest
     /// Returns true if the new camera position is greater or less than the expected position
     /// The comparing mode greater or less is set by the boolean parameter compareToGreater
     /// </summary>
-    private Boolean CompareVektors(Vector3 newCalculatedPosition, Boolean compareToGreater)     
+    private Boolean CompareCameraPosition(Vector3 newCalculatedPosition, Boolean compareToGreater)     
     {                                                                                           
         Boolean result = false;                                                                 
         if (compareToGreater)
