@@ -9,27 +9,32 @@ namespace FortressForge.BuildingSystem.BuildManager
 {
     public class ButtonManager : MonoBehaviour
     {
-        public Dropdown Dropdown;
-        public List<BaseBuildingTemplate> AvailableBuildings;
+        private Dropdown _dropdown;
+        private List<BaseBuildingTemplate> _availableBuildings;
     
-        public BuildViewController  BuildViewController;
+        private BuildViewController  _buildViewController;
         
-        public void Init()
+        public void Init(Dropdown dropdown, List<BaseBuildingTemplate> availableBuildings, BuildViewController buildViewController)
         {
-            Dropdown.ClearOptions();
-            Dropdown.AddOptions(AvailableBuildings.Select(b => b.name).ToList());
-            Dropdown.onValueChanged.AddListener(SelectBuilding);
+            _dropdown = dropdown;
+            _availableBuildings = availableBuildings;
+            _buildViewController = buildViewController;
+            
+            // Initialize the dropdown with available buildings
+            _dropdown.ClearOptions();
+            _dropdown.AddOptions(_availableBuildings.Select(b => b.name).ToList());
+            _dropdown.onValueChanged.AddListener(SelectBuilding);
         }
 
         void SelectBuilding(int index)
         {
-            if (index >= AvailableBuildings.Count)
+            if (index >= _availableBuildings.Count)
             {
                 Debug.LogError("Index out of range.");
                 return;
             }
 
-            BuildViewController.PreviewSelectedBuilding(AvailableBuildings[index]);
+            _buildViewController.PreviewSelectedBuilding(_availableBuildings[index]);
         }
     }
 }

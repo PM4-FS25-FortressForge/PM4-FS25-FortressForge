@@ -1,4 +1,7 @@
+using System;
+using FortressForge.Economy;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace FortressForge.BuildingSystem.BuildingData
 {

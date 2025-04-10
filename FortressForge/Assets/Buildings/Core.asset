@@ -12,7 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a724c598079413096e2f62eeecb9dd4, type: 3}
   m_Name: Core
   m_EditorClassIdentifier: 
-  buildingPrefab: {fileID: 0}
-  name: 
-  metalCost: 0
-  maxHealth: 0
+  BuildingPrefab: {fileID: 8461799468503079714, guid: d22a0ce999be4cc4c838e7ccd738ba95, type: 3}
+  Name: Multi Inferno
+  MetalCost: 0
+  MaxHealth: 0
+  resourceRate: 0
+  resourceRateType: 0
+  resourceCost: 0
+  resourceCostType: 0

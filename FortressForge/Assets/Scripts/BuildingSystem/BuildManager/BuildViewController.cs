@@ -1,30 +1,38 @@
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Resources;
 using FortressForge.BuildingSystem.BuildingData;
 using FortressForge.BuildingSystem.HexGrid;
 using FortressForge.BuildingSystem.HexTile;
+using FortressForge.Economy;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace FortressForge.BuildingSystem.BuildManager
 {
     public class BuildViewController : MonoBehaviour
     {
-        public HexGridView HexGridView;
-        public HexGridData HexGridData;
+
+        private HexGridView _hexGridView;
+        private HexGridData _hexGridData;
+        private EconomySystem _economySystem;
+        private BuildingManager _buildingManager;
 
         private BaseBuildingTemplate _selectedBuildingTemplate;
         private GameObject _previewBuilding;
-        private List<BaseBuildingTemplate> _placedBuildings = new();
 
         private bool _isPreviewMode = false;
+        
+        public void Init(HexGridView hexGridView, HexGridData hexGridData, EconomySystem economySystem, BuildingManager buildingManager)
+        {
+            _hexGridView = hexGridView;
+            _hexGridData = hexGridData;
+            _economySystem = economySystem;
+            _buildingManager = buildingManager;
+        }
 
         public void PreviewSelectedBuilding(BaseBuildingTemplate building)
         {
             _selectedBuildingTemplate = Instantiate(building);
-            _selectedBuildingTemplate.ShapeData = new List<HexTileCoordinate>
-            {
-                new HexTileCoordinate(0,0,0) // TODO: Adjust so this is taken from building directly
-            };
 
             if (_previewBuilding != null)
             {
@@ -60,24 +68,32 @@ namespace FortressForge.BuildingSystem.BuildManager
 
         private void MovePreviewObject()
         {
-            if (HexGridView.GetCurrentlyHoveredHexTileCoordinate() != default)
+            if (_hexGridView.GetCurrentlyHoveredHexTileCoordinate() != default)
             {
-                Vector3 snappedPos = HexGridView.GetCurrentlyHoveredHexTileCoordinate().GetWorldPosition(HexGridData.TileRadius, HexGridData.TileHeight);
+                Vector3 snappedPos = _hexGridView.GetCurrentlyHoveredHexTileCoordinate().GetWorldPosition(_hexGridData.TileRadius, _hexGridData.TileHeight);
                 _previewBuilding.transform.position = snappedPos;
             }
         }
 
         private void TryPlaceBuilding()
         {
-            HexTileCoordinate hexCoord = HexGridView.GetCurrentlyHoveredHexTileCoordinate();
+            HexTileCoordinate hexCoord = _hexGridView.GetCurrentlyHoveredHexTileCoordinate();
 
-            if (HexGridData.ValidateBuildingPlacement(hexCoord, _selectedBuildingTemplate) && hexCoord != default)
-            {
-                // Place the final building at the correct position
-                Instantiate(_selectedBuildingTemplate.BuildingPrefab, _previewBuilding.transform.position, _previewBuilding.transform.rotation);
-                BaseBuildingTemplate copy = Instantiate(_selectedBuildingTemplate);
-                _placedBuildings.Add(copy); // TODO this will add the same object multiple times, it needs to be different
-            }
+            // Check if enough resources are available and pay 
+            if (!_economySystem.PayResourceIfSufficient(_selectedBuildingTemplate.GetBuildCost())) return; // TODO: this should be accessed after the placement is validated, move this down when validate buildings function are detached more completely from the placement
+            
+            if (!_hexGridData.ValidateBuildingPlacement(hexCoord, _selectedBuildingTemplate) ||
+                hexCoord == default) return; 
+                
+            // Place the final building at the correct position
+            PlaceBuilding();
+        }
+
+        private void PlaceBuilding()
+        {
+            Instantiate(_selectedBuildingTemplate.BuildingPrefab, _previewBuilding.transform.position, _previewBuilding.transform.rotation);
+            BaseBuildingTemplate copy = Instantiate(_selectedBuildingTemplate);
+            _buildingManager.AddBuilding(copy);
         }
 
         private void ExitBuildMode()
