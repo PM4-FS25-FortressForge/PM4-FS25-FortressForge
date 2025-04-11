@@ -36,18 +36,10 @@ using Object = UnityEngine.Object;
 /// <author>Hoferlev</author>
 /// <version>1.0</version>
 
-
-//Idee von julien 
-// Eine Settermethode für die Sartwerde im Cameracontreoller einbauen
-// Der Test setzt dan die Startwerdte
-// somit sind fix punkt berchnungen immer möglich unabhängig von den wilden nebeneffekten die auftreten könnten (evtl mehr tests von nöten)
-// Um das problem mit der Zeit zu lösen folgenden Asatz verweden 
-// Die Tasten drucken und warten bis die kamera einen gewissen punkt überschritten hat
-// danach die tasten loslasen (Realistisches Timeout setzten)
 public class CameraControllerTest
 {
     private GameObject _mainCamera;
-    private Vector3 _initialPosition = Vector3.zero;
+    private Vector3 _initialPosition;
     private float _yInitialRotation;
     private float _xInitialRotation;
     private float _zInitialRotation;
@@ -83,7 +75,7 @@ public class CameraControllerTest
         _cameraController.SetYaw(0.0f);
         _cameraController.SetPitch(45);
         _cameraController.SetZoom(6f);
-        _cameraController.SetTargetPosition(_initialPosition);
+        _cameraController.SetTargetPosition(Vector3.zero);
         _cameraController.SetMoveSpeed(7.5f);
         _cameraController.SetRotationSpeed(60.0f);
         _cameraController.SetPitchSpeed(45.0f);
@@ -223,7 +215,7 @@ public class CameraControllerTest
         SetInitialCameraValuesForEachTest();    //Ensure the camera is set to the initial values for each test
 
         PressKey(Key.LeftArrow);
-        yield return new WaitUntil(     //Structure is used to wait until the camera has moved to the new position or teming out after realistic time
+        yield return new WaitUntil(     //Structure is used to wait until the camera has moved to the new position or terminate after realistic time
                 () => CompareCameraPosition(newCalculatedPosition, false), 
             new TimeSpan(0,0,0,0,600),
             () => Assert.True(CompareCameraPosition(newCalculatedPosition, false), "Camera should zoom Out when LeftArrow is pressed." + PrintFailedTestMsg(newCalculatedPosition))
@@ -242,7 +234,7 @@ public class CameraControllerTest
         SetInitialCameraValuesForEachTest();    //Ensure the camera is set to the initial values for each test
 
         PressKey(Key.RightArrow);
-        yield return new WaitUntil( //Structure is used to wait until the camera has moved to the new position or teming out after realistic time
+        yield return new WaitUntil( //Structure is used to wait until the camera has moved to the new position or terminate after realistic time
             () => CompareCameraPosition(newCalculatedPosition, true), 
             new TimeSpan(0,0,0,0,600),
             () => Assert.True(CompareCameraPosition(newCalculatedPosition, true), "Camera should zoom In when RightArrow is pressed." + PrintFailedTestMsg(newCalculatedPosition))
@@ -261,7 +253,7 @@ public class CameraControllerTest
         SetInitialCameraValuesForEachTest();    //Ensure the camera is set to the initial values for each test
 
         PressKey(Key.LeftArrow);
-        yield return new WaitUntil( //Structure is used to wait until the camera has moved to the new position or teming out after realistic time
+        yield return new WaitUntil( //Structure is used to wait until the camera has moved to the new position or terminate after realistic time
             () => CompareCameraPosition(newCalculatedPosition, false), 
             new TimeSpan(0,0,0,5,600),
             () => Assert.True(CompareCameraPosition(newCalculatedPosition, false), "Camera should zoom Out till it reaches the boarder when LeftArrow is pressed" + PrintFailedTestMsg(newCalculatedPosition))
@@ -280,7 +272,7 @@ public class CameraControllerTest
         SetInitialCameraValuesForEachTest();    //Ensure the camera is set to the initial values for each test
 
         PressKey(Key.RightArrow);
-        yield return new WaitUntil( //Structure is used to wait until the camera has moved to the new position or teming out after realistic time
+        yield return new WaitUntil( //Structure is used to wait until the camera has moved to the new position or terminate after realistic time
             () => CompareCameraPosition(newCalculatedPosition, true), 
             new TimeSpan(0,0,0,3,0),
             () => Assert.True(CompareCameraPosition(newCalculatedPosition, true), "Camera should zoom In till it reaches the boarder when RightArrow is pressed" + PrintFailedTestMsg(newCalculatedPosition))
@@ -304,7 +296,7 @@ public class CameraControllerTest
         PressKey(Key.E);
         PressKey(Key.UpArrow);
         PressKey(Key.LeftArrow);
-        yield return new WaitUntil( //Structure is used to wait until the camera has moved to the new position or teming out after realistic time
+        yield return new WaitUntil( //Structure is used to wait until the camera has moved to the new position or terminate after realistic time
             () => CompareCameraPosition(newCalculatedPosition, false), 
             new TimeSpan(0,0,0,2,500),
             () => Assert.True(CompareCameraPosition(newCalculatedPosition, false), "Camera should move to new position moving with W A S D UpArrow LeftArrow Keys." + PrintFailedTestMsg(newCalculatedPosition))
@@ -332,7 +324,7 @@ public class CameraControllerTest
         PressKey(Key.Q);
         PressKey(Key.DownArrow);
         PressKey(Key.RightArrow);
-        yield return new WaitUntil( //Structure is used to wait until the camera has moved to the new position or teming out after realistic time
+        yield return new WaitUntil( //Structure is used to wait until the camera has moved to the new position or terminate after realistic time
             () => CompareCameraPosition(newCalculatedPosition, false), 
             new TimeSpan(0,0,0,2,500),
             () => Assert.True(CompareCameraPosition(newCalculatedPosition, false), "Camera should move to new position moving with S A Q DownArrow RightArrow Keys." + PrintFailedTestMsg(newCalculatedPosition))
@@ -372,21 +364,7 @@ public class CameraControllerTest
     
     private string PrintFailedTestMsg(Vector3 newCalculatedPosition)  // Helper function to print the failed test message including the expected and actual camera position
     {
-        return $"Expected: {RoundVector(newCalculatedPosition)} but got: {RoundVector(_mainCamera.transform.position)}";
-    }
-    
-    [TearDown]
-    public void TearDown()
-    {
-        // Destroy the test camera and reset all vars after each test
-        Object.Destroy(_mainCamera);
-        _mainCamera = null;
-        _initialPosition = Vector3.zero;
-        _yInitialRotation = 0f;
-        _xInitialRotation = 0f;
-        _zInitialRotation = 0f;
-        _initialZoom = 0f;
-        _activeKeys.Clear();
+        return $"\n\nExpected: {newCalculatedPosition} \nbut got: {_mainCamera.transform.position}";
     }
 
     private void PressKey(Key key)      //Can handle multiple keys at the same time (Only presses the key down)
@@ -403,7 +381,7 @@ public class CameraControllerTest
         InputSystem.Update();
     }
 
-    private void ReleaseKey(Key key)    //Can handle multiple keys at the same time (Only released the key down)
+    private void ReleaseKey(Key key)    //Can handle multiple keys at the same time (Only released the key)
     {
         _activeKeys.Remove(key); // Remove key from active set
 
@@ -417,13 +395,18 @@ public class CameraControllerTest
         InputSystem.Update();
     }
     
-    private Vector3 RoundVector(Vector3 vector)     // Helper function to round the vector values to 2 decimal places after point
+    [TearDown]
+    public void TearDown()
     {
-        return new Vector3(
-            (float)Math.Round(vector.x, 2),
-            (float)Math.Round(vector.y, 2),
-            (float)Math.Round(vector.z, 2)
-        );
+        // Destroy the test camera and reset all vars after each test
+        Object.Destroy(_mainCamera);
+        _mainCamera = null;
+        _initialPosition = Vector3.zero;
+        _yInitialRotation = 0f;
+        _xInitialRotation = 0f;
+        _zInitialRotation = 0f;
+        _initialZoom = 0f;
+        _activeKeys.Clear();
     }
 }
 

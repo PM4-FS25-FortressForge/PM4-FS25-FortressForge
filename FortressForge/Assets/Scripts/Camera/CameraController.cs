@@ -45,8 +45,7 @@ namespace FortressForge.CameraControll
 
         [SerializeField]
         public Vector3
-            targetPosition =
-                Vector3.zero; //At the Sart the Camera will always look (be centered) at the point at 0.0.0 coordinates
+            targetPosition = Vector3.zero; //At the Sart the Camera will always look (be centered) at the point at 0.0.0 coordinates
 
         // Movement & rotation speeds
         [SerializeField] public float moveSpeed = 5.0f;
@@ -59,8 +58,7 @@ namespace FortressForge.CameraControll
         [SerializeField]
         public Vector2
             pitchLimits =
-                new Vector2(89,
-                    0); // Pitch flat to fully top-dow (To avoid the camera to flip do not use value higher than 89°)
+                new Vector2(89, 0); // Pitch flat to fully top-dow (To avoid the camera to flip do not use value higher than 89°)
 
         [SerializeField] public Vector2 zoomLimits = new Vector2(2.0f, 20.0f); // Min/Max distance from target Zoom
 
