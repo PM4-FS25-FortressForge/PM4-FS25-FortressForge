@@ -107,7 +107,6 @@ namespace FortressForge.BuildingSystem.BuildManager
         /// </summary>
         private void ExitBuildMode()
         {
-            // If placement is invalid, destroy the preview
             _isPreviewMode = false;
             Destroy(_previewBuilding);
             _selectedBuildingTemplate = null;
