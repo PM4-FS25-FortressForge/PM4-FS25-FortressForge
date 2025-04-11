@@ -16,7 +16,7 @@ public class EconomySystem_PayResourceIfSufficientTests
         {
             { ResourceType.Metal, 100 },
             { ResourceType.Power, 100 },
-            { ResourceType.Wood, 100 }
+            { ResourceType.Magma, 100 }
         };
 
         _economySystem = new EconomySystem(buildingManager, maxValues);
@@ -24,7 +24,7 @@ public class EconomySystem_PayResourceIfSufficientTests
         // Set initial amounts manually for full control
         _economySystem.CurrentResources[ResourceType.Metal].CurrentAmount = 80;
         _economySystem.CurrentResources[ResourceType.Power].CurrentAmount = 50;
-        _economySystem.CurrentResources[ResourceType.Wood].CurrentAmount = 0;
+        _economySystem.CurrentResources[ResourceType.Magma].CurrentAmount = 0;
     }
 
     [Test]
@@ -77,14 +77,14 @@ public class EconomySystem_PayResourceIfSufficientTests
         var cost = new Dictionary<ResourceType, float>
         {
             { ResourceType.Metal, 50 },
-            { ResourceType.Wood, 10 } // Not enough
+            { ResourceType.Magma, 10 } // Not enough
         };
 
         var result = _economySystem.PayResourceIfSufficient(cost);
 
         Assert.IsFalse(result);
         Assert.AreEqual(80, _economySystem.CurrentResources[ResourceType.Metal].CurrentAmount);
-        Assert.AreEqual(0, _economySystem.CurrentResources[ResourceType.Wood].CurrentAmount);
+        Assert.AreEqual(0, _economySystem.CurrentResources[ResourceType.Magma].CurrentAmount);
     }
 
     [Test]
