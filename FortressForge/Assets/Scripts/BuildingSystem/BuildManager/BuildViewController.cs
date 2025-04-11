@@ -19,6 +19,7 @@ namespace FortressForge.BuildingSystem.BuildManager
 
         private BaseBuildingTemplate _selectedBuildingTemplate;
         private GameObject _previewBuilding;
+        private readonly List<HexTileCoordinate> _currentBuildTargets = new();
 
         private bool _isPreviewMode = false;
         
@@ -72,12 +73,32 @@ namespace FortressForge.BuildingSystem.BuildManager
         private void MovePreviewObject()
         {
             var currentlyHoveredHexTileCoordinate = _hexGridView.GetCurrentlyHoveredHexTileCoordinate();
-            if (currentlyHoveredHexTileCoordinate != default) // TODO default is wrong, use null, adjust after action changes
-            {
-                Vector3 snappedPos = currentlyHoveredHexTileCoordinate.GetWorldPosition(_hexGridData.TileRadius, _hexGridData.TileHeight);
+            if (currentlyHoveredHexTileCoordinate == default) return; // TODO default is wrong, use null, adjust after action changes
+            
+            Vector3 snappedPos = currentlyHoveredHexTileCoordinate.GetWorldPosition(_hexGridData.TileRadius, _hexGridData.TileHeight);
                 
-                Vector3 rotatedAvgPos = GetAveragePosition(_selectedBuildingTemplate.ShapeData);
-                _previewBuilding.transform.position = snappedPos + rotatedAvgPos; 
+            Vector3 avgPos = GetAveragePosition(_selectedBuildingTemplate.ShapeData);
+            _previewBuilding.transform.position = snappedPos + avgPos;
+            
+            MarkNewTilesAsBuildTargets(currentlyHoveredHexTileCoordinate, _selectedBuildingTemplate.ShapeData); 
+        }
+
+        private void MarkNewTilesAsBuildTargets(HexTileCoordinate target, List<HexTileCoordinate> buildingShape)
+        {
+            // Clear previous build targets
+            foreach (HexTileCoordinate hexTileCoordinate in _currentBuildTargets)
+            {
+                _hexGridData.TileMap[hexTileCoordinate].IsBuildTarget = false;
+            }
+            
+            _currentBuildTargets.Clear();
+            
+            foreach (HexTileCoordinate hexTileCoordinate in buildingShape)
+            {
+                if (!_hexGridData.TileMap.TryGetValue(hexTileCoordinate + target, out var tileData)) 
+                    continue;
+                tileData.IsBuildTarget = true;
+                _currentBuildTargets.Add(hexTileCoordinate + target);
             }
         }
 

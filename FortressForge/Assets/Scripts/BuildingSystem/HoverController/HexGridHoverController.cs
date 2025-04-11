@@ -31,7 +31,7 @@ namespace FortressForge.BuildingSystem.HoverController
             if (hitTileView != CurrentlyHoveredTile)
             {
                 if (CurrentlyHoveredTile != null)
-                    CurrentlyHoveredTile.UpdateVisuals(false);
+                    CurrentlyHoveredTile.UpdateVisuals(false); // TODO this shouldnt be done directly in the hover controller, instead update the tile data in the hover controller
                 
                 hitTileView.UpdateVisuals(true);
                 CurrentlyHoveredTile = hitTileView;
