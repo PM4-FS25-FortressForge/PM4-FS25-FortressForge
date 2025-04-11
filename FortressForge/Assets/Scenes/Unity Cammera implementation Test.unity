@@ -363,14 +363,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   yaw: 0
   pitch: 45
-  zoom: 6
+  distance: 6
   targetPosition: {x: 0, y: 0, z: 0}
   moveSpeed: 5
-  rotationSpeed: 50
-  pitchSpeed: 40
-  zoomSpeed: 2
+  RotationSpeed: 50
+  PitchSpeed: 40
+  ZoomSpeed: 2
   pitchLimits: {x: 89, y: 0}
-  zoomLimits: {x: 2, y: 20}
+  distanceLimits: {x: 0.5, y: 25}
 --- !u!114 &1546958352
 MonoBehaviour:
   m_ObjectHideFlags: 0

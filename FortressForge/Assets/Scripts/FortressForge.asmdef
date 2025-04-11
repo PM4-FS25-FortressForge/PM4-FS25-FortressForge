@@ -1,7 +1,10 @@
 {
     "name": "FortressForge",
     "rootNamespace": "FortressForge",
-    "references": ["GUID:7c88a4a7926ee5145ad2dfa06f454c67"],
+    "references": [
+        "GUID:7c88a4a7926ee5145ad2dfa06f454c67",
+        "GUID:75469ad4d38634e559750d17036d5f7c"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
