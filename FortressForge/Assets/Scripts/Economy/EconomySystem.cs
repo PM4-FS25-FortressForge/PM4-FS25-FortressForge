@@ -68,22 +68,28 @@ namespace FortressForge.Economy
         }
 
         /// <summary>
-        /// Attempts to deduct specified resources from the current resources.
+        /// Checks if there are sufficient resources available for the specified costs.
         /// </summary>
         /// <param name="resourceCosts">The resource amount.</param>
         /// <returns>True if there are sufficient resources.</returns>
-        public bool PayResourceIfSufficient(Dictionary<ResourceType, float> resourceCosts)
+        public bool CheckForSufficientResources(Dictionary<ResourceType, float> resourceCosts)
         {
             if (resourceCosts.Any(resource => 
                     _currentResources[resource.Key].CurrentAmount < resource.Value))
                 return false;
-            
+            return true;
+        }
+
+        /// <summary>
+        /// Deducts specified resources from the current resources. Will not check if there are sufficient resources. Use CheckForSufficientResources first.
+        /// </summary>
+        /// <param name="resourceCosts">The resource amount.</param>
+        public void PayResource(Dictionary<ResourceType, float> resourceCosts)
+        {
             foreach (var resource in resourceCosts)
             {
                 _currentResources[resource.Key].CurrentAmount -= resource.Value;
             }
-            
-            return true;
         }
 
         /// <summary>

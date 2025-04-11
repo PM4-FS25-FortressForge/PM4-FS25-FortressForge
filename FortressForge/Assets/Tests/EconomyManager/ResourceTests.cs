@@ -36,7 +36,8 @@ public class EconomySystem_PayResourceIfSufficientTests
             { ResourceType.Power, 20 }
         };
 
-        var result = _economySystem.PayResourceIfSufficient(cost);
+        var result =  _economySystem.CheckForSufficientResources(cost);
+        _economySystem.PayResource(cost);
 
         Assert.IsTrue(result);
         Assert.AreEqual(50, _economySystem.CurrentResources[ResourceType.Metal].CurrentAmount);
@@ -51,7 +52,8 @@ public class EconomySystem_PayResourceIfSufficientTests
             { ResourceType.Power, 50 }
         };
 
-        var result = _economySystem.PayResourceIfSufficient(cost);
+        var result =  _economySystem.CheckForSufficientResources(cost);
+        _economySystem.PayResource(cost);
 
         Assert.IsTrue(result);
         Assert.AreEqual(0, _economySystem.CurrentResources[ResourceType.Power].CurrentAmount);
@@ -65,7 +67,8 @@ public class EconomySystem_PayResourceIfSufficientTests
             { ResourceType.Metal, 200 }
         };
 
-        var result = _economySystem.PayResourceIfSufficient(cost);
+        var result =  _economySystem.CheckForSufficientResources(cost);
+        _economySystem.PayResource(cost);
 
         Assert.IsFalse(result);
         Assert.AreEqual(80, _economySystem.CurrentResources[ResourceType.Metal].CurrentAmount);
@@ -80,7 +83,8 @@ public class EconomySystem_PayResourceIfSufficientTests
             { ResourceType.Wood, 10 } // Not enough
         };
 
-        var result = _economySystem.PayResourceIfSufficient(cost);
+        var result =  _economySystem.CheckForSufficientResources(cost);
+        _economySystem.PayResource(cost);
 
         Assert.IsFalse(result);
         Assert.AreEqual(80, _economySystem.CurrentResources[ResourceType.Metal].CurrentAmount);
@@ -90,8 +94,9 @@ public class EconomySystem_PayResourceIfSufficientTests
     [Test]
     public void PayResourceIfSufficient_EmptyCost_ReturnsTrue()
     {
-        var result = _economySystem.PayResourceIfSufficient(new Dictionary<ResourceType, float>());
-
+        var result =  _economySystem.CheckForSufficientResources(new Dictionary<ResourceType, float>());
+        _economySystem.PayResource(new Dictionary<ResourceType, float>());
+        
         Assert.IsTrue(result);
         Assert.AreEqual(80, _economySystem.CurrentResources[ResourceType.Metal].CurrentAmount);
         Assert.AreEqual(50, _economySystem.CurrentResources[ResourceType.Power].CurrentAmount);

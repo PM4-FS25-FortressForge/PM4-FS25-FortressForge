@@ -64,25 +64,39 @@ namespace FortressForge.BuildingSystem.HexGrid
             PlayerIds.Add(playerId);
         }
 
+        /// <summary>
+        /// Places buildings on the hex grid. This doesn't check if the placement is valid. Use Validate Building Placement first.
+        /// </summary>
+        /// <param name="hexCoord"></param>
+        /// <param name="buildingTemplate"></param>
+        public void PlaceBuilding(HexTileCoordinate hexCoord, BaseBuildingTemplate buildingTemplate)
+        { 
+            foreach (var coord in buildingTemplate.ShapeData)
+            {
+                OccupyHexTileAndUnlockNewTile(hexCoord + coord);
+            }
+        }
+
+        /// <summary>
+        /// Validates if a building can be placed on the hex grid.
+        /// </summary>
+        /// <param name="hexCoord"></param>
+        /// <param name="buildingTemplate"></param>
+        /// <returns>Returns true if placement is unoccupied</returns>
         public bool ValidateBuildingPlacement(HexTileCoordinate hexCoord, BaseBuildingTemplate buildingTemplate)
-        { // TODO: THis method does more then just validate the placement, consider renaming, or better splitting it up
+        {
             foreach (var coord in buildingTemplate.ShapeData)
             {
                 TileMap.TryGetValue((hexCoord + coord), out var tileData);
                 if (tileData == null || tileData.IsOccupied)
                 {
-                    Debug.Log("Placement failed");
                     return false;
                 }
-
-                OccupyHexTile(hexCoord + coord);
             }
-            
-            Debug.Log("Placement succeeded");
             return true;
         }
 
-        private void OccupyHexTile(HexTileCoordinate hexCoord)
+        private void OccupyHexTileAndUnlockNewTile(HexTileCoordinate hexCoord)
         {
             TileMap[hexCoord].IsOccupied = true;
             

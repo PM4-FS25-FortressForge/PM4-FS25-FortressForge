@@ -53,7 +53,7 @@ namespace FortressForge.BuildingSystem.BuildManager
             
                 if (Input.GetMouseButtonDown(0)) // First click to place // TODO consider using onclick events
                 {
-                    TryPlaceBuilding();
+                    TryBuyAndPlaceBuilding();
                 }
                 else if (Input.GetMouseButtonDown(1)) // Right click to cancel
                 {
@@ -73,32 +73,33 @@ namespace FortressForge.BuildingSystem.BuildManager
             {
                 Vector3 snappedPos = currentlyHoveredHexTileCoordinate.GetWorldPosition(_hexGridData.TileRadius, _hexGridData.TileHeight);
                 
-                // Apply rotation to the preview building tiles
-                float currentRotationY = _previewBuilding.transform.eulerAngles.y;
-                List<HexTileCoordinate> rotatedShapeData = RotateByAngle(_selectedBuildingTemplate.ShapeData, (int) currentRotationY);
-                
-                Vector3 rotatedAvgPos = GetAveragePosition(rotatedShapeData);
+                Vector3 rotatedAvgPos = GetAveragePosition(_selectedBuildingTemplate.ShapeData);
                 _previewBuilding.transform.position = snappedPos + rotatedAvgPos; 
             }
         }
 
-        private void TryPlaceBuilding()
+        private void TryBuyAndPlaceBuilding()
         {
             HexTileCoordinate hexCoord = _hexGridView.GetCurrentlyHoveredHexTileCoordinate();
 
-            // Check if enough resources are available and pay 
-            if (!_economySystem.PayResourceIfSufficient(_selectedBuildingTemplate.GetBuildCost())) 
-                return; // TODO: this should be accessed after the placement is validated, move this down when validate buildings function are detached more completely from the placement
-            
-            if (!_hexGridData.ValidateBuildingPlacement(hexCoord, _selectedBuildingTemplate) ||
-                hexCoord == default) return; 
+            // Check if the building can be placed
+            if (hexCoord == default // TODO default is wrong, use null, adjust after action changes
+                || !_economySystem.CheckForSufficientResources(_selectedBuildingTemplate.GetBuildCost())
+                || !_hexGridData.ValidateBuildingPlacement(hexCoord, _selectedBuildingTemplate))
+            {
+                Debug.Log("Placement failed");
+                return;
+            }
                 
             // Place the final building at the correct position
-            PlaceBuilding();
+            PlaceBuilding(hexCoord);
+            Debug.Log("Placement succeeded");
         }
 
-        private void PlaceBuilding()
+        private void PlaceBuilding(HexTileCoordinate hexCoord)
         {
+            _hexGridData.PlaceBuilding(hexCoord, _selectedBuildingTemplate);
+            _economySystem.PayResource(_selectedBuildingTemplate.GetBuildCost());
             Instantiate(_selectedBuildingTemplate.BuildingPrefab, _previewBuilding.transform.position, _previewBuilding.transform.rotation);
             BaseBuildingTemplate copy = Instantiate(_selectedBuildingTemplate);
             _buildingManager.AddBuilding(copy);
@@ -124,6 +125,9 @@ namespace FortressForge.BuildingSystem.BuildManager
 
             // Apply the new rotation while keeping other axes unchanged
             _previewBuilding.transform.rotation = Quaternion.Euler(currentRotation);
+            
+            // Apply rotation to the preview building tiles
+            _selectedBuildingTemplate.ShapeData = RotateByAngle(_selectedBuildingTemplate.ShapeData, (int) angle);
         }
 
         private Vector3 GetAveragePosition(List<HexTileCoordinate> hexTileCoordinates)
@@ -139,7 +143,7 @@ namespace FortressForge.BuildingSystem.BuildManager
             return averagePosition;
         }
 
-        public List<HexTileCoordinate> RotateByAngle(List<HexTileCoordinate> hexTileCoordinates, int angle)
+        private List<HexTileCoordinate> RotateByAngle(List<HexTileCoordinate> hexTileCoordinates, int angle)
         {
             var rotatedHexTileCoordinates = new List<HexTileCoordinate>(hexTileCoordinates.Count);
             foreach (var hexTileCoordinate in hexTileCoordinates)
