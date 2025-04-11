@@ -1,6 +1,8 @@
 using System;
 using UnityEngine;
 using System.Collections.Generic;
+using FortressForge.BuildingSystem.HexTile;
+using FortressForge.BuildingSystem.HoverController;
 
 namespace FortressForge.BuildingSystem.HexGrid
 {
@@ -10,26 +12,24 @@ namespace FortressForge.BuildingSystem.HexGrid
     /// </summary>
     public class HexGridView : MonoBehaviour
     {
-        private HexGridData _hexGrid;
+        public HexGridData _hexGrid; // TODO reduce visibility
         private GameObject _tilePrefab;
-        private readonly Dictionary<(int, int, int), HexTileView> _tileViews = new ();
+        private readonly Dictionary<HexTileCoordinate, HexTileView> _tileViews = new ();
         private HexTileView _currentlyHoveredTile;
 
         /// <summary>
         /// Creates a new HexTileView for each tile in the HexGrid and initializes the visuals.
         /// </summary>
-        public void BuildGridView(GameObject tilePrefab, HexGridData hexGrid)
+        public void Initialize(GameObject tilePrefab, HexGridData hexGrid)
         {
             _tilePrefab = tilePrefab;
             _hexGrid = hexGrid;
+            _hexGrid.OnNewTileCreated += HandleNewTileCreated;
 
             if (_hexGrid == null || _tilePrefab == null)
-            {
                 throw new InvalidOperationException("HexGridView: Invalid reference to HexGrid or TilePrefab.");
-            }
-
+            
             InitializeHexGridView();
-            UpdateHexGridView();
         }
 
         /// <summary>
@@ -37,15 +37,21 @@ namespace FortressForge.BuildingSystem.HexGrid
         /// </summary>
         public void UpdateHexGridView()
         {
-            foreach (var kvp in _hexGrid.AllTiles)
+            foreach (var kvp in _hexGrid.TileMap)
             {
-                (int q, int r, int h) = kvp.Key;
-                HexTileView hexTileView = _tileViews[(q, r, h)];
+                var tileCoords = kvp.Key;
+                HexTileView hexTileView = _tileViews[tileCoords];
                 hexTileView.UpdateVisuals();
 
-                bool canRender = ShouldRenderTile((q, r, h));
+                bool canRender = ShouldRenderTile(tileCoords);
                 SetTileVisibility(hexTileView, canRender);
             }
+        }
+        
+        private void HandleNewTileCreated(HexTileData hexData, HexTileCoordinate newCoords)
+        {
+            InitializeTile(hexData, newCoords);
+            UpdateHexGridView();
         }
 
         /// <summary>
@@ -53,14 +59,15 @@ namespace FortressForge.BuildingSystem.HexGrid
         /// </summary>
         private void InitializeHexGridView()
         {
-            foreach (var kvp in _hexGrid.AllTiles)
+            foreach (var kvp in _hexGrid.TileMap)
             {
-                (int q, int r, int h) = kvp.Key;
-                HexTileData tileData = kvp.Value;
+                var coords = kvp.Key;
+                var data = kvp.Value;
 
-                HexTileView hexTileView = InitializeTile(tileData, (q, r, h));
-                _tileViews[(q, r, h)] = hexTileView;
+                HexTileView hexTileView = InitializeTile(data, coords);
+                _tileViews[coords] = hexTileView;
             }
+            UpdateHexGridView();
         }
 
         /// <summary>
@@ -70,12 +77,14 @@ namespace FortressForge.BuildingSystem.HexGrid
         private void SetTileVisibility(HexTileView tileObj, bool canRender)
         {
             Renderer rend = tileObj.GetComponent<Renderer>();
-            if (rend != null) {
+            if (rend != null)
+            {
                 rend.enabled = canRender;
             }
             
             Collider col = tileObj.GetComponent<Collider>();
-            if (col != null) {
+            if (col != null)
+            {
                 col.enabled = canRender;
             }
         }
@@ -83,16 +92,17 @@ namespace FortressForge.BuildingSystem.HexGrid
         /// <summary>
         /// Initializes the HexTileView script (if present) and stores it in the dictionary.
         /// </summary>
-        private HexTileView InitializeTile(HexTileData tileData, (int, int, int) coord)
+        private HexTileView InitializeTile(HexTileData tileData, HexTileCoordinate coord)
         {
-            Vector3 worldPos = CalculateWorldPosition(coord, _hexGrid.Origin);
+            Vector3 worldPos = coord.GetWorldPosition(_hexGrid.TileRadius, _hexGrid.TileHeight);
 
-            if (!_tileViews.ContainsKey(coord)) {
+            if (!_tileViews.ContainsKey(coord))
+            {
                 GameObject tileObj = Instantiate(
                     _tilePrefab,
                     worldPos,
                     _tilePrefab.transform.rotation,
-                    this.transform
+                    transform
                 );
 
                 HexTileView tileView = tileObj.GetComponent<HexTileView>();
@@ -109,13 +119,13 @@ namespace FortressForge.BuildingSystem.HexGrid
         /// It should be rendered if the tile is at ground level (h = 0) or
         /// if the tile below it is occupied.
         /// </summary>
-        private bool ShouldRenderTile((int q, int r, int h) coord)
+        private bool ShouldRenderTile(HexTileCoordinate coord)
         {
-            if (coord.h == 0)
+            if (coord.H == 0)
                 return true;
             
-            var belowCoord = (coord.q, coord.r, coord.h - 1);
-            if (_hexGrid.AllTiles.TryGetValue(belowCoord, out HexTileData belowTileData))
+            var belowCoord = new HexTileCoordinate(coord.Q, coord.R, coord.H - 1);
+            if (_hexGrid.TileMap.TryGetValue(belowCoord, out HexTileData belowTileData))
             {
                 return belowTileData.IsOccupied;
             }
@@ -123,56 +133,14 @@ namespace FortressForge.BuildingSystem.HexGrid
             return false;
         }
 
-        
-        private void Update()
+        public HexTileCoordinate GetCurrentlyHoveredHexTileCoordinate()
         {
-            if (Camera.main == null) return;
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            
-            if (!Physics.Raycast(ray, out RaycastHit hit, 1000f))
+            if (GetComponent<HexGridHoverController>().CurrentlyHoveredTile != null)
             {
-                ClearHoveredTile();
-                return;
+                return GetComponent<HexGridHoverController>().CurrentlyHoveredTile.HexTileCoordinate;
             }
             
-            HexTileView hitTileView = hit.collider.GetComponentInParent<HexTileView>();
-
-            if (hitTileView == null)
-            {
-                ClearHoveredTile();
-                return;
-            }
-            
-            if (hitTileView != _currentlyHoveredTile)
-            {
-                if (_currentlyHoveredTile != null)
-                    _currentlyHoveredTile.UpdateVisuals(false);
-                
-                hitTileView.UpdateVisuals(true);
-                _currentlyHoveredTile = hitTileView;
-            }
-        }
-
-        /// <summary>
-        /// Clears the hover effect from the currently hovered tile.
-        /// </summary>
-        private void ClearHoveredTile()
-        {
-            if (_currentlyHoveredTile != null)
-            {
-                _currentlyHoveredTile.UpdateVisuals(false);
-                _currentlyHoveredTile = null;
-            }
-        }
-
-        /// <summary>
-        /// Calculates the world position of a tile based on its axial coordinates.
-        /// </summary>
-        private Vector3 CalculateWorldPosition((int, int, int) coord, Vector3 origin)
-        {
-            float x = _hexGrid.TileRadius * 3f / 2f * coord.Item1;
-            float z = _hexGrid.TileRadius * Mathf.Sqrt(3) * (coord.Item2 + coord.Item1 / 2f);
-            return new Vector3(x, coord.Item3 * _hexGrid.TileHeight, z) + origin;
+            return default;
         }
     }
 }

@@ -2,6 +2,8 @@ using System;
 using UnityEngine;
 using System.Collections.Generic;
 using FortressForge.BuildingSystem.BuildingData;
+using FortressForge.BuildingSystem.HexTile;
+using UnityEngine.Tilemaps;
 
 namespace FortressForge.BuildingSystem.HexGrid
 {
@@ -15,84 +17,84 @@ namespace FortressForge.BuildingSystem.HexGrid
     /// </summary>
     public class HexGridData
     {
-        public int GridId { get; private set; }
         public Vector3 Origin { get; private set; }
-        public string OwnerId { get; set; }
+        public int Id { get; set; }
+
+        public readonly int MaxBuildHeight;
+
+        // Players that own this grid
+        public readonly List<string> PlayerIds = new();
 
         /// <summary>
         /// The size of the hex tiles are defined here, so that in the future different
         /// tile sizes for different players are possible (e.g. for AI).
         /// </summary>
-        public float TileRadius { get; private set; }
+        public readonly float TileRadius; // TODO TileRadius is available here and in HexGridConfiguration, consider always using one or making both readonly
 
-        public float TileHeight { get; private set; }
+        public readonly float TileHeight;
+        
+        public readonly Dictionary<HexTileCoordinate, HexTileData> TileMap = new();
+        
+        public event Action<HexTileData, HexTileCoordinate> OnNewTileCreated;
 
-        private readonly Dictionary<(int, int, int), HexTileData> _tiles = new();
-
-        /// <summary>
-        /// Returns a list of all tiles in the grid.
-        /// </summary>
-        public Dictionary<(int, int, int), HexTileData> AllTiles => _tiles;
-
-        public HexGridData(int gridId, Vector3 origin, int radius, int height, float tileSize, float tileHeight)
+        public HexGridData(int id, Vector3 origin, int radius, int maxBuildHight, float tileSize, float tileHeight)
         {
-            this.GridId = gridId;
-            this.Origin = origin;
+            Id = id;
+            Origin = origin;
+            MaxBuildHeight = maxBuildHight;
             TileRadius = tileSize;
-            this.TileHeight = tileHeight;
-
-            for (int h = 0; h < height; h++)
+            TileHeight = tileHeight;
+            
+            for (int q = -radius; q <= radius; q++)
             {
-                for (int q = -radius; q <= radius; q++)
+                int r1 = Math.Max(-radius, -q - radius);
+                int r2 = Math.Min(radius, -q + radius);
+                for (int r = r1; r <= r2; r++)
                 {
-                    int r1 = Math.Max(-radius, -q - radius);
-                    int r2 = Math.Min(radius, -q + radius);
-                    for (int r = r1; r <= r2; r++)
-                    {
-                        (int, int, int) coord = (q, r, h);
-                        _tiles[coord] = new HexTileData(coord);
-                    }
+                    HexTileCoordinate newHexCoords = new HexTileCoordinate(q, r, 0) +
+                        new HexTileCoordinate(TileRadius, TileHeight, origin);
+                                                     
+                    TileMap[newHexCoords] = new HexTileData(newHexCoords);
                 }
             }
         }
-
-        public bool ValidateBuildingPlacement((int, int, int) hexCoord, BaseBuilding building)
+        
+        public void AddPlayer(string playerId)
         {
-            foreach (var kvp in building.shapeData)
+            PlayerIds.Add(playerId);
+        }
+
+        public bool ValidateBuildingPlacement(HexTileCoordinate hexCoord, BaseBuildingTemplate buildingTemplate)
+        {
+            foreach (var coord in buildingTemplate.ShapeData)
             {
-                (int, int, int) coord = (kvp.r, kvp.q, kvp.h);
-                HexTileData tileData = GetTileData((coord.Item1 + hexCoord.Item1, coord.Item2 + hexCoord.Item2,
-                    coord.Item3 + hexCoord.Item3));
+                TileMap.TryGetValue((hexCoord + coord), out var tileData);
                 if (tileData == null || tileData.IsOccupied)
                 {
+                    Debug.Log("Placement failed");
                     return false;
                 }
+                   
+                UpdateHexTileData(hexCoord);
             }
-
+            
+            Debug.Log("Placement succeeded");
             return true;
         }
 
-        /// <summary>
-        /// Gets the data of a specific hex tile.
-        /// </summary>
-        public HexTileData GetTileData((int, int, int) hexCoord)
+        private void UpdateHexTileData(HexTileCoordinate hexCoord)
         {
-            if (_tiles.TryGetValue(hexCoord, out HexTileData data))
-            {
-                return data;
-            }
+            TileMap[hexCoord].IsOccupied = true;
+            
+            // unlock tile above
+            TileMap.TryGetValue(hexCoord + new HexTileCoordinate(0, 0, 1), out var tileData);
 
-            return null;
-        }
-
-        /// <summary>
-        /// Sets (or overwrites) the data of a specific hex tile.
-        /// </summary>
-        public void SetTileData((int, int, int) hexCoord, HexTileData newData)
-        {
-            if (_tiles.ContainsKey(hexCoord))
+            if (tileData == null && hexCoord.H + 1 <= MaxBuildHeight)
             {
-                _tiles[hexCoord] = newData;
+                HexTileCoordinate newHexCoords = hexCoord + new HexTileCoordinate(0, 0, 1);
+                HexTileData hexTileData = new HexTileData(newHexCoords);
+                TileMap[newHexCoords] = hexTileData;
+                OnNewTileCreated?.Invoke(hexTileData, newHexCoords); // UpdateHexGridView
             }
         }
     }
