@@ -100,9 +100,6 @@ namespace FortressForge.BuildingSystem.BuildManager
             Instantiate(_selectedBuildingTemplate.BuildingPrefab, _previewBuilding.transform.position, _previewBuilding.transform.rotation);
             BaseBuildingTemplate copy = Instantiate(_selectedBuildingTemplate);
             _buildingManager.AddBuilding(copy);
-
-            _placedBuildings.Add(copy);
-            ExitBuildMode();
         }
 
         /// <summary>
@@ -110,7 +107,6 @@ namespace FortressForge.BuildingSystem.BuildManager
         /// </summary>
         private void ExitBuildMode()
         {
-            // If placement is invalid, destroy the preview
             _isPreviewMode = false;
             Destroy(_previewBuilding);
             _selectedBuildingTemplate = null;
