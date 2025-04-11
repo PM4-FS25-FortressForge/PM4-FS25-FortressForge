@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shapeData: []
   buildingPrefab: {fileID: 0}
-  name: 
+  name: Windrad
   metallCost: 50
   maxHealth: 0
   ressourceType: 2

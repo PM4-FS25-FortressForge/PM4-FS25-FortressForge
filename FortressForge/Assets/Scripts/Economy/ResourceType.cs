@@ -17,8 +17,8 @@
         Power,
         
         /// <summary>
-        /// A basic building material, often used in construction.
+        /// The main source of energy and life. Used in various processes and buildings.
         /// </summary>
-        Wood,
+        Magma,
     }
 }

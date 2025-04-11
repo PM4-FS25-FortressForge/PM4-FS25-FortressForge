@@ -12,7 +12,7 @@ namespace FortressForge.BuildingSystem.HexGrid
     /// </summary>
     public class HexGridView : MonoBehaviour
     {
-        public HexGridData _hexGrid; // TODO reduce visibility
+        private HexGridData _hexGrid;
         private GameObject _tilePrefab;
         private readonly Dictionary<HexTileCoordinate, HexTileView> _tileViews = new ();
         private HexTileView _currentlyHoveredTile;
@@ -48,6 +48,9 @@ namespace FortressForge.BuildingSystem.HexGrid
             }
         }
         
+        /// <summary>
+        /// Handles setup when a new tile is created.
+        /// </summary>
         private void HandleNewTileCreated(HexTileData hexData, HexTileCoordinate newCoords)
         {
             InitializeTile(hexData, newCoords);
@@ -133,6 +136,9 @@ namespace FortressForge.BuildingSystem.HexGrid
             return false;
         }
 
+        /// <summary>
+        /// Returns the coordinate of the currently hovered hex tile.
+        /// </summary>
         public HexTileCoordinate GetCurrentlyHoveredHexTileCoordinate()
         {
             if (GetComponent<HexGridHoverController>().CurrentlyHoveredTile != null) // TODO just get a reference to the hover controller

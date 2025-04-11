@@ -26,7 +26,7 @@ namespace FortressForge.BuildingSystem.HexGrid
         {
             HexTileCoordinate = data.HexTileCoordinate;
             _tileCoordinates = data;
-            _renderer = GetComponentInChildren<MeshRenderer>(); // TODO: Check if we can remove this GetComponent call and not use MonoBehaviour
+            _renderer = GetComponentInChildren<MeshRenderer>(); 
             UpdateVisuals();
         }
 
