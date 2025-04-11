@@ -98,6 +98,9 @@ public class CameraControllerTest
         SetInitialCameraValuesForEachTest();    //Ensure the camera is set to the initial values for each test
         
         PressKey(Key.W);
+        //check if key is pressed
+        Assert.IsTrue(_activeKeys.Contains(Key.W), "Key W should be pressed.");
+        Assert.IsTrue(Keyboard.current.anyKey.isPressed, "Key W should be pressed.");
         yield return new WaitForSeconds(0.5f);
         ReleaseKey(Key.W);
 
