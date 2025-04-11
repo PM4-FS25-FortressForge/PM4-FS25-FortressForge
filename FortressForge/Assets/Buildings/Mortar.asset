@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Mortar
   m_EditorClassIdentifier: 
   BuildingPrefab: {fileID: 8421781907833339578, guid: c3df0ce681d76cf409ef6cf14794e8a1, type: 3}
-  Name: 
+  Name: Mortar
   MetalCost: 0
   MaxHealth: 0
   baseDamage: 0
