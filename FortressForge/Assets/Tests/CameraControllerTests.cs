@@ -10,6 +10,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 using GameObject = UnityEngine.GameObject;
 using Object = UnityEngine.Object;
+//using UnityEngine.InputSystem.Testing;
 
 /// <summary>
 /// This class contains unit tests for the CameraController class in Unity.
@@ -338,6 +339,42 @@ public class CameraControllerTest
         Assert.True(CompareCameraPosition(newCalculatedPosition, false), "Camera should move to new position moving with W A S D UpArrow LeftArrow Keys." + PrintFailedTestMsg(newCalculatedPosition));
         TearDown();     //Ensure the scene is unloaded and the camera is destroyed after each test and all vars are cleared
     }
+    
+    [UnityTest]
+    public IEnumerator TestCameraZoomsIn_WhenScrollingMouseWheelUp()
+    {
+        Vector3 newCalculatedPosition = new Vector3(0, 2.83f, -2.83f);
+        Setup();       //Ensure the scene is loaded in each new test and camera is set up
+        SetInitialCameraValuesForEachTest();     //Ensure the camera is set to the initial values for each test
+        
+        for (int i = 0; i < 5; i++) //Simulate mouse wheel scroll
+        {
+            yield return new WaitForSeconds(0.5f); // Let the system react to the input
+            InputSystem.QueueDeltaStateEvent(Mouse.current.scroll, new Vector2(0, 1f)); // Simulate scroll up (positive y value = scroll up)
+            InputSystem.Update();
+        }
+        
+        Assert.True(CompareCameraPosition(newCalculatedPosition, true), "Camera should zoom in when scrolling mouse wheel up" + PrintFailedTestMsg(newCalculatedPosition));
+        TearDown();     //Ensure the scene is unloaded and the camera is destroyed after each test and all vars are cleared
+    }
+
+    [UnityTest]
+    public IEnumerator TestCameraZoomsOut_WhenScrollingMouseWheelDown()
+    {
+        Vector3 newCalculatedPosition = new Vector3(0, 5.66f, -5.66f);
+        Setup();       //Ensure the scene is loaded in each new test and camera is set up
+        SetInitialCameraValuesForEachTest();     //Ensure the camera is set to the initial values for each test
+
+        for (int i = 0; i < 8; i++) //Simulate mouse wheel scroll
+        {
+            yield return new WaitForSeconds(0.5f); // Let the system react to the input
+            InputSystem.QueueDeltaStateEvent(Mouse.current.scroll, new Vector2(0, -1f)); // Simulate scroll down (negative y value = scroll down)
+            InputSystem.Update();
+        }
+        
+        Assert.True(CompareCameraPosition(newCalculatedPosition, false), "Camera should zoom out when scrolling mouse wheel down" + PrintFailedTestMsg(newCalculatedPosition));
+        TearDown();     //Ensure the scene is unloaded and the camera is destroyed after each test and all vars are cleared
+    }
 
     /// <summary>
     /// Helper function to compare the new camera position with the expected position
@@ -407,6 +444,8 @@ public class CameraControllerTest
         _zInitialRotation = 0f;
         _initialZoom = 0f;
         _activeKeys.Clear();
+        InputSystem.QueueDeltaStateEvent(Mouse.current.scroll, Vector2.zero);
+        InputSystem.Update();
     }
 }
 
