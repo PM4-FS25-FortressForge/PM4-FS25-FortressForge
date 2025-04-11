@@ -347,9 +347,9 @@ public class CameraControllerTest
         Setup();       //Ensure the scene is loaded in each new test and camera is set up
         SetInitialCameraValuesForEachTest();     //Ensure the camera is set to the initial values for each test
         
-        for (int i = 0; i < 5; i++) //Simulate mouse wheel scroll
+        for (int i = 0; i < 10; i++) //Simulate mouse wheel scroll
         {
-            yield return new WaitForSeconds(0.5f); // Let the system react to the input
+            yield return new WaitForSeconds(0.25f); // Let the system react to the input
             InputSystem.QueueDeltaStateEvent(Mouse.current.scroll, new Vector2(0, 1f)); // Simulate scroll up (positive y value = scroll up)
             InputSystem.Update();
         }
@@ -365,9 +365,9 @@ public class CameraControllerTest
         Setup();       //Ensure the scene is loaded in each new test and camera is set up
         SetInitialCameraValuesForEachTest();     //Ensure the camera is set to the initial values for each test
 
-        for (int i = 0; i < 8; i++) //Simulate mouse wheel scroll
+        for (int i = 0; i < 15; i++) //Simulate mouse wheel scroll
         {
-            yield return new WaitForSeconds(0.5f); // Let the system react to the input
+            yield return new WaitForSeconds(0.25f); // Let the system react to the input
             InputSystem.QueueDeltaStateEvent(Mouse.current.scroll, new Vector2(0, -1f)); // Simulate scroll down (negative y value = scroll down)
             InputSystem.Update();
         }
