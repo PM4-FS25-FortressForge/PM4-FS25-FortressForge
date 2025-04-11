@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Core
   m_EditorClassIdentifier: 
   buildingPrefab: {fileID: 0}
-  name: 
+  name: Core
   metalCost: 0
   maxHealth: 0

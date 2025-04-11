@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Mine
   m_EditorClassIdentifier: 
   BuildingPrefab: {fileID: 8461799468503079714, guid: d22a0ce999be4cc4c838e7ccd738ba95, type: 3}
-  Name: 
+  Name: Mine
   MetalCost: 0
   MaxHealth: 0
   ressourceType: 0
