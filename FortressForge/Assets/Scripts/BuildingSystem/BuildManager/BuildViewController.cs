@@ -66,6 +66,9 @@ namespace FortressForge.BuildingSystem.BuildManager
             }
         }
 
+        /// <summary>
+        /// Moves the preview object to the currently hovered hex tile position.
+        /// </summary>
         private void MovePreviewObject()
         {
             if (_hexGridView.GetCurrentlyHoveredHexTileCoordinate() != default)
@@ -75,6 +78,9 @@ namespace FortressForge.BuildingSystem.BuildManager
             }
         }
 
+        /// <summary>
+        /// Attempts to place a building at the hovered tile if the placement is valid.
+        /// </summary>
         private void TryPlaceBuilding()
         {
             HexTileCoordinate hexCoord = _hexGridView.GetCurrentlyHoveredHexTileCoordinate();
@@ -94,8 +100,14 @@ namespace FortressForge.BuildingSystem.BuildManager
             Instantiate(_selectedBuildingTemplate.BuildingPrefab, _previewBuilding.transform.position, _previewBuilding.transform.rotation);
             BaseBuildingTemplate copy = Instantiate(_selectedBuildingTemplate);
             _buildingManager.AddBuilding(copy);
+
+            _placedBuildings.Add(copy);
+            ExitBuildMode();
         }
 
+        /// <summary>
+        /// Exits build mode and clears the preview state.
+        /// </summary>
         private void ExitBuildMode()
         {
             // If placement is invalid, destroy the preview
@@ -104,7 +116,10 @@ namespace FortressForge.BuildingSystem.BuildManager
             _selectedBuildingTemplate = null;
         }
     
-        private void RotateObject(float angle)
+        /// <summary>
+        /// Rotates the preview object around the Y-axis by the given angle.
+        /// </summary>
+        private void RotateObject(float angle)  //TODO: use shapeData to rotate correctly in hex grid
         {
             if (_previewBuilding != null)
             {

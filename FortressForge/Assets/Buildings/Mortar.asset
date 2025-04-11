@@ -20,5 +20,3 @@ MonoBehaviour:
   resourceRateType: 0
   resourceCost: 250
   resourceCostType: 0
-  baseDamage: 0
-  reloadSpeed: 0
