@@ -8,7 +8,7 @@ using UnityEngine.Serialization;
 
 namespace FortressForge.BuildingSystem.BuildingData
 {
-    public abstract class BaseBuildingTemplate : ScriptableObject, IEconomyActor
+    public class BaseBuildingTemplate : ScriptableObject, IEconomyActor
     {
         /// <summary>
         /// Information about the shape of the building, in the form of a list of HexTileCoordinates.
