@@ -65,23 +65,34 @@ namespace FortressForge.BuildingSystem.HexGrid
         }
 
         /// <summary>
-        /// Validates a tile if its already occupied, then if not Marks it as occupied and creates the tile above if needed.
+        /// Places buildings on the hex grid. This doesn't check if the placement is valid. Use Validate Building Placement first.
         /// </summary>
+        /// <param name="hexCoord"></param>
+        /// <param name="buildingTemplate"></param>
+        public void PlaceBuilding(HexTileCoordinate hexCoord, BaseBuildingTemplate buildingTemplate)
+        { 
+            foreach (var coord in buildingTemplate.ShapeData)
+            {
+                OccupyHexTileAndUnlockNewTile(hexCoord + coord);
+            }
+        }
+
+        /// <summary>
+        /// Validates if a building can be placed on the hex grid.
+        /// </summary>
+        /// <param name="hexCoord"></param>
+        /// <param name="buildingTemplate"></param>
+        /// <returns>Returns true if placement is unoccupied</returns>
         public bool ValidateBuildingPlacement(HexTileCoordinate hexCoord, BaseBuildingTemplate buildingTemplate)
-        { // TODO: THis method does more then just validate the placement, consider renaming, or better splitting it up
+        {
             foreach (var coord in buildingTemplate.ShapeData)
             {
                 TileMap.TryGetValue((hexCoord + coord), out var tileData);
                 if (tileData == null || tileData.IsOccupied)
                 {
-                    Debug.Log("Placement failed");
                     return false;
                 }
-
-                UpdateHexTileData(hexCoord);
             }
-            
-            Debug.Log("Placement succeeded");
             return true;
         }
 
@@ -90,7 +101,7 @@ namespace FortressForge.BuildingSystem.HexGrid
         /// If the tile above does not exist and is within the maximum build height,
         /// a new tile is created and added to the tile map, and the OnNewTileCreated event is triggered.
         /// </summary>
-        private void UpdateHexTileData(HexTileCoordinate hexCoord)
+        private void OccupyHexTileAndUnlockNewTile(HexTileCoordinate hexCoord)
         {
             TileMap[hexCoord].IsOccupied = true;
             
