@@ -13,26 +13,37 @@ public class BuildViewController : MonoBehaviour, BuildActionHandler.IPreviewMod
     private GameObject _previewBuilding;
     private List<BaseBuildingTemplate> _placedBuildings = new();
     private bool _isPreviewMode = false;
-
     private BuildActionHandler _input;
 
+    /// <summary>
+    /// Initializes the input handler on Awake.
+    /// </summary>
     private void Awake()
     {
         _input = new BuildActionHandler();
     }
 
+    /// <summary>
+    /// Enables input actions and sets callbacks.
+    /// </summary>
     private void OnEnable()
     {
         _input.PreviewMode.SetCallbacks(this);
         _input.PreviewMode.Enable();
     }
 
+    /// <summary>
+    /// Disables input actions and clears callbacks.
+    /// </summary>
     private void OnDisable()
     {
         _input.PreviewMode.Disable();
         _input.PreviewMode.SetCallbacks(null); // Cleanup
     }
 
+    /// <summary>
+    /// Moves the preview building each frame if in preview mode.
+    /// </summary>
     private void Update()
     {
         if (_isPreviewMode && _previewBuilding != null)
@@ -41,24 +52,36 @@ public class BuildViewController : MonoBehaviour, BuildActionHandler.IPreviewMod
         }
     }
 
+    /// <summary>
+    /// Called when the player performs the place action. Attempts to place the building.
+    /// </summary>
     public void OnPlaceAction(InputAction.CallbackContext context)
     {
         if (context.performed)
             TryPlaceBuilding();
     }
 
+    /// <summary>
+    /// Called when the player exits build mode.
+    /// </summary>
     public void OnExitBuildMode(InputAction.CallbackContext context)
     {
         if (context.performed)
             ExitBuildMode();
     }
 
+    /// <summary>
+    /// Rotates the preview building when triggered by the player.
+    /// </summary>
     public void OnRotateBuilding(InputAction.CallbackContext context)
     {
         if (context.performed)
             RotateObject(60f); // Or whatever angle you want for rotation
     }
 
+    /// <summary>
+    /// Instantiates and displays the preview version of the selected building.
+    /// </summary>
     public void PreviewSelectedBuilding(BaseBuildingTemplate building)
     {
         _selectedBuildingTemplate = Instantiate(building);
@@ -74,6 +97,9 @@ public class BuildViewController : MonoBehaviour, BuildActionHandler.IPreviewMod
         _isPreviewMode = true;
     }
 
+    /// <summary>
+    /// Updates the preview object's position to follow the currently hovered hex tile.
+    /// </summary>
     private void MovePreviewObject()
     {
         var coord = HexGridView.GetCurrentlyHoveredHexTileCoordinate();
@@ -84,6 +110,9 @@ public class BuildViewController : MonoBehaviour, BuildActionHandler.IPreviewMod
         }
     }
 
+    /// <summary>
+    /// Attempts to place the currently previewed building at the hovered location.
+    /// </summary>
     public void TryPlaceBuilding()
     {
         if (!_isPreviewMode) return;
@@ -100,6 +129,9 @@ public class BuildViewController : MonoBehaviour, BuildActionHandler.IPreviewMod
         }
     }
 
+    /// <summary>
+    /// Exits the building preview mode and cleans up the preview object.
+    /// </summary>
     public void ExitBuildMode()
     {
         if (!_isPreviewMode) return;
@@ -109,6 +141,9 @@ public class BuildViewController : MonoBehaviour, BuildActionHandler.IPreviewMod
         _selectedBuildingTemplate = null;
     }
 
+    /// <summary>
+    /// Rotates the preview building by a specified angle.
+    /// </summary>
     public void RotateObject(float angle)
     {
         if (!_isPreviewMode || _previewBuilding == null) return;
