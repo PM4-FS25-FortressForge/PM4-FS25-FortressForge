@@ -16,5 +16,7 @@ MonoBehaviour:
   Name: Mine
   MetalCost: 0
   MaxHealth: 0
-  ressourceType: 0
-  ressourcePerTick: 1
+  resourceRate: 100
+  resourceRateType: 0
+  resourceCost: 0
+  resourceCostType: 0
