@@ -85,14 +85,8 @@ namespace FortressForge.BuildingSystem.BuildManager
 
         private void MarkNewTilesAsBuildTargets(HexTileCoordinate target, List<HexTileCoordinate> buildingShape)
         {
-            // Clear previous build targets
-            foreach (HexTileCoordinate hexTileCoordinate in _currentBuildTargets)
-            {
-                _hexGridData.TileMap[hexTileCoordinate].IsBuildTarget = false;
-            }
-            
-            _currentBuildTargets.Clear();
-            
+            ClearPreviousBuildTargets();
+
             foreach (HexTileCoordinate hexTileCoordinate in buildingShape)
             {
                 if (!_hexGridData.TileMap.TryGetValue(hexTileCoordinate + target, out var tileData)) 
@@ -100,6 +94,17 @@ namespace FortressForge.BuildingSystem.BuildManager
                 tileData.IsBuildTarget = true;
                 _currentBuildTargets.Add(hexTileCoordinate + target);
             }
+        }
+
+        private void ClearPreviousBuildTargets()
+        {
+            // Clear previous build targets
+            foreach (HexTileCoordinate hexTileCoordinate in _currentBuildTargets)
+            {
+                _hexGridData.TileMap[hexTileCoordinate].IsBuildTarget = false;
+            }
+
+            _currentBuildTargets.Clear();
         }
 
         /// <summary>
@@ -140,6 +145,7 @@ namespace FortressForge.BuildingSystem.BuildManager
             _isPreviewMode = false;
             Destroy(_previewBuilding);
             _selectedBuildingTemplate = null;
+            ClearPreviousBuildTargets();
         }
     
         /// <summary>
