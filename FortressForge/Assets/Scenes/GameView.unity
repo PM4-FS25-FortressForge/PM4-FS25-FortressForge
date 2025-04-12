@@ -1136,8 +1136,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   availableBuildings:
+  - {fileID: 11400000, guid: 7ba111d719d345840ab9c8e5c62a3464, type: 2}
   - {fileID: 11400000, guid: de8eeb04020297a4790e752b8f95080c, type: 2}
   - {fileID: 11400000, guid: 2ed51e6f707565743a43896dec9b53b0, type: 2}
+  - {fileID: 11400000, guid: 7ba111d719d345840ab9c8e5c62a3464, type: 2}
   buildingDropdown: {fileID: 1223200759}
   hexGridManager: {fileID: 1149923578}
 --- !u!1 &1171472197
