@@ -97,12 +97,11 @@ namespace FortressForge.CameraControll
         }
 
         /// <summary>
-        /// FixedUpdate function to handle the movement, rotation, pitch control and zoom of the camera
-        /// This function is called every fixed frame-rate frame
+        ///Update function to handle the movement, rotation, pitch control and zoom of the camera
         /// It calls the respective functions to handle the movement, rotation, pitch control and zoom of the camera
         /// Additionally it calls the UpdateCameraPosition function to calculate the new camera position
         /// </summary>
-        void FixedUpdate()
+        void Update()
         {
             _deltaTime = Time.deltaTime;
             HandleMovement(); //Move Target (WASD)
