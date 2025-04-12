@@ -1,7 +1,6 @@
-using FortressForge.BuildingSystem.HexTile;
 using UnityEngine;
 
-namespace FortressForge.BuildingSystem.HexGrid
+namespace FortressForge.BuildingSystem.HexTile
 {
     /// <summary>
     /// Represents the visual representation of a HexTile.
@@ -10,7 +9,7 @@ namespace FortressForge.BuildingSystem.HexGrid
     {
         public HexTileCoordinate HexTileCoordinate { get; set; }
         
-        private HexTileData _tileCoordinates;
+        private HexTileData _tileData;
 
         public Material FreeMaterial;
         public Material OccupiedMaterial;
@@ -25,7 +24,8 @@ namespace FortressForge.BuildingSystem.HexGrid
         public void Init(HexTileData data)
         {
             HexTileCoordinate = data.HexTileCoordinate;
-            _tileCoordinates = data;
+            _tileData = data;
+            _tileData.OnChanged += UpdateVisuals;
             _renderer = GetComponentInChildren<MeshRenderer>(); 
             UpdateVisuals();
         }
@@ -34,8 +34,15 @@ namespace FortressForge.BuildingSystem.HexGrid
         /// Changes the material of the HexTileView based on the IsOccupied property of the HexTileData.
         /// </summary>
         public void UpdateVisuals()
-        {
-            _renderer.material = _tileCoordinates.IsOccupied ? OccupiedMaterial : FreeMaterial;
+        { // TODO maybe add custom colors for overlapping events such as build target and occupied
+            if (_tileData.IsBuildTarget) 
+                _renderer.material = HighlightMaterial;
+            else if (_tileData.IsMouseTarget)
+                _renderer.material = HighlightMaterial;
+            else if (_tileData.IsOccupied)
+                _renderer.material = OccupiedMaterial;
+            else
+                _renderer.material = FreeMaterial;
         }
 
         /// <summary>
@@ -48,7 +55,7 @@ namespace FortressForge.BuildingSystem.HexGrid
                 _renderer.material = HighlightMaterial;
             else
             {
-                _renderer.material = _tileCoordinates.IsOccupied ? OccupiedMaterial : FreeMaterial; // TODO: Throws NullReferenceException in some cases check out why
+                UpdateVisuals(); // TODO: Throws NullReferenceException in some cases check out why
             }
         }
     }
