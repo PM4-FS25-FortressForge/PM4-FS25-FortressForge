@@ -125,7 +125,6 @@ public class BuildViewController : MonoBehaviour, BuildActionHandler.IPreviewMod
                 _previewBuilding.transform.rotation);
             BaseBuildingTemplate copy = Instantiate(_selectedBuildingTemplate);
             _placedBuildings.Add(copy);
-            ExitBuildMode();
         }
     }
 
