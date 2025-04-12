@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace FortressForge.EconomyManager
+namespace FortressForge.Economy
 {
     /// <summary>
     /// Represents a single resource in the game, such as Iron or Power.

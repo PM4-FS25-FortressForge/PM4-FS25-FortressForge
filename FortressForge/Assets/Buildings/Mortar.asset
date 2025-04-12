@@ -16,5 +16,9 @@ MonoBehaviour:
   Name: Mortar
   MetalCost: 0
   MaxHealth: 0
+  resourceRate: -50
+  resourceRateType: 0
+  resourceCost: 250
+  resourceCostType: 0
   baseDamage: 0
   reloadSpeed: 0
