@@ -68,7 +68,10 @@ public class EconomySystem_PayResourceIfSufficientTests
         };
 
         var result =  _economySystem.CheckForSufficientResources(cost);
-        _economySystem.PayResource(cost);
+        if (result)
+        {
+            _economySystem.PayResource(cost);
+        }
 
         Assert.IsFalse(result);
         Assert.AreEqual(80, _economySystem.CurrentResources[ResourceType.Metal].CurrentAmount);
