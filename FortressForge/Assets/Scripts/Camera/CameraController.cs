@@ -1,36 +1,34 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-/// <summary>
-/// Cammera controller for orbiting around a target.
-/// Extended to support moving the target (WASD), rotating with Q/E, pitch control with arrow (up/down) keys and Zoom in/out with mouse wheel or arrow (left/right) keys.
-/// The Camera will always look (be centered) at the point at 0.0.0 coordinates
-///
-/// ------------------------------------------------------------------------------------------------------------
-/// Short Dokumentation for Unity setup and additional files
-/// This Feature implementation includes 2 Files, the CameraController.cs and the CameraInputActions.inputactions
-///
-/// The CameraController.cs is This File
-/// The CameraInputActions.inputactions is a file containing a list of all Input Actions for the CameraController.cs linked to their respective keyboard keys
-/// The Camera Object in Unity needs to have the CameraController.cs (this File) attached to it as an Component
-/// Also The Camera Object in Unity needs to have the PlayerInput component attached to it (PlayerInput component is a Unity component that allows you to use the new Input System)
-/// And additionally needs to have the CameraInputActions.inputactions file assigned to the PlayerInput Action component
-///
-/// Functions:
-/// The Camera can be controlled with following inputs
-///  - WASD for moving the centred target (Camera will orbit around the target)
-///  - Q/E for rotating the camera around the target (Yaw)
-///  - Arrow keys (Up/Down) for Pitch control (Camera angle)
-///  - Mouse wheel or Arrow keys (Left/Right) for Zoom in/out (Camera distance from target)
-///
-/// Therefore:
-/// The Camera will Orbit around a centred target (0.0.0 coordinates at beginning) and always look at the centred target
-/// ------------------------------------------------------------------------------------------------------------
-/// </summary>
-
 namespace FortressForge.CameraControll
 {
-
+    /// <summary>
+    /// Cammera controller for orbiting around a target.
+    /// Extended to support moving the target (WASD), rotating with Q/E, pitch control with arrow (up/down) keys and Zoom in/out with mouse wheel or arrow (left/right) keys.
+    /// The Camera will always look (be centered) at the point at 0.0.0 coordinates
+    ///
+    /// ------------------------------------------------------------------------------------------------------------
+    /// Short Dokumentation for Unity setup and additional files
+    /// This Feature implementation includes 2 Files, the CameraController.cs and the CameraInputActions.inputactions
+    ///
+    /// The CameraController.cs is This File
+    /// The CameraInputActions.inputactions is a file containing a list of all Input Actions for the CameraController.cs linked to their respective keyboard keys
+    /// The Camera Object in Unity needs to have the CameraController.cs (this File) attached to it as an Component
+    /// Also The Camera Object in Unity needs to have the PlayerInput component attached to it (PlayerInput component is a Unity component that allows you to use the new Input System)
+    /// And additionally needs to have the CameraInputActions.inputactions file assigned to the PlayerInput Action component
+    ///
+    /// Functions:
+    /// The Camera can be controlled with following inputs
+    ///  - WASD for moving the centred target (Camera will orbit around the target)
+    ///  - Q/E for rotating the camera around the target (Yaw)
+    ///  - Arrow keys (Up/Down) for Pitch control (Camera angle)
+    ///  - Mouse wheel or Arrow keys (Left/Right) for Zoom in/out (Camera distance from target)
+    ///
+    /// Therefore:
+    /// The Camera will Orbit around a centred target (0.0.0 coordinates at beginning) and always look at the centred target
+    /// ------------------------------------------------------------------------------------------------------------
+    /// </summary>
     public class CameraController : MonoBehaviour
     {
         /// Warning:
