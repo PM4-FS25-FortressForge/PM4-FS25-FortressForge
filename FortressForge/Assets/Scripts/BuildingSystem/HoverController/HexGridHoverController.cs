@@ -1,4 +1,5 @@
 using FortressForge.BuildingSystem.HexGrid;
+using FortressForge.BuildingSystem.HexTile;
 using UnityEngine;
 
 namespace FortressForge.BuildingSystem.HoverController

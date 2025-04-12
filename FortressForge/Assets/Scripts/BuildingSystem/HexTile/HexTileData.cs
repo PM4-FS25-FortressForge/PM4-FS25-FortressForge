@@ -1,7 +1,6 @@
-﻿using FortressForge.BuildingSystem.HexTile;
-using System;
+﻿using System;
 
-namespace FortressForge.BuildingSystem.HexGrid
+namespace FortressForge.BuildingSystem.HexTile
 {
     public class HexTileData
     {
