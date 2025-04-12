@@ -28,7 +28,6 @@ namespace FortressForge.BuildingSystem.BuildingData
         protected Dictionary<ResourceType, float> _buildCost = new();
         protected bool _enabled = true;
         
-        [Header("Resource Data")] 
         public float resourceRate;
         public ResourceType resourceRateType;
         public float resourceCost;
