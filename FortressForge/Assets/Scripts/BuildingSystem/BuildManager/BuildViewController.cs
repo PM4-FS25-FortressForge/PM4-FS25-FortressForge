@@ -1,28 +1,27 @@
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Resources;
 using FortressForge.BuildingSystem.BuildingData;
 using FortressForge.BuildingSystem.HexGrid;
 using FortressForge.BuildingSystem.HexTile;
 using FortressForge.Economy;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace FortressForge.BuildingSystem.BuildManager
 {
-    public class BuildViewController : MonoBehaviour
+    public class BuildViewController : MonoBehaviour, BuildActions.IPreviewModeActions
     {
-
         private HexGridView _hexGridView;
         private HexGridData _hexGridData;
         private EconomySystem _economySystem;
         private BuildingManager _buildingManager;
-
+        
         private BaseBuildingTemplate _selectedBuildingTemplate;
         private GameObject _previewBuilding;
         private readonly List<HexTileCoordinate> _currentBuildTargets = new();
 
         private bool _isPreviewMode = false;
-        
+        private BuildActions _input;
+    
         public void Init(HexGridView hexGridView, HexGridData hexGridData, EconomySystem economySystem, BuildingManager buildingManager)
         {
             _hexGridView = hexGridView;
@@ -36,35 +35,74 @@ namespace FortressForge.BuildingSystem.BuildManager
             _selectedBuildingTemplate = Instantiate(building);
 
             if (_previewBuilding != null)
-            {
                 Destroy(_previewBuilding);
-            }
 
-            // Instantiate the building's prefab for preview
             _previewBuilding = Instantiate(_selectedBuildingTemplate.BuildingPrefab);
             _isPreviewMode = true;
         }
 
-        void Update() // TODO Input Controller benutzen
+        /// <summary>
+        /// Initializes the input handler on Awake.
+        /// </summary>
+        private void Awake()
         {
-            // Move preview
+            _input = new BuildActions();
+        }
+
+        /// <summary>
+        /// Enables input actions and sets callbacks.
+        /// </summary>
+        private void OnEnable()
+        {
+            _input.PreviewMode.SetCallbacks(this);
+            _input.PreviewMode.Enable();
+        }
+
+        /// <summary>
+        /// Disables input actions and clears callbacks.
+        /// </summary>
+        private void OnDisable()
+        {
+            _input.PreviewMode.Disable();
+            _input.PreviewMode.SetCallbacks(null); // Cleanup
+        }
+
+        /// <summary>
+        /// Moves the preview building each frame if in preview mode.
+        /// </summary>
+        private void Update()
+        {
             if (_isPreviewMode && _previewBuilding != null)
             {
                 MovePreviewObject();
-            
-                if (Input.GetMouseButtonDown(0)) // First click to place // TODO consider using onclick events
-                {
-                    TryBuyAndPlaceBuilding();
-                }
-                else if (Input.GetMouseButtonDown(1)) // Right click to cancel
-                {
-                    ExitBuildMode();
-                }
-                else if (Input.GetKeyDown(KeyCode.R)) // Rotate
-                {
-                    RotateObject(60f);
-                }
             }
+        }
+
+        /// <summary>
+        /// Called when the player performs the place action. Attempts to place the building.
+        /// </summary>
+        public void OnPlaceAction(InputAction.CallbackContext context)
+        {
+            if (context.performed)
+                TryBuyAndPlaceBuilding();
+        }
+
+        /// <summary>
+        /// Called when the player exits build mode.
+        /// </summary>
+        public void OnExitBuildMode(InputAction.CallbackContext context)
+        {
+            if (context.performed)
+                ExitBuildMode();
+        }
+
+        /// <summary>
+        /// Rotates the preview building when triggered by the player.
+        /// </summary>
+        public void OnRotateBuilding(InputAction.CallbackContext context)
+        {
+            if (context.performed)
+                RotateObject(60f); // Or whatever angle you want for rotation
         }
 
         /// <summary>
@@ -74,12 +112,12 @@ namespace FortressForge.BuildingSystem.BuildManager
         {
             var currentlyHoveredHexTileCoordinate = _hexGridView.GetCurrentlyHoveredHexTileCoordinate();
             if (currentlyHoveredHexTileCoordinate == default) return; // TODO default is wrong, use null, adjust after action changes
-            
+        
             Vector3 snappedPos = currentlyHoveredHexTileCoordinate.GetWorldPosition(_hexGridData.TileRadius, _hexGridData.TileHeight);
-                
+            
             Vector3 avgPos = GetAveragePosition(_selectedBuildingTemplate.ShapeData);
             _previewBuilding.transform.position = snappedPos + avgPos;
-            
+        
             MarkNewTilesAsBuildTargets(currentlyHoveredHexTileCoordinate, _selectedBuildingTemplate.ShapeData); 
         }
 
@@ -96,6 +134,9 @@ namespace FortressForge.BuildingSystem.BuildManager
             }
         }
 
+        /// <summary>
+        /// Attempts to place a building at the hovered tile if the placement is valid.
+        /// </summary>
         private void ClearPreviousBuildTargets()
         {
             // Clear previous build targets
@@ -122,7 +163,7 @@ namespace FortressForge.BuildingSystem.BuildManager
                 Debug.Log("Placement failed");
                 return;
             }
-                
+            
             // Place the final building at the correct position
             PlaceBuilding(hexCoord);
             Debug.Log("Placement succeeded");
@@ -138,23 +179,25 @@ namespace FortressForge.BuildingSystem.BuildManager
         }
 
         /// <summary>
-        /// Exits build mode and clears the preview state.
+        /// Exits the building preview mode and cleans up the preview object.
         /// </summary>
         private void ExitBuildMode()
         {
+            if (!_isPreviewMode) return;
+        
             _isPreviewMode = false;
             Destroy(_previewBuilding);
             _selectedBuildingTemplate = null;
             ClearPreviousBuildTargets();
         }
-    
+
         /// <summary>
         /// Rotates the preview object around the Y-axis by the given angle.
         /// </summary>
         private void RotateObject(float angle)  //TODO: use shapeData to rotate correctly in hex grid
         {
-            if (_previewBuilding == null) return;
-            
+            if (!_isPreviewMode || _previewBuilding == null) return;
+        
             // Get the current rotation around the Y-axis
             Vector3 currentRotation = _previewBuilding.transform.eulerAngles;
 
@@ -163,7 +206,7 @@ namespace FortressForge.BuildingSystem.BuildManager
 
             // Apply the new rotation while keeping other axes unchanged
             _previewBuilding.transform.rotation = Quaternion.Euler(currentRotation);
-            
+        
             // Apply rotation to the preview building tiles
             _selectedBuildingTemplate.ShapeData = RotateByAngle(_selectedBuildingTemplate.ShapeData, (int) angle);
         }
@@ -176,7 +219,7 @@ namespace FortressForge.BuildingSystem.BuildManager
             {
                 averagePosition += hexTileCoordinate.GetWorldPosition(_hexGridData.TileRadius, _hexGridData.TileHeight);
             }
-            
+        
             averagePosition /= hexTileCoordinates.Count;
             return averagePosition;
         }
@@ -197,10 +240,10 @@ namespace FortressForge.BuildingSystem.BuildManager
                     q = -r;
                     r = temp + r;
                 }
-                
+            
                 rotatedHexTileCoordinates.Add(new HexTileCoordinate(q, r, hexTileCoordinate.H));
             }
-            
+        
             return rotatedHexTileCoordinates;
         }
     }
