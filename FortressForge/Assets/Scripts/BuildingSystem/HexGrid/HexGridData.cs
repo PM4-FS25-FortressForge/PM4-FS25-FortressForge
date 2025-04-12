@@ -84,7 +84,7 @@ namespace FortressForge.BuildingSystem.HexGrid
         /// <param name="buildingTemplate"></param>
         /// <returns>Returns true if placement is unoccupied</returns>
         public bool ValidateBuildingPlacement(HexTileCoordinate hexCoord, BaseBuildingTemplate buildingTemplate)
-        {
+        { // TODO: THis method does more then just validate the placement, consider renaming, or better splitting it up
             foreach (var coord in buildingTemplate.ShapeData)
             {
                 TileMap.TryGetValue((hexCoord + coord), out var tileData);
