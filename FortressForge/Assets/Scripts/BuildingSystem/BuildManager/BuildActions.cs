@@ -97,7 +97,7 @@ public partial class @BuildActions: IInputActionCollection2, IDisposable
                     ""id"": ""b6abe3dc-bc7d-4bb5-bb4a-03d15dd7e07d"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""Press"",
+                    ""interactions"": """",
                     ""initialStateCheck"": false
                 },
                 {
@@ -106,7 +106,7 @@ public partial class @BuildActions: IInputActionCollection2, IDisposable
                     ""id"": ""e81c3523-f785-4344-a7e6-96c749e51b25"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""Press"",
+                    ""interactions"": """",
                     ""initialStateCheck"": false
                 },
                 {
@@ -115,7 +115,7 @@ public partial class @BuildActions: IInputActionCollection2, IDisposable
                     ""id"": ""38e79f5a-771b-4144-95bc-d8b47c9e4d7e"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""Press"",
+                    ""interactions"": """",
                     ""initialStateCheck"": false
                 }
             ],

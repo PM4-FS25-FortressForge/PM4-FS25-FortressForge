@@ -8,19 +8,19 @@ using UnityEngine.InputSystem;
 
 namespace FortressForge.BuildingSystem.BuildManager
 {
-    public class BuildViewController : MonoBehaviour, BuildActionHandler.IPreviewModeActions
+    public class BuildViewController : MonoBehaviour, BuildActions.IPreviewModeActions
     {
         private HexGridView _hexGridView;
         private HexGridData _hexGridData;
         private EconomySystem _economySystem;
         private BuildingManager _buildingManager;
-
+        
         private BaseBuildingTemplate _selectedBuildingTemplate;
         private GameObject _previewBuilding;
         private readonly List<HexTileCoordinate> _currentBuildTargets = new();
 
         private bool _isPreviewMode = false;
-        private BuildActionHandler _input;
+        private BuildActions _input;
     
         public void Init(HexGridView hexGridView, HexGridData hexGridData, EconomySystem economySystem, BuildingManager buildingManager)
         {
@@ -46,7 +46,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         /// </summary>
         private void Awake()
         {
-            _input = new BuildActionHandler();
+            _input = new BuildActions();
         }
 
         /// <summary>
