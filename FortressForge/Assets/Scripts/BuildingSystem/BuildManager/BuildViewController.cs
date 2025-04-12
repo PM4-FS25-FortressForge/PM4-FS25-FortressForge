@@ -8,7 +8,7 @@ using UnityEngine.InputSystem;
 
 namespace FortressForge.BuildingSystem.BuildManager
 {
-    public class BuildViewController : MonoBehaviour, BuildActions.IPreviewModeActions
+    public class BuildViewController : MonoBehaviour, BuildActionHandler.IPreviewModeActions
     {
         private HexGridView _hexGridView;
         private HexGridData _hexGridData;
@@ -84,7 +84,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         public void OnPlaceAction(InputAction.CallbackContext context)
         {
             if (context.performed)
-                TryPlaceBuilding();
+                TryBuyAndPlaceBuilding();
         }
 
         /// <summary>
@@ -144,16 +144,6 @@ namespace FortressForge.BuildingSystem.BuildManager
             {
                 _hexGridData.TileMap[hexTileCoordinate].IsBuildTarget = false;
             }
-
-            _currentBuildTargets.Clear();
-        }
-
-        /// <summary>
-        /// Attempts to place the currently previewed building at the hovered location.
-        /// </summary>
-        private void TryPlaceBuilding()
-        {
-            HexTileCoordinate hexCoord = _hexGridView.GetCurrentlyHoveredHexTileCoordinate();
 
             _currentBuildTargets.Clear();
         }
