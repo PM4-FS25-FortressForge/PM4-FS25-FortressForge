@@ -7,13 +7,14 @@ namespace FortressForge.HexGrid.HexTile
     /// Struct to store hex tile coordinates.
     /// Value-type, comparable, usable in dictionaries or sets.
     /// </summary>
+    [System.Serializable]
     public struct HexTileCoordinate : IEquatable<HexTileCoordinate>
     {
         // Axial + height coordinate
-        public int Q { get; private set; }
-        public int R { get; private set; }
+        public int Q;
+        public int R;
         public int S => -Q - R;
-        public int H { get; private set; }
+        public int H;
         
         public (int q, int r, int h) AxialCoord => (Q, R, H);
         public (int q, int r, int s, int h) HexCoord => (Q, S, R, H); // Cube coordinates
