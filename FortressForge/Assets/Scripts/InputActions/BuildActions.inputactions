@@ -1,0 +1,74 @@
+{
+    "name": "BuildActions",
+    "maps": [
+        {
+            "name": "PreviewMode",
+            "id": "3e21666f-7a8e-42f4-aa25-1df6f6fbf7f3",
+            "actions": [
+                {
+                    "name": "PlaceAction",
+                    "type": "Button",
+                    "id": "b6abe3dc-bc7d-4bb5-bb4a-03d15dd7e07d",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ExitBuildMode",
+                    "type": "Button",
+                    "id": "e81c3523-f785-4344-a7e6-96c749e51b25",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "RotateBuilding",
+                    "type": "Button",
+                    "id": "38e79f5a-771b-4144-95bc-d8b47c9e4d7e",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "93bac52b-ebba-4414-9cce-cccce31863b3",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "Press",
+                    "processors": "",
+                    "groups": "",
+                    "action": "PlaceAction",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "263ae0db-ce65-45f0-b434-f796019becd3",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "Press",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ExitBuildMode",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2c35b44f-1ab0-4bc4-92be-d3d284464a6f",
+                    "path": "<Keyboard>/r",
+                    "interactions": "Press",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RotateBuilding",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

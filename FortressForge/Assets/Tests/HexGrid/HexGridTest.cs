@@ -39,7 +39,7 @@ namespace Tests.Hexgrid
             HexTileCoordinate placementCoord = new HexTileCoordinate(x, y, z);
 
             // Act
-            bool canPlace = gridData.ValidateBuildingPlacement(placementCoord, buildingTemplate);
+            bool canPlace = gridData.ValidateBuildingPlacement(placementCoord, buildingTemplate); 
 
             // Assert
             Assert.IsFalse(canPlace,

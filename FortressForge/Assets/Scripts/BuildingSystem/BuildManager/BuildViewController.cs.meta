@@ -1,2 +1,13 @@
 fileFormatVersion: 2
 guid: 931aa0f552e99b249bdf3febcec5d238
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - HexGridView: {instanceID: 0}
+  - _buildActions: {fileID: -944628639613478452, guid: 242704d22cf922e40bbedd9b942a083c, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

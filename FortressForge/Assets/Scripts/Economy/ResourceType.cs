@@ -1,4 +1,4 @@
-﻿namespace FortressForge.EconomyManager
+﻿namespace FortressForge.Economy
 {
     /// <summary>
     /// Enum representing all possible types of resources in the game.
@@ -9,11 +9,16 @@
         /// <summary>
         /// A basic raw material, often produced by mines.
         /// </summary>
-        Iron,
+        Metal,
 
         /// <summary>
         /// Represents electrical energy, often generated or consumed by buildings.
         /// </summary>
-        Power
+        Power,
+        
+        /// <summary>
+        /// The main source of energy and life. Used in various processes and buildings.
+        /// </summary>
+        Magma,
     }
 }

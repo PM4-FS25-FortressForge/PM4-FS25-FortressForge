@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
 MonoBehaviour:
@@ -9,14 +9,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef29358a93271754a96b453372866827, type: 3}
-  m_Name: Mine
+  m_Script: {fileID: 11500000, guid: 0a724c598079413096e2f62eeecb9dd4, type: 3}
+  m_Name: T2 Core
   m_EditorClassIdentifier: 
-  BuildingPrefab: {fileID: 8461799468503079714, guid: d22a0ce999be4cc4c838e7ccd738ba95, type: 3}
-  Name: Mine
+  ShapeData:
+  - Q: 0
+    R: 0
+    H: 0
+  BuildingPrefab: {fileID: 5004982027604579114, guid: 438d37259e2842c41af939bc73b842cd, type: 3}
+  Name: Core T2
   MetalCost: 0
   MaxHealth: 0
-  resourceRate: 100
+  resourceRate: 0
   resourceRateType: 0
   resourceCost: 0
   resourceCostType: 0

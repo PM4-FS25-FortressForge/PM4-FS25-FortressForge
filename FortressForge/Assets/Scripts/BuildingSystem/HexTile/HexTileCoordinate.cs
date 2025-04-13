@@ -7,13 +7,14 @@ namespace FortressForge.BuildingSystem.HexTile
     /// Struct to store hex tile coordinates.
     /// Value-type, comparable, usable in dictionaries or sets.
     /// </summary>
+    [System.Serializable]
     public struct HexTileCoordinate : IEquatable<HexTileCoordinate>
     {
         // Axial + height coordinate
-        public int Q { get; private set; }
-        public int R { get; private set; }
+        public int Q;
+        public int R;
         public int S => -Q - R;
-        public int H { get; private set; }
+        public int H;
         
         public (int q, int r, int h) AxialCoord => (Q, R, H);
         public (int q, int r, int s, int h) HexCoord => (Q, S, R, H); // Cube coordinates
@@ -25,7 +26,7 @@ namespace FortressForge.BuildingSystem.HexTile
             H = height;
         }
 
-        public HexTileCoordinate(float tileRadius, float tileHeight, Vector3 origin=default) // TODO make sure to use custom axial coordinates
+        public HexTileCoordinate(float tileRadius, float tileHeight, Vector3 origin=default) 
         { 
             // Convert world position to hex grid axial coordinates
             float x = origin.x / (tileRadius * 3f / 2f); // TODO throws exception regularly
@@ -33,7 +34,7 @@ namespace FortressForge.BuildingSystem.HexTile
 
             Q = Mathf.RoundToInt(x);
             R = Mathf.RoundToInt(z - (Q / 2f)); // Adjust for hex grid layout
-            H = (int) (origin.y / tileHeight); // Assuming h (height) is 0 for ground-level placement TODO add object height transformation
+            H = (int) (origin.y / tileHeight); // Assuming h (height) is 0 for ground-level placement
         }
         
         /// <summary>
