@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using FortressForge.BuildingSystem.BuildingData;
+using FortressForge.HexGrid.BuildingData;
 using FortressForge.Economy;
 using NUnit.Framework;
 

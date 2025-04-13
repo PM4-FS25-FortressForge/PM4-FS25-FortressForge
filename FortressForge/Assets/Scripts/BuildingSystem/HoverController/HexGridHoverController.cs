@@ -1,12 +1,12 @@
-using FortressForge.BuildingSystem.HexGrid;
-using FortressForge.BuildingSystem.HexTile;
+using FortressForge.HexGrid;
+using FortressForge.HexGrid.HexTile;
 using UnityEngine;
 
-namespace FortressForge.BuildingSystem.HoverController
+namespace FortressForge.HexGrid.HoverController
 {
     public class HexGridHoverController : MonoBehaviour
     {
-        [SerializeField] private float raycastDistance = 1000f;
+        [SerializeField] private float raycastDistance = 3000;
 
         public HexTileView CurrentlyHoveredTile { get; set; }
 

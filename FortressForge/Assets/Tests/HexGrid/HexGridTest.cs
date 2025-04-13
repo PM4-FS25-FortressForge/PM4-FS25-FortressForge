@@ -1,9 +1,9 @@
 using NUnit.Framework;
 using UnityEngine;
 using System.Collections.Generic;
-using FortressForge.BuildingSystem.BuildingData;
-using FortressForge.BuildingSystem.HexGrid;
-using FortressForge.BuildingSystem.HexTile;
+using FortressForge.HexGrid.BuildingData;
+using FortressForge.HexGrid;
+using FortressForge.HexGrid.HexTile;
 
 namespace Tests.Hexgrid
 {
@@ -20,7 +20,6 @@ namespace Tests.Hexgrid
                 id: 1,
                 origin: Vector3.zero,
                 radius: 5,
-                maxBuildHight: 5,
                 tileSize: 1f,
                 tileHeight: 2f
             );
@@ -55,7 +54,6 @@ namespace Tests.Hexgrid
                 id: 1,
                 origin: Vector3.zero,
                 radius: 7, 
-                maxBuildHight: 5,// TODO hit fabio
                 tileSize: 1f,
                 tileHeight: 2f
             );

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace FortressForge.BuildingSystem.BuildingData
+namespace FortressForge.HexGrid.BuildingData
 {
     public class BuildingManager
     {

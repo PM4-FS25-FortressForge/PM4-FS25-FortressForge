@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using FortressForge.BuildingSystem.BuildingData;
-using FortressForge.BuildingSystem.BuildManager;
+using FortressForge.HexGrid.BuildingData;
+using FortressForge.HexGrid.BuildManager;
 using UnityEngine;
 
 namespace FortressForge.Economy

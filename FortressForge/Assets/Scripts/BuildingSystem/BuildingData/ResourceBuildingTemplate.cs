@@ -3,7 +3,7 @@ using FortressForge.Economy;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace FortressForge.BuildingSystem.BuildingData
+namespace FortressForge.HexGrid.BuildingData
 {
     [CreateAssetMenu(fileName = "New Building", menuName = "Buildings/ResourceBuilding")]
     public class ResourceBuildingTemplate : BaseBuildingTemplate
