@@ -36,27 +36,23 @@ namespace FortressForge.CameraControll
         /// If you change the values in the Unity Editor it will override the default values in this script
 
         // Initial camera setup
-        [SerializeField] public float yaw = 0.0f;
-
-        [SerializeField] public float pitch = 45;
-        [SerializeField] public float zoom = 6f;
+        [SerializeField] public float Yaw = 0.0f;
+        [SerializeField] public float Pitch = 45;
+        [SerializeField] public float Zoom = 6f;
 
         [SerializeField]
-        public Vector3
-            targetPosition = Vector3.zero; //At the Sart the Camera will always look (be centered) at the point at 0.0.0 coordinates
+        public Vector3 TargetPosition = Vector3.zero; //At the Sart the Camera will always look (be centered) at the point at 0.0.0 coordinates
 
         // Movement & rotation speeds
-        [SerializeField] public float moveSpeed = 5.0f;
-        [SerializeField] public float rotationSpeed = 50.0f;
-        [SerializeField] public float pitchSpeed = 40.0f;
-        [SerializeField] public float zoomSpeed = 2.0f;
+        [SerializeField] public float MoveSpeed = 5.0f;
+        [SerializeField] public float RotationSpeed = 50.0f;
+        [SerializeField] public float PitchSpeed = 40.0f;
+        [SerializeField] public float ZoomSpeed = 2.0f;
 
         // Limits
         [Tooltip("To avoid the camera to flip or bug do not use value higher than 89\u00b0 or lower than 0\u00b0")]
         [SerializeField]
-        public Vector2
-            pitchLimits =
-                new Vector2(89, 0); // Pitch flat to fully top-dow (To avoid the camera to flip do not use value higher than 89°)
+        public Vector2 PitchLimits = new Vector2(89, 0); // Pitch flat to fully top-dow (To avoid the camera to flip do not use value higher than 89°)
 
         [SerializeField] public Vector2 zoomLimits = new Vector2(2.0f, 20.0f); // Min/Max distance from target Zoom
 
@@ -118,8 +114,8 @@ namespace FortressForge.CameraControll
         {
             Vector2 moveInput = _moveTargetAction.ReadValue<Vector2>(); // WASD input
             Vector3 moveDir = new Vector3(moveInput.x, 0, moveInput.y); // X (A/D), Z (W/S)
-            Vector3 moveVector = Quaternion.Euler(0, yaw, 0) * moveDir; // Move relative to current yaw
-            targetPosition += moveVector * moveSpeed * _deltaTime; // calculate new target position
+            Vector3 moveVector = Quaternion.Euler(0, Yaw, 0) * moveDir; // Move relative to current yaw
+            TargetPosition += moveVector * MoveSpeed * _deltaTime; // calculate new target position
         }
 
         /// <summary>
@@ -130,7 +126,7 @@ namespace FortressForge.CameraControll
         private void HandleRotation()
         {
             float rotateInput = _rotateAction.ReadValue<float>(); // Q/E input
-            yaw = (yaw + rotateInput * rotationSpeed * _deltaTime) % 360f; // Rotate around target
+            Yaw = (Yaw + rotateInput * RotationSpeed * _deltaTime) % 360f; // Rotate around target
         }
 
         /// <summary>
@@ -141,8 +137,8 @@ namespace FortressForge.CameraControll
         private void HandlePitch()
         {
             float pitchInput = _pitchAction.ReadValue<float>(); // Up/Down arrows
-            pitch += pitchInput * pitchSpeed * _deltaTime; // move camera in pitch angle to center
-            pitch = Mathf.Clamp(pitch, pitchLimits.y, pitchLimits.x); // Limit pitch angle
+            Pitch += pitchInput * PitchSpeed * _deltaTime; // move camera in pitch angle to center
+            Pitch = Mathf.Clamp(Pitch, PitchLimits.y, PitchLimits.x); // Limit pitch angle
         }
 
         /// <summary>
@@ -153,11 +149,11 @@ namespace FortressForge.CameraControll
         private void HandleZoom()
         {
             float zoomInput = _zoomAction.ReadValue<float>(); // Zoom input with mouse wheel
-            zoom = Mathf.Clamp(zoom - zoomInput * zoomSpeed, zoomLimits.x,
+            Zoom = Mathf.Clamp(Zoom - zoomInput * ZoomSpeed, zoomLimits.x,
                 zoomLimits.y); // Zoom without deltaTime to make it consistent and good feeling
 
             float zoomButtonInput = _zoomButtons.ReadValue<float>(); // Zoom input with the Buttons
-            zoom = Mathf.Clamp(zoom - zoomButtonInput * zoomSpeed * _deltaTime * 2, zoomLimits.x,
+            Zoom = Mathf.Clamp(Zoom - zoomButtonInput * ZoomSpeed * _deltaTime * 2, zoomLimits.x,
                 zoomLimits.y); // Zoom faster (multiplied by 2) with buttons but depends on the deltaTime
         }
 
@@ -168,10 +164,10 @@ namespace FortressForge.CameraControll
         /// </summary>
         private void UpdateCameraPosition()
         {
-            Quaternion rotation = Quaternion.Euler(pitch, yaw, 0); //Calculate the rotation around the centred object
-            Vector3 offset = rotation * new Vector3(0, 0, -zoom); // Calculate the offset of the camera
-            transform.position = targetPosition + offset; // Set the new position of the camera
-            transform.LookAt(targetPosition); // Always look at the center point
+            Quaternion rotation = Quaternion.Euler(Pitch, Yaw, 0); //Calculate the rotation around the centred object
+            Vector3 offset = rotation * new Vector3(0, 0, -Zoom); // Calculate the offset of the camera
+            transform.position = TargetPosition + offset; // Set the new position of the camera
+            transform.LookAt(TargetPosition); // Always look at the center point
         }
 
         /// <summary>
@@ -201,7 +197,7 @@ namespace FortressForge.CameraControll
         /// </summary>
         public void SetYaw(float newYaw)
         {
-            yaw = newYaw;
+            Yaw = newYaw;
         }
 
         /// <summary>
@@ -209,7 +205,7 @@ namespace FortressForge.CameraControll
         /// </summary>
         public void SetPitch(float newPitch)
         {
-            pitch = newPitch;
+            Pitch = newPitch;
         }
 
         /// <summary>
@@ -217,7 +213,7 @@ namespace FortressForge.CameraControll
         /// </summary>
         public void SetZoom(float newZoom)
         {
-            zoom = newZoom;
+            Zoom = newZoom;
         }
 
         /// <summary>
@@ -225,7 +221,7 @@ namespace FortressForge.CameraControll
         /// </summary>
         public void SetTargetPosition(Vector3 newTargetPosition)
         {
-            targetPosition = newTargetPosition;
+            TargetPosition = newTargetPosition;
         }
 
         /// <summary>
@@ -233,7 +229,7 @@ namespace FortressForge.CameraControll
         /// </summary>
         public void SetMoveSpeed(float newMoveSpeed)
         {
-            moveSpeed = newMoveSpeed;
+            MoveSpeed = newMoveSpeed;
         }
 
         /// <summary>
@@ -241,7 +237,7 @@ namespace FortressForge.CameraControll
         /// </summary>
         public void SetRotationSpeed(float newRotationSpeed)
         {
-            rotationSpeed = newRotationSpeed;
+            RotationSpeed = newRotationSpeed;
         }
 
         /// <summary>
@@ -249,7 +245,7 @@ namespace FortressForge.CameraControll
         /// </summary>
         public void SetPitchSpeed(float newPitchSpeed)
         {
-            pitchSpeed = newPitchSpeed;
+            PitchSpeed = newPitchSpeed;
         }
 
         /// <summary>
@@ -257,7 +253,7 @@ namespace FortressForge.CameraControll
         /// </summary>
         public void SetZoomSpeed(float newZoomSpeed)
         {
-            zoomSpeed = newZoomSpeed;
+            ZoomSpeed = newZoomSpeed;
         }
 
         /// <summary>
@@ -265,7 +261,7 @@ namespace FortressForge.CameraControll
         /// </summary>
         public void SetPitchLimits(Vector2 newPitchLimits)
         {
-            pitchLimits = newPitchLimits;
+            PitchLimits = newPitchLimits;
         }
 
         /// <summary>

@@ -112,11 +112,10 @@ namespace Tests.Camera
             SetInitialCameraValuesForEachTest(); //Ensure the camera is set to the initial values for each test
 
             Press(_keyboard.wKey);
-            yield return null; // Allow time for the camera to move
+            yield return new WaitForSeconds(0.5f); // Let the system react to the input
             Release(_keyboard.wKey);
 
-            Assert.Greater(_mainCamera.transform.position.z, _initialPosition.z,
-                "Camera should move forward when W is pressed.");
+            Assert.Greater(_mainCamera.transform.position.z, _initialPosition.z, "Camera should move forward when W is pressed.");
         }
 
         [UnityTest]
@@ -126,11 +125,10 @@ namespace Tests.Camera
             SetInitialCameraValuesForEachTest(); //Ensure the camera is set to the initial values for each test    
 
             Press(_keyboard.aKey);
-            yield return null;
+            yield return new WaitForSeconds(0.5f); // Let the system react to the input
             Release(_keyboard.aKey);
 
-            Assert.Less(_mainCamera.transform.position.x, _initialPosition.x,
-                "Camera should move left when A is pressed.");
+            Assert.Less(_mainCamera.transform.position.x, _initialPosition.x, "Camera should move left when A is pressed.");
         }
 
         [UnityTest]
@@ -140,11 +138,10 @@ namespace Tests.Camera
             SetInitialCameraValuesForEachTest(); //Ensure the camera is set to the initial values for each test
 
             Press(_keyboard.sKey);
-            yield return null;
+            yield return new WaitForSeconds(0.5f); // Let the system react to the input
             Release(_keyboard.sKey);
 
-            Assert.Less(_mainCamera.transform.position.z, _initialPosition.z,
-                "Camera should move Down when S is pressed.");
+            Assert.Less(_mainCamera.transform.position.z, _initialPosition.z, "Camera should move Down when S is pressed.");
         }
 
         [UnityTest]
@@ -154,11 +151,10 @@ namespace Tests.Camera
             SetInitialCameraValuesForEachTest(); //Ensure the camera is set to the initial values for each test
 
             Press(_keyboard.dKey);
-            yield return null;
+            yield return new WaitForSeconds(0.5f); // Let the system react to the input
             Release(_keyboard.dKey);
 
-            Assert.Greater(_mainCamera.transform.position.x, _initialPosition.x,
-                "Camera should move right when D is pressed.");
+            Assert.Greater(_mainCamera.transform.position.x, _initialPosition.x, "Camera should move right when D is pressed.");
         }
 
         [UnityTest]
@@ -168,7 +164,7 @@ namespace Tests.Camera
             SetInitialCameraValuesForEachTest(); //Ensure the camera is set to the initial values for each test
 
             Press(_keyboard.qKey);
-            yield return null;
+            yield return new WaitForSeconds(0.5f); // Let the system react to the input
             Release(_keyboard.qKey);
 
             float newRotation = _mainCamera.transform.eulerAngles.y;
@@ -182,7 +178,7 @@ namespace Tests.Camera
             SetInitialCameraValuesForEachTest(); //Ensure the camera is set to the initial values for each test
 
             Press(_keyboard.eKey);
-            yield return null;
+            yield return new WaitForSeconds(0.5f); // Let the system react to the input
             Release(_keyboard.eKey);
 
             float newRotation = _mainCamera.transform.eulerAngles.y;
@@ -196,7 +192,7 @@ namespace Tests.Camera
             SetInitialCameraValuesForEachTest(); //Ensure the camera is set to the initial values for each test
 
             Press(_keyboard.upArrowKey);
-            yield return null;
+            yield return new WaitForSeconds(0.5f); // Let the system react to the input
             Release(_keyboard.upArrowKey);
 
             float newPitch = _mainCamera.transform.eulerAngles.x;
@@ -212,7 +208,7 @@ namespace Tests.Camera
 
             // _xInitialRotation = _mainCamera.transform.eulerAngles.x; //I Know this is technically called 2 times in a row but just leave it this way, so it works
             Press(_keyboard.downArrowKey);
-            yield return null;
+            yield return new WaitForSeconds(0.5f); // Let the system react to the input
             Release(_keyboard.downArrowKey);
 
             float newPitch = _mainCamera.transform.eulerAngles.x;
@@ -227,17 +223,14 @@ namespace Tests.Camera
             SetInitialCameraValuesForEachTest(); //Ensure the camera is set to the initial values for each test
 
             Press(_keyboard.leftArrowKey);
-            yield return new
-                WaitUntil( //Structure is used to wait until the camera has moved to the new position or terminate after realistic time
+            yield return new WaitUntil( //Structure is used to wait until the camera has moved to the new position or terminate after realistic time
                     () => CompareCameraPosition(newCalculatedPosition, false),
                     new TimeSpan(0, 0, 0, 0, 600),
-                    () => Assert.True(CompareCameraPosition(newCalculatedPosition, false),
-                        "Camera should zoom Out when LeftArrow is pressed." + PrintFailedTestMsg(newCalculatedPosition))
+                    () => Assert.True(CompareCameraPosition(newCalculatedPosition, false), "Camera should zoom Out when LeftArrow is pressed." + PrintFailedTestMsg(newCalculatedPosition))
                 );
             Release(_keyboard.leftArrowKey);
 
-            Assert.True(CompareCameraPosition(newCalculatedPosition, false),
-                "Camera should zoom Out when LeftArrow is pressed." + PrintFailedTestMsg(newCalculatedPosition));
+            Assert.True(CompareCameraPosition(newCalculatedPosition, false), "Camera should zoom Out when LeftArrow is pressed." + PrintFailedTestMsg(newCalculatedPosition));
         }
 
         [UnityTest]
@@ -248,17 +241,14 @@ namespace Tests.Camera
             SetInitialCameraValuesForEachTest(); //Ensure the camera is set to the initial values for each test
 
             Press(_keyboard.rightArrowKey);
-            yield return new
-                WaitUntil( //Structure is used to wait until the camera has moved to the new position or terminate after realistic time
+            yield return new WaitUntil( //Structure is used to wait until the camera has moved to the new position or terminate after realistic time
                     () => CompareCameraPosition(newCalculatedPosition, true),
                     new TimeSpan(0, 0, 0, 0, 600),
-                    () => Assert.True(CompareCameraPosition(newCalculatedPosition, true),
-                        "Camera should zoom In when RightArrow is pressed." + PrintFailedTestMsg(newCalculatedPosition))
+                    () => Assert.True(CompareCameraPosition(newCalculatedPosition, true), "Camera should zoom In when RightArrow is pressed." + PrintFailedTestMsg(newCalculatedPosition))
                 );
             Release(_keyboard.rightArrowKey);
 
-            Assert.True(CompareCameraPosition(newCalculatedPosition, true),
-                "Camera should zoom Out In RightArrow is pressed." + PrintFailedTestMsg(newCalculatedPosition));
+            Assert.True(CompareCameraPosition(newCalculatedPosition, true), "Camera should zoom Out In RightArrow is pressed." + PrintFailedTestMsg(newCalculatedPosition));
         }
 
         [UnityTest]
@@ -269,19 +259,15 @@ namespace Tests.Camera
             SetInitialCameraValuesForEachTest(); //Ensure the camera is set to the initial values for each test
 
             Press(_keyboard.leftArrowKey);
-            yield return new
-                WaitUntil( //Structure is used to wait until the camera has moved to the new position or terminate after realistic time
+            yield return new WaitUntil( //Structure is used to wait until the camera has moved to the new position or terminate after realistic time
                     () => CompareCameraPosition(newCalculatedPosition, false),
                     new TimeSpan(0, 0, 0, 5, 600),
-                    () => Assert.True(CompareCameraPosition(newCalculatedPosition, false),
-                        "Camera should zoom Out till it reaches the boarder when LeftArrow is pressed" +
+                    () => Assert.True(CompareCameraPosition(newCalculatedPosition, false), "Camera should zoom Out till it reaches the boarder when LeftArrow is pressed" +
                         PrintFailedTestMsg(newCalculatedPosition))
                 );
             Release(_keyboard.leftArrowKey);
 
-            Assert.True(CompareCameraPosition(newCalculatedPosition, false),
-                "Camera should zoom Out till it reaches the boarder when LeftArrow is pressed" +
-                PrintFailedTestMsg(newCalculatedPosition));
+            Assert.True(CompareCameraPosition(newCalculatedPosition, false), "Camera should zoom Out till it reaches the boarder when LeftArrow is pressed" + PrintFailedTestMsg(newCalculatedPosition));
         }
 
         [UnityTest]
@@ -292,19 +278,15 @@ namespace Tests.Camera
             SetInitialCameraValuesForEachTest(); //Ensure the camera is set to the initial values for each test
 
             Press(_keyboard.rightArrowKey);
-            yield return new
-                WaitUntil( //Structure is used to wait until the camera has moved to the new position or terminate after realistic time
+            yield return new WaitUntil( //Structure is used to wait until the camera has moved to the new position or terminate after realistic time
                     () => CompareCameraPosition(newCalculatedPosition, true),
                     new TimeSpan(0, 0, 0, 3, 0),
                     () => Assert.True(CompareCameraPosition(newCalculatedPosition, true),
-                        "Camera should zoom In till it reaches the boarder when RightArrow is pressed" +
-                        PrintFailedTestMsg(newCalculatedPosition))
+                        "Camera should zoom In till it reaches the boarder when RightArrow is pressed" + PrintFailedTestMsg(newCalculatedPosition))
                 );
             Release(_keyboard.rightArrowKey);
 
-            Assert.True(CompareCameraPosition(newCalculatedPosition, true),
-                "Camera should zoom In till it reaches the boarder when RightArrow is pressed" +
-                PrintFailedTestMsg(newCalculatedPosition));
+            Assert.True(CompareCameraPosition(newCalculatedPosition, true), "Camera should zoom In till it reaches the boarder when RightArrow is pressed" + PrintFailedTestMsg(newCalculatedPosition));
         }
 
         [UnityTest]
@@ -316,7 +298,7 @@ namespace Tests.Camera
 
             //This Test does also test the boarder of the min or max Pitch of the up or down arrow keys
             Press(_keyboard.wKey);
-            yield return null;
+            yield return null;  // somehow these are needed in the combined movement tests otherwise they are probably not correctly registered in the update method
             Press(_keyboard.dKey);
             yield return null;
             Press(_keyboard.eKey);
@@ -324,13 +306,10 @@ namespace Tests.Camera
             Press(_keyboard.upArrowKey);
             yield return null;
             Press(_keyboard.leftArrowKey);
-            yield return new
-                WaitUntil( //Structure is used to wait until the camera has moved to the new position or terminate after realistic time
+            yield return new WaitUntil( //Structure is used to wait until the camera has moved to the new position or terminate after realistic time
                     () => CompareCameraPosition(newCalculatedPosition, false),
                     new TimeSpan(0, 0, 0, 2, 500),
-                    () => Assert.True(CompareCameraPosition(newCalculatedPosition, false),
-                        "Camera should move to new position moving with W A S D UpArrow LeftArrow Keys." +
-                        PrintFailedTestMsg(newCalculatedPosition))
+                    () => Assert.True(CompareCameraPosition(newCalculatedPosition, false), "Camera should move to new position moving with W A S D UpArrow LeftArrow Keys." + PrintFailedTestMsg(newCalculatedPosition))
                 );
             Release(_keyboard.wKey);
             Release(_keyboard.dKey);
@@ -338,9 +317,7 @@ namespace Tests.Camera
             Release(_keyboard.upArrowKey);
             Release(_keyboard.leftArrowKey);
 
-            Assert.True(CompareCameraPosition(newCalculatedPosition, false),
-                "Camera should move to new position moving with W D E UpArrow LeftArrow Keys." +
-                PrintFailedTestMsg(newCalculatedPosition));
+            Assert.True(CompareCameraPosition(newCalculatedPosition, false), "Camera should move to new position moving with W D E UpArrow LeftArrow Keys." + PrintFailedTestMsg(newCalculatedPosition));
         }
 
         [UnityTest]
@@ -352,8 +329,7 @@ namespace Tests.Camera
 
             //This Test does also test the boarder of the min or max Pitch of the up or down arrow keys
             Press(_keyboard.sKey);
-            yield return
-                null; // somehow these are needed in the combined movement tests otherwise they are probably not correctly registered in the update method
+            yield return null; // somehow these are needed in the combined movement tests otherwise they are probably not correctly registered in the update method
             Press(_keyboard.aKey);
             yield return null;
             Press(_keyboard.qKey);
@@ -361,13 +337,10 @@ namespace Tests.Camera
             Press(_keyboard.downArrowKey);
             yield return null;
             Press(_keyboard.rightArrowKey);
-            yield return new
-                WaitUntil( //Structure is used to wait until the camera has moved to the new position or terminate after realistic time
+            yield return new WaitUntil( //Structure is used to wait until the camera has moved to the new position or terminate after realistic time
                     () => CompareCameraPosition(newCalculatedPosition, false),
                     new TimeSpan(0, 0, 0, 2, 500),
-                    () => Assert.True(CompareCameraPosition(newCalculatedPosition, false),
-                        "Camera should move to new position moving with S A Q DownArrow RightArrow Keys." +
-                        PrintFailedTestMsg(newCalculatedPosition))
+                    () => Assert.True(CompareCameraPosition(newCalculatedPosition, false), "Camera should move to new position moving with S A Q DownArrow RightArrow Keys." + PrintFailedTestMsg(newCalculatedPosition))
                 );
             Release(_keyboard.sKey);
             Release(_keyboard.aKey);
@@ -375,9 +348,7 @@ namespace Tests.Camera
             Release(_keyboard.downArrowKey);
             Release(_keyboard.rightArrowKey);
 
-            Assert.True(CompareCameraPosition(newCalculatedPosition, false),
-                "Camera should move to new position moving with W A S D UpArrow LeftArrow Keys." +
-                PrintFailedTestMsg(newCalculatedPosition));
+            Assert.True(CompareCameraPosition(newCalculatedPosition, false), "Camera should move to new position moving with W A S D UpArrow LeftArrow Keys." + PrintFailedTestMsg(newCalculatedPosition));
         }
 
         [UnityTest]
@@ -387,14 +358,13 @@ namespace Tests.Camera
             yield return SetupCustom(); //Ensure the scene is loaded in each new test and camera is set up
             SetInitialCameraValuesForEachTest(); //Ensure the camera is set to the initial values for each test
 
-            for (int i = 0; i < 10; i++) //Simulate mouse wheel scroll
+            for (int i = 0; i < 3; i++) //Simulate mouse wheel scroll
             {
-                yield return null; // Let the system react to the input
+                yield return new WaitForSeconds(0.25f); // Let the system react to the input
                 Set(_mouse.scroll.up, 1);
             }
 
-            Assert.True(CompareCameraPosition(newCalculatedPosition, true),
-                "Camera should zoom in when scrolling mouse wheel up" + PrintFailedTestMsg(newCalculatedPosition));
+            Assert.True(CompareCameraPosition(newCalculatedPosition, true), "Camera should zoom in when scrolling mouse wheel up" + PrintFailedTestMsg(newCalculatedPosition));
         }
 
         [UnityTest]
@@ -404,14 +374,13 @@ namespace Tests.Camera
             yield return SetupCustom(); //Ensure the scene is loaded in each new test and camera is set up
             SetInitialCameraValuesForEachTest(); //Ensure the camera is set to the initial values for each test
 
-            for (int i = 0; i < 15; i++) //Simulate mouse wheel scroll
+            for (int i = 0; i < 5; i++) //Simulate mouse wheel scroll
             {
-                yield return null; // Let the system react to the input
+                yield return new WaitForSeconds(0.25f); // Let the system react to the input
                 Set(_mouse.scroll.up, -1);
             }
 
-            Assert.True(CompareCameraPosition(newCalculatedPosition, false),
-                "Camera should zoom out when scrolling mouse wheel down" + PrintFailedTestMsg(newCalculatedPosition));
+            Assert.True(CompareCameraPosition(newCalculatedPosition, false), "Camera should zoom out when scrolling mouse wheel down" + PrintFailedTestMsg(newCalculatedPosition));
         }
 
         /// <summary>
@@ -434,19 +403,17 @@ namespace Tests.Camera
                          (Math.Abs(newCalculatedPosition.y) <= Math.Abs(_mainCamera.transform.position.y)) &&
                          (Math.Abs(newCalculatedPosition.z) <= Math.Abs(_mainCamera.transform.position.z));
             }
-
             return result;
         }
 
         private string
-            PrintFailedTestMsg(
-                Vector3 newCalculatedPosition) // Helper function to print the failed test message including the expected and actual camera position
+            PrintFailedTestMsg(Vector3 newCalculatedPosition) // Helper function to print the failed test message including the expected and actual camera position
         {
             return $"\n\nExpected: {newCalculatedPosition} \nbut got: {_mainCamera.transform.position}";
         }
 
         [TearDown]
-        public override void TearDown()
+        public override void TearDown() // Is called after each test
         {
             // Destroy the test camera and reset all vars after each test
             Object.Destroy(_mainCamera);
