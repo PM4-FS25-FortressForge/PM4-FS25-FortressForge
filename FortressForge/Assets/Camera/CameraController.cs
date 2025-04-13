@@ -160,6 +160,7 @@ public class CameraController : MonoBehaviour
     {
         Quaternion rotation = Quaternion.Euler(pitch, yaw, 0);  //Calculate the rotation around the centred object
         Vector3 offset = rotation * new Vector3(0, 0, -zoom); // Calculate the offset of the camera
+        targetPosition.y = Terrain.activeTerrain.SampleHeight(targetPosition);
         transform.position = targetPosition + offset;  // Set the new position of the camera
         transform.LookAt(targetPosition);   // Always look at the center point
     }

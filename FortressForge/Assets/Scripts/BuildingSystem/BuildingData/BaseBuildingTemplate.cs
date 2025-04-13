@@ -1,12 +1,12 @@
 using System.Collections.Generic;
-using FortressForge.BuildingSystem.HexGrid;
-using FortressForge.BuildingSystem.HexTile;
+using FortressForge.HexGrid;
 using FortressForge.Economy;
+using FortressForge.HexGrid.HexTile;
 using FortressForge.Serializables;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace FortressForge.BuildingSystem.BuildingData
+namespace FortressForge.HexGrid.BuildingData
 {
     public abstract class BaseBuildingTemplate : ScriptableObject, IEconomyActor
     {

@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Resources;
-using FortressForge.BuildingSystem.BuildingData;
-using FortressForge.BuildingSystem.HexGrid;
-using FortressForge.BuildingSystem.HexTile;
 using FortressForge.Economy;
+using FortressForge.HexGrid.BuildingData;
+using FortressForge.HexGrid;
+using FortressForge.HexGrid.HexTile;
 using UnityEngine;
 
-namespace FortressForge.BuildingSystem.BuildManager
+namespace FortressForge.HexGrid.BuildManager
 {
     public class BuildViewController : MonoBehaviour
     {
@@ -151,7 +151,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         /// <summary>
         /// Rotates the preview object around the Y-axis by the given angle.
         /// </summary>
-        private void RotateObject(float angle)  //TODO: use shapeData to rotate correctly in hex grid
+        private void RotateObject(float angle)
         {
             if (_previewBuilding == null) return;
             
