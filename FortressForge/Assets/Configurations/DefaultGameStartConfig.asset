@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: DefaultGameStartConfig
   m_EditorClassIdentifier: 
   Terrain: {fileID: 4565851599252019505, guid: 33502376c7d14c14ab0d550a3d4ee89a, type: 3}
-  PlayerId: Player2
+  PlayerId: Player1
   PlayerIdsHexGridIdTuplesList:
   - PlayerId: Player1
     HexGridId: 0

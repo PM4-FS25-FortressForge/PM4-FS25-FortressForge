@@ -48,6 +48,7 @@ namespace FortressForge
                     
                     var buttonManager = gameObject.AddComponent<ButtonManager>(); 
                     buttonManager.Init(_buildingDropdown, _config.availableBuildings, buildViewController);
+                    break; // TODO remove this with multiplayer integration and make sure multiple buildview controller work as intended
                 }
             }
         }

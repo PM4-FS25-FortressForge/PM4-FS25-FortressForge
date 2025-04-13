@@ -33,9 +33,9 @@ namespace FortressForge.HexGrid.HoverController
             if (hitTileView != CurrentlyHoveredTile)
             {
                 if (CurrentlyHoveredTile != null)
-                    CurrentlyHoveredTile.TileData.IsHovered = false;
+                    CurrentlyHoveredTile.TileData.IsMouseTarget = false;
                 
-                hitTileView.TileData.IsHovered = true;
+                hitTileView.TileData.IsMouseTarget = true;
                 CurrentlyHoveredTile = hitTileView;
             }
         }
@@ -47,7 +47,7 @@ namespace FortressForge.HexGrid.HoverController
         {
             if (CurrentlyHoveredTile != null)
             {
-                CurrentlyHoveredTile.TileData.IsHovered = false;
+                CurrentlyHoveredTile.TileData.IsMouseTarget = false;
             }
         }
     }

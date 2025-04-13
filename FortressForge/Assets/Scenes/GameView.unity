@@ -449,7 +449,7 @@ Transform:
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
   m_LocalRotation: {x: 0.26912743, y: 0.39926758, z: -0.12384455, w: 0.86765105}
-  m_LocalPosition: {x: 248.138, y: 29.457, z: 212.259}
+  m_LocalPosition: {x: 3000, y: 29.457, z: 9000}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -514,8 +514,8 @@ MonoBehaviour:
   yaw: 0
   pitch: 45
   zoom: 6
-  targetPosition: {x: 13150, y: 0, z: 8029}
-  moveSpeed: 50
+  targetPosition: {x: 3000, y: 0, z: 9000}
+  moveSpeed: 800
   rotationSpeed: 50
   pitchSpeed: 40
   zoomSpeed: 30
