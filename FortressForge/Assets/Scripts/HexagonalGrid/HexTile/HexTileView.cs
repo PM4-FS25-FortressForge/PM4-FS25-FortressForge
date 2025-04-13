@@ -10,6 +10,7 @@ namespace FortressForge.HexGrid.HexTile
         public HexTileCoordinate HexTileCoordinate { get; set; }
         
         private HexTileData _tileData;
+        public HexTileData TileData => _tileData;
 
         public Material FreeMaterial;
         public Material OccupiedMaterial;
@@ -33,7 +34,7 @@ namespace FortressForge.HexGrid.HexTile
         /// <summary>
         /// Changes the material of the HexTileView based on the IsOccupied property of the HexTileData.
         /// </summary>
-        public void UpdateVisuals()
+        private void UpdateVisuals()
         { // TODO maybe add custom colors for overlapping events such as build target and occupied
             if (_tileData.IsBuildTarget) 
                 _renderer.material = HighlightMaterial;
@@ -49,7 +50,7 @@ namespace FortressForge.HexGrid.HexTile
         /// Changes the material of the HexTileView based on the IsOccupied property of the HexTileData.
         /// </summary>
         /// <param name="highlight">Whether the tile should be highlighted for a hover effect.</param>
-        public void UpdateVisuals(bool highlight)
+        private void UpdateVisuals(bool highlight)
         {
             if (highlight)
                 _renderer.material = HighlightMaterial;

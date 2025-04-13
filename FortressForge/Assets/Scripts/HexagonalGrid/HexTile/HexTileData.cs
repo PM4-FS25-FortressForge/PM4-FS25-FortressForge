@@ -5,6 +5,20 @@ namespace FortressForge.HexGrid.HexTile
     public class HexTileData
     {
         public event Action OnChanged;
+        
+        private bool _isHovered;
+        public bool IsHovered
+        {
+            get => _isOccupied;
+            set
+            {
+                if (_isOccupied != value)
+                {
+                    _isOccupied = value;
+                    OnChanged?.Invoke();
+                }
+            }
+        }
 
         private bool _isOccupied;
         public bool IsOccupied

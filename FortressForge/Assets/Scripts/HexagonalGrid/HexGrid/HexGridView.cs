@@ -31,19 +31,6 @@ namespace FortressForge.HexGrid
             
             InitializeHexGridView();
         }
-
-        /// <summary>
-        /// Updates the visuals of all HexTiles in the HexGrid.
-        /// </summary>
-        public void UpdateHexGridView()
-        {
-            foreach (var kvp in _hexGrid.TileMap)
-            {
-                var tileCoords = kvp.Key;
-                HexTileView hexTileView = _tileViews[tileCoords];
-                hexTileView.UpdateVisuals();
-            }
-        }
         
         /// <summary>
         /// Handles setup when a new tile is created.
@@ -65,7 +52,6 @@ namespace FortressForge.HexGrid
 
                 InitializeTile(data, coords);
             }
-            UpdateHexGridView();
         }
 
         /// <summary>
@@ -87,8 +73,6 @@ namespace FortressForge.HexGrid
                 HexTileView tileView = tileObj.GetComponent<HexTileView>();
                 tileView.Init(tileData);
                 _tileViews[coord] = tileView;
-                
-                tileView.UpdateVisuals();
             }
         }
 

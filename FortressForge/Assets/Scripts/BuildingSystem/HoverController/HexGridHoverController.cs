@@ -1,6 +1,7 @@
 using FortressForge.HexGrid;
 using FortressForge.HexGrid.HexTile;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 namespace FortressForge.HexGrid.HoverController
 {
@@ -32,9 +33,9 @@ namespace FortressForge.HexGrid.HoverController
             if (hitTileView != CurrentlyHoveredTile)
             {
                 if (CurrentlyHoveredTile != null)
-                    CurrentlyHoveredTile.UpdateVisuals(false); // TODO this shouldnt be done directly in the hover controller, instead update the tile data in the hover controller
+                    CurrentlyHoveredTile.TileData.IsHovered = false;
                 
-                hitTileView.UpdateVisuals(true);
+                hitTileView.TileData.IsHovered = true;
                 CurrentlyHoveredTile = hitTileView;
             }
         }
@@ -46,8 +47,7 @@ namespace FortressForge.HexGrid.HoverController
         {
             if (CurrentlyHoveredTile != null)
             {
-                CurrentlyHoveredTile.UpdateVisuals(false);
-                CurrentlyHoveredTile = null;
+                CurrentlyHoveredTile.TileData.IsHovered = false;
             }
         }
     }

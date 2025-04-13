@@ -119,7 +119,7 @@ namespace FortressForge.HexGrid
         {
              Vector3 worldPos = position.GetWorldPosition(TileRadius, TileHeight);
              float terrainHeight = Terrain.activeTerrain.SampleHeight(worldPos);
-             return new HexTileCoordinate(position.Q, position.R, Mathf.RoundToInt(terrainHeight / TileHeight));
+             return new HexTileCoordinate(position.Q, position.R, Mathf.CeilToInt(terrainHeight / TileHeight));
         }
     }
 }

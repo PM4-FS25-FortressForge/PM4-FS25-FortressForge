@@ -1,12 +1,6 @@
 using System.Collections.Generic;
-using FortressForge.BuildingSystem.BuildingData;
-using FortressForge.BuildingSystem.HexGrid;
-using FortressForge.BuildingSystem.HexTile;
-using System.Collections.ObjectModel;
-using System.Resources;
 using FortressForge.Economy;
 using FortressForge.HexGrid.BuildingData;
-using FortressForge.HexGrid;
 using FortressForge.HexGrid.HexTile;
 using UnityEngine;
 using UnityEngine.InputSystem;
