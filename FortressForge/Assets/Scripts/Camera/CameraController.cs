@@ -62,7 +62,6 @@ namespace FortressForge.CameraControll
         private InputAction _zoomAction;
         private InputAction _zoomButtons;
         private InputAction _pitchAction;
-        private float _deltaTime;
 
         /// <summary>
         /// Start function to initialize the PlayerInput and the InputActions
@@ -96,12 +95,12 @@ namespace FortressForge.CameraControll
         /// </summary>
         void Update()
         {
-            _deltaTime = Time.deltaTime;
-            HandleMovement(); //Move Target (WASD)
-            HandleRotation(); //Rotate around target (Q/E)
-            HandlePitch(); //Pitch control (Arrow keys)
-            HandleZoom(); //Zoom
-            UpdateCameraPosition(); //Calculate at update camera position
+            float deltaTime = Time.deltaTime;
+            HandleMovement(deltaTime); //Move Target (WASD)
+            HandleRotation(deltaTime); //Rotate around target (Q/E)
+            HandlePitch(deltaTime); //Pitch control (Arrow keys)
+            HandleZoom(deltaTime); //Zoom
+            UpdateCameraPosition(deltaTime); //Calculate at update camera position
         }
 
         /// <summary>
@@ -109,12 +108,13 @@ namespace FortressForge.CameraControll
         /// To be more specifiv the function calculates the new horizontal position of the target object wich is followed by the camera
         /// To calculate the new target position the function uses the WASD input and the current yaw of the camera
         /// </summary>
-        private void HandleMovement()
+        /// <param name="deltaTime"></param>
+        private void HandleMovement(float deltaTime)
         {
             Vector2 moveInput = _moveTargetAction.ReadValue<Vector2>(); // WASD input
             Vector3 moveDir = new Vector3(moveInput.x, 0, moveInput.y); // X (A/D), Z (W/S)
             Vector3 moveVector = Quaternion.Euler(0, Yaw, 0) * moveDir; // Move relative to current yaw
-            TargetPosition += moveVector * MoveSpeed * _deltaTime; // calculate new target position
+            TargetPosition += moveVector * MoveSpeed * deltaTime; // calculate new target position
         }
 
         /// <summary>
@@ -122,10 +122,11 @@ namespace FortressForge.CameraControll
         /// The function calculates the new yaw of the camera
         /// To calculate the new yaw the function uses the Q/E input
         /// </summary>
-        private void HandleRotation()
+        /// <param name="deltaTime"></param>
+        private void HandleRotation(float deltaTime)
         {
             float rotateInput = _rotateAction.ReadValue<float>(); // Q/E input
-            Yaw = (Yaw + rotateInput * RotationSpeed * _deltaTime) % 360f; // Rotate around target
+            Yaw = (Yaw + rotateInput * RotationSpeed * deltaTime) % 360f; // Rotate around target
         }
 
         /// <summary>
@@ -133,10 +134,11 @@ namespace FortressForge.CameraControll
         /// The function calculates the new pitch of the camera
         /// To calculate the new pitch the function uses the Up/Down arrow keys input
         /// </summary>
-        private void HandlePitch()
+        /// <param name="deltaTime"></param>
+        private void HandlePitch(float deltaTime)
         {
             float pitchInput = _pitchAction.ReadValue<float>(); // Up/Down arrows
-            Pitch += pitchInput * PitchSpeed * _deltaTime; // move camera in pitch angle to center
+            Pitch += pitchInput * PitchSpeed * deltaTime; // move camera in pitch angle to center
             Pitch = Mathf.Clamp(Pitch, PitchLimits.y, PitchLimits.x); // Limit pitch angle
         }
 
@@ -145,13 +147,14 @@ namespace FortressForge.CameraControll
         /// The function calculates the new distance of the camera from the target
         /// To calculate the new distance the function uses the mouse wheel input and the arrow keys (left/right) input
         /// </summary>
-        private void HandleZoom()
+        /// <param name="deltaTime"></param>
+        private void HandleZoom(float deltaTime)
         {
             float zoomInput = _zoomAction.ReadValue<float>(); // Zoom input with mouse wheel
             Zoom = Mathf.Clamp(Zoom - zoomInput * ZoomSpeed, zoomLimits.x, zoomLimits.y); // Zoom without deltaTime to make it consistent and good feeling
 
             float zoomButtonInput = _zoomButtons.ReadValue<float>(); // Zoom input with the Buttons
-            Zoom = Mathf.Clamp(Zoom - zoomButtonInput * ZoomSpeed * _deltaTime * 2, zoomLimits.x, zoomLimits.y); // Zoom faster (multiplied by 2) with buttons but depends on the deltaTime
+            Zoom = Mathf.Clamp(Zoom - zoomButtonInput * ZoomSpeed * deltaTime * 2, zoomLimits.x, zoomLimits.y); // Zoom faster (multiplied by 2) with buttons but depends on the deltaTime
         }
 
         /// <summary>
@@ -159,7 +162,8 @@ namespace FortressForge.CameraControll
         /// The function calculates the new position of the camera based on the target position, the pitch, yaw and distance of the camera
         /// It sets the new position of the camera and makes sure the camera always looks at the centred target
         /// </summary>
-        private void UpdateCameraPosition()
+        /// <param name="deltaTime"></param>
+        private void UpdateCameraPosition(float deltaTime)
         {
             Quaternion rotation = Quaternion.Euler(Pitch, Yaw, 0); // Calculate the rotation around the centred object
             Vector3 offset = rotation * new Vector3(0, 0, -Zoom); // Calculate the offset of the camera
