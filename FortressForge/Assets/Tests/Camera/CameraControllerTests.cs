@@ -49,6 +49,8 @@ namespace Tests.Camera
         private Keyboard _keyboard; // Store the virtual keyboard
         private Mouse _mouse; // Store the virtual mouse
         private const string TEST_SCENE = "Unity Cammera implementation Test";
+        
+        private float TestsDelayTime = 0f; // Delay time for the tests to wait for the camera to move (Change this for optical debuging to 0.5f)
 
         [SetUp]
         public override void Setup()
@@ -110,7 +112,7 @@ namespace Tests.Camera
             SetInitialCameraValuesForEachTest(); //Ensure the camera is set to the initial values for each test
 
             Press(_keyboard.wKey);
-            yield return new WaitForSeconds(0.5f); // Let the system react to the input
+            yield return new WaitForSeconds(TestsDelayTime); // Let the system react to the input
             Release(_keyboard.wKey);
 
             Assert.Greater(_mainCamera.transform.position.z, _initialPosition.z, "Camera should move forward when W is pressed.");
@@ -123,7 +125,7 @@ namespace Tests.Camera
             SetInitialCameraValuesForEachTest(); //Ensure the camera is set to the initial values for each test    
 
             Press(_keyboard.aKey);
-            yield return new WaitForSeconds(0.5f); // Let the system react to the input
+            yield return new WaitForSeconds(TestsDelayTime); // Let the system react to the input
             Release(_keyboard.aKey);
 
             Assert.Less(_mainCamera.transform.position.x, _initialPosition.x, "Camera should move left when A is pressed.");
@@ -136,7 +138,7 @@ namespace Tests.Camera
             SetInitialCameraValuesForEachTest(); //Ensure the camera is set to the initial values for each test
 
             Press(_keyboard.sKey);
-            yield return new WaitForSeconds(0.5f); // Let the system react to the input
+            yield return new WaitForSeconds(TestsDelayTime); // Let the system react to the input
             Release(_keyboard.sKey);
 
             Assert.Less(_mainCamera.transform.position.z, _initialPosition.z, "Camera should move Down when S is pressed.");
@@ -149,7 +151,7 @@ namespace Tests.Camera
             SetInitialCameraValuesForEachTest(); //Ensure the camera is set to the initial values for each test
 
             Press(_keyboard.dKey);
-            yield return new WaitForSeconds(0.5f); // Let the system react to the input
+            yield return new WaitForSeconds(TestsDelayTime); // Let the system react to the input
             Release(_keyboard.dKey);
 
             Assert.Greater(_mainCamera.transform.position.x, _initialPosition.x, "Camera should move right when D is pressed.");
@@ -162,7 +164,7 @@ namespace Tests.Camera
             SetInitialCameraValuesForEachTest(); //Ensure the camera is set to the initial values for each test
 
             Press(_keyboard.qKey);
-            yield return new WaitForSeconds(0.5f); // Let the system react to the input
+            yield return new WaitForSeconds(TestsDelayTime); // Let the system react to the input
             Release(_keyboard.qKey);
 
             float newRotation = _mainCamera.transform.eulerAngles.y;
@@ -176,7 +178,7 @@ namespace Tests.Camera
             SetInitialCameraValuesForEachTest(); //Ensure the camera is set to the initial values for each test
 
             Press(_keyboard.eKey);
-            yield return new WaitForSeconds(0.5f); // Let the system react to the input
+            yield return new WaitForSeconds(TestsDelayTime); // Let the system react to the input
             Release(_keyboard.eKey);
 
             float newRotation = _mainCamera.transform.eulerAngles.y;
@@ -190,7 +192,7 @@ namespace Tests.Camera
             SetInitialCameraValuesForEachTest(); //Ensure the camera is set to the initial values for each test
 
             Press(_keyboard.upArrowKey);
-            yield return new WaitForSeconds(0.5f); // Let the system react to the input
+            yield return new WaitForSeconds(TestsDelayTime); // Let the system react to the input
             Release(_keyboard.upArrowKey);
 
             float newPitch = _mainCamera.transform.eulerAngles.x;
@@ -206,7 +208,7 @@ namespace Tests.Camera
 
             // _xInitialRotation = _mainCamera.transform.eulerAngles.x; //I Know this is technically called 2 times in a row but just leave it this way, so it works
             Press(_keyboard.downArrowKey);
-            yield return new WaitForSeconds(0.5f); // Let the system react to the input
+            yield return new WaitForSeconds(TestsDelayTime); // Let the system react to the input
             Release(_keyboard.downArrowKey);
 
             float newPitch = _mainCamera.transform.eulerAngles.x;
