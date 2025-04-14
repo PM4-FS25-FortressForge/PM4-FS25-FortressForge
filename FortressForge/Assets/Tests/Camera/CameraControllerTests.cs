@@ -48,7 +48,6 @@ namespace Tests.Camera
 
         private Keyboard _keyboard; // Store the virtual keyboard
         private Mouse _mouse; // Store the virtual mouse
-        private InputTestFixture _inputTestFixture;
         private const string TEST_SCENE = "Unity Cammera implementation Test";
 
         [SetUp]
