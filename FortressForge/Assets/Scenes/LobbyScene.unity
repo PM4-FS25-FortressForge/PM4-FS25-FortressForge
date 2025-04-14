@@ -331,7 +331,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lobbyViewDoc: {fileID: 1540258046}
   gameRoomViewDoc: {fileID: 978647737}
-  nextScene: Unity Cammera implementation Test
+  nextScene: GameView
   lobbyScene: LobbyScene
 --- !u!4 &885907599
 Transform:

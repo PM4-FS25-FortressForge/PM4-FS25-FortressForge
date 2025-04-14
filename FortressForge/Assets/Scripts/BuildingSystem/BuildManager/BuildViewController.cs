@@ -72,7 +72,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         /// </summary>
         private void Update()
         {
-            if (_isPreviewMode && _previewBuilding != null)
+            if (_isPreviewMode)
             {
                 MovePreviewObject();
             }
@@ -83,7 +83,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         /// </summary>
         public void OnPlaceAction(InputAction.CallbackContext context)
         {
-            if (context.performed)
+            if (context.performed && _isPreviewMode)
                 TryBuyAndPlaceBuilding();
         }
 
@@ -92,7 +92,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         /// </summary>
         public void OnExitBuildMode(InputAction.CallbackContext context)
         {
-            if (context.performed)
+            if (context.performed && _isPreviewMode)
                 ExitBuildMode();
         }
 
@@ -101,7 +101,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         /// </summary>
         public void OnRotateBuilding(InputAction.CallbackContext context)
         {
-            if (context.performed)
+            if (context.performed && _isPreviewMode)
                 RotateObject(60f); // Or whatever angle you want for rotation
         }
 

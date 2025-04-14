@@ -403,15 +403,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18b7da322d3a3414381ac04cb70f808a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  yaw: 0
-  pitch: 45
-  zoom: 6
-  targetPosition: {x: 300, y: 0, z: 300}
-  moveSpeed: 50
-  rotationSpeed: 50
-  pitchSpeed: 40
-  zoomSpeed: 30
-  pitchLimits: {x: 89, y: 0}
+  Yaw: 0
+  Pitch: 45
+  Zoom: 6
+  TargetPosition: {x: 0, y: 0, z: 0}
+  MoveSpeed: 400
+  RotationSpeed: 50
+  PitchSpeed: 40
+  ZoomSpeed: 2
+  PitchLimits: {x: 89, y: 0}
   zoomLimits: {x: 2, y: 1000}
 --- !u!114 &330585549
 MonoBehaviour:
