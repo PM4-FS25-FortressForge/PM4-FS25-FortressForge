@@ -32,7 +32,7 @@ namespace FortressForge
             HexGridManager hexGridManager = gameObject.AddComponent<HexGridManager>();
             hexGridManager.InitializeHexGridForPlayers(_config);
             
-            HexGridHoverController hoverController = gameObject.AddComponent<HexGridHoverController>();
+            gameObject.AddComponent<HexGridHoverController>();
             
             CreateBuildViewControllerForPlayer(_config.PlayerId, hexGridManager, economyManager.EconomySystem, buildingManager);
         }
@@ -43,12 +43,12 @@ namespace FortressForge
             {
                 if (grid.data.PlayerIds.Contains(playerId))
                 {
-                    var buildViewController = gameObject.AddComponent<BuildViewController>();
+                    BuildViewController buildViewController = gameObject.AddComponent<BuildViewController>();
                     buildViewController.Init(grid.view, grid.data, economySystem, buildingManager);
                     
-                    var buttonManager = gameObject.AddComponent<ButtonManager>(); 
+                    ButtonManager buttonManager = gameObject.AddComponent<ButtonManager>(); 
                     buttonManager.Init(_buildingDropdown, _config.availableBuildings, buildViewController);
-                    break; // TODO remove this with multiplayer integration and make sure multiple buildview controller work as intended
+                    break;  // TODO remove this with multiplayer integration and make sure multiple buildview controller work as intended
                 }
             }
         }

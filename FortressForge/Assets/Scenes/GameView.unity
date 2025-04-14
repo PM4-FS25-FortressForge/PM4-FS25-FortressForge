@@ -514,7 +514,7 @@ MonoBehaviour:
   yaw: 0
   pitch: 45
   zoom: 6
-  targetPosition: {x: 3000, y: 0, z: 9000}
+  targetPosition: {x: 3089, y: 0, z: 10559}
   moveSpeed: 800
   rotationSpeed: 50
   pitchSpeed: 40
