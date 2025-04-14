@@ -359,7 +359,7 @@ namespace Tests.Camera
 
             for (int i = 0; i < 3; i++) //Simulate mouse wheel scroll
             {
-                yield return new WaitForSeconds(0.25f); // Let the system react to the input
+                yield return new WaitForSeconds(TestsDelayTime / 2); // Let the system react to the input
                 Set(_mouse.scroll.up, 1);
             }
 
@@ -375,7 +375,7 @@ namespace Tests.Camera
 
             for (int i = 0; i < 5; i++) //Simulate mouse wheel scroll
             {
-                yield return new WaitForSeconds(0.25f); // Let the system react to the input
+                yield return new WaitForSeconds(TestsDelayTime / 2); // Let the system react to the input
                 Set(_mouse.scroll.up, -1);
             }
 
