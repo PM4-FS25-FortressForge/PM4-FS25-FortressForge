@@ -37,11 +37,11 @@ namespace FortressForge.CameraControll
 
         // Initial camera setup
         [SerializeField] public float Yaw = 0.0f;
+
         [SerializeField] public float Pitch = 45;
         [SerializeField] public float Zoom = 6f;
 
-        [SerializeField]
-        public Vector3 TargetPosition = Vector3.zero; //At the Sart the Camera will always look (be centered) at the point at 0.0.0 coordinates
+        [SerializeField] public Vector3 TargetPosition = Vector3.zero; //At the Sart the Camera will always look (be centered) at the point at 0.0.0 coordinates
 
         // Movement & rotation speeds
         [SerializeField] public float MoveSpeed = 5.0f;
@@ -50,8 +50,7 @@ namespace FortressForge.CameraControll
         [SerializeField] public float ZoomSpeed = 2.0f;
 
         // Limits
-        [Tooltip("To avoid the camera to flip or bug do not use value higher than 89\u00b0 or lower than 0\u00b0")]
-        [SerializeField]
+        [Tooltip("To avoid the camera to flip or bug do not use value higher than 89\u00b0 or lower than 0\u00b0")] [SerializeField]
         public Vector2 PitchLimits = new Vector2(89, 0); // Pitch flat to fully top-dow (To avoid the camera to flip do not use value higher than 89°)
 
         [SerializeField] public Vector2 zoomLimits = new Vector2(2.0f, 20.0f); // Min/Max distance from target Zoom
@@ -149,12 +148,10 @@ namespace FortressForge.CameraControll
         private void HandleZoom()
         {
             float zoomInput = _zoomAction.ReadValue<float>(); // Zoom input with mouse wheel
-            Zoom = Mathf.Clamp(Zoom - zoomInput * ZoomSpeed, zoomLimits.x,
-                zoomLimits.y); // Zoom without deltaTime to make it consistent and good feeling
+            Zoom = Mathf.Clamp(Zoom - zoomInput * ZoomSpeed, zoomLimits.x, zoomLimits.y); // Zoom without deltaTime to make it consistent and good feeling
 
             float zoomButtonInput = _zoomButtons.ReadValue<float>(); // Zoom input with the Buttons
-            Zoom = Mathf.Clamp(Zoom - zoomButtonInput * ZoomSpeed * _deltaTime * 2, zoomLimits.x,
-                zoomLimits.y); // Zoom faster (multiplied by 2) with buttons but depends on the deltaTime
+            Zoom = Mathf.Clamp(Zoom - zoomButtonInput * ZoomSpeed * _deltaTime * 2, zoomLimits.x, zoomLimits.y); // Zoom faster (multiplied by 2) with buttons but depends on the deltaTime
         }
 
         /// <summary>
@@ -181,8 +178,7 @@ namespace FortressForge.CameraControll
         private InputAction InitializeActionsButtons(string Action)
         {
             InputAction
-                desiredButtonAction =
-                    _playerInput.actions[Action]; // Get the desired action from the playerInput ActionMap
+                desiredButtonAction = _playerInput.actions[Action]; // Get the desired action from the playerInput ActionMap
             if (desiredButtonAction == null) //Test if the desired action / Button is found in the playerInput ActionMap
             {
                 Debug.LogError(Action + ": This action or button was not found in ActionMap");

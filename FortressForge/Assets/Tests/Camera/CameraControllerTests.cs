@@ -73,8 +73,7 @@ namespace Tests.Camera
 
             // Ensure the scene is actually loaded
             Scene loadedScene = SceneManager.GetActiveScene();
-            Assert.AreEqual(TEST_SCENE, loadedScene.name,
-                $"Error: Scene did not load correctly. Loaded: {loadedScene.name}");
+            Assert.AreEqual(TEST_SCENE, loadedScene.name, $"Error: Scene did not load correctly. Loaded: {loadedScene.name}");
 
             // Find the main camera in the loaded scene
             _mainCamera = GameObject.Find("Main Camera");
@@ -224,10 +223,10 @@ namespace Tests.Camera
 
             Press(_keyboard.leftArrowKey);
             yield return new WaitUntil( //Structure is used to wait until the camera has moved to the new position or terminate after realistic time
-                    () => CompareCameraPosition(newCalculatedPosition, false),
-                    new TimeSpan(0, 0, 0, 0, 600),
-                    () => Assert.True(CompareCameraPosition(newCalculatedPosition, false), "Camera should zoom Out when LeftArrow is pressed." + PrintFailedTestMsg(newCalculatedPosition))
-                );
+                () => CompareCameraPosition(newCalculatedPosition, false),
+                new TimeSpan(0, 0, 0, 0, 600),
+                () => Assert.True(CompareCameraPosition(newCalculatedPosition, false), "Camera should zoom Out when LeftArrow is pressed." + PrintFailedTestMsg(newCalculatedPosition))
+            );
             Release(_keyboard.leftArrowKey);
 
             Assert.True(CompareCameraPosition(newCalculatedPosition, false), "Camera should zoom Out when LeftArrow is pressed." + PrintFailedTestMsg(newCalculatedPosition));
@@ -242,10 +241,10 @@ namespace Tests.Camera
 
             Press(_keyboard.rightArrowKey);
             yield return new WaitUntil( //Structure is used to wait until the camera has moved to the new position or terminate after realistic time
-                    () => CompareCameraPosition(newCalculatedPosition, true),
-                    new TimeSpan(0, 0, 0, 0, 600),
-                    () => Assert.True(CompareCameraPosition(newCalculatedPosition, true), "Camera should zoom In when RightArrow is pressed." + PrintFailedTestMsg(newCalculatedPosition))
-                );
+                () => CompareCameraPosition(newCalculatedPosition, true),
+                new TimeSpan(0, 0, 0, 0, 600),
+                () => Assert.True(CompareCameraPosition(newCalculatedPosition, true), "Camera should zoom In when RightArrow is pressed." + PrintFailedTestMsg(newCalculatedPosition))
+            );
             Release(_keyboard.rightArrowKey);
 
             Assert.True(CompareCameraPosition(newCalculatedPosition, true), "Camera should zoom Out In RightArrow is pressed." + PrintFailedTestMsg(newCalculatedPosition));
@@ -260,11 +259,10 @@ namespace Tests.Camera
 
             Press(_keyboard.leftArrowKey);
             yield return new WaitUntil( //Structure is used to wait until the camera has moved to the new position or terminate after realistic time
-                    () => CompareCameraPosition(newCalculatedPosition, false),
-                    new TimeSpan(0, 0, 0, 5, 600),
-                    () => Assert.True(CompareCameraPosition(newCalculatedPosition, false), "Camera should zoom Out till it reaches the boarder when LeftArrow is pressed" +
-                        PrintFailedTestMsg(newCalculatedPosition))
-                );
+                () => CompareCameraPosition(newCalculatedPosition, false),
+                new TimeSpan(0, 0, 0, 5, 600),
+                () => Assert.True(CompareCameraPosition(newCalculatedPosition, false), "Camera should zoom Out till it reaches the boarder when LeftArrow is pressed" + PrintFailedTestMsg(newCalculatedPosition))
+            );
             Release(_keyboard.leftArrowKey);
 
             Assert.True(CompareCameraPosition(newCalculatedPosition, false), "Camera should zoom Out till it reaches the boarder when LeftArrow is pressed" + PrintFailedTestMsg(newCalculatedPosition));
@@ -279,11 +277,11 @@ namespace Tests.Camera
 
             Press(_keyboard.rightArrowKey);
             yield return new WaitUntil( //Structure is used to wait until the camera has moved to the new position or terminate after realistic time
-                    () => CompareCameraPosition(newCalculatedPosition, true),
-                    new TimeSpan(0, 0, 0, 3, 0),
-                    () => Assert.True(CompareCameraPosition(newCalculatedPosition, true),
-                        "Camera should zoom In till it reaches the boarder when RightArrow is pressed" + PrintFailedTestMsg(newCalculatedPosition))
-                );
+                () => CompareCameraPosition(newCalculatedPosition, true),
+                new TimeSpan(0, 0, 0, 3, 0),
+                () => Assert.True(CompareCameraPosition(newCalculatedPosition, true),
+                    "Camera should zoom In till it reaches the boarder when RightArrow is pressed" + PrintFailedTestMsg(newCalculatedPosition))
+            );
             Release(_keyboard.rightArrowKey);
 
             Assert.True(CompareCameraPosition(newCalculatedPosition, true), "Camera should zoom In till it reaches the boarder when RightArrow is pressed" + PrintFailedTestMsg(newCalculatedPosition));
@@ -298,7 +296,7 @@ namespace Tests.Camera
 
             //This Test does also test the boarder of the min or max Pitch of the up or down arrow keys
             Press(_keyboard.wKey);
-            yield return null;  // somehow these are needed in the combined movement tests otherwise they are probably not correctly registered in the update method
+            yield return null; // somehow these are needed in the combined movement tests otherwise they are probably not correctly registered in the update method
             Press(_keyboard.dKey);
             yield return null;
             Press(_keyboard.eKey);
@@ -307,10 +305,10 @@ namespace Tests.Camera
             yield return null;
             Press(_keyboard.leftArrowKey);
             yield return new WaitUntil( //Structure is used to wait until the camera has moved to the new position or terminate after realistic time
-                    () => CompareCameraPosition(newCalculatedPosition, false),
-                    new TimeSpan(0, 0, 0, 2, 500),
-                    () => Assert.True(CompareCameraPosition(newCalculatedPosition, false), "Camera should move to new position moving with W A S D UpArrow LeftArrow Keys." + PrintFailedTestMsg(newCalculatedPosition))
-                );
+                () => CompareCameraPosition(newCalculatedPosition, false),
+                new TimeSpan(0, 0, 0, 2, 500),
+                () => Assert.True(CompareCameraPosition(newCalculatedPosition, false), "Camera should move to new position moving with W A S D UpArrow LeftArrow Keys." + PrintFailedTestMsg(newCalculatedPosition))
+            );
             Release(_keyboard.wKey);
             Release(_keyboard.dKey);
             Release(_keyboard.eKey);
@@ -338,10 +336,10 @@ namespace Tests.Camera
             yield return null;
             Press(_keyboard.rightArrowKey);
             yield return new WaitUntil( //Structure is used to wait until the camera has moved to the new position or terminate after realistic time
-                    () => CompareCameraPosition(newCalculatedPosition, false),
-                    new TimeSpan(0, 0, 0, 2, 500),
-                    () => Assert.True(CompareCameraPosition(newCalculatedPosition, false), "Camera should move to new position moving with S A Q DownArrow RightArrow Keys." + PrintFailedTestMsg(newCalculatedPosition))
-                );
+                () => CompareCameraPosition(newCalculatedPosition, false),
+                new TimeSpan(0, 0, 0, 2, 500),
+                () => Assert.True(CompareCameraPosition(newCalculatedPosition, false), "Camera should move to new position moving with S A Q DownArrow RightArrow Keys." + PrintFailedTestMsg(newCalculatedPosition))
+            );
             Release(_keyboard.sKey);
             Release(_keyboard.aKey);
             Release(_keyboard.qKey);
@@ -403,6 +401,7 @@ namespace Tests.Camera
                          (Math.Abs(newCalculatedPosition.y) <= Math.Abs(_mainCamera.transform.position.y)) &&
                          (Math.Abs(newCalculatedPosition.z) <= Math.Abs(_mainCamera.transform.position.z));
             }
+
             return result;
         }
 
