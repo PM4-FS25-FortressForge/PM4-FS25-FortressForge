@@ -12,7 +12,7 @@ namespace FortressForge.BuildingSystem.HexGrid
     /// </summary>
     public class HexGridView : MonoBehaviour
     {
-        public HexGridData _hexGrid; // TODO reduce visibility
+        private HexGridData _hexGrid;
         private GameObject _tilePrefab;
         private readonly Dictionary<HexTileCoordinate, HexTileView> _tileViews = new ();
         private HexTileView _currentlyHoveredTile;
@@ -48,10 +48,13 @@ namespace FortressForge.BuildingSystem.HexGrid
             }
         }
         
+        /// <summary>
+        /// Handles setup when a new tile is created.
+        /// </summary>
         private void HandleNewTileCreated(HexTileData hexData, HexTileCoordinate newCoords)
         {
             InitializeTile(hexData, newCoords);
-            UpdateHexGridView();
+            UpdateHexGridView(); // TODO why is this needed here? We should only update the tile that was created.
         }
 
         /// <summary>
@@ -75,7 +78,7 @@ namespace FortressForge.BuildingSystem.HexGrid
         /// an invisible tile from being drawn or blocking raycasts.
         /// </summary>
         private void SetTileVisibility(HexTileView tileObj, bool canRender)
-        {
+        { // TODO check if this is still needed or a relic from the past
             Renderer rend = tileObj.GetComponent<Renderer>();
             if (rend != null)
             {
@@ -120,7 +123,7 @@ namespace FortressForge.BuildingSystem.HexGrid
         /// if the tile below it is occupied.
         /// </summary>
         private bool ShouldRenderTile(HexTileCoordinate coord)
-        {
+        { // TODO: This shouldnt be needed with our current approach, we should just render all tiles
             if (coord.H == 0)
                 return true;
             
@@ -133,14 +136,17 @@ namespace FortressForge.BuildingSystem.HexGrid
             return false;
         }
 
+        /// <summary>
+        /// Returns the coordinate of the currently hovered hex tile.
+        /// </summary>
         public HexTileCoordinate GetCurrentlyHoveredHexTileCoordinate()
         {
-            if (GetComponent<HexGridHoverController>().CurrentlyHoveredTile != null)
+            if (GetComponent<HexGridHoverController>().CurrentlyHoveredTile != null) // TODO just get a reference to the hover controller
             {
                 return GetComponent<HexGridHoverController>().CurrentlyHoveredTile.HexTileCoordinate;
             }
             
-            return default;
+            return default; // TODO: Returning default is bad, because its still a valid coordinate, consider returning null, after action changes
         }
     }
 }

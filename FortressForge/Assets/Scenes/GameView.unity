@@ -1073,6 +1073,7 @@ GameObject:
   - component: {fileID: 1149923579}
   - component: {fileID: 1149923578}
   - component: {fileID: 1149923580}
+  - component: {fileID: 1149923581}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -1094,10 +1095,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _hexGridConfiguration: {fileID: 11400000, guid: 4db0b0d18baaa5747b0639afa305dced, type: 2}
   _gameStartConfiguration: {fileID: 11400000, guid: 8c5e56cc0c67a1f4e9e168c329893944, type: 2}
-  _otherTilePrefab:
-  - {fileID: 11400000, guid: de8eeb04020297a4790e752b8f95080c, type: 2}
-  - {fileID: 11400000, guid: 2ed51e6f707565743a43896dec9b53b0, type: 2}
-  superTollesDropdown: {fileID: 1223200759}
 --- !u!4 &1149923579
 Transform:
   m_ObjectHideFlags: 0
@@ -1126,6 +1123,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   raycastDistance: 1000
+--- !u!114 &1149923581
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1149923577}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0487c45547f42f4896edc0985f2f194, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  availableBuildings:
+  - {fileID: 11400000, guid: 7ba111d719d345840ab9c8e5c62a3464, type: 2}
+  - {fileID: 11400000, guid: de8eeb04020297a4790e752b8f95080c, type: 2}
+  - {fileID: 11400000, guid: 2ed51e6f707565743a43896dec9b53b0, type: 2}
+  - {fileID: 11400000, guid: 7ba111d719d345840ab9c8e5c62a3464, type: 2}
+  - {fileID: 11400000, guid: c00869abe949da449913b200d8116870, type: 2}
+  - {fileID: 11400000, guid: 2cb7baa5fb87b75409920515b37d1344, type: 2}
+  buildingDropdown: {fileID: 1223200759}
+  hexGridManager: {fileID: 1149923578}
 --- !u!1 &1171472197
 GameObject:
   m_ObjectHideFlags: 0
