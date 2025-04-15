@@ -3,7 +3,8 @@ using System.Collections.ObjectModel;
 using System.Resources;
 using FortressForge.Economy;
 using FortressForge.HexGrid.BuildingData;
-using FortressForge.HexGrid.HexTile;
+using FortressForge.HexGrid.Data;
+using FortressForge.HexGrid.View;
 using UnityEngine;
 using UnityEngine.InputSystem;
 

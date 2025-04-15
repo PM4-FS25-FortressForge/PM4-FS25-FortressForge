@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using FortressForge.HexGrid.HexTile;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace FortressForge.HexGrid.BuildingData
 {

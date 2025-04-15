@@ -1,9 +1,8 @@
-using FortressForge.HexGrid;
-using FortressForge.HexGrid.HexTile;
+using FortressForge.HexGrid.View;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-namespace FortressForge.HexGrid.HoverController
+namespace FortressForge.BuildingSystem
 {
     public class HexGridHoverController : MonoBehaviour
     {

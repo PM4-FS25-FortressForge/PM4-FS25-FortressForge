@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using FortressForge.HexGrid.BuildingData;
 using FortressForge.Economy;
+using FortressForge.HexGrid.BuildingData;
 using NUnit.Framework;
 
 namespace Tests.EconomyManager

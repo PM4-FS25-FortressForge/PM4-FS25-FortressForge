@@ -2,10 +2,8 @@ using System;
 using UnityEngine;
 using System.Collections.Generic;
 using FortressForge.HexGrid.BuildingData;
-using FortressForge.HexGrid.HexTile;
-using UnityEngine.Tilemaps;
 
-namespace FortressForge.HexGrid
+namespace FortressForge.HexGrid.Data
 {
     /// <summary>
     /// Represents the pure data of a hex grid. This class is responsible for
@@ -22,11 +20,7 @@ namespace FortressForge.HexGrid
 
         // Players that own this grid
         public readonly List<string> PlayerIds = new();
-
-        /// <summary>
-        /// The size of the hex tiles are defined here, so that in the future different
-        /// tile sizes for different players are possible (e.g. for AI).
-        /// </summary>
+        
         public readonly float TileRadius;
 
         public readonly float TileHeight;
@@ -34,13 +28,21 @@ namespace FortressForge.HexGrid
         public readonly Dictionary<HexTileCoordinate, HexTileData> TileMap = new();
         
         public event Action<HexTileData, HexTileCoordinate> OnNewTileCreated;
+        
+        private readonly ITerrainHeightProvider _terrainHeightProvider;
 
-        public HexGridData(int id, Vector3 origin, int radius, float tileSize, float tileHeight)
+        public HexGridData(int id,
+            Vector3 origin,
+            int radius,
+            float tileSize,
+            float tileHeight,
+            ITerrainHeightProvider terrainHeightProvider)
         {
             Id = id;
             Origin = origin;
             TileRadius = tileSize;
             TileHeight = tileHeight;
+            _terrainHeightProvider = terrainHeightProvider;
             
             for (int q = -radius; q <= radius; q++)
             {
@@ -49,7 +51,7 @@ namespace FortressForge.HexGrid
                 for (int r = r1; r <= r2; r++)
                 {
                     HexTileCoordinate newHexCoords = new HexTileCoordinate(q, r, 0) +
-                        new HexTileCoordinate(TileRadius, TileHeight, origin);
+                                                     new HexTileCoordinate(TileRadius, TileHeight, origin);
                     newHexCoords = GetTerrainHeightFromHexTileCoordinate(newHexCoords);
                                                      
                     TileMap[newHexCoords] = new HexTileData(newHexCoords);
@@ -117,9 +119,16 @@ namespace FortressForge.HexGrid
 
         private HexTileCoordinate GetTerrainHeightFromHexTileCoordinate(HexTileCoordinate position)
         {
-             Vector3 worldPos = position.GetWorldPosition(TileRadius, TileHeight);
-             float terrainHeight = Terrain.activeTerrain.SampleHeight(worldPos);
-             return new HexTileCoordinate(position.Q, position.R, Mathf.CeilToInt(terrainHeight / TileHeight));
+            Vector3 worldPos = position.GetWorldPosition(TileRadius, TileHeight);
+        
+            // Hier wird jetzt das Interface benutzt:
+            float terrainHeight = _terrainHeightProvider.SampleHeight(worldPos);
+
+            return new HexTileCoordinate(
+                position.Q, 
+                position.R, 
+                Mathf.CeilToInt(terrainHeight / TileHeight)
+            );
         }
     }
 }

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace FortressForge.HexGrid.HexTile
+namespace FortressForge.HexGrid
 {
     /// <summary>
     /// Struct to store hex tile coordinates.

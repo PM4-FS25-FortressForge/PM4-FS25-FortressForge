@@ -1,10 +1,6 @@
 using System.Collections.Generic;
-using FortressForge.HexGrid;
 using FortressForge.Economy;
-using FortressForge.HexGrid.HexTile;
-using FortressForge.Serializables;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace FortressForge.HexGrid.BuildingData
 {

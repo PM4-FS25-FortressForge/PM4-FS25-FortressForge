@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FortressForge.HexGrid.HexTile
+namespace FortressForge.HexGrid.Data
 {
     public class HexTileData
     {

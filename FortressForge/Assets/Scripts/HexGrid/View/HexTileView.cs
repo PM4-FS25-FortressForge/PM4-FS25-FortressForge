@@ -1,6 +1,7 @@
+using FortressForge.HexGrid.Data;
 using UnityEngine;
 
-namespace FortressForge.HexGrid.HexTile
+namespace FortressForge.HexGrid.View
 {
     /// <summary>
     /// Represents the visual representation of a HexTile.

@@ -1,10 +1,10 @@
 using System;
 using UnityEngine;
 using System.Collections.Generic;
-using FortressForge.HexGrid.HexTile;
-using FortressForge.HexGrid.HoverController;
+using FortressForge.BuildingSystem;
+using FortressForge.HexGrid.Data;
 
-namespace FortressForge.HexGrid
+namespace FortressForge.HexGrid.View
 {
     /// <summary>
     /// A MonoBehaviour that takes data from a HexGrid and
