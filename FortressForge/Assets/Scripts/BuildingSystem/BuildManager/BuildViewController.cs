@@ -114,12 +114,9 @@ namespace FortressForge.BuildingSystem.BuildManager
         {
             HexTileView currentlyHoveredTile = _hexGridHoverController.CurrentlyHoveredTile;
             if (currentlyHoveredTile == null) return;
-            HexTileCoordinate currentlyHoveredHexTileCoordinate =
-                currentlyHoveredTile.TileData.HexTileCoordinate;
+            HexTileCoordinate currentlyHoveredHexTileCoordinate = currentlyHoveredTile.TileData.HexTileCoordinate;
 
-            Vector3 snappedPos =
-                currentlyHoveredHexTileCoordinate.GetWorldPosition(_hexGridData.TileRadius,
-                    _hexGridData.TileHeight);
+            Vector3 snappedPos = currentlyHoveredHexTileCoordinate.GetWorldPosition(_hexGridData.TileRadius, _hexGridData.TileHeight);
 
             Vector3 avgPos = GetAveragePosition(_selectedBuildingTemplate.ShapeData);
             _previewBuilding.transform.position = snappedPos + avgPos;
@@ -161,8 +158,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         {
             HexTileView currentlyHoveredTile = _hexGridHoverController.CurrentlyHoveredTile;
             if (currentlyHoveredTile == null) return;
-            HexTileCoordinate hexCoord = 
-                currentlyHoveredTile.TileData.HexTileCoordinate;
+            HexTileCoordinate hexCoord = currentlyHoveredTile.TileData.HexTileCoordinate;
 
             // Check if the building can be placed
             if (!_economySystem.CheckForSufficientResources(_selectedBuildingTemplate.GetBuildCost())
