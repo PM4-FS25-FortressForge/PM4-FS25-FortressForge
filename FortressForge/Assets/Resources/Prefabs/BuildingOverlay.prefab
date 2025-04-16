@@ -65,8 +65,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e770d30da8e14fef9c61faaf29e66148, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  overlayUIDocument: {fileID: 7705381498415874196}
-  resourceContainerAsset: {fileID: 9197481963319205126, guid: 2291da1f5d0e8df42a9d657525ba362a, type: 3}
+  OverlayUIDocument: {fileID: 7705381498415874196}
+  ResourceContainerAsset: {fileID: 9197481963319205126, guid: 2291da1f5d0e8df42a9d657525ba362a, type: 3}
 --- !u!114 &3978965704136286442
 MonoBehaviour:
   m_ObjectHideFlags: 0

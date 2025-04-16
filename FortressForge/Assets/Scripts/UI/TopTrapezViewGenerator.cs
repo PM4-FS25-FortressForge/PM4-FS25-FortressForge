@@ -1,5 +1,6 @@
 ﻿using FortressForge.UI.CustomVisualElements;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UIElements;
 
 namespace FortressForge.UI
@@ -9,21 +10,21 @@ namespace FortressForge.UI
     /// </summary>
     public class TopTrapezViewGenerator : MonoBehaviour
     {
-        public UIDocument overlayUIDocument;
+        public UIDocument OverlayUIDocument;
+        public VisualTreeAsset ResourceContainerAsset;
         private VisualElement _overlayRoot;
         private VisualElement _overlayFrame;
         private Image _overlayImage;
-        public VisualTreeAsset resourceContainerAsset;
 
         void OnEnable()
         {
-            if (overlayUIDocument == null)
+            if (OverlayUIDocument == null)
             {
                 Debug.LogError("UIDocument für Overlay nicht zugewiesen!");
                 return;
             }
 
-            _overlayRoot = overlayUIDocument.rootVisualElement.Q<VisualElement>("root-frame");
+            _overlayRoot = OverlayUIDocument.rootVisualElement.Q<VisualElement>("root-frame");
             if (_overlayRoot == null)
             {
                 Debug.LogError("Overlay-Root-Element mit dem Namen 'overlayRoot' nicht gefunden!");
@@ -48,13 +49,13 @@ namespace FortressForge.UI
                 Debug.Log("RessourceContainer Trapezoid clicked!")
             );
 
-            if (resourceContainerAsset == null)
+            if (ResourceContainerAsset == null)
             {
                 Debug.LogError("ResourceContainer asset is not assigned!");
                 return;
             }
 
-            VisualElement resourceContainer = resourceContainerAsset.CloneTree();
+            VisualElement resourceContainer = ResourceContainerAsset.CloneTree();
             resourceContainer.AddToClassList("ressource-container");
             trapezElement.Add(resourceContainer);
 
