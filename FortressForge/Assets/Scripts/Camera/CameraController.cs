@@ -167,6 +167,7 @@ namespace FortressForge.CameraControll
         {
             Quaternion rotation = Quaternion.Euler(Pitch, Yaw, 0); // Calculate the rotation around the centred object
             Vector3 offset = rotation * new Vector3(0, 0, -Zoom); // Calculate the offset of the camera
+            TargetPosition.y = Terrain.activeTerrain.SampleHeight(TargetPosition); // Set the target position to the height of the terrain at the current position
             transform.position = TargetPosition + offset; // Set the new position of the camera
             transform.LookAt(TargetPosition); // Always look at the center point
         }

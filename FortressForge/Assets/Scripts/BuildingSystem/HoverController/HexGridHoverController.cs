@@ -1,21 +1,23 @@
 using FortressForge.HexGrid.View;
+using JetBrains.Annotations;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.Tilemaps;
 
 namespace FortressForge.BuildingSystem
 {
     public class HexGridHoverController : MonoBehaviour
     {
-        [SerializeField] private float raycastDistance = 3000;
-
-        public HexTileView CurrentlyHoveredTile { get; set; }
+        [CanBeNull] public HexTileView CurrentlyHoveredTile { get; set; }
+        
+        [SerializeField] private float _raycastDistance = 3000;
 
         private void Update()
         {
             if (Camera.main == null) return;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             
-            if (!Physics.Raycast(ray, out RaycastHit hit, raycastDistance))
+            if (!Physics.Raycast(ray, out RaycastHit hit, _raycastDistance))
             {
                 ClearHoveredTile();
                 return;

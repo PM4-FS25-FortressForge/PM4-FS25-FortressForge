@@ -17,20 +17,13 @@ namespace FortressForge.HexGrid
     /// </summary>
     public class HexGridManager : MonoBehaviour
     {
-        public List<HexGridAssembly> AllGrids { get; } = new();
+        public List<HexGridData> AllGrids { get; } = new();
         
-        private IHexGridDataFactory _dataFactory;
-        private IHexGridViewFactory _viewFactory;
-        private HexGridAssembler _assembler;
+        private TerrainHeightProvider _terrainHeightProvider;
 
-        private void Start()
+        private void Awake()
         {
-            ITerrainHeightProvider terrainProvider = new UnityTerrainHeightProvider();
-            
-            _dataFactory = new HexGridDataFactory(terrainProvider);
-            _viewFactory = new HexGridViewFactory();
-            
-            _assembler = new HexGridAssembler(_dataFactory, _viewFactory);
+            _terrainHeightProvider = new TerrainHeightProvider();
         }
 
         public void InitializeHexGridForPlayers(GameStartConfiguration gameStartConfiguration)
@@ -41,16 +34,17 @@ namespace FortressForge.HexGrid
                 int radius = gameStartConfiguration.Radius;
                 float tileSize = gameStartConfiguration.TileSize;
                 float tileHeight = gameStartConfiguration.TileHeight;
-                GameObject tilePrefab = gameStartConfiguration.TilePrefab;
                 
-                HexGridAssembly gridAssembly = _assembler.CreateHexGrid(
-                    i, origin, radius, tileSize, tileHeight, tilePrefab);
+                HexGridData gridData = new HexGridData(
+                    id: i,
+                    origin: origin,
+                    radius: radius,
+                    tileSize: tileSize,
+                    tileHeight: tileHeight,
+                    terrainHeightProvider: _terrainHeightProvider
+                );
                 
-                var playerId = gameStartConfiguration
-                    .PlayerIdsHexGridIdTuplesList[i].PlayerId;
-                gridAssembly.Data.AddPlayer(playerId);
-                
-                AllGrids.Add(gridAssembly);
+                AllGrids.Add(gridData);
             }
         }
     }

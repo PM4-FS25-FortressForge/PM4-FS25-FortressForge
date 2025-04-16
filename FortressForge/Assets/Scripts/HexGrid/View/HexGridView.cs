@@ -75,18 +75,5 @@ namespace FortressForge.HexGrid.View
                 _tileViews[coord] = tileView;
             }
         }
-
-        /// <summary>
-        /// Returns the coordinate of the currently hovered hex tile.
-        /// </summary>
-        public HexTileCoordinate GetCurrentlyHoveredHexTileCoordinate()
-        {
-            if (GetComponent<HexGridHoverController>().CurrentlyHoveredTile != null) // TODO just get a reference to the hover controller
-            {
-                return GetComponent<HexGridHoverController>().CurrentlyHoveredTile.HexTileCoordinate;
-            }
-            
-            return default; // TODO: Returning default is bad, because its still a valid coordinate, consider returning null, after action changes
-        }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace FortressForge.HexGrid
 {
-    public class UnityTerrainHeightProvider : ITerrainHeightProvider
+    public class TerrainHeightProvider : ITerrainHeightProvider
     {
         public float SampleHeight(Vector3 position)
         {
