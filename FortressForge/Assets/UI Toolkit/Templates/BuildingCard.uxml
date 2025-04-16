@@ -1,0 +1,11 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI%20Toolkit/Style/ColorPaletteStyle.uss?fileID=7433441132597879392&amp;guid=5ec20a6ef536e8446ae4e92fb3e188a3&amp;type=3#ColorPaletteStyle" />
+    <Style src="project://database/Assets/UI%20Toolkit/Style/BuildingSelector.uss?fileID=7433441132597879392&amp;guid=45d15a8dac7b6a94fa224cf3d9efaf32&amp;type=3#BuildingSelector" />
+    <engine:VisualElement name="building-card-frame" style="flex-grow: 1;">
+        <engine:VisualElement name="building-card-visual" style="flex-grow: 1;" />
+        <engine:VisualElement name="building-card-label-container" style="flex-grow: 1;">
+            <engine:Label text="Label" name="building-card-name" class="unity-tab__header-label" />
+            <engine:Label text="Label" name="building-card-cost" />
+        </engine:VisualElement>
+    </engine:VisualElement>
+</engine:UXML>

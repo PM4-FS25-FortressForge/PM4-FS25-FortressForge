@@ -1,0 +1,8 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI%20Toolkit/Style/ColorPaletteStyle.uss?fileID=7433441132597879392&amp;guid=5ec20a6ef536e8446ae4e92fb3e188a3&amp;type=3#ColorPaletteStyle" />
+    <Style src="project://database/Assets/UI%20Toolkit/Style/GameOverlay.uss?fileID=7433441132597879392&amp;guid=aa8c5dd4f28e74445958e38dca118d43&amp;type=3#GameOverlay" />
+    <engine:VisualElement name="root-frame" style="flex-grow: 1;">
+        <engine:VisualElement name="top-view" class="top-view-frame" />
+        <engine:VisualElement name="bottom-view" class="bottom-view-frame" style="flex-grow: 1;" />
+    </engine:VisualElement>
+</engine:UXML>
