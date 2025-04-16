@@ -1,9 +1,9 @@
 ﻿using FortressForge.BuildingSystem;
+using FortressForge.BuildingSystem.BuildManager;
+using FortressForge.BuildingSystem.HoverController;
 using FortressForge.Economy;
 using FortressForge.GameInitialization;
 using FortressForge.HexGrid;
-using FortressForge.HexGrid.BuildingData;
-using FortressForge.HexGrid.BuildManager;
 using FortressForge.HexGrid.View;
 using UnityEngine;
 using UnityEngine.UI;

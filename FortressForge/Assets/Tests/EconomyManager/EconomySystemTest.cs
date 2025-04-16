@@ -2,8 +2,9 @@
 using NUnit.Framework;
 using Assert = UnityEngine.Assertions.Assert;
 using System.Collections.Generic;
+using FortressForge.BuildingSystem.BuildingData;
+using FortressForge.BuildingSystem.BuildManager;
 using FortressForge.Economy;
-using FortressForge.HexGrid.BuildingData;
 using UnityEngine;
 
 namespace Tests.EconomyManager

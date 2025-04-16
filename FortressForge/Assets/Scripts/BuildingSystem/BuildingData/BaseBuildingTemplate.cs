@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using FortressForge.Economy;
+using FortressForge.HexGrid;
 using UnityEngine;
 
-namespace FortressForge.HexGrid.BuildingData
+namespace FortressForge.BuildingSystem.BuildingData
 {
     public class BaseBuildingTemplate : ScriptableObject, IEconomyActor
     {

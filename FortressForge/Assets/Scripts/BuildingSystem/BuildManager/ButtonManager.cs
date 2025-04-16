@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using FortressForge.HexGrid.BuildingData;
+using FortressForge.BuildingSystem.BuildingData;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-namespace FortressForge.HexGrid.BuildManager
+namespace FortressForge.BuildingSystem.BuildManager
 {
     public class ButtonManager : MonoBehaviour
     {

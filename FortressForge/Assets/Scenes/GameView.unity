@@ -515,10 +515,10 @@ MonoBehaviour:
   Pitch: 45
   Zoom: 6
   TargetPosition: {x: 3089, y: 0, z: 10559}
-  MoveSpeed: 5
+  MoveSpeed: 300
   RotationSpeed: 50
   PitchSpeed: 40
-  ZoomSpeed: 2
+  ZoomSpeed: 50
   PitchLimits: {x: 89, y: 0}
   zoomLimits: {x: 2, y: 1000}
 --- !u!114 &330585549

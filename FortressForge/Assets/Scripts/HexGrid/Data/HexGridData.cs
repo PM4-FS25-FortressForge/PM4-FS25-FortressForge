@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 using System.Collections.Generic;
-using FortressForge.HexGrid.BuildingData;
+using FortressForge.BuildingSystem.BuildingData;
 
 namespace FortressForge.HexGrid.Data
 {

@@ -1,10 +1,8 @@
 using FortressForge.HexGrid.View;
 using JetBrains.Annotations;
 using UnityEngine;
-using UnityEngine.Serialization;
-using UnityEngine.Tilemaps;
 
-namespace FortressForge.BuildingSystem
+namespace FortressForge.BuildingSystem.HoverController
 {
     public class HexGridHoverController : MonoBehaviour
     {

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using FortressForge.HexGrid.BuildingData;
+using FortressForge.BuildingSystem.BuildingData;
 using FortressForge.Serializables;
 using UnityEngine;
 using UnityEngine.UI;

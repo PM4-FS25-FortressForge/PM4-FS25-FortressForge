@@ -1,15 +1,14 @@
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Resources;
-using FortressForge.BuildingSystem;
+using FortressForge.BuildingSystem.BuildingData;
+using FortressForge.BuildingSystem.HoverController;
 using FortressForge.Economy;
-using FortressForge.HexGrid.BuildingData;
+using FortressForge.HexGrid;
 using FortressForge.HexGrid.Data;
 using FortressForge.HexGrid.View;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace FortressForge.HexGrid.BuildManager
+namespace FortressForge.BuildingSystem.BuildManager
 {
     public class BuildViewController : MonoBehaviour, BuildActions.IPreviewModeActions
     {

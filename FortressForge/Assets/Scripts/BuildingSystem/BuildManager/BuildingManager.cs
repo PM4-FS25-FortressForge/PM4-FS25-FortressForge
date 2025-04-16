@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using FortressForge.BuildingSystem.BuildingData;
 
-namespace FortressForge.HexGrid.BuildingData
+namespace FortressForge.BuildingSystem.BuildManager
 {
     public class BuildingManager
     {
