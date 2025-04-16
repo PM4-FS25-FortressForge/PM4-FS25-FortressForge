@@ -56,7 +56,9 @@ namespace FortressForge.UI.CustomVisualElements
             _rotationAngle = rotation % 360f;
 
             if (!string.IsNullOrEmpty(selector))
+            {
                 AddToClassList(selector);
+            }
 
             MarkDirtyRepaint();
         }
@@ -227,13 +229,13 @@ namespace FortressForge.UI.CustomVisualElements
             bool inside = false;
             for (int i = 0, j = vertices.Length - 1; i < vertices.Length; j = i++)
             {
-                if ((vertices[i].y > localPoint.y) == (vertices[j].y > localPoint.y))
-                    continue;
+                if ((vertices[i].y > localPoint.y) == vertices[j].y > localPoint.y) continue;
 
-                float intersectX = (vertices[j].x - vertices[i].x) * (localPoint.y - vertices[i].y)
-                    / (vertices[j].y - vertices[i].y) + vertices[i].x;
+                float intersectX = (vertices[j].x - vertices[i].x) * (localPoint.y - vertices[i].y) / (vertices[j].y - vertices[i].y) + vertices[i].x;
                 if (localPoint.x < intersectX)
+                {
                     inside = !inside;
+                }
             }
 
             return inside;
