@@ -75,7 +75,9 @@ namespace FortressForge.UI
             TrapezElement trapezElement = new TrapezElement();
             trapezElement.SetParameters(90f, 180f, selector);
             if (!string.IsNullOrEmpty(className))
+            {
                 trapezElement.AddToClassList(className);
+            }
             return trapezElement;
         }
 
