@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using FortressForge.BuildingSystem.HexTile;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace FortressForge.BuildingSystem.BuildingData
 {
