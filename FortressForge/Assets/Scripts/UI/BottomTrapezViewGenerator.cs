@@ -6,6 +6,9 @@ using UnityEngine.UIElements;
 
 namespace FortressForge.UI
 {
+    /// <summary>
+    /// Generates the bottom trapez view for the building GameOverlay
+    /// </summary>
     public class BottomTrapezViewGenerator : MonoBehaviour
     {
         public UIDocument overlayUIDocument;
@@ -15,7 +18,7 @@ namespace FortressForge.UI
         public VisualTreeAsset buildingCardVisualTree;
 
         private readonly Dictionary<string, string> _exampleBuildings = new();
-
+        
         private void OnEnable()
         {
             if (!ValidateUIDocument()) return;
@@ -30,6 +33,10 @@ namespace FortressForge.UI
             PopulateTabViewContentContainers();
         }
 
+        /// <summary>
+        /// Validates if the overlay UIDocument is assigned.
+        /// </summary>
+        /// <returns>True if the UIDocument is valid, false otherwise.</returns>
         private bool ValidateUIDocument()
         {
             if (overlayUIDocument != null) return true;
@@ -38,6 +45,9 @@ namespace FortressForge.UI
             return false;
         }
 
+        /// <summary>
+        /// Initializes the overlay frame by finding the bottom frame element.
+        /// </summary>
         private void InitializeOverlayFrame()
         {
             _bottomFrame = overlayUIDocument.rootVisualElement.Q<VisualElement>("root-frame")?.Q<VisualElement>("bottom-view");
@@ -46,6 +56,9 @@ namespace FortressForge.UI
                 Debug.LogError("Bottom frame is missing.");
         }
 
+        /// <summary>
+        /// Initializes the trapez frame by creating a new TrapezElement and setting its parameters.
+        /// </summary>
         private void InitializeTrapezFrame()
         {
             _trapezElement = new TrapezElement();
@@ -53,6 +66,9 @@ namespace FortressForge.UI
             _trapezElement.AddToClassList("bottom-trapez-frame");
         }
 
+        /// <summary>
+        /// Loads the building selector view by cloning the visual tree asset and adding it to the trapez element.
+        /// </summary>
         private void LoadBuildingSelectorView()
         {
             if (buildingSelectorViewTree == null)
@@ -66,6 +82,9 @@ namespace FortressForge.UI
             _trapezElement.Add(buildingSelectorView);
         }
 
+        /// <summary>
+        /// Aligns the tab headers with the trapez border by setting their margins.
+        /// </summary>
         private void AlignTabHeadersWithTrapezBorder()
         {
             VisualElement tabHeaders = _trapezElement.Q<TemplateContainer>()?
@@ -86,6 +105,9 @@ namespace FortressForge.UI
                 tabHeaderList[i].style.marginLeft = Length.Percent(tabHeaderMargins[i]);
         }
 
+        /// <summary>
+        /// Populates the tab view content containers with building cards.
+        /// </summary>
         private void PopulateTabViewContentContainers()
         {
             IEnumerable<VisualElement> tabContentList = _trapezElement.Q<TemplateContainer>()?
@@ -124,6 +146,9 @@ namespace FortressForge.UI
             }
         }
 
+        /// <summary>
+        /// Generates a list of example buildings with their names and descriptions.
+        /// </summary>
         private void GenerateBuildingList()
         {
             _exampleBuildings.Clear();
@@ -133,6 +158,10 @@ namespace FortressForge.UI
             }
         }
 
+        /// <summary>
+        /// Creates a new building card item.
+        /// </summary>
+        /// <returns></returns>
         private VisualElement MakeItem()
         {
             VisualElement buildingCard = buildingCardVisualTree.CloneTree();
@@ -140,6 +169,11 @@ namespace FortressForge.UI
             return buildingCard;
         }
 
+        /// <summary>
+        /// Binds the data to the building card item.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="index"></param>
         private void BindItem(VisualElement item, int index)
         {
             if (!_exampleBuildings.TryGetValue(_exampleBuildings.ElementAt(index).Key, out string description))
