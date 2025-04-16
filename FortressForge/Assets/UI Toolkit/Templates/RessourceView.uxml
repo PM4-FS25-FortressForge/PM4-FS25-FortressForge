@@ -1,0 +1,38 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI%20Toolkit/Style/ColorPaletteStyle.uss?fileID=7433441132597879392&amp;guid=5ec20a6ef536e8446ae4e92fb3e188a3&amp;type=3#ColorPaletteStyle" />
+    <Style src="project://database/Assets/UI%20Toolkit/Style/RessourceView.uss?fileID=7433441132597879392&amp;guid=d2de485bec71c41439bf63e61eb14490&amp;type=3#RessourceView" />
+    <engine:VisualElement name="ressource-root" class="ressource-root" style="flex-grow: 1;">
+        <engine:VisualElement name="ressource-container-left" class="ressource-container-left" style="flex-grow: 1;">
+            <engine:VisualElement name="ressource-element-container" style="flex-grow: 1;">
+                <engine:VisualElement name="FillableRessourceContainer-left-top-text-container" class="ressource-text-container" style="flex-grow: 1;">
+                    <engine:Label text="Label left&#10;" name="FillableRessourceContainer-left-top-title" class="ressource-title" />
+                    <engine:Label text="Label" name="FillableRessourceContainer-left-top-amount" class="ressource-amount-text"/>
+                </engine:VisualElement>
+                <FortressForge.UI.CustomVisualElements.FillableRessourceContainer name="FillableRessourceContainer-left-top" class="ressource-container-fillable" />
+            </engine:VisualElement>
+            <engine:VisualElement name="ressource-element-container" style="flex-grow: 1;">
+                <engine:VisualElement name="FillableRessourceContainer-left-bottom-text-container" class="ressource-text-container" style="flex-grow: 1;">
+                    <engine:Label text="Label left&#10;" name="FillableRessourceContainer-left-bottom-title" class="ressource-title" />
+                    <engine:Label text="Label" name="FillableRessourceContainer-left-bottom-amount" class="ressource-amount-text"/>
+                </engine:VisualElement>
+                <FortressForge.UI.CustomVisualElements.FillableRessourceContainer name="FillableRessourceContainer-left-bottom" class="ressource-container-fillable"  />
+            </engine:VisualElement>
+        </engine:VisualElement>
+        <engine:VisualElement name="ressource-container-right" class="ressource-container-right" style="flex-grow: 1;">
+            <engine:VisualElement name="ressource-element-container" style="flex-grow: 1;">
+                <engine:VisualElement name="FillableRessourceContainer-right-top-text-container" class="ressource-text-container" style="flex-grow: 1;">
+                    <engine:Label text="Label irght&#x9;&#10;" name="FillableRessourceContainer-right-top-title" class="ressource-title" />
+                    <engine:Label text="Label" name="FillableRessourceContainer-right-top-amount" class="ressource-amount-text"/>
+                </engine:VisualElement>
+                <FortressForge.UI.CustomVisualElements.FillableRessourceContainer name="FillableRessourceContainer-right-top" class="ressource-container-fillable"  />
+            </engine:VisualElement>
+            <engine:VisualElement name="ressource-element-container" style="flex-grow: 1;">
+                <engine:VisualElement name="FillableRessourceContainer-right-bottom-text-container" class="ressource-text-container" style="flex-grow: 1;">
+                    <engine:Label text="Label right&#10;" name="FillableRessourceContainer-right-bottom-title" class="ressource-title" />
+                    <engine:Label text="Label" name="FillableRessourceContainer-right-bottom-amount" class="ressource-amount-text"/>
+                </engine:VisualElement>
+                <FortressForge.UI.CustomVisualElements.FillableRessourceContainer name="FillableRessourceContainer-right-bottom"  class="ressource-container-fillable" />
+            </engine:VisualElement>
+        </engine:VisualElement>
+    </engine:VisualElement>
+</engine:UXML>
