@@ -2,6 +2,7 @@
 using System.Linq;
 using FortressForge.UI.CustomVisualElements;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UIElements;
 
 namespace FortressForge.UI
@@ -14,8 +15,8 @@ namespace FortressForge.UI
         public UIDocument overlayUIDocument;
         private VisualElement _bottomFrame;
         private TrapezElement _trapezElement;
-        public VisualTreeAsset buildingSelectorViewTree;
-        public VisualTreeAsset buildingCardVisualTree;
+        public VisualTreeAsset BuildingSelectorViewTree;
+        public VisualTreeAsset BuildingCardVisualTree;
 
         private readonly Dictionary<string, string> _exampleBuildings = new();
         
@@ -71,13 +72,13 @@ namespace FortressForge.UI
         /// </summary>
         private void LoadBuildingSelectorView()
         {
-            if (buildingSelectorViewTree == null)
+            if (BuildingSelectorViewTree == null)
             {
                 Debug.LogError("Building selector view tree is missing.");
                 return;
             }
 
-            VisualElement buildingSelectorView = buildingSelectorViewTree.CloneTree();
+            VisualElement buildingSelectorView = BuildingSelectorViewTree.CloneTree();
             buildingSelectorView.AddToClassList("building-selector-view");
             _trapezElement.Add(buildingSelectorView);
         }
@@ -134,8 +135,7 @@ namespace FortressForge.UI
                 }
 
                 tabContentListView.Clear();
-                _exampleBuildings
-                    .Select((_, index) =>
+                _exampleBuildings.Select((_, index) =>
                     {
                         VisualElement buildingCard = MakeItem();
                         BindItem(buildingCard, index);
@@ -164,7 +164,7 @@ namespace FortressForge.UI
         /// <returns></returns>
         private VisualElement MakeItem()
         {
-            VisualElement buildingCard = buildingCardVisualTree.CloneTree();
+            VisualElement buildingCard = BuildingCardVisualTree.CloneTree();
             buildingCard.RegisterCallback<PointerDownEvent>(_ => Debug.Log("Building card clicked!"));
             return buildingCard;
         }
@@ -176,8 +176,7 @@ namespace FortressForge.UI
         /// <param name="index"></param>
         private void BindItem(VisualElement item, int index)
         {
-            if (!_exampleBuildings.TryGetValue(_exampleBuildings.ElementAt(index).Key, out string description))
-                return;
+            if (!_exampleBuildings.TryGetValue(_exampleBuildings.ElementAt(index).Key, out string description)) return;
 
             item.AddToClassList("building-card-template-container");
 

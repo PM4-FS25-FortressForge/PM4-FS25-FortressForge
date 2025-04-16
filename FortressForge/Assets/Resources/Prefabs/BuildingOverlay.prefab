@@ -80,5 +80,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   overlayUIDocument: {fileID: 7705381498415874196}
-  buildingSelectorViewTree: {fileID: 9197481963319205126, guid: 3273baa11f7007b44af34893b3895c52, type: 3}
-  buildingCardVisualTree: {fileID: 9197481963319205126, guid: 33d7c4d569a11d5489a7851a486442dd, type: 3}
+  BuildingSelectorViewTree: {fileID: 9197481963319205126, guid: 3273baa11f7007b44af34893b3895c52, type: 3}
+  BuildingCardVisualTree: {fileID: 9197481963319205126, guid: 33d7c4d569a11d5489a7851a486442dd, type: 3}
