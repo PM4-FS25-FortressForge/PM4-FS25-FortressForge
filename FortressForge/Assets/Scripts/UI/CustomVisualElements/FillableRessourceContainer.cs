@@ -82,10 +82,9 @@
         /// <param name="className">The name of the class to add.</param>
         public void AddStyleForClassList(string className)
         {
-            if (!string.IsNullOrEmpty(className))
-            {
-                AddToClassList(className);
-            }
+            if (string.IsNullOrEmpty(className)) return;
+            
+            AddToClassList(className);
         }
     }
 }
