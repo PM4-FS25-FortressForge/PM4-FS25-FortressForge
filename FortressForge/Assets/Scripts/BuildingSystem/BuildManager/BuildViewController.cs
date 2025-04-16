@@ -1,48 +1,65 @@
 using System.Collections.Generic;
+using FishNet.Object;
 using FortressForge.BuildingSystem.BuildingData;
 using FortressForge.BuildingSystem.HoverController;
 using FortressForge.Economy;
 using FortressForge.HexGrid;
 using FortressForge.HexGrid.Data;
 using FortressForge.HexGrid.View;
+using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace FortressForge.BuildingSystem.BuildManager
 {
-    public class BuildViewController : MonoBehaviour, BuildActions.IPreviewModeActions
+    public class BuildViewController : NetworkBehaviour, BuildActions.IPreviewModeActions
     {
+        private BaseBuildingTemplate SelectedBuildingTemplate => _availableBuildings[_selectedBuildingIndex];
+        
         private HexGridHoverController _hexGridHoverController;
         private HexGridData _hexGridData;
         private EconomySystem _economySystem;
         private BuildingManager _buildingManager;
         
-        private BaseBuildingTemplate _selectedBuildingTemplate;
         private GameObject _previewBuilding;
         private readonly List<HexTileCoordinate> _currentBuildTargets = new();
 
         private bool _isPreviewMode = false;
         private BuildActions _input;
-    
-        public void Init(HexGridData hexGridData, EconomySystem economySystem, BuildingManager buildingManager, HexGridHoverController hexGridHoverController)
+        private int _selectedBuildingIndex;
+        private List<BaseBuildingTemplate> _availableBuildings;
+
+        public void Init(HexGridData hexGridData, EconomySystem economySystem, BuildingManager buildingManager, HexGridHoverController hexGridHoverController, List<BaseBuildingTemplate> availableBuildings)
         {
+            _availableBuildings = availableBuildings;
             _hexGridData = hexGridData;
             _economySystem = economySystem;
             _buildingManager = buildingManager;
             _hexGridHoverController = hexGridHoverController;
         }
 
-        public void PreviewSelectedBuilding(BaseBuildingTemplate building)
+        public void PreviewSelectedBuilding(int buildingIndex)
         {
-            _selectedBuildingTemplate = Instantiate(building);
-
             if (_previewBuilding != null)
                 Destroy(_previewBuilding);
-
-            _previewBuilding = Instantiate(_selectedBuildingTemplate.BuildingPrefab);
+            _selectedBuildingIndex = buildingIndex;
+            _previewBuilding = Instantiate(_availableBuildings[_selectedBuildingIndex].BuildingPrefab);
             _isPreviewMode = true;
         }
+        
+        /// <summary>
+        /// Moves the preview building each frame if in preview mode.
+        /// </summary>
+        private void Update()
+        {
+            if (_isPreviewMode)
+            {
+                MovePreviewObject();
+            }
+        }
 
+        #region Input Callbacks
+        
         /// <summary>
         /// Initializes the input handler on Awake.
         /// </summary>
@@ -70,21 +87,11 @@ namespace FortressForge.BuildingSystem.BuildManager
         }
 
         /// <summary>
-        /// Moves the preview building each frame if in preview mode.
-        /// </summary>
-        private void Update()
-        {
-            if (_isPreviewMode)
-            {
-                MovePreviewObject();
-            }
-        }
-
-        /// <summary>
         /// Called when the player performs the place action. Attempts to place the building.
         /// </summary>
         public void OnPlaceAction(InputAction.CallbackContext context)
         {
+            if (!IsOwner) return;
             if (context.performed && _isPreviewMode)
                 TryBuyAndPlaceBuilding();
         }
@@ -94,6 +101,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         /// </summary>
         public void OnExitBuildMode(InputAction.CallbackContext context)
         {
+            if (!IsOwner) return;
             if (context.performed && _isPreviewMode)
                 ExitBuildMode();
         }
@@ -106,7 +114,9 @@ namespace FortressForge.BuildingSystem.BuildManager
             if (context.performed && _isPreviewMode)
                 RotateObject(60f); // Or whatever angle you want for rotation
         }
-
+        
+        #endregion
+        
         /// <summary>
         /// Moves the preview object to the currently hovered hex tile position.
         /// </summary>
@@ -118,10 +128,10 @@ namespace FortressForge.BuildingSystem.BuildManager
 
             Vector3 snappedPos = currentlyHoveredHexTileCoordinate.GetWorldPosition(_hexGridData.TileRadius, _hexGridData.TileHeight);
 
-            Vector3 avgPos = GetAveragePosition(_selectedBuildingTemplate.ShapeData);
+            Vector3 avgPos = GetAveragePosition(SelectedBuildingTemplate.ShapeData);
             _previewBuilding.transform.position = snappedPos + avgPos;
 
-            MarkNewTilesAsBuildTargets(currentlyHoveredHexTileCoordinate, _selectedBuildingTemplate.ShapeData);
+            MarkNewTilesAsBuildTargets(currentlyHoveredHexTileCoordinate, SelectedBuildingTemplate.ShapeData);
         }
 
         private void MarkNewTilesAsBuildTargets(HexTileCoordinate target, List<HexTileCoordinate> buildingShape)
@@ -161,8 +171,8 @@ namespace FortressForge.BuildingSystem.BuildManager
             HexTileCoordinate hexCoord = currentlyHoveredTile.TileData.HexTileCoordinate;
 
             // Check if the building can be placed
-            if (!_economySystem.CheckForSufficientResources(_selectedBuildingTemplate.GetBuildCost())
-                || !_hexGridData.ValidateBuildingPlacement(hexCoord, _selectedBuildingTemplate))
+            if (!_economySystem.CheckForSufficientResources(SelectedBuildingTemplate.GetBuildCost())
+                || !_hexGridData.ValidateBuildingPlacement(hexCoord, SelectedBuildingTemplate))
             {
                 Debug.Log("Placement failed");
                 return;
@@ -175,13 +185,21 @@ namespace FortressForge.BuildingSystem.BuildManager
 
         private void PlaceBuilding(HexTileCoordinate hexCoord)
         {
-            _hexGridData.PlaceBuilding(hexCoord, _selectedBuildingTemplate);
-            _economySystem.PayResource(_selectedBuildingTemplate.GetBuildCost());
-            Instantiate(_selectedBuildingTemplate.BuildingPrefab, _previewBuilding.transform.position, _previewBuilding.transform.rotation);
-            BaseBuildingTemplate copy = Instantiate(_selectedBuildingTemplate);
+            _hexGridData.PlaceBuilding(hexCoord, SelectedBuildingTemplate);
+            _economySystem.PayResource(SelectedBuildingTemplate.GetBuildCost());
+            BaseBuildingTemplate copy = Instantiate(SelectedBuildingTemplate);
             _buildingManager.AddBuilding(copy);
+            
+            PlaceServerBuilding(_selectedBuildingIndex, _previewBuilding.transform.position, _previewBuilding.transform.rotation);
         }
-
+        
+        [ServerRpc(RequireOwnership = false)]
+        private void PlaceServerBuilding(int buildingIndex, Vector3 transformPosition, Quaternion transformRotation)
+        {
+            var instance = Instantiate(_availableBuildings[buildingIndex].BuildingPrefab, transformPosition, transformRotation);
+            ServerManager.Spawn(instance);
+        }
+        
         /// <summary>
         /// Exits the building preview mode and cleans up the preview object.
         /// </summary>
@@ -191,7 +209,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         
             _isPreviewMode = false;
             Destroy(_previewBuilding);
-            _selectedBuildingTemplate = null;
+            _selectedBuildingIndex = -1;
             ClearPreviousBuildTargets();
         }
 
@@ -212,7 +230,7 @@ namespace FortressForge.BuildingSystem.BuildManager
             _previewBuilding.transform.rotation = Quaternion.Euler(currentRotation);
         
             // Apply rotation to the preview building tiles
-            _selectedBuildingTemplate.ShapeData = RotateByAngle(_selectedBuildingTemplate.ShapeData, (int) angle);
+            SelectedBuildingTemplate.ShapeData = RotateByAngle(SelectedBuildingTemplate.ShapeData, (int) angle);
         }
 
         private Vector3 GetAveragePosition(List<HexTileCoordinate> hexTileCoordinates)

@@ -1,4 +1,5 @@
-﻿using FortressForge.BuildingSystem;
+﻿using FishNet.Object;
+using FortressForge.BuildingSystem;
 using FortressForge.BuildingSystem.BuildManager;
 using FortressForge.BuildingSystem.HoverController;
 using FortressForge.Economy;
@@ -10,13 +11,13 @@ using UnityEngine.UI;
 
 namespace FortressForge
 {
-    public class InitializationManager : MonoBehaviour
+    public class InitializationManager : NetworkBehaviour
     {
         [Header("Game Start Configuration")]
         [SerializeField] private GameStartConfiguration _config;
         [SerializeField] private Dropdown _buildingDropdown;
         
-        private void Start()
+        public override void OnStartClient()
         {
             // Initialize the Terrain from _config
             Instantiate(_config.Terrain);
@@ -33,12 +34,12 @@ namespace FortressForge
             
             HexGridHoverController hexGridHoverController = gameObject.AddComponent<HexGridHoverController>();
             
-            BuildViewController buildViewController = gameObject.AddComponent<BuildViewController>();
-            buildViewController.Init(hexGridManager.AllGrids[0], economyManager.EconomySystem, buildingManager, hexGridHoverController);
-            
-            ButtonManager buttonManager = gameObject.AddComponent<ButtonManager>(); 
-            buttonManager.Init(_buildingDropdown, _config.availableBuildings, buildViewController);
-            
+            BuildViewController buildViewController = gameObject.GetComponent<BuildViewController>();
+            buildViewController.Init(hexGridManager.AllGrids[0], economyManager.EconomySystem, buildingManager, hexGridHoverController, _config.availableBuildings);
+            _buildingDropdown = FindObjectOfType<Dropdown>();
+
+            BuildMenuController buildMenuController = gameObject.AddComponent<BuildMenuController>(); 
+            buildMenuController.Init(_buildingDropdown, _config.availableBuildings, buildViewController);
         }
 
         private void InitializeHexGridViews(GameStartConfiguration config, HexGridManager hexGridManager)

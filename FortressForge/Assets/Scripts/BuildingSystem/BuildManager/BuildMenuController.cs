@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace FortressForge.BuildingSystem.BuildManager
 {
-    public class ButtonManager : MonoBehaviour
+    public class BuildMenuController : MonoBehaviour
     {
         private Dropdown _dropdown;
         private List<BaseBuildingTemplate> _availableBuildings;
@@ -27,13 +27,13 @@ namespace FortressForge.BuildingSystem.BuildManager
 
         void SelectBuilding(int index)
         {
-            if (index >= _availableBuildings.Count)
+            if (index >= _availableBuildings.Count || index < 0)
             {
                 Debug.LogError("Index out of range.");
                 return;
             }
 
-            _buildViewController.PreviewSelectedBuilding(_availableBuildings[index]);
+            _buildViewController.PreviewSelectedBuilding(index);
         }
     }
 }
