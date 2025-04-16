@@ -1,0 +1,10 @@
+:root {
+    --paynes-grey: rgb(99, 111, 122);
+    --silver-gey: rgb(176, 180, 183);
+    --outer-space-grey: rgb(61, 77, 83);
+    --dark-grey: rgb(36, 45, 49);
+    --red: rgb(191, 49, 49);
+    --neon-green: rgb(48, 219, 48);
+    --pale-green: rgb(137, 184, 137);
+    --transparent: rgba(0, 0, 0, 0);
+}
