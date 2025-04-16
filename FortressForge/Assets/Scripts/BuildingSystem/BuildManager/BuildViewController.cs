@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using FortressForge.BuildingSystem.BuildingData;
-using FortressForge.BuildingSystem.HexGrid;
-using FortressForge.BuildingSystem.HexTile;
+using FortressForge.BuildingSystem.HoverController;
 using FortressForge.Economy;
+using FortressForge.HexGrid;
+using FortressForge.HexGrid.Data;
+using FortressForge.HexGrid.View;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -10,7 +12,7 @@ namespace FortressForge.BuildingSystem.BuildManager
 {
     public class BuildViewController : MonoBehaviour, BuildActions.IPreviewModeActions
     {
-        private HexGridView _hexGridView;
+        private HexGridHoverController _hexGridHoverController;
         private HexGridData _hexGridData;
         private EconomySystem _economySystem;
         private BuildingManager _buildingManager;
@@ -22,12 +24,12 @@ namespace FortressForge.BuildingSystem.BuildManager
         private bool _isPreviewMode = false;
         private BuildActions _input;
     
-        public void Init(HexGridView hexGridView, HexGridData hexGridData, EconomySystem economySystem, BuildingManager buildingManager)
+        public void Init(HexGridData hexGridData, EconomySystem economySystem, BuildingManager buildingManager, HexGridHoverController hexGridHoverController)
         {
-            _hexGridView = hexGridView;
             _hexGridData = hexGridData;
             _economySystem = economySystem;
             _buildingManager = buildingManager;
+            _hexGridHoverController = hexGridHoverController;
         }
 
         public void PreviewSelectedBuilding(BaseBuildingTemplate building)
@@ -72,7 +74,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         /// </summary>
         private void Update()
         {
-            if (_isPreviewMode && _previewBuilding != null)
+            if (_isPreviewMode)
             {
                 MovePreviewObject();
             }
@@ -83,7 +85,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         /// </summary>
         public void OnPlaceAction(InputAction.CallbackContext context)
         {
-            if (context.performed)
+            if (context.performed && _isPreviewMode)
                 TryBuyAndPlaceBuilding();
         }
 
@@ -92,7 +94,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         /// </summary>
         public void OnExitBuildMode(InputAction.CallbackContext context)
         {
-            if (context.performed)
+            if (context.performed && _isPreviewMode)
                 ExitBuildMode();
         }
 
@@ -110,15 +112,16 @@ namespace FortressForge.BuildingSystem.BuildManager
         /// </summary>
         private void MovePreviewObject()
         {
-            var currentlyHoveredHexTileCoordinate = _hexGridView.GetCurrentlyHoveredHexTileCoordinate();
-            if (currentlyHoveredHexTileCoordinate == default) return; // TODO default is wrong, use null, adjust after action changes
-        
+            HexTileView currentlyHoveredTile = _hexGridHoverController.CurrentlyHoveredTile;
+            if (currentlyHoveredTile == null) return;
+            HexTileCoordinate currentlyHoveredHexTileCoordinate = currentlyHoveredTile.TileData.HexTileCoordinate;
+
             Vector3 snappedPos = currentlyHoveredHexTileCoordinate.GetWorldPosition(_hexGridData.TileRadius, _hexGridData.TileHeight);
-            
+
             Vector3 avgPos = GetAveragePosition(_selectedBuildingTemplate.ShapeData);
             _previewBuilding.transform.position = snappedPos + avgPos;
-        
-            MarkNewTilesAsBuildTargets(currentlyHoveredHexTileCoordinate, _selectedBuildingTemplate.ShapeData); 
+
+            MarkNewTilesAsBuildTargets(currentlyHoveredHexTileCoordinate, _selectedBuildingTemplate.ShapeData);
         }
 
         private void MarkNewTilesAsBuildTargets(HexTileCoordinate target, List<HexTileCoordinate> buildingShape)
@@ -153,11 +156,12 @@ namespace FortressForge.BuildingSystem.BuildManager
         /// </summary>
         private void TryBuyAndPlaceBuilding()
         {
-            HexTileCoordinate hexCoord = _hexGridView.GetCurrentlyHoveredHexTileCoordinate();
+            HexTileView currentlyHoveredTile = _hexGridHoverController.CurrentlyHoveredTile;
+            if (currentlyHoveredTile == null) return;
+            HexTileCoordinate hexCoord = currentlyHoveredTile.TileData.HexTileCoordinate;
 
             // Check if the building can be placed
-            if (hexCoord == default // TODO default is wrong, use null, adjust after action changes
-                || !_economySystem.CheckForSufficientResources(_selectedBuildingTemplate.GetBuildCost())
+            if (!_economySystem.CheckForSufficientResources(_selectedBuildingTemplate.GetBuildCost())
                 || !_hexGridData.ValidateBuildingPlacement(hexCoord, _selectedBuildingTemplate))
             {
                 Debug.Log("Placement failed");
@@ -194,7 +198,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         /// <summary>
         /// Rotates the preview object around the Y-axis by the given angle.
         /// </summary>
-        private void RotateObject(float angle)  //TODO: use shapeData to rotate correctly in hex grid
+        private void RotateObject(float angle)
         {
             if (!_isPreviewMode || _previewBuilding == null) return;
         

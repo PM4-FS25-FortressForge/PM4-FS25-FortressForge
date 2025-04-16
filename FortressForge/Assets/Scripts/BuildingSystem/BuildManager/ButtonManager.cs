@@ -2,7 +2,6 @@
 using System.Linq;
 using FortressForge.BuildingSystem.BuildingData;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace FortressForge.BuildingSystem.BuildManager
