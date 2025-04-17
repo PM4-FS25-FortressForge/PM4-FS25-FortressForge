@@ -16,7 +16,6 @@ namespace FortressForge.GameInitialization
     {
         [Header("Game Start Configuration")]
         [SerializeField] private GameStartConfiguration _config;
-        [SerializeField] private Dropdown _buildingDropdown;
         
         private void Start()
         {
@@ -38,11 +37,11 @@ namespace FortressForge.GameInitialization
             BuildViewController buildViewController = gameObject.AddComponent<BuildViewController>();
             buildViewController.Init(hexGridManager.AllGrids[0], economyManager.EconomySystem, buildingManager, hexGridHoverController);
             
-            ButtonManager buttonManager = gameObject.AddComponent<ButtonManager>(); 
-            buttonManager.Init(_buildingDropdown, _config.availableBuildings, buildViewController);
+            TopTrapezViewGenerator topTrapezViewGenerator = FindFirstObjectByType<UIDocument>().GetComponent<TopTrapezViewGenerator>();
+            topTrapezViewGenerator.Init(economyManager.EconomySystem);
             
-            TopTrapezViewGenerator trapezViewGenerator = FindFirstObjectByType<UIDocument>().GetComponent<TopTrapezViewGenerator>();
-            trapezViewGenerator.Init(economyManager.EconomySystem);
+            BottomTrapezViewGenerator bottomTrapezViewGenerator = FindFirstObjectByType<UIDocument>().GetComponent<BottomTrapezViewGenerator>();
+            bottomTrapezViewGenerator.Init(_config.availableBuildings, buildViewController);
         }
 
         private void InitializeHexGridViews(GameStartConfiguration config, HexGridManager hexGridManager)
