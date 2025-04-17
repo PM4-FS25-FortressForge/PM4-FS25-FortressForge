@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using FishNet;
 using FishNet.Object;
 using FortressForge.BuildingSystem.BuildingData;
 using FortressForge.BuildingSystem.HoverController;
@@ -15,6 +16,7 @@ namespace FortressForge.BuildingSystem.BuildManager
     public class BuildViewController : NetworkBehaviour, BuildActions.IPreviewModeActions
     {
         private BaseBuildingTemplate SelectedBuildingTemplate => _availableBuildings[_selectedBuildingIndex];
+        private bool IsPreviewMode => _selectedBuildingIndex != -1;
         
         private HexGridHoverController _hexGridHoverController;
         private HexGridData _hexGridData;
@@ -24,7 +26,6 @@ namespace FortressForge.BuildingSystem.BuildManager
         private GameObject _previewBuilding;
         private readonly List<HexTileCoordinate> _currentBuildTargets = new();
 
-        private bool _isPreviewMode = false;
         private BuildActions _input;
         private int _selectedBuildingIndex;
         private List<BaseBuildingTemplate> _availableBuildings;
@@ -43,8 +44,7 @@ namespace FortressForge.BuildingSystem.BuildManager
             if (_previewBuilding != null)
                 Destroy(_previewBuilding);
             _selectedBuildingIndex = buildingIndex;
-            _previewBuilding = Instantiate(_availableBuildings[_selectedBuildingIndex].BuildingPrefab);
-            _isPreviewMode = true;
+            _previewBuilding = SpawnLocal(_availableBuildings[_selectedBuildingIndex].BuildingPrefab);
         }
         
         /// <summary>
@@ -52,7 +52,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         /// </summary>
         private void Update()
         {
-            if (_isPreviewMode)
+            if (IsPreviewMode)
             {
                 MovePreviewObject();
             }
@@ -92,7 +92,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         public void OnPlaceAction(InputAction.CallbackContext context)
         {
             if (!IsOwner) return;
-            if (context.performed && _isPreviewMode)
+            if (context.performed && IsPreviewMode)
                 TryBuyAndPlaceBuilding();
         }
 
@@ -102,7 +102,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         public void OnExitBuildMode(InputAction.CallbackContext context)
         {
             if (!IsOwner) return;
-            if (context.performed && _isPreviewMode)
+            if (context.performed && IsPreviewMode)
                 ExitBuildMode();
         }
 
@@ -111,8 +111,8 @@ namespace FortressForge.BuildingSystem.BuildManager
         /// </summary>
         public void OnRotateBuilding(InputAction.CallbackContext context)
         {
-            if (context.performed && _isPreviewMode)
-                RotateObject(60f); // Or whatever angle you want for rotation
+            if (context.performed && IsPreviewMode)
+                RotateBuilding(60f); // Or whatever angle you want for rotation
         }
         
         #endregion
@@ -142,6 +142,7 @@ namespace FortressForge.BuildingSystem.BuildManager
             {
                 if (!_hexGridData.TileMap.TryGetValue(hexTileCoordinate + target, out var tileData)) 
                     continue;
+                
                 tileData.IsBuildTarget = true;
                 _currentBuildTargets.Add(hexTileCoordinate + target);
             }
@@ -190,14 +191,15 @@ namespace FortressForge.BuildingSystem.BuildManager
             BaseBuildingTemplate copy = Instantiate(SelectedBuildingTemplate);
             _buildingManager.AddBuilding(copy);
             
-            PlaceServerBuilding(_selectedBuildingIndex, _previewBuilding.transform.position, _previewBuilding.transform.rotation);
+            PlaceServerBuilding(_selectedBuildingIndex, 
+                hexCoord.GetWorldPosition(_hexGridData.TileRadius, _hexGridData.TileHeight) + GetAveragePosition(SelectedBuildingTemplate.ShapeData),
+                _previewBuilding.transform.rotation);
         }
         
         [ServerRpc(RequireOwnership = false)]
         private void PlaceServerBuilding(int buildingIndex, Vector3 transformPosition, Quaternion transformRotation)
         {
-            var instance = Instantiate(_availableBuildings[buildingIndex].BuildingPrefab, transformPosition, transformRotation);
-            ServerManager.Spawn(instance);
+            SpawnNetworked(_availableBuildings[buildingIndex].BuildingPrefab, transformPosition, transformRotation, gameObject.transform);
         }
         
         /// <summary>
@@ -205,9 +207,8 @@ namespace FortressForge.BuildingSystem.BuildManager
         /// </summary>
         private void ExitBuildMode()
         {
-            if (!_isPreviewMode) return;
+            if (!IsPreviewMode) return;
         
-            _isPreviewMode = false;
             Destroy(_previewBuilding);
             _selectedBuildingIndex = -1;
             ClearPreviousBuildTargets();
@@ -216,9 +217,9 @@ namespace FortressForge.BuildingSystem.BuildManager
         /// <summary>
         /// Rotates the preview object around the Y-axis by the given angle.
         /// </summary>
-        private void RotateObject(float angle)
+        private void RotateBuilding(float angle)
         {
-            if (!_isPreviewMode || _previewBuilding == null) return;
+            if (!IsPreviewMode || _previewBuilding == null) return;
         
             // Get the current rotation around the Y-axis
             Vector3 currentRotation = _previewBuilding.transform.eulerAngles;
@@ -267,6 +268,23 @@ namespace FortressForge.BuildingSystem.BuildManager
             }
         
             return rotatedHexTileCoordinates;
+        }
+        
+        private static GameObject SpawnLocal(GameObject prefabToSpawn, Transform parent=null)
+        {
+            GameObject obj = Instantiate(prefabToSpawn, parent);
+            if (obj.TryGetComponent(out NetworkObject netObj))
+            {
+                netObj.enabled = false;
+            }
+            return obj;
+        }
+
+        private static GameObject SpawnNetworked(GameObject prefabToSpawn, Vector3 transformPosition=new(), Quaternion transformRotation=new(), Transform parent=null)
+        {
+            GameObject obj = Instantiate(prefabToSpawn, transformPosition, transformRotation, parent);
+            InstanceFinder.ServerManager.Spawn(obj);
+            return obj;
         }
     }
 }
