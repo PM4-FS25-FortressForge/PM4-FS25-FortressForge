@@ -5,10 +5,12 @@ using FortressForge.Economy;
 using FortressForge.GameInitialization;
 using FortressForge.HexGrid;
 using FortressForge.HexGrid.View;
+using FortressForge.UI;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
-namespace FortressForge
+namespace FortressForge.GameInitialization
 {
     public class InitializationManager : MonoBehaviour
     {
@@ -39,6 +41,8 @@ namespace FortressForge
             ButtonManager buttonManager = gameObject.AddComponent<ButtonManager>(); 
             buttonManager.Init(_buildingDropdown, _config.availableBuildings, buildViewController);
             
+            TopTrapezViewGenerator trapezViewGenerator = FindFirstObjectByType<UIDocument>().GetComponent<TopTrapezViewGenerator>();
+            trapezViewGenerator.Init(economyManager.EconomySystem);
         }
 
         private void InitializeHexGridViews(GameStartConfiguration config, HexGridManager hexGridManager)
