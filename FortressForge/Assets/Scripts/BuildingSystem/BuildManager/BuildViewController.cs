@@ -27,7 +27,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         private readonly List<HexTileCoordinate> _currentBuildTargets = new();
 
         private BuildActions _input;
-        private int _selectedBuildingIndex;
+        private int _selectedBuildingIndex = -1;
         private List<BaseBuildingTemplate> _availableBuildings;
 
         public void Init(HexGridData hexGridData, EconomySystem economySystem, BuildingManager buildingManager, HexGridHoverController hexGridHoverController, List<BaseBuildingTemplate> availableBuildings)
