@@ -151,9 +151,14 @@ namespace FortressForge.UI
                 label.text = text;
             }
         }
-
-        private void UpdateRessourceFillableContainer(VisualElement resourceContainer, FillableRessourceContainer fillableRessourceContainer,
-            Resource resource)
+        
+        /// <summary>
+        /// Updates the fillable resource container with the current amount of the resource.
+        /// </summary>
+        /// <param name="resourceContainer">The container element that holds the resource information.</param>
+        /// <param name="fillableRessourceContainer">The fillable resource container to update.</param>
+        /// <param name="resource">The resource to get the current amount from.</param>
+        private void UpdateRessourceFillableContainer(VisualElement resourceContainer, FillableRessourceContainer fillableRessourceContainer, Resource resource)
         {
             if (resource == null) return;
             fillableRessourceContainer.FillPercentage = Mathf.Clamp(resource.CurrentAmount / resource.MaxAmount, 0f, 1f);
