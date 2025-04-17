@@ -16,8 +16,8 @@ namespace FortressForge.UI
         private VisualElement _overlayRoot;
         private VisualElement _overlayFrame;
         private Image _overlayImage;
-        
-        private readonly Dictionary<ResourceType, FillableRessourceContainer> _fillableRessourceContainers = new ();
+
+        private readonly Dictionary<ResourceType, FillableRessourceContainer> _fillableRessourceContainers = new();
 
         /// <summary>
         /// Initializes the TopTrapezViewGenerator with the provided EconomySystem.
@@ -151,7 +151,7 @@ namespace FortressForge.UI
                 label.text = text;
             }
         }
-        
+
         /// <summary>
         /// Updates the fillable resource container with the current amount of the resource.
         /// </summary>
