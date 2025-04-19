@@ -5,6 +5,7 @@ using FortressForge.Economy;
 using FortressForge.HexGrid;
 using FortressForge.HexGrid.Data;
 using FortressForge.HexGrid.View;
+using FortressForge.UI;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -16,14 +17,16 @@ namespace FortressForge.BuildingSystem.BuildManager
         private HexGridData _hexGridData;
         private EconomySystem _economySystem;
         private BuildingManager _buildingManager;
-        
+
         private BaseBuildingTemplate _selectedBuildingTemplate;
         private GameObject _previewBuilding;
         private readonly List<HexTileCoordinate> _currentBuildTargets = new();
 
+        private UIClickChecker _uiClickChecker;
+
         private bool _isPreviewMode = false;
         private BuildActions _input;
-    
+
         public void Init(HexGridData hexGridData, EconomySystem economySystem, BuildingManager buildingManager, HexGridHoverController hexGridHoverController)
         {
             _hexGridData = hexGridData;
@@ -58,6 +61,8 @@ namespace FortressForge.BuildingSystem.BuildManager
         {
             _input.PreviewMode.SetCallbacks(this);
             _input.PreviewMode.Enable();
+
+            _uiClickChecker = new UIClickChecker();
         }
 
         /// <summary>
@@ -85,7 +90,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         /// </summary>
         public void OnPlaceAction(InputAction.CallbackContext context)
         {
-            if (context.performed && _isPreviewMode)
+            if (context.performed && _isPreviewMode && !_uiClickChecker.IsClickOnOverlay())
                 TryBuyAndPlaceBuilding();
         }
 
@@ -94,7 +99,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         /// </summary>
         public void OnExitBuildMode(InputAction.CallbackContext context)
         {
-            if (context.performed && _isPreviewMode)
+            if (context.performed && _isPreviewMode && !_uiClickChecker.IsClickOnOverlay())
                 ExitBuildMode();
         }
 
@@ -130,7 +135,7 @@ namespace FortressForge.BuildingSystem.BuildManager
 
             foreach (HexTileCoordinate hexTileCoordinate in buildingShape)
             {
-                if (!_hexGridData.TileMap.TryGetValue(hexTileCoordinate + target, out var tileData)) 
+                if (!_hexGridData.TileMap.TryGetValue(hexTileCoordinate + target, out var tileData))
                     continue;
                 tileData.IsBuildTarget = true;
                 _currentBuildTargets.Add(hexTileCoordinate + target);
@@ -167,7 +172,7 @@ namespace FortressForge.BuildingSystem.BuildManager
                 Debug.Log("Placement failed");
                 return;
             }
-            
+
             // Place the final building at the correct position
             PlaceBuilding(hexCoord);
             Debug.Log("Placement succeeded");
@@ -188,7 +193,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         private void ExitBuildMode()
         {
             if (!_isPreviewMode) return;
-        
+
             _isPreviewMode = false;
             Destroy(_previewBuilding);
             _selectedBuildingTemplate = null;
@@ -201,7 +206,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         private void RotateObject(float angle)
         {
             if (!_isPreviewMode || _previewBuilding == null) return;
-        
+
             // Get the current rotation around the Y-axis
             Vector3 currentRotation = _previewBuilding.transform.eulerAngles;
 
@@ -210,9 +215,9 @@ namespace FortressForge.BuildingSystem.BuildManager
 
             // Apply the new rotation while keeping other axes unchanged
             _previewBuilding.transform.rotation = Quaternion.Euler(currentRotation);
-        
+
             // Apply rotation to the preview building tiles
-            _selectedBuildingTemplate.ShapeData = RotateByAngle(_selectedBuildingTemplate.ShapeData, (int) angle);
+            _selectedBuildingTemplate.ShapeData = RotateByAngle(_selectedBuildingTemplate.ShapeData, (int)angle);
         }
 
         private Vector3 GetAveragePosition(List<HexTileCoordinate> hexTileCoordinates)
@@ -223,7 +228,7 @@ namespace FortressForge.BuildingSystem.BuildManager
             {
                 averagePosition += hexTileCoordinate.GetWorldPosition(_hexGridData.TileRadius, _hexGridData.TileHeight);
             }
-        
+
             averagePosition /= hexTileCoordinates.Count;
             return averagePosition;
         }
@@ -244,10 +249,10 @@ namespace FortressForge.BuildingSystem.BuildManager
                     q = -r;
                     r = temp + r;
                 }
-            
+
                 rotatedHexTileCoordinates.Add(new HexTileCoordinate(q, r, hexTileCoordinate.H));
             }
-        
+
             return rotatedHexTileCoordinates;
         }
     }
