@@ -81,6 +81,12 @@ namespace FortressForge.BuildingSystem.BuildManager
         {
             if (_isPreviewMode)
             {
+                if (_uiClickChecker.IsClickOnOverlay())
+                {
+                    ClearPreviousBuildTargets();
+                    return;
+                }
+
                 MovePreviewObject();
             }
         }
@@ -118,7 +124,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         private void MovePreviewObject()
         {
             HexTileView currentlyHoveredTile = _hexGridHoverController.CurrentlyHoveredTile;
-            if (currentlyHoveredTile == null) return;
+            if (currentlyHoveredTile is null) return;
             HexTileCoordinate currentlyHoveredHexTileCoordinate = currentlyHoveredTile.TileData.HexTileCoordinate;
 
             Vector3 snappedPos = currentlyHoveredHexTileCoordinate.GetWorldPosition(_hexGridData.TileRadius, _hexGridData.TileHeight);
