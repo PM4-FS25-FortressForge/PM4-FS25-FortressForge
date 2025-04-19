@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using FishNet;
 using FishNet.Object;
 using FortressForge.BuildingSystem.BuildingData;
-using FortressForge.BuildingSystem.HoverController;
 using FortressForge.Economy;
 using FortressForge.HexGrid;
 using FortressForge.HexGrid.Data;
@@ -18,47 +17,53 @@ namespace FortressForge.BuildingSystem.BuildManager
         private BaseBuildingTemplate SelectedBuildingTemplate => _availableBuildings[_selectedBuildingIndex];
         private bool IsPreviewMode => _selectedBuildingIndex != -1;
         
-        private HexGridHoverController _hexGridHoverController;
         private HexGridData _hexGridData;
         private EconomySystem _economySystem;
         private BuildingManager _buildingManager;
         
         private GameObject _previewBuilding;
+        private MeshRenderer _previewBuildingMeshRenderer;
         private readonly List<HexTileCoordinate> _currentBuildTargets = new();
 
         private BuildActions _input;
         private int _selectedBuildingIndex = -1;
         private List<BaseBuildingTemplate> _availableBuildings;
+        private HexTileData _hoveredHexTile;
 
-        public void Init(HexGridData hexGridData, EconomySystem economySystem, BuildingManager buildingManager, HexGridHoverController hexGridHoverController, List<BaseBuildingTemplate> availableBuildings)
+        public void Init(HexGridData hexGridData, EconomySystem economySystem, BuildingManager buildingManager, List<BaseBuildingTemplate> availableBuildings)
         {
             _availableBuildings = availableBuildings;
             _hexGridData = hexGridData;
             _economySystem = economySystem;
             _buildingManager = buildingManager;
-            _hexGridHoverController = hexGridHoverController;
+            
+            _hexGridData.OnHoverTileChanged += OnHexTileChanged;
         }
 
         public void PreviewSelectedBuilding(int buildingIndex)
         {
             if (_previewBuilding != null)
                 Destroy(_previewBuilding);
+            
             _selectedBuildingIndex = buildingIndex;
             _previewBuilding = SpawnLocal(_availableBuildings[_selectedBuildingIndex].BuildingPrefab);
+            _previewBuildingMeshRenderer = _previewBuilding.GetComponentInChildren<MeshRenderer>();
         }
         
-        /// <summary>
-        /// Moves the preview building each frame if in preview mode.
-        /// </summary>
-        private void Update()
-        {
-            if (IsPreviewMode)
-            {
-                MovePreviewObject();
-            }
-        }
-
         #region Input Callbacks
+        
+        private void OnHexTileChanged(HexTileData hexTileData)
+        {
+            if (_previewBuilding == null) return;
+            _hoveredHexTile = hexTileData.IsMouseTarget ? hexTileData : null;
+            MovePreviewObject(hexTileData);
+        }
+        
+        private void OnDestroy()
+        {
+            _hexGridData.OnHoverTileChanged -= OnHexTileChanged;
+            ExitBuildMode();
+        }
         
         /// <summary>
         /// Initializes the input handler on Awake.
@@ -116,15 +121,19 @@ namespace FortressForge.BuildingSystem.BuildManager
         }
         
         #endregion
-        
+
         /// <summary>
         /// Moves the preview object to the currently hovered hex tile position.
         /// </summary>
-        private void MovePreviewObject()
+        /// <param name="hexTileData"></param>
+        private void MovePreviewObject(HexTileData hexTileData)
         {
-            HexTileView currentlyHoveredTile = _hexGridHoverController.CurrentlyHoveredTile;
-            if (currentlyHoveredTile == null) return;
-            HexTileCoordinate currentlyHoveredHexTileCoordinate = currentlyHoveredTile.TileData.HexTileCoordinate;
+            ClearPreviousBuildTargets();
+            
+            // If this tile is not a valid target, do nothing
+            if (!hexTileData.IsMouseTarget) return;
+            
+            HexTileCoordinate currentlyHoveredHexTileCoordinate = hexTileData.HexTileCoordinate;
 
             Vector3 snappedPos = currentlyHoveredHexTileCoordinate.GetWorldPosition(_hexGridData.TileRadius, _hexGridData.TileHeight);
 
@@ -136,8 +145,6 @@ namespace FortressForge.BuildingSystem.BuildManager
 
         private void MarkNewTilesAsBuildTargets(HexTileCoordinate target, List<HexTileCoordinate> buildingShape)
         {
-            ClearPreviousBuildTargets();
-
             foreach (HexTileCoordinate hexTileCoordinate in buildingShape)
             {
                 if (!_hexGridData.TileMap.TryGetValue(hexTileCoordinate + target, out var tileData)) 
@@ -146,6 +153,8 @@ namespace FortressForge.BuildingSystem.BuildManager
                 tileData.IsBuildTarget = true;
                 _currentBuildTargets.Add(hexTileCoordinate + target);
             }
+            
+            _previewBuildingMeshRenderer.enabled = true;
         }
 
         /// <summary>
@@ -160,6 +169,7 @@ namespace FortressForge.BuildingSystem.BuildManager
             }
 
             _currentBuildTargets.Clear();
+            _previewBuildingMeshRenderer.enabled = false;
         }
 
         /// <summary>
@@ -167,9 +177,10 @@ namespace FortressForge.BuildingSystem.BuildManager
         /// </summary>
         private void TryBuyAndPlaceBuilding()
         {
-            HexTileView currentlyHoveredTile = _hexGridHoverController.CurrentlyHoveredTile;
+            HexTileData currentlyHoveredTile = _hoveredHexTile;
             if (currentlyHoveredTile == null) return;
-            HexTileCoordinate hexCoord = currentlyHoveredTile.TileData.HexTileCoordinate;
+            
+            HexTileCoordinate hexCoord = currentlyHoveredTile.HexTileCoordinate;
 
             // Check if the building can be placed
             if (!_economySystem.CheckForSufficientResources(SelectedBuildingTemplate.GetBuildCost())

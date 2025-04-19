@@ -4,7 +4,8 @@ namespace FortressForge.HexGrid.Data
 {
     public class HexTileData
     {
-        public event Action OnChanged;
+        public event Action<HexTileData> OnChanged;
+        public event Action<HexTileData> OnHoverChanged;
 
         private bool _isOccupied;
         public bool IsOccupied
@@ -15,7 +16,7 @@ namespace FortressForge.HexGrid.Data
                 if (_isOccupied != value)
                 {
                     _isOccupied = value;
-                    OnChanged?.Invoke();
+                    OnChanged?.Invoke(this);
                 }
             }
         }
@@ -29,7 +30,7 @@ namespace FortressForge.HexGrid.Data
                 if (_isBuildTarget != value)
                 {
                     _isBuildTarget = value;
-                    OnChanged?.Invoke();
+                    OnChanged?.Invoke(this);
                 }
             }
         }
@@ -43,7 +44,8 @@ namespace FortressForge.HexGrid.Data
                 if (_isMouseTarget != value)
                 {
                     _isMouseTarget = value;
-                    OnChanged?.Invoke();
+                    OnChanged?.Invoke(this);
+                    OnHoverChanged?.Invoke(this);
                 }
             }
         }
