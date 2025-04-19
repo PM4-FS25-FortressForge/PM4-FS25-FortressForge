@@ -67,10 +67,6 @@ namespace FortressForge.UI
             TrapezElement ressourceContainerTrapezoid = CreateTrapezElement("ressource-container");
             trapezElement.Add(ressourceContainerTrapezoid);
 
-            ressourceContainerTrapezoid.RegisterCallback<PointerDownEvent>(_ =>
-                Debug.Log("RessourceContainer Trapezoid clicked!")
-            );
-
             if (ResourceContainerAsset == null)
             {
                 Debug.LogError("ResourceContainer asset is not assigned!");
@@ -95,7 +91,7 @@ namespace FortressForge.UI
         /// <returns>A new instance of TrapezElement.</returns>
         private TrapezElement CreateTrapezElement(string selector, string className = null)
         {
-            TrapezElement trapezElement = new TrapezElement();
+            TrapezElement trapezElement = new ();
             trapezElement.SetParameters(90f, 180f, selector);
             if (!string.IsNullOrEmpty(className))
             {
@@ -108,9 +104,10 @@ namespace FortressForge.UI
         /// <summary>
         /// Loads the resource fill container with the specified parameters.
         /// </summary>
-        /// <param name="elementName"></param>
-        /// <param name="resourceContainer"></param>
-        /// <param name="ressourceTitle"></param>
+        /// <param name="elementName">The name of the element to load.</param>
+        /// <param name="resourceContainer">The container element that holds the resource information.</param>
+        /// <param name="resourceType">The type of resource to load.</param>
+        /// <param name="ressourceTitle"> The title of the resource.</param>
         private void LoadRessourceFillContainer(string elementName, VisualElement resourceContainer, ResourceType resourceType,
             string ressourceTitle = "Unknown Ressource")
         {
