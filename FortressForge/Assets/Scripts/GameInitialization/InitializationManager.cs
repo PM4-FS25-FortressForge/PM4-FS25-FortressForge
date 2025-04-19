@@ -31,7 +31,7 @@ namespace FortressForge
             InitializeHexGridViews(_config, hexGridManager);
             
             BuildViewController buildViewController = gameObject.GetComponent<BuildViewController>();
-            buildViewController.Init(hexGridManager.AllGrids[0], economyManager.EconomySystem, buildingManager, _config.availableBuildings);
+            buildViewController.Init(hexGridManager.AllGrids, economyManager.EconomySystem, buildingManager, _config);
             _buildingDropdown = FindObjectOfType<Dropdown>();
 
             BuildMenuController buildMenuController = gameObject.AddComponent<BuildMenuController>(); 

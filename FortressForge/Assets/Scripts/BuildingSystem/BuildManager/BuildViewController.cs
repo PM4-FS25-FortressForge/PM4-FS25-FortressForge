@@ -1,8 +1,10 @@
 using System.Collections.Generic;
+using System.Linq;
 using FishNet;
 using FishNet.Object;
 using FortressForge.BuildingSystem.BuildingData;
 using FortressForge.Economy;
+using FortressForge.GameInitialization;
 using FortressForge.HexGrid;
 using FortressForge.HexGrid.Data;
 using FortressForge.HexGrid.View;
@@ -14,12 +16,14 @@ namespace FortressForge.BuildingSystem.BuildManager
 {
     public class BuildViewController : NetworkBehaviour, BuildActions.IPreviewModeActions
     {
-        private BaseBuildingTemplate SelectedBuildingTemplate => _availableBuildings[_selectedBuildingIndex];
+        private BaseBuildingTemplate SelectedBuildingTemplate => AvailableBuildings[_selectedBuildingIndex];
+        private List<BaseBuildingTemplate> AvailableBuildings => _config.availableBuildings;
         private bool IsPreviewMode => _selectedBuildingIndex != -1;
         
-        private HexGridData _hexGridData;
+        private List<HexGridData> _hexGridDatas;
         private EconomySystem _economySystem;
         private BuildingManager _buildingManager;
+        private GameStartConfiguration _config;
         
         private GameObject _previewBuilding;
         private MeshRenderer _previewBuildingMeshRenderer;
@@ -27,17 +31,16 @@ namespace FortressForge.BuildingSystem.BuildManager
 
         private BuildActions _input;
         private int _selectedBuildingIndex = -1;
-        private List<BaseBuildingTemplate> _availableBuildings;
         private HexTileData _hoveredHexTile;
 
-        public void Init(HexGridData hexGridData, EconomySystem economySystem, BuildingManager buildingManager, List<BaseBuildingTemplate> availableBuildings)
+        public void Init(List<HexGridData> hexGridData, EconomySystem economySystem, BuildingManager buildingManager, GameStartConfiguration config)
         {
-            _availableBuildings = availableBuildings;
-            _hexGridData = hexGridData;
+            _hexGridDatas = hexGridData;
             _economySystem = economySystem;
             _buildingManager = buildingManager;
+            _config = config;
             
-            _hexGridData.OnHoverTileChanged += OnHexTileChanged;
+            _hexGridDatas.ForEach(gridData => gridData.OnHoverTileChanged += OnHexTileChanged);
         }
 
         public void PreviewSelectedBuilding(int buildingIndex)
@@ -46,7 +49,7 @@ namespace FortressForge.BuildingSystem.BuildManager
                 Destroy(_previewBuilding);
             
             _selectedBuildingIndex = buildingIndex;
-            _previewBuilding = SpawnLocal(_availableBuildings[_selectedBuildingIndex].BuildingPrefab);
+            _previewBuilding = SpawnLocal(AvailableBuildings[_selectedBuildingIndex].BuildingPrefab);
             _previewBuildingMeshRenderer = _previewBuilding.GetComponentInChildren<MeshRenderer>();
         }
         
@@ -61,7 +64,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         
         private void OnDestroy()
         {
-            _hexGridData.OnHoverTileChanged -= OnHexTileChanged;
+            _hexGridDatas.ForEach(gridData => gridData.OnHoverTileChanged -= OnHexTileChanged);
             ExitBuildMode();
         }
         
@@ -136,7 +139,7 @@ namespace FortressForge.BuildingSystem.BuildManager
             
             HexTileCoordinate currentlyHoveredHexTileCoordinate = hexTileData.HexTileCoordinate;
 
-            Vector3 snappedPos = currentlyHoveredHexTileCoordinate.GetWorldPosition(_hexGridData.TileRadius, _hexGridData.TileHeight);
+            Vector3 snappedPos = currentlyHoveredHexTileCoordinate.GetWorldPosition(_config.Radius, _config.TileHeight);
 
             Vector3 avgPos = GetAveragePosition(SelectedBuildingTemplate.ShapeData);
             _previewBuilding.transform.position = snappedPos + avgPos;
@@ -148,13 +151,19 @@ namespace FortressForge.BuildingSystem.BuildManager
         {
             foreach (HexTileCoordinate hexTileCoordinate in buildingShape)
             {
-                if (!_hexGridData.TileMap.TryGetValue(hexTileCoordinate + target, out var tileData)) 
-                    continue;
-                
-                tileData.IsBuildTarget = true;
-                _currentBuildTargets.Add(hexTileCoordinate + target);
+                HexTileCoordinate worldCoord = hexTileCoordinate + target;
+
+                foreach (var grid in _hexGridDatas)
+                {
+                    if (grid.TileMap.TryGetValue(worldCoord, out var tileData))
+                    {
+                        tileData.IsBuildTarget = true;
+                        _currentBuildTargets.Add(worldCoord);
+                        break; // tile found, stop searching other grids
+                    }
+                }
             }
-            
+
             _previewBuildingMeshRenderer.enabled = true;
         }
 
@@ -163,10 +172,16 @@ namespace FortressForge.BuildingSystem.BuildManager
         /// </summary>
         private void ClearPreviousBuildTargets()
         {
-            // Clear previous build targets
             foreach (HexTileCoordinate hexTileCoordinate in _currentBuildTargets)
             {
-                _hexGridData.TileMap[hexTileCoordinate].IsBuildTarget = false;
+                foreach (var hexGridData in _hexGridDatas)
+                {
+                    if (hexGridData.TileMap.TryGetValue(hexTileCoordinate, out var tileData))
+                    {
+                        tileData.IsBuildTarget = false;
+                        break; // Found the tile, no need to check other grids
+                    }
+                }
             }
 
             _currentBuildTargets.Clear();
@@ -180,38 +195,42 @@ namespace FortressForge.BuildingSystem.BuildManager
         {
             HexTileData currentlyHoveredTile = _hoveredHexTile;
             if (currentlyHoveredTile == null) return;
-            
+
             HexTileCoordinate hexCoord = currentlyHoveredTile.HexTileCoordinate;
 
-            // Check if the building can be placed
-            if (!_economySystem.CheckForSufficientResources(SelectedBuildingTemplate.GetBuildCost())
-                || !_hexGridData.ValidateBuildingPlacement(hexCoord, SelectedBuildingTemplate))
+            // Find the grid that allows placement
+            HexGridData targetGrid = _hexGridDatas
+                .FirstOrDefault(grid => grid.ValidateBuildingPlacement(hexCoord, SelectedBuildingTemplate));
+
+            bool hasResources = _economySystem.CheckForSufficientResources(SelectedBuildingTemplate.GetBuildCost());
+
+            if (targetGrid == null || !hasResources)
             {
                 Debug.Log("Placement failed");
                 return;
             }
-            
-            // Place the final building at the correct position
-            PlaceBuilding(hexCoord);
+
+            PlaceBuilding(targetGrid, hexCoord);
             Debug.Log("Placement succeeded");
         }
 
-        private void PlaceBuilding(HexTileCoordinate hexCoord)
+
+        private void PlaceBuilding(HexGridData hexGridData, HexTileCoordinate hexCoord)
         {
-            _hexGridData.PlaceBuilding(hexCoord, SelectedBuildingTemplate);
+            hexGridData.PlaceBuilding(hexCoord, SelectedBuildingTemplate);
             _economySystem.PayResource(SelectedBuildingTemplate.GetBuildCost());
             BaseBuildingTemplate copy = Instantiate(SelectedBuildingTemplate);
             _buildingManager.AddBuilding(copy);
             
             PlaceServerBuilding(_selectedBuildingIndex, 
-                hexCoord.GetWorldPosition(_hexGridData.TileRadius, _hexGridData.TileHeight) + GetAveragePosition(SelectedBuildingTemplate.ShapeData),
+                hexCoord.GetWorldPosition(_config.Radius, _config.TileHeight) + GetAveragePosition(SelectedBuildingTemplate.ShapeData),
                 _previewBuilding.transform.rotation);
         }
         
         [ServerRpc(RequireOwnership = false)]
         private void PlaceServerBuilding(int buildingIndex, Vector3 transformPosition, Quaternion transformRotation)
         {
-            SpawnNetworked(_availableBuildings[buildingIndex].BuildingPrefab, transformPosition, transformRotation, gameObject.transform);
+            SpawnNetworked(AvailableBuildings[buildingIndex].BuildingPrefab, transformPosition, transformRotation, gameObject.transform);
         }
         
         /// <summary>
@@ -252,7 +271,7 @@ namespace FortressForge.BuildingSystem.BuildManager
             Vector3 averagePosition = Vector3.zero;
             foreach (HexTileCoordinate hexTileCoordinate in hexTileCoordinates)
             {
-                averagePosition += hexTileCoordinate.GetWorldPosition(_hexGridData.TileRadius, _hexGridData.TileHeight);
+                averagePosition += hexTileCoordinate.GetWorldPosition(_config.Radius, _config.TileHeight);
             }
         
             averagePosition /= hexTileCoordinates.Count;
