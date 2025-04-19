@@ -1,6 +1,5 @@
 .ressource-root {
     flex-direction: row;
-    margin-left: 5%;
 }
 
 .ressource-container-left {

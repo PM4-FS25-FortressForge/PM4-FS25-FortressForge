@@ -28,7 +28,8 @@ namespace FortressForge.Economy
             // Example for max value application
             var maxValues = new Dictionary<ResourceType, float>
             {
-                { ResourceType.Power, 0f }
+                { ResourceType.Power, 0f },
+                { ResourceType.Metal, 10000f },
             };
             
             _economySystem = new EconomySystem(buildingManager, maxValues);

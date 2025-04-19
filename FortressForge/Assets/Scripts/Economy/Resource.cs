@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace FortressForge.Economy
 {
@@ -8,6 +9,8 @@ namespace FortressForge.Economy
     /// </summary>
     public class Resource
     {
+        public event Action OnChanged;
+        
         private readonly ResourceType _type;
 
         private float _currentAmount;
@@ -31,6 +34,7 @@ namespace FortressForge.Economy
                     Debug.LogError($"[Resource] {_type} attempted to go below 0. Value: {value}");
                     throw new System.ArgumentOutOfRangeException(nameof(value), $"[Resource] {_type} cannot go below 0.");
                 }
+                float previousValue = _currentAmount;
                 if (value > MaxAmount)
                 {
                     Debug.Log($"[Resource] { _type } exceeded max ({value} > {MaxAmount}). Clamping.");
@@ -39,6 +43,10 @@ namespace FortressForge.Economy
                 else 
                 {
                     _currentAmount = value;
+                }
+                if (Math.Abs(previousValue - _currentAmount) > Mathf.Epsilon)
+                {
+                    OnChanged?.Invoke();
                 }
             }
         }

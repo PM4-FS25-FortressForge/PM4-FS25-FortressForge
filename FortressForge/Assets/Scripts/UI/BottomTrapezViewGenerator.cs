@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using FortressForge.BuildingSystem.BuildingData;
+using FortressForge.BuildingSystem.BuildManager;
 using FortressForge.UI.CustomVisualElements;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UIElements;
 
 namespace FortressForge.UI
@@ -18,8 +19,9 @@ namespace FortressForge.UI
         public VisualTreeAsset BuildingSelectorViewTree;
         public VisualTreeAsset BuildingCardVisualTree;
 
-        private readonly Dictionary<string, string> _exampleBuildings = new();
-        
+        private BuildViewController _buildViewController;
+        private List<BaseBuildingTemplate> _availableBuildings;
+
         private void OnEnable()
         {
             if (!ValidateUIDocument()) return;
@@ -30,8 +32,40 @@ namespace FortressForge.UI
 
             LoadBuildingSelectorView();
             AlignTabHeadersWithTrapezBorder();
-            GenerateBuildingList();
+        }
+
+        /// <summary>
+        /// Initializes the BottomTrapezViewGenerator with the available buildings and BuildViewController.
+        /// </summary>
+        /// <param name="availableBuildings"> List of available buildings.</param>
+        /// <param name="buildViewController"> The BuildViewController to initialize with.</param>
+        public void Init(List<BaseBuildingTemplate> availableBuildings, BuildViewController buildViewController)
+        {
+            if (availableBuildings == null || availableBuildings.Count == 0 || buildViewController == null)
+            {
+                Debug.LogError("No available buildings or BuildViewController provided.");
+                return;
+            }
+
+            _availableBuildings = availableBuildings;
+            _buildViewController = buildViewController;
+
             PopulateTabViewContentContainers();
+        }
+
+        /// <summary>
+        /// Selects a building based on the index and triggers the preview in the BuildViewController.
+        /// </summary>
+        /// <param name="index"></param>
+        private void SelectBuilding(int index)
+        {
+            if (index >= _availableBuildings.Count)
+            {
+                Debug.LogError("Index out of range.");
+                return;
+            }
+
+            _buildViewController.PreviewSelectedBuilding(_availableBuildings[index]);
         }
 
         /// <summary>
@@ -135,26 +169,12 @@ namespace FortressForge.UI
                 }
 
                 tabContentListView.Clear();
-                _exampleBuildings.Select((_, index) =>
-                    {
-                        VisualElement buildingCard = MakeItem();
-                        BindItem(buildingCard, index);
-                        return buildingCard;
-                    })
-                    .ToList()
-                    .ForEach(buildingCard => tabContentListView.Add(buildingCard));
-            }
-        }
-
-        /// <summary>
-        /// Generates a list of example buildings with their names and descriptions.
-        /// </summary>
-        private void GenerateBuildingList()
-        {
-            _exampleBuildings.Clear();
-            for (int i = 0; i < 40; i++)
-            {
-                _exampleBuildings.Add($"Building {i}", $"Description for Building {i}");
+                foreach (BaseBuildingTemplate building in _availableBuildings)
+                {
+                    VisualElement buildingCard = MakeItem();
+                    BindItem(buildingCard, _availableBuildings.IndexOf(building));
+                    tabContentListView.Add(buildingCard);
+                }
             }
         }
 
@@ -165,7 +185,6 @@ namespace FortressForge.UI
         private VisualElement MakeItem()
         {
             VisualElement buildingCard = BuildingCardVisualTree.CloneTree();
-            buildingCard.RegisterCallback<PointerDownEvent>(_ => Debug.Log("Building card clicked!"));
             return buildingCard;
         }
 
@@ -176,7 +195,9 @@ namespace FortressForge.UI
         /// <param name="index"></param>
         private void BindItem(VisualElement item, int index)
         {
-            if (!_exampleBuildings.TryGetValue(_exampleBuildings.ElementAt(index).Key, out string description)) return;
+            if (index < 0 || index >= _availableBuildings.Count) return;
+
+            BaseBuildingTemplate building = _availableBuildings[index];
 
             item.AddToClassList("building-card-template-container");
 
@@ -189,8 +210,14 @@ namespace FortressForge.UI
                 return;
             }
 
-            labelsContainer.Q<Label>("building-card-name").text = _exampleBuildings.ElementAt(index).Key;
-            labelsContainer.Q<Label>("building-card-cost").text = description;
+            labelsContainer.Q<Label>("building-card-name").text = building.name;
+            labelsContainer.Q<Label>("building-card-cost").text = building.name;
+
+            item.RegisterCallback<PointerDownEvent>(_ =>
+            {
+                SelectBuilding(index);
+                Debug.Log($"Selected building: {building.name}");
+            });
         }
     }
 }
