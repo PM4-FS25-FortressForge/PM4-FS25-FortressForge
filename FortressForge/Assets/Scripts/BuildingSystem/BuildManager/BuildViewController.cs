@@ -116,6 +116,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         /// </summary>
         public void OnRotateBuilding(InputAction.CallbackContext context)
         {
+            if (!IsOwner) return;
             if (context.performed && IsPreviewMode)
                 RotateBuilding(60f); // Or whatever angle you want for rotation
         }
