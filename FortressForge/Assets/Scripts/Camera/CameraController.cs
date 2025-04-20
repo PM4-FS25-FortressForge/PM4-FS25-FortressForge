@@ -68,6 +68,10 @@ namespace FortressForge.CameraControll
         private InputAction _pitchAction;
 
         private ITerrainHeightProvider _terrainHeightProvider = new TerrainHeightProvider();
+        private float _targetHeight; // target terrain height that will be reached by SmoothDamp
+        private float _heightVelocity; // Needed for SmoothDamp (in the UpdateCameraPosition methode)
+        private float _heightSmoothTime = 0.5f; // Higher = smoother but less accurate
+        
         private float _moveSpeedZoomSensitivity = 1f; // Zoom speed sensitivity for the WASD movement (from 0.4f, 3f, neutral is 1.0f)
         private float _pitchAndRollSpeedZoomSensitivity = 1f; // Zoom speed sensitivity for the pitch and roll movement (from 0.85f, 1.5f, neutral is 1.0f)
         private Vector2 _moveSensitivityLimits = new Vector2(0.4f, 3f); // Min/Max sensitivity for the WASD movement
@@ -97,6 +101,8 @@ namespace FortressForge.CameraControll
             _zoomAction = InitializeActionsButtons("Zoom"); // Zoom in/out mouse Wheel
             _zoomButtons = InitializeActionsButtons("ZoomButtons"); // Zoom in/out Buttons (left/right arrow keys)
             _targetZoom = Zoom; // Set the initial target zoom to the initial zoom
+            //_targetHeight = _terrainHeightProvider.SampleHeight(TargetPosition); // Set the initial target height to the initial height of the terrain
+
         }
 
         /// <summary>
@@ -111,7 +117,7 @@ namespace FortressForge.CameraControll
             HandleRotation(deltaTime); //Rotate around target (Q/E)
             HandlePitch(deltaTime); //Pitch control (Arrow keys)
             HandleZoom(deltaTime); //Zoom
-            UpdateCameraPosition(deltaTime); //Calculate at update camera position
+            UpdateCameraPosition(); //Calculate at update camera position
         }
 
         /// <summary>
@@ -182,11 +188,15 @@ namespace FortressForge.CameraControll
         /// It sets the new position of the camera and makes sure the camera always looks at the centred target
         /// </summary>
         /// <param name="deltaTime"></param>
-        private void UpdateCameraPosition(float deltaTime)
+        private void UpdateCameraPosition()
         {
             Quaternion rotation = Quaternion.Euler(Pitch, Yaw, 0); // Calculate the rotation around the centred object
             Vector3 offset = rotation * new Vector3(0, 0, -Zoom); // Calculate the offset of the camera
-            TargetPosition.y = _terrainHeightProvider.SampleHeight(TargetPosition); // Set the target position to the height of the terrain at the current position
+            
+            TargetPosition.y = _terrainHeightProvider.SampleHeight(TargetPosition); // get the height of the terrain at the current position
+            _targetHeight = Mathf.SmoothDamp(_targetHeight, TargetPosition.y, ref _heightVelocity, _heightSmoothTime);  // SmoothDamp for height
+            TargetPosition.y = _targetHeight; 
+
             transform.position = TargetPosition + offset; // Set the new position of the camera
             transform.LookAt(TargetPosition); // Always look at the center point
         }
