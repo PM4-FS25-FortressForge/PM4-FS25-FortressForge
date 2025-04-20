@@ -65,6 +65,10 @@ namespace FortressForge.CameraControll
         private InputAction _pitchAction;
 
         private ITerrainHeightProvider _terrainHeightProvider = new TerrainHeightProvider();
+        private float _moveSpeedZoomSensitivity = 1f; // Zoom speed sensitivity for the WASD movement (from 0.4f, 3f, neutral is 1.0f)
+        private float _pitchAndRollSpeedZoomSensitivity = 1f; // Zoom speed sensitivity for the pitch and roll movement (from 0.85f, 1.5f, neutral is 1.0f)
+        private Vector2 _moveSensitivityLimits = new Vector2(0.4f, 3f); // Min/Max sensitivity for the WASD movement
+        private Vector2 _pitchAndRollSensitivityLimits = new Vector2(0.85f, 1.5f); // Min/Max sensitivity for the pitch and roll movement
 
         /// <summary>
         /// Start function to initialize the PlayerInput and the InputActions
@@ -117,7 +121,7 @@ namespace FortressForge.CameraControll
             Vector2 moveInput = _moveTargetAction.ReadValue<Vector2>(); // WASD input
             Vector3 moveDir = new Vector3(moveInput.x, 0, moveInput.y); // X (A/D), Z (W/S)
             Vector3 moveVector = Quaternion.Euler(0, Yaw, 0) * moveDir; // Move relative to current yaw
-            TargetPosition += moveVector * MoveSpeed * deltaTime; // calculate new target position
+            TargetPosition += moveVector * MoveSpeed * deltaTime * _moveSpeedZoomSensitivity; // calculate new target position
         }
 
         /// <summary>
@@ -129,7 +133,7 @@ namespace FortressForge.CameraControll
         private void HandleRotation(float deltaTime)
         {
             float rotateInput = _rotateAction.ReadValue<float>(); // Q/E input
-            Yaw = (Yaw + rotateInput * RotationSpeed * deltaTime) % 360f; // Rotate around target
+            Yaw = (Yaw + rotateInput * RotationSpeed * deltaTime * _pitchAndRollSpeedZoomSensitivity) % 360f; // Rotate around target
         }
 
         /// <summary>
@@ -141,7 +145,7 @@ namespace FortressForge.CameraControll
         private void HandlePitch(float deltaTime)
         {
             float pitchInput = _pitchAction.ReadValue<float>(); // Up/Down arrows
-            Pitch += pitchInput * PitchSpeed * deltaTime; // move camera in pitch angle to center
+            Pitch += pitchInput * PitchSpeed * deltaTime * _pitchAndRollSpeedZoomSensitivity; // move camera in pitch angle to center
             Pitch = Mathf.Clamp(Pitch, PitchLimits.y, PitchLimits.x); // Limit pitch angle
         }
 
@@ -158,6 +162,11 @@ namespace FortressForge.CameraControll
 
             float zoomButtonInput = _zoomButtons.ReadValue<float>(); // Zoom input with the Buttons
             Zoom = Mathf.Clamp(Zoom - zoomButtonInput * ZoomSpeed * deltaTime * 2, zoomLimits.x, zoomLimits.y); // Zoom faster (multiplied by 2) with buttons but depends on the deltaTime
+            
+            // Linear mapping from [min, max Zoom] to [0.4, 3] for WASD movement
+            _moveSpeedZoomSensitivity = _moveSensitivityLimits.x + (Zoom - zoomLimits.x) * (_moveSensitivityLimits.y - _moveSensitivityLimits.x) / (zoomLimits.y - zoomLimits.x);
+            // Linear mapping from [min, max Zoom] to [0.85, 1.5] for pitch and roll
+            _pitchAndRollSpeedZoomSensitivity = _pitchAndRollSensitivityLimits.x + (Zoom - zoomLimits.x) * (_pitchAndRollSensitivityLimits.y - _pitchAndRollSensitivityLimits.x) / (zoomLimits.y - zoomLimits.x);
         }
 
         /// <summary>

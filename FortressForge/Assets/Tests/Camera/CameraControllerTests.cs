@@ -322,7 +322,7 @@ namespace Tests.Camera
         [UnityTest]
         public IEnumerator TestCameraCombinedInversedMovement()
         {
-            Vector3 newCalculatedPosition = new(-11.36f, 0f, 4.12f);
+            Vector3 newCalculatedPosition = new(-8f, 0f, 1.7f);
             yield return SetupCustom(); //Ensure the scene is loaded in each new test and camera is set up
             SetInitialCameraValuesForEachTest(); //Ensure the camera is set to the initial values for each test
 
