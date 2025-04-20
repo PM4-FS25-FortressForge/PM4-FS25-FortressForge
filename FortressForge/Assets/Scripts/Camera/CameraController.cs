@@ -49,6 +49,9 @@ namespace FortressForge.CameraControll
         [SerializeField] public float RotationSpeed = 50.0f;
         [SerializeField] public float PitchSpeed = 40.0f;
         [SerializeField] public float ZoomSpeed = 2.0f;
+        private float _targetZoom;  // Zoomtarget that will be reached by SmoothDamp
+        private float _zoomVelocity; // SmoothDamp (used in HandleZoom methode) needs this velocity-Reference
+        private float _zoomSmoothTime = 0.2f; // the time it takes to reach the _targetZoom (bigger value more smooth but less accurate)
 
         // Limits
         [Tooltip("To avoid the camera to flip or bug do not use value higher than 89\u00b0 or lower than 0\u00b0")] [SerializeField]
@@ -93,6 +96,7 @@ namespace FortressForge.CameraControll
             _pitchAction = InitializeActionsButtons("Pitch"); // Up/Down arrow keys
             _zoomAction = InitializeActionsButtons("Zoom"); // Zoom in/out mouse Wheel
             _zoomButtons = InitializeActionsButtons("ZoomButtons"); // Zoom in/out Buttons (left/right arrow keys)
+            _targetZoom = Zoom; // Set the initial target zoom to the initial zoom
         }
 
         /// <summary>
@@ -157,11 +161,14 @@ namespace FortressForge.CameraControll
         /// <param name="deltaTime"></param>
         private void HandleZoom(float deltaTime)
         {
-            float zoomInput = _zoomAction.ReadValue<float>(); // Zoom input with mouse wheel
-            Zoom = Mathf.Clamp(Zoom - zoomInput * ZoomSpeed, zoomLimits.x, zoomLimits.y); // Zoom without deltaTime to make it consistent and good feeling
-
+            float zoomInput = _zoomAction.ReadValue<float>(); // Zoom input with mouse wheel (made more smooth with SmoothDamp)
+            zoomInput = zoomInput * 0.5f;   // Zoom input is split in half to make the step size of the mouse wheel smaller
+            _targetZoom = Mathf.Clamp(_targetZoom - zoomInput * ZoomSpeed, zoomLimits.x, zoomLimits.y); 
+            
             float zoomButtonInput = _zoomButtons.ReadValue<float>(); // Zoom input with the Buttons
-            Zoom = Mathf.Clamp(Zoom - zoomButtonInput * ZoomSpeed * deltaTime * 2, zoomLimits.x, zoomLimits.y); // Zoom faster (multiplied by 2) with buttons but depends on the deltaTime
+            _targetZoom = Mathf.Clamp(_targetZoom - zoomButtonInput * ZoomSpeed * deltaTime * 2.5f, zoomLimits.x, zoomLimits.y);
+            
+            Zoom = Mathf.SmoothDamp(Zoom, _targetZoom, ref _zoomVelocity, _zoomSmoothTime); // SmoothDamp for zooming smoothly in/out
             
             // Linear mapping from [min, max Zoom] to [0.4, 3] for WASD movement
             _moveSpeedZoomSensitivity = _moveSensitivityLimits.x + (Zoom - zoomLimits.x) * (_moveSensitivityLimits.y - _moveSensitivityLimits.x) / (zoomLimits.y - zoomLimits.x);
