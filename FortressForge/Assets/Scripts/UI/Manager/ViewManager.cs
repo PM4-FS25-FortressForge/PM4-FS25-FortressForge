@@ -16,7 +16,7 @@ namespace FortressForge.UI.Manager
     {
         [SerializeField] private UIDocument lobbyViewDoc;
         [SerializeField] private UIDocument gameRoomViewDoc;
-        [SerializeField] private string nextScene = "Unity Cammera implementation Test"; // TODO: quickfix to make tests work as long as ui is wrongly implemented
+        [SerializeField] private string nextScene = "CameraTestScene"; // TODO: quickfix to make tests work as long as ui is wrongly implemented
         [SerializeField] private string lobbyScene = "LobbyScene";
 
         private UIDocument _currentView;

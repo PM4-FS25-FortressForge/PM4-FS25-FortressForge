@@ -48,7 +48,7 @@ namespace Tests.Camera
 
         private Keyboard _keyboard; // Store the virtual keyboard
         private Mouse _mouse; // Store the virtual mouse
-        private const string TEST_SCENE = "Unity Cammera implementation Test";
+        private const string TEST_SCENE = "CameraTestScene";
         
         private float TestsDelayTime = 0f; // Delay time for the tests to wait for the camera to move (Change this for optical debuging to 0.5f)
 
