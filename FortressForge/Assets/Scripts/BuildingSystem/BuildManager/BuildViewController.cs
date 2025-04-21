@@ -114,7 +114,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         public void OnExitBuildMode(InputAction.CallbackContext context)
         {
             if (!IsOwner) return;
-            if (context.performed && IsPreviewMode && !_uiClickChecker.IsClickOnOverlay())
+            if (context.performed && IsPreviewMode)
                 ExitBuildMode();
         }
 

@@ -65,7 +65,7 @@ namespace FortressForge.UI
                 return;
             }
 
-            _buildViewController.PreviewSelectedBuilding(_availableBuildings[index]);
+            _buildViewController.PreviewSelectedBuilding(index);
         }
 
         /// <summary>
