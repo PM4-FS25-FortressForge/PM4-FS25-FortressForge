@@ -12,12 +12,10 @@ namespace FortressForge.BuildingSystem.HoverController
         [SerializeField] private float _raycastDistance = 3000;
 
         private UIClickChecker _clickChecker;
-        private Camera _camera;
 
         public void OnEnable()
         {
             _clickChecker = new UIClickChecker();
-            _camera = Camera.main;
         }
 
         private void Update()
@@ -28,8 +26,8 @@ namespace FortressForge.BuildingSystem.HoverController
                 return;
             }
 
-            if (_camera is null) return;
-            Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
+            if (Camera.main is null) return;
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
             if (!Physics.Raycast(ray, out RaycastHit hit, _raycastDistance))
             {
