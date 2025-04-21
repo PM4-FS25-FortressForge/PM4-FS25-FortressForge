@@ -20,7 +20,7 @@ namespace FortressForge.UI
 
             if (uiDocument == null)
             {
-                Debug.LogError("No UIDocument found in the scene.");
+                Debug.LogWarning("No UIDocument found in the scene.");
                 return;
             }
 
@@ -28,7 +28,7 @@ namespace FortressForge.UI
             _bottomTrapezOverlay = uiDocument.rootVisualElement.Q<TrapezElement>(className: "bottom-trapez-frame");
 
             if (_topTrapezOverlay == null || _bottomTrapezOverlay == null)
-                Debug.LogError("TrapezOverlay not found!");
+                Debug.LogWarning("TrapezOverlay not found!");
         }
 
         /// <summary>
