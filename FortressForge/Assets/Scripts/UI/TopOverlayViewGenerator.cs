@@ -1,6 +1,7 @@
-﻿using FortressForge.UI.CustomVisualElements;
+﻿using System.Collections.Generic;
+using FortressForge.Economy;
+using FortressForge.UI.CustomVisualElements;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UIElements;
 
 namespace FortressForge.UI
@@ -8,13 +9,34 @@ namespace FortressForge.UI
     /// <summary>
     /// Generates the top trapez view for the building GameOverlay
     /// </summary>
-    public class TopTrapezViewGenerator : MonoBehaviour
+    public class TopOverlayViewGenerator : MonoBehaviour
     {
         public UIDocument OverlayUIDocument;
         public VisualTreeAsset ResourceContainerAsset;
         private VisualElement _overlayRoot;
         private VisualElement _overlayFrame;
         private Image _overlayImage;
+
+        private readonly Dictionary<ResourceType, FillableRessourceContainer> _fillableRessourceContainers = new();
+
+        /// <summary>
+        /// Initializes the TopTrapezViewGenerator with the provided EconomySystem.
+        /// </summary>
+        /// <param name="economySystem">The EconomySystem to initialize with.</param>
+        public void Init(EconomySystem economySystem)
+        {
+            if (economySystem == null) return;
+            foreach (KeyValuePair<ResourceType, Resource> resource in economySystem.CurrentResources)
+            {
+                resource.Value.OnChanged += () =>
+                {
+                    if (_fillableRessourceContainers.TryGetValue(resource.Key, out FillableRessourceContainer fillableRessourceContainer))
+                    {
+                        UpdateRessourceFillableContainer(_overlayFrame, fillableRessourceContainer, resource.Value);
+                    }
+                };
+            }
+        }
 
         void OnEnable()
         {
@@ -45,10 +67,6 @@ namespace FortressForge.UI
             TrapezElement ressourceContainerTrapezoid = CreateTrapezElement("ressource-container");
             trapezElement.Add(ressourceContainerTrapezoid);
 
-            ressourceContainerTrapezoid.RegisterCallback<PointerDownEvent>(_ =>
-                Debug.Log("RessourceContainer Trapezoid clicked!")
-            );
-
             if (ResourceContainerAsset == null)
             {
                 Debug.LogError("ResourceContainer asset is not assigned!");
@@ -59,10 +77,10 @@ namespace FortressForge.UI
             resourceContainer.AddToClassList("ressource-container");
             trapezElement.Add(resourceContainer);
 
-            LoadRessourceFillContainer("FillableRessourceContainer-left-top", resourceContainer, "Energy");
-            LoadRessourceFillContainer("FillableRessourceContainer-right-top", resourceContainer, "Munition");
-            LoadRessourceFillContainer("FillableRessourceContainer-left-bottom", resourceContainer, "Metal");
-            LoadRessourceFillContainer("FillableRessourceContainer-right-bottom", resourceContainer, "Stone");
+            LoadRessourceFillContainer("FillableRessourceContainer-left-top", resourceContainer, ResourceType.Power, "Energy");
+            LoadRessourceFillContainer("FillableRessourceContainer-right-top", resourceContainer, ResourceType.Magma, "Munition");
+            LoadRessourceFillContainer("FillableRessourceContainer-left-bottom", resourceContainer, ResourceType.Metal, "Metal");
+            LoadRessourceFillContainer("FillableRessourceContainer-right-bottom", resourceContainer, ResourceType.Metal, "Stone");
         }
 
         /// <summary>
@@ -73,39 +91,44 @@ namespace FortressForge.UI
         /// <returns>A new instance of TrapezElement.</returns>
         private TrapezElement CreateTrapezElement(string selector, string className = null)
         {
-            TrapezElement trapezElement = new TrapezElement();
+            TrapezElement trapezElement = new ();
             trapezElement.SetParameters(90f, 180f, selector);
             if (!string.IsNullOrEmpty(className))
             {
                 trapezElement.AddToClassList(className);
             }
+
             return trapezElement;
         }
 
         /// <summary>
         /// Loads the resource fill container with the specified parameters.
         /// </summary>
-        /// <param name="elementName"></param>
-        /// <param name="resourceContainer"></param>
-        /// <param name="ressourceTitle"></param>
-        private static void LoadRessourceFillContainer(string elementName, VisualElement resourceContainer, string ressourceTitle = "Unknown Ressource")
+        /// <param name="elementName">The name of the element to load.</param>
+        /// <param name="resourceContainer">The container element that holds the resource information.</param>
+        /// <param name="resourceType">The type of resource to load.</param>
+        /// <param name="ressourceTitle"> The title of the resource.</param>
+        private void LoadRessourceFillContainer(string elementName, VisualElement resourceContainer, ResourceType resourceType,
+            string ressourceTitle = "Unknown Ressource")
         {
-            FillableRessourceContainer fillableRessourceContainer = resourceContainer.Q<FillableRessourceContainer>(elementName);
+            FillableRessourceContainer fillableRessourceContainer =
+                resourceContainer.Q<FillableRessourceContainer>(elementName);
             if (fillableRessourceContainer == null)
             {
                 Debug.LogError("FillableRessourceContainer not found!");
             }
             else
             {
-                fillableRessourceContainer.FillPercentage = 0.5f;
+                fillableRessourceContainer.FillPercentage = 0f;
                 fillableRessourceContainer.IsHorizontal = true;
-                fillableRessourceContainer.AddStyleForClassList("ressource-container-fillable");
+                fillableRessourceContainer.AddToClassList("ressource-container-fillable");
+                _fillableRessourceContainers.TryAdd(resourceType, fillableRessourceContainer);
             }
-        
+
             SetLabelText(resourceContainer, elementName + "-title", ressourceTitle, "Title label not found!");
-            SetLabelText(resourceContainer, elementName + "-amount", "100/200", "Current amount label not found!");
+            SetLabelText(resourceContainer, elementName + "-amount", "0/0", "Current amount label not found!");
         }
-        
+
         /// <summary>
         /// Sets the text of a label in the specified container.
         /// </summary>
@@ -123,6 +146,27 @@ namespace FortressForge.UI
             else
             {
                 label.text = text;
+            }
+        }
+
+        /// <summary>
+        /// Updates the fillable resource container with the current amount of the resource.
+        /// </summary>
+        /// <param name="resourceContainer">The container element that holds the resource information.</param>
+        /// <param name="fillableRessourceContainer">The fillable resource container to update.</param>
+        /// <param name="resource">The resource to get the current amount from.</param>
+        private void UpdateRessourceFillableContainer(VisualElement resourceContainer, FillableRessourceContainer fillableRessourceContainer, Resource resource)
+        {
+            if (resource == null) return;
+            fillableRessourceContainer.FillPercentage = Mathf.Clamp(resource.CurrentAmount / resource.MaxAmount, 0f, 1f);
+            Label amountLabel = resourceContainer.Q<Label>(fillableRessourceContainer.name + "-amount");
+            if (amountLabel != null)
+            {
+                amountLabel.text = $"{resource.CurrentAmount}/{resource.MaxAmount}";
+            }
+            else
+            {
+                Debug.LogError("Current amount label not found!");
             }
         }
     }

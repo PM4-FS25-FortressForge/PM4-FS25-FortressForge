@@ -5,16 +5,17 @@ using FortressForge.Economy;
 using FortressForge.GameInitialization;
 using FortressForge.HexGrid;
 using FortressForge.HexGrid.View;
+using FortressForge.UI;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
-namespace FortressForge
+namespace FortressForge.GameInitialization
 {
     public class InitializationManager : MonoBehaviour
     {
         [Header("Game Start Configuration")]
         [SerializeField] private GameStartConfiguration _config;
-        [SerializeField] private Dropdown _buildingDropdown;
         
         private void Start()
         {
@@ -36,9 +37,11 @@ namespace FortressForge
             BuildViewController buildViewController = gameObject.AddComponent<BuildViewController>();
             buildViewController.Init(hexGridManager.AllGrids[0], economyManager.EconomySystem, buildingManager, hexGridHoverController);
             
-            ButtonManager buttonManager = gameObject.AddComponent<ButtonManager>(); 
-            buttonManager.Init(_buildingDropdown, _config.availableBuildings, buildViewController);
+            TopOverlayViewGenerator topOverlayViewGenerator = FindFirstObjectByType<UIDocument>().GetComponent<TopOverlayViewGenerator>();
+            topOverlayViewGenerator.Init(economyManager.EconomySystem);
             
+            BottomOverlayViewGenerator bottomOverlayViewGenerator = FindFirstObjectByType<UIDocument>().GetComponent<BottomOverlayViewGenerator>();
+            bottomOverlayViewGenerator.Init(_config.availableBuildings, buildViewController);
         }
 
         private void InitializeHexGridViews(GameStartConfiguration config, HexGridManager hexGridManager)
