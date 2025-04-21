@@ -15,6 +15,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Unity Cammera implementation Test.unity
     guid: 20fd2a6261fdc234f935e1cda2ad329c
   - enabled: 1
+    path: Assets/Scenes/Tests/EmptyScene.unity
+    guid: 4dc3924270405a34ba2282f9d469f92c
+  - enabled: 1
     path: Assets/Scenes/Tests/GameOverlayTesting.unity
     guid: 91798de14ede4209ae761d7a587f1acd
   m_configObjects:

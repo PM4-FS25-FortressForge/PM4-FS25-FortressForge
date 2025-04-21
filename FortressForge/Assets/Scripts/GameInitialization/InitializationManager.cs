@@ -1,6 +1,5 @@
-﻿using FortressForge.BuildingSystem;
+﻿using FishNet.Object;
 using FortressForge.BuildingSystem.BuildManager;
-using FortressForge.BuildingSystem.HoverController;
 using FortressForge.Economy;
 using FortressForge.GameInitialization;
 using FortressForge.HexGrid;
@@ -12,12 +11,12 @@ using UnityEngine.UIElements;
 
 namespace FortressForge.GameInitialization
 {
-    public class InitializationManager : MonoBehaviour
+    public class InitializationManager : NetworkBehaviour
     {
         [Header("Game Start Configuration")]
         [SerializeField] private GameStartConfiguration _config;
         
-        private void Start()
+        public override void OnStartClient()
         {
             // Initialize the Terrain from _config
             Instantiate(_config.Terrain);
@@ -32,16 +31,15 @@ namespace FortressForge.GameInitialization
             
             InitializeHexGridViews(_config, hexGridManager);
             
-            HexGridHoverController hexGridHoverController = gameObject.AddComponent<HexGridHoverController>();
-            
-            BuildViewController buildViewController = gameObject.AddComponent<BuildViewController>();
-            buildViewController.Init(hexGridManager.AllGrids[0], economyManager.EconomySystem, buildingManager, hexGridHoverController);
-            
+            BuildViewController buildViewController = gameObject.GetComponent<BuildViewController>();
+            buildViewController.Init(hexGridManager.AllGrids, economyManager.EconomySystem, buildingManager, _config);
+
             TopOverlayViewGenerator topOverlayViewGenerator = FindFirstObjectByType<UIDocument>().GetComponent<TopOverlayViewGenerator>();
             topOverlayViewGenerator.Init(economyManager.EconomySystem);
             
             BottomOverlayViewGenerator bottomOverlayViewGenerator = FindFirstObjectByType<UIDocument>().GetComponent<BottomOverlayViewGenerator>();
             bottomOverlayViewGenerator.Init(_config.availableBuildings, buildViewController);
+
         }
 
         private void InitializeHexGridViews(GameStartConfiguration config, HexGridManager hexGridManager)
