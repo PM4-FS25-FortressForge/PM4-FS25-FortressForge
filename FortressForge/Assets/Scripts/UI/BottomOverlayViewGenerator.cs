@@ -11,7 +11,7 @@ namespace FortressForge.UI
     /// <summary>
     /// Generates the bottom trapez view for the building GameOverlay
     /// </summary>
-    public class BottomOverlayGenerator : MonoBehaviour
+    public class BottomOverlayViewGenerator : MonoBehaviour
     {
         public UIDocument overlayUIDocument;
         private VisualElement _bottomFrame;

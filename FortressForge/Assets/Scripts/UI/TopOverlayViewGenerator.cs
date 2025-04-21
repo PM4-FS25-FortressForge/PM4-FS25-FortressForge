@@ -9,7 +9,7 @@ namespace FortressForge.UI
     /// <summary>
     /// Generates the top trapez view for the building GameOverlay
     /// </summary>
-    public class TopOverlayGenerator : MonoBehaviour
+    public class TopOverlayViewGenerator : MonoBehaviour
     {
         public UIDocument OverlayUIDocument;
         public VisualTreeAsset ResourceContainerAsset;
