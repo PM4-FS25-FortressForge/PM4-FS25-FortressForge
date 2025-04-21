@@ -37,11 +37,11 @@ namespace FortressForge.GameInitialization
             BuildViewController buildViewController = gameObject.AddComponent<BuildViewController>();
             buildViewController.Init(hexGridManager.AllGrids[0], economyManager.EconomySystem, buildingManager, hexGridHoverController);
             
-            TopTrapezViewGenerator topTrapezViewGenerator = FindFirstObjectByType<UIDocument>().GetComponent<TopTrapezViewGenerator>();
-            topTrapezViewGenerator.Init(economyManager.EconomySystem);
+            TopOverlayGenerator topOverlayGenerator = FindFirstObjectByType<UIDocument>().GetComponent<TopOverlayGenerator>();
+            topOverlayGenerator.Init(economyManager.EconomySystem);
             
-            BottomTrapezViewGenerator bottomTrapezViewGenerator = FindFirstObjectByType<UIDocument>().GetComponent<BottomTrapezViewGenerator>();
-            bottomTrapezViewGenerator.Init(_config.availableBuildings, buildViewController);
+            BottomOverlayGenerator bottomOverlayGenerator = FindFirstObjectByType<UIDocument>().GetComponent<BottomOverlayGenerator>();
+            bottomOverlayGenerator.Init(_config.availableBuildings, buildViewController);
         }
 
         private void InitializeHexGridViews(GameStartConfiguration config, HexGridManager hexGridManager)
