@@ -5,10 +5,12 @@ using FortressForge.Economy;
 using FortressForge.GameInitialization;
 using FortressForge.HexGrid;
 using FortressForge.HexGrid.View;
+using FortressForge.UI;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
-namespace FortressForge
+namespace FortressForge.GameInitialization
 {
     public class InitializationManager : NetworkBehaviour
     {
@@ -47,8 +49,11 @@ namespace FortressForge
             buildViewController.Init(hexGridManager.AllGrids, economyManager.EconomySystem, buildingManager, _config);
             var buildingDropdown = FindObjectOfType<Dropdown>();
 
-            BuildMenuController buildMenuController = gameObject.AddComponent<BuildMenuController>(); 
-            buildMenuController.Init(buildingDropdown, _config.availableBuildings, buildViewController);
+            TopOverlayViewGenerator topOverlayViewGenerator = FindFirstObjectByType<UIDocument>().GetComponent<TopOverlayViewGenerator>();
+            topOverlayViewGenerator.Init(economyManager.EconomySystem);
+            
+            BottomOverlayViewGenerator bottomOverlayViewGenerator = FindFirstObjectByType<UIDocument>().GetComponent<BottomOverlayViewGenerator>();
+            bottomOverlayViewGenerator.Init(_config.availableBuildings, buildViewController);
 
             // Initialize view only on the main client, server and other clients don't need the individual views
             if (!IsClient || !IsOwner) return;

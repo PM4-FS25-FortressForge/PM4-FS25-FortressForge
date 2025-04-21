@@ -9,6 +9,7 @@ using FortressForge.HexGrid;
 using FortressForge.HexGrid.Data;
 using FortressForge.HexGrid.View;
 using NUnit.Framework;
+using FortressForge.UI;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -29,6 +30,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         private MeshRenderer _previewBuildingMeshRenderer;
         private readonly List<HexTileCoordinate> _currentBuildTargets = new();
 
+        private UIClickChecker _uiClickChecker;
         private BuildActions _input;
         private int _selectedBuildingIndex = -1;
         private HexTileData _hoveredHexTile;
@@ -84,6 +86,8 @@ namespace FortressForge.BuildingSystem.BuildManager
         {
             _input.PreviewMode.SetCallbacks(this);
             _input.PreviewMode.Enable();
+
+            _uiClickChecker = new UIClickChecker();
         }
 
         /// <summary>
@@ -101,7 +105,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         public void OnPlaceAction(InputAction.CallbackContext context)
         {
             if (!IsOwner) return;
-            if (context.performed && IsPreviewMode && _hoveredHexTile != null)
+            if (context.performed && IsPreviewMode && _hoveredHexTile != null && !_uiClickChecker.IsClickOnOverlay())
             {
                 var coord = _hoveredHexTile.HexTileCoordinate;
                 var rotation = _previewBuilding.transform.rotation;
@@ -253,7 +257,6 @@ namespace FortressForge.BuildingSystem.BuildManager
         private void RotateBuilding(float angle)
         {
             if (!IsPreviewMode || _previewBuilding == null) return;
-        
             // Get the current rotation around the Y-axis
             Vector3 currentRotation = _previewBuilding.transform.eulerAngles;
 
@@ -262,9 +265,9 @@ namespace FortressForge.BuildingSystem.BuildManager
 
             // Apply the new rotation while keeping other axes unchanged
             _previewBuilding.transform.rotation = Quaternion.Euler(currentRotation);
-        
+
             // Apply rotation to the preview building tiles
-            SelectedBuildingTemplate.ShapeData = RotateByAngle(SelectedBuildingTemplate.ShapeData, (int) angle);
+            SelectedBuildingTemplate.ShapeData = RotateByAngle(SelectedBuildingTemplate.ShapeData, (int)angle);
         }
 
         private Vector3 GetAveragePosition(List<HexTileCoordinate> hexTileCoordinates)
@@ -275,7 +278,7 @@ namespace FortressForge.BuildingSystem.BuildManager
             {
                 averagePosition += hexTileCoordinate.GetWorldPosition(_config.Radius, _config.TileHeight);
             }
-        
+
             averagePosition /= hexTileCoordinates.Count;
             return averagePosition;
         }
@@ -296,10 +299,10 @@ namespace FortressForge.BuildingSystem.BuildManager
                     q = -r;
                     r = temp + r;
                 }
-            
+
                 rotatedHexTileCoordinates.Add(new HexTileCoordinate(q, r, hexTileCoordinate.H));
             }
-        
+
             return rotatedHexTileCoordinates;
         }
         
