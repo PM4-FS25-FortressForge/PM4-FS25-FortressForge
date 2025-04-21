@@ -4,16 +4,17 @@ using FortressForge.Economy;
 using FortressForge.GameInitialization;
 using FortressForge.HexGrid;
 using FortressForge.HexGrid.View;
+using FortressForge.UI;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
-namespace FortressForge
+namespace FortressForge.GameInitialization
 {
     public class InitializationManager : NetworkBehaviour
     {
         [Header("Game Start Configuration")]
         [SerializeField] private GameStartConfiguration _config;
-        [SerializeField] private Dropdown _buildingDropdown;
         
         public override void OnStartClient()
         {
@@ -32,10 +33,13 @@ namespace FortressForge
             
             BuildViewController buildViewController = gameObject.GetComponent<BuildViewController>();
             buildViewController.Init(hexGridManager.AllGrids, economyManager.EconomySystem, buildingManager, _config);
-            _buildingDropdown = FindObjectOfType<Dropdown>();
 
-            BuildMenuController buildMenuController = gameObject.AddComponent<BuildMenuController>(); 
-            buildMenuController.Init(_buildingDropdown, _config.availableBuildings, buildViewController);
+            TopOverlayViewGenerator topOverlayViewGenerator = FindFirstObjectByType<UIDocument>().GetComponent<TopOverlayViewGenerator>();
+            topOverlayViewGenerator.Init(economyManager.EconomySystem);
+            
+            BottomOverlayViewGenerator bottomOverlayViewGenerator = FindFirstObjectByType<UIDocument>().GetComponent<BottomOverlayViewGenerator>();
+            bottomOverlayViewGenerator.Init(_config.availableBuildings, buildViewController);
+
         }
 
         private void InitializeHexGridViews(GameStartConfiguration config, HexGridManager hexGridManager)

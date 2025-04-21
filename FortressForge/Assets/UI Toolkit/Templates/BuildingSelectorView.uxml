@@ -1,0 +1,20 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI%20Toolkit/Style/ColorPaletteStyle.uss?fileID=7433441132597879392&amp;guid=5ec20a6ef536e8446ae4e92fb3e188a3&amp;type=3#ColorPaletteStyle" />
+    <Style src="project://database/Assets/UI%20Toolkit/Style/BuildingSelector.uss?fileID=7433441132597879392&amp;guid=45d15a8dac7b6a94fa224cf3d9efaf32&amp;type=3#BuildingSelector" />
+    <engine:VisualElement name="building-selector-root" style="flex-grow: 1;">
+        <engine:TabView>
+            <engine:Tab label="Buildings" name="buildings-tab">
+                <engine:ScrollView mode="Horizontal" vertical-scroller-visibility="Hidden" nested-interaction-kind="Default" horizontal-scroller-visibility="Hidden" focusable="false" touch-scroll-type="Unrestricted" class="building-selector-list-view" />
+            </engine:Tab>
+            <engine:Tab label="Weapons" name="weapons-tab">
+                <engine:ScrollView mode="Horizontal" vertical-scroller-visibility="Hidden" nested-interaction-kind="Default" horizontal-scroller-visibility="Hidden" class="building-selector-list-view" />
+            </engine:Tab>
+            <engine:Tab label="Defense" name="defense-tab">
+                <engine:ScrollView mode="Horizontal" vertical-scroller-visibility="Hidden" nested-interaction-kind="Default" horizontal-scroller-visibility="Hidden" class="building-selector-list-view" />
+            </engine:Tab>
+            <engine:Tab label="Factories" name="factory-tab">
+                <engine:ScrollView mode="Horizontal" vertical-scroller-visibility="Hidden" nested-interaction-kind="Default" horizontal-scroller-visibility="Hidden" class="building-selector-list-view" />
+            </engine:Tab>
+        </engine:TabView>
+    </engine:VisualElement>
+</engine:UXML>
