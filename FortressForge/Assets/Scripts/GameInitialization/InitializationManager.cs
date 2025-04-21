@@ -1,4 +1,5 @@
-﻿using FishNet.Object;
+﻿using FishNet;
+using FishNet.Object;
 using FortressForge.BuildingSystem.BuildManager;
 using FortressForge.Economy;
 using FortressForge.GameInitialization;
@@ -13,29 +14,46 @@ namespace FortressForge
     {
         [Header("Game Start Configuration")]
         [SerializeField] private GameStartConfiguration _config;
-        [SerializeField] private Dropdown _buildingDropdown;
         
         public override void OnStartClient()
         {
-            // Initialize the Terrain from _config
-            Instantiate(_config.Terrain);
+            // Only initialize the client if it's your own
+            Init();
+        }
+        
+        public override void OnStartServer()
+        {
+            // Initialize same as client, to have access to the same data, and be flexible with data access
+            // This is a bit of a hack, for optimization but higher complexity you could differentiate between server and client more.
+            Init();
+        }
+
+        private void Init()
+        {
+            if (_config == null)
+            {
+                Debug.LogError("GameStartConfiguration is not set.");
+                return;
+            }
             
             BuildingManager buildingManager = new BuildingManager();
             
             EconomyManager economyManager = gameObject.AddComponent<EconomyManager>();
             economyManager.Init(buildingManager);
             
-            HexGridManager hexGridManager = gameObject.AddComponent<HexGridManager>();
-            hexGridManager.InitializeHexGridForPlayers(_config);
-            
-            InitializeHexGridViews(_config, hexGridManager);
+            var hexGridManager = HexGridManager.Instance;
             
             BuildViewController buildViewController = gameObject.GetComponent<BuildViewController>();
             buildViewController.Init(hexGridManager.AllGrids, economyManager.EconomySystem, buildingManager, _config);
-            _buildingDropdown = FindObjectOfType<Dropdown>();
+            var buildingDropdown = FindObjectOfType<Dropdown>();
 
             BuildMenuController buildMenuController = gameObject.AddComponent<BuildMenuController>(); 
-            buildMenuController.Init(_buildingDropdown, _config.availableBuildings, buildViewController);
+            buildMenuController.Init(buildingDropdown, _config.availableBuildings, buildViewController);
+
+            // Initialize view only on the main client, server and other clients don't need the individual views
+            if (!IsClient || !IsOwner) return;
+            
+            InitializeHexGridViews(_config, hexGridManager);
         }
 
         private void InitializeHexGridViews(GameStartConfiguration config, HexGridManager hexGridManager)

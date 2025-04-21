@@ -1,11 +1,9 @@
 using System;
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
 using FortressForge.GameInitialization;
 using FortressForge.HexGrid.Data;
-using FortressForge.HexGrid.View;
 using FortressForge.Serializables;
-using UnityEngine.UI;
 
 namespace FortressForge.HexGrid
 {
@@ -17,35 +15,60 @@ namespace FortressForge.HexGrid
     /// </summary>
     public class HexGridManager : MonoBehaviour
     {
+        public static HexGridManager Instance { get; private set; }
+
         public List<HexGridData> AllGrids { get; } = new();
-        
+        private readonly Dictionary<int, HexGridData> _gridsById = new();
+        private readonly Dictionary<string, HexGridData> _gridsByOwnerId = new();
+
         private TerrainHeightProvider _terrainHeightProvider;
 
         private void Awake()
         {
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+
             _terrainHeightProvider = new TerrainHeightProvider();
         }
 
         public void InitializeHexGridForPlayers(GameStartConfiguration gameStartConfiguration)
         {
-            for (int i = 0; i < gameStartConfiguration.PlayerIdsHexGridIdTuplesList.Count; i++)
+            foreach (var player in gameStartConfiguration.PlayerIdsHexGridIdTuplesList)
             {
-                Vector3 origin = gameStartConfiguration.HexGridOrigins[i];
+                Vector3 origin = gameStartConfiguration.HexGridOrigins[player.HexGridId];
                 int radius = gameStartConfiguration.Radius;
                 float tileSize = gameStartConfiguration.TileSize;
                 float tileHeight = gameStartConfiguration.TileHeight;
-                
+
                 HexGridData gridData = new HexGridData(
-                    id: i,
+                    id: player.HexGridId,
                     origin: origin,
                     radius: radius,
                     tileSize: tileSize,
                     tileHeight: tileHeight,
                     terrainHeightProvider: _terrainHeightProvider
                 );
-                
+
                 AllGrids.Add(gridData);
+                _gridsById[player.HexGridId] = gridData;
+                _gridsByOwnerId[player.PlayerId] = gridData;
             }
+        }
+
+        public HexGridData GetGridById(int id)
+        {
+            return _gridsById.TryGetValue(id, out var grid) ? grid : null;
+        }
+
+        public HexGridData GetGridByOwner(string ownerId)
+        {
+            return _gridsByOwnerId.TryGetValue(ownerId, out var grid) ? grid : null;
         }
     }
 }

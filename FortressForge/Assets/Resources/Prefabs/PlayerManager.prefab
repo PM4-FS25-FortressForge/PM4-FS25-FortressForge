@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!1 &6811327856764417488
 GameObject:
@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7935336322730317849}
   - component: {fileID: -8591065605973102564}
   m_Layer: 0
-  m_Name: GameManager
+  m_Name: PlayerManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -46,9 +46,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0487c45547f42f4896edc0985f2f194, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 7935336322730317849}
+  _networkObjectCache: {fileID: 0}
   _config: {fileID: 11400000, guid: 5a14fda24b5e45a48a6e66352b2d350d, type: 2}
   _buildingDropdown: {fileID: 0}
-  _buildViewController: {fileID: 0}
 --- !u!114 &7935336322730317849
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -93,7 +95,7 @@ MonoBehaviour:
   _teleportThreshold: 1
   <PrefabId>k__BackingField: 15
   <SpawnableCollectionId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 6337622486488130249
+  <AssetPathHash>k__BackingField: 16549769214515790529
   <SceneId>k__BackingField: 0
   SerializedTransformProperties:
     Position: {x: 0, y: 0, z: 0}

@@ -20,7 +20,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         private List<BaseBuildingTemplate> AvailableBuildings => _config.availableBuildings;
         private bool IsPreviewMode => _selectedBuildingIndex != -1;
         
-        private List<HexGridData> _hexGridDatas;
+        private List<HexGridData> _hexGridDatas = new();
         private EconomySystem _economySystem;
         private BuildingManager _buildingManager;
         private GameStartConfiguration _config;
@@ -45,6 +45,7 @@ namespace FortressForge.BuildingSystem.BuildManager
 
         public void PreviewSelectedBuilding(int buildingIndex)
         {
+            if (!IsOwner) return;
             if (_previewBuilding != null)
                 Destroy(_previewBuilding);
             
@@ -100,8 +101,13 @@ namespace FortressForge.BuildingSystem.BuildManager
         public void OnPlaceAction(InputAction.CallbackContext context)
         {
             if (!IsOwner) return;
-            if (context.performed && IsPreviewMode)
-                TryBuyAndPlaceBuilding();
+            if (context.performed && IsPreviewMode && _hoveredHexTile != null)
+            {
+                var coord = _hoveredHexTile.HexTileCoordinate;
+                var rotation = _previewBuilding.transform.rotation;
+
+                TryPlaceBuildingServerRpc(_selectedBuildingIndex, coord, rotation);
+            }
         }
 
         /// <summary>
@@ -187,50 +193,46 @@ namespace FortressForge.BuildingSystem.BuildManager
             _currentBuildTargets.Clear();
             _previewBuildingMeshRenderer.enabled = false;
         }
-
-        /// <summary>
-        /// Attempts to place a building at the hovered tile if the placement is valid.
-        /// </summary>
-        private void TryBuyAndPlaceBuilding()
+        
+        [ServerRpc(RequireOwnership = false)]
+        private void TryPlaceBuildingServerRpc(int buildingIndex, HexTileCoordinate hexCoord, Quaternion rotation)
         {
-            HexTileData currentlyHoveredTile = _hoveredHexTile;
-            if (currentlyHoveredTile == null) return;
+            BaseBuildingTemplate template = AvailableBuildings[buildingIndex];
 
-            HexTileCoordinate hexCoord = currentlyHoveredTile.HexTileCoordinate;
-
-            // Find the grid that allows placement
+            // Find the correct grid
             HexGridData targetGrid = _hexGridDatas
-                .FirstOrDefault(grid => grid.ValidateBuildingPlacement(hexCoord, SelectedBuildingTemplate));
+                .FirstOrDefault(grid => grid.ValidateBuildingPlacement(hexCoord, template));
 
-            bool hasResources = _economySystem.CheckForSufficientResources(SelectedBuildingTemplate.GetBuildCost());
-
-            if (targetGrid == null || !hasResources)
+            if (targetGrid == null || !_economySystem.CheckForSufficientResources(template.GetBuildCost()))
             {
-                Debug.Log("Placement failed");
+                Debug.Log("Server: Invalid placement or insufficient resources.");
                 return;
             }
 
-            PlaceBuilding(targetGrid, hexCoord);
-            Debug.Log("Placement succeeded");
-        }
+            // Apply logic
+            targetGrid.PlaceBuilding(hexCoord, template);
+            _economySystem.PayResource(template.GetBuildCost());
+            _buildingManager.AddBuilding(Instantiate(template));
 
+            // Spawn networked building object
+            Vector3 pos = hexCoord.GetWorldPosition(_config.Radius, _config.TileHeight) + GetAveragePosition(template.ShapeData);
+            GameObject obj = SpawnNetworked(template.BuildingPrefab, pos, rotation, gameObject.transform);
 
-        private void PlaceBuilding(HexGridData hexGridData, HexTileCoordinate hexCoord)
-        {
-            hexGridData.PlaceBuilding(hexCoord, SelectedBuildingTemplate);
-            _economySystem.PayResource(SelectedBuildingTemplate.GetBuildCost());
-            BaseBuildingTemplate copy = Instantiate(SelectedBuildingTemplate);
-            _buildingManager.AddBuilding(copy);
-            
-            PlaceServerBuilding(_selectedBuildingIndex, 
-                hexCoord.GetWorldPosition(_config.Radius, _config.TileHeight) + GetAveragePosition(SelectedBuildingTemplate.ShapeData),
-                _previewBuilding.transform.rotation);
+            // Tell all clients to update their grid
+            UpdateGridClientRpc(buildingIndex, hexCoord);
         }
         
-        [ServerRpc(RequireOwnership = false)]
-        private void PlaceServerBuilding(int buildingIndex, Vector3 transformPosition, Quaternion transformRotation)
+        [ObserversRpc]
+        private void UpdateGridClientRpc(int buildingIndex, HexTileCoordinate coord)
         {
-            SpawnNetworked(AvailableBuildings[buildingIndex].BuildingPrefab, transformPosition, transformRotation, gameObject.transform);
+            BaseBuildingTemplate template = AvailableBuildings[buildingIndex];
+
+            // Update the correct grid locally
+            foreach (var grid in _hexGridDatas)
+            {
+                grid.PlaceBuilding(coord, template);
+                break;
+            }
         }
         
         /// <summary>
