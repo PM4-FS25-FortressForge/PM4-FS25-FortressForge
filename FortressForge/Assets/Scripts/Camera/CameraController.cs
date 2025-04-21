@@ -101,7 +101,7 @@ namespace FortressForge.CameraControll
             _zoomAction = InitializeActionsButtons("Zoom"); // Zoom in/out mouse Wheel
             _zoomButtons = InitializeActionsButtons("ZoomButtons"); // Zoom in/out Buttons (left/right arrow keys)
             _targetZoom = Zoom; // Set the initial target zoom to the initial zoom
-            //_targetHeight = _terrainHeightProvider.SampleHeight(TargetPosition); // Set the initial target height to the initial height of the terrain
+            _targetHeight = _terrainHeightProvider.SampleHeight(TargetPosition); // Set the initial target height to the initial height of the terrain
 
         }
 
