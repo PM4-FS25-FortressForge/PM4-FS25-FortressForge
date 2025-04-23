@@ -1,22 +1,22 @@
-﻿using FortressForge.BuildingSystem;
+﻿using FishNet.Object;
 using FortressForge.BuildingSystem.BuildManager;
-using FortressForge.BuildingSystem.HoverController;
 using FortressForge.Economy;
 using FortressForge.GameInitialization;
 using FortressForge.HexGrid;
 using FortressForge.HexGrid.View;
+using FortressForge.UI;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
-namespace FortressForge
+namespace FortressForge.GameInitialization
 {
-    public class InitializationManager : MonoBehaviour
+    public class InitializationManager : NetworkBehaviour
     {
         [Header("Game Start Configuration")]
         [SerializeField] private GameStartConfiguration _config;
-        [SerializeField] private Dropdown _buildingDropdown;
         
-        private void Start()
+        public override void OnStartClient()
         {
             // Initialize the Terrain from _config
             Instantiate(_config.Terrain);
@@ -31,14 +31,15 @@ namespace FortressForge
             
             InitializeHexGridViews(_config, hexGridManager);
             
-            HexGridHoverController hexGridHoverController = gameObject.AddComponent<HexGridHoverController>();
+            BuildViewController buildViewController = gameObject.GetComponent<BuildViewController>();
+            buildViewController.Init(hexGridManager.AllGrids, economyManager.EconomySystem, buildingManager, _config);
+
+            TopOverlayViewGenerator topOverlayViewGenerator = FindFirstObjectByType<UIDocument>().GetComponent<TopOverlayViewGenerator>();
+            topOverlayViewGenerator.Init(economyManager.EconomySystem);
             
-            BuildViewController buildViewController = gameObject.AddComponent<BuildViewController>();
-            buildViewController.Init(hexGridManager.AllGrids[0], economyManager.EconomySystem, buildingManager, hexGridHoverController);
-            
-            ButtonManager buttonManager = gameObject.AddComponent<ButtonManager>(); 
-            buttonManager.Init(_buildingDropdown, _config.availableBuildings, buildViewController);
-            
+            BottomOverlayViewGenerator bottomOverlayViewGenerator = FindFirstObjectByType<UIDocument>().GetComponent<BottomOverlayViewGenerator>();
+            bottomOverlayViewGenerator.Init(_config.availableBuildings, buildViewController);
+
         }
 
         private void InitializeHexGridViews(GameStartConfiguration config, HexGridManager hexGridManager)

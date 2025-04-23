@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using System.Collections.Generic;
 using FortressForge.BuildingSystem.BuildingData;
+using UnityEngine.Tilemaps;
 
 namespace FortressForge.HexGrid.Data
 {
@@ -15,6 +16,7 @@ namespace FortressForge.HexGrid.Data
     /// </summary>
     public class HexGridData
     {
+        public event Action<HexTileData> OnHoverTileChanged;
         public Vector3 Origin { get; private set; }
         public int Id { get; set; }
 
@@ -25,7 +27,7 @@ namespace FortressForge.HexGrid.Data
 
         public readonly float TileHeight;
         
-        public readonly Dictionary<HexTileCoordinate, HexTileData> TileMap = new();
+        public Dictionary<HexTileCoordinate, HexTileData> TileMap = new();
         
         public event Action<HexTileData, HexTileCoordinate> OnNewTileCreated;
         
@@ -54,11 +56,17 @@ namespace FortressForge.HexGrid.Data
                                                      new HexTileCoordinate(TileRadius, TileHeight, origin);
                     newHexCoords = GetTerrainHeightFromHexTileCoordinate(newHexCoords);
                                                      
-                    TileMap[newHexCoords] = new HexTileData(newHexCoords);
+                    CreateNewHexTile(newHexCoords);
                 }
             }
         }
-        
+
+        private void CreateNewHexTile(HexTileCoordinate newHexCoords)
+        {
+            TileMap[newHexCoords] = new HexTileData(newHexCoords);
+            TileMap[newHexCoords].OnHoverChanged += OnHoverTileChangedEvent;
+        }
+
         public void AddPlayer(string playerId)
         {
             PlayerIds.Add(playerId);
@@ -129,6 +137,11 @@ namespace FortressForge.HexGrid.Data
                 position.R, 
                 Mathf.CeilToInt(terrainHeight / TileHeight)
             );
+        }
+        
+        private void OnHoverTileChangedEvent(HexTileData hexTileData)
+        {
+            OnHoverTileChanged?.Invoke(hexTileData);
         }
     }
 }

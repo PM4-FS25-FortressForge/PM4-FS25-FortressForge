@@ -1,4 +1,4 @@
-﻿%YAML 1.1
+%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
 MonoBehaviour:
@@ -14,6 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShapeData:
   - Q: 0
+    R: 0
+    H: 0
+  - Q: 0
+    R: 1
+    H: 0
+  - Q: 1
     R: 0
     H: 0
   BuildingPrefab: {fileID: 5004982027604579114, guid: 438d37259e2842c41af939bc73b842cd, type: 3}
