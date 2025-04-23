@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using FortressForge.BuildingSystem.BuildManager;
+using FortressForge.Economy;
 using UnityEngine;
 using FortressForge.GameInitialization;
 using FortressForge.HexGrid.Data;
@@ -45,14 +47,27 @@ namespace FortressForge.HexGrid
                 int radius = gameStartConfiguration.Radius;
                 float tileSize = gameStartConfiguration.TileSize;
                 float tileHeight = gameStartConfiguration.TileHeight;
-
+                
+                BuildingManager buildingManager = new BuildingManager();
+                
+                // Example for max value application // TODO move or remove when actual max values are set
+                var maxValues = new Dictionary<ResourceType, float>
+                {
+                    { ResourceType.Power, 0f },
+                    { ResourceType.Metal, 10000f },
+                };
+                
+                EconomySystem economyController = new EconomySystem(buildingManager, maxValues);
+                
                 HexGridData gridData = new HexGridData(
                     id: player.HexGridId,
                     origin: origin,
                     radius: radius,
                     tileSize: tileSize,
                     tileHeight: tileHeight,
-                    terrainHeightProvider: _terrainHeightProvider
+                    terrainHeightProvider: _terrainHeightProvider,
+                    economySystem: economyController,
+                    buildingManager: buildingManager
                 );
 
                 AllGrids.Add(gridData);

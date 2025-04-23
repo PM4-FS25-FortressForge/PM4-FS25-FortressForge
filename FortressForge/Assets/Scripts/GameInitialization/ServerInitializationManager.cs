@@ -16,7 +16,7 @@ namespace FortressForge.GameInitialization
         [SerializeField] private GameStartConfiguration _config;
 
         private BuildingManager _buildingManager;
-        private EconomyManager _economyManager;
+        private EconomyController _economyController;
         private HexGridManager _hexGridManager;
 
         /// <summary>
@@ -26,11 +26,6 @@ namespace FortressForge.GameInitialization
         public override void OnStartServer() 
         {
             Instance = this;
-            
-            _buildingManager = new BuildingManager();
-            
-            _economyManager = gameObject.AddComponent<EconomyManager>();
-            _economyManager.Init(_buildingManager);
         }
     }
 }

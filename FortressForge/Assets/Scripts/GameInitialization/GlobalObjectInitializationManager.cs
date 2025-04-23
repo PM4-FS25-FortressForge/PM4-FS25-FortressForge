@@ -1,4 +1,5 @@
 ﻿using FortressForge.HexGrid;
+using FortressForge.HexGrid.View;
 using UnityEngine;
 
 namespace FortressForge.GameInitialization
@@ -29,6 +30,18 @@ namespace FortressForge.GameInitialization
             }
             
             HexGridManager.Instance.InitializeHexGridForPlayers(_config);
+            
+            InitializeHexGridViews(_config, HexGridManager.Instance);
+        }
+
+        private void InitializeHexGridViews(GameStartConfiguration config, HexGridManager hexGridManager)
+        {
+            foreach (var data in hexGridManager.AllGrids)
+            {
+                HexGridView hexGridView = new GameObject("HexGridView_" + data.Id).AddComponent<HexGridView>();
+                hexGridView.transform.SetParent(transform);
+                hexGridView.Initialize(config.TilePrefab, data);
+            }
         }
     }
 }

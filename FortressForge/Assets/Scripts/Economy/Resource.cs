@@ -12,6 +12,7 @@ namespace FortressForge.Economy
         public event Action OnChanged;
         
         private readonly ResourceType _type;
+        public ResourceType Type => _type;
 
         private float _currentAmount;
 

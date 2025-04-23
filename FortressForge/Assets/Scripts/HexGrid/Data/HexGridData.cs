@@ -2,6 +2,8 @@ using System;
 using UnityEngine;
 using System.Collections.Generic;
 using FortressForge.BuildingSystem.BuildingData;
+using FortressForge.BuildingSystem.BuildManager;
+using FortressForge.Economy;
 using UnityEngine.Tilemaps;
 
 namespace FortressForge.HexGrid.Data
@@ -28,6 +30,8 @@ namespace FortressForge.HexGrid.Data
         public readonly float TileHeight;
         
         public Dictionary<HexTileCoordinate, HexTileData> TileMap = new();
+        public EconomySystem EconomySystem { get; private set; }
+        public BuildingManager BuildingManager { get; private set; }
         
         public event Action<HexTileData, HexTileCoordinate> OnNewTileCreated;
         
@@ -38,14 +42,18 @@ namespace FortressForge.HexGrid.Data
             int radius,
             float tileSize,
             float tileHeight,
-            ITerrainHeightProvider terrainHeightProvider)
+            ITerrainHeightProvider terrainHeightProvider,
+            EconomySystem economySystem,
+            BuildingManager buildingManager)
         {
             Id = id;
             Origin = origin;
             TileRadius = tileSize;
             TileHeight = tileHeight;
             _terrainHeightProvider = terrainHeightProvider;
-            
+            EconomySystem = economySystem;
+            BuildingManager = buildingManager;
+
             for (int q = -radius; q <= radius; q++)
             {
                 int r1 = Math.Max(-radius, -q - radius);

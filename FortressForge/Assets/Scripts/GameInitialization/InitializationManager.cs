@@ -4,7 +4,9 @@ using FortressForge.BuildingSystem.BuildManager;
 using FortressForge.Economy;
 using FortressForge.GameInitialization;
 using FortressForge.HexGrid;
+using FortressForge.HexGrid.Data;
 using FortressForge.HexGrid.View;
+using FortressForge.Networking;
 using FortressForge.UI;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,13 +21,13 @@ namespace FortressForge.GameInitialization
         
         public override void OnStartClient()
         {
-            // Only initialize the client if it's your own
+            // Initialize Client for each player so ObserverRpc can be used
             Init();
         }
         
         public override void OnStartServer()
         {
-            // Initialize same as client, to have access to the same data, and be flexible with data access
+            // Initialize Server for each player so ObserverRpc can be used. This gets called on each joining client on server side.
             // This is a bit of a hack, for optimization but higher complexity you could differentiate between server and client more.
             Init();
         }
@@ -38,37 +40,32 @@ namespace FortressForge.GameInitialization
                 return;
             }
             
-            BuildingManager buildingManager = new BuildingManager();
-            
-            EconomyManager economyManager = gameObject.AddComponent<EconomyManager>();
-            economyManager.Init(buildingManager);
-            
-            var hexGridManager = HexGridManager.Instance;
+            // Always select first grid for the player for now
+            HexGridData selectedGrid = HexGridManager.Instance.AllGrids[0];
             
             BuildViewController buildViewController = gameObject.GetComponent<BuildViewController>();
-            buildViewController.Init(hexGridManager.AllGrids, economyManager.EconomySystem, buildingManager, _config);
-            var buildingDropdown = FindObjectOfType<Dropdown>();
-
-            TopOverlayViewGenerator topOverlayViewGenerator = FindFirstObjectByType<UIDocument>().GetComponent<TopOverlayViewGenerator>();
-            topOverlayViewGenerator.Init(economyManager.EconomySystem);
+            buildViewController.Init(HexGridManager.Instance.AllGrids, selectedGrid.EconomySystem, selectedGrid.BuildingManager, _config);
             
-            BottomOverlayViewGenerator bottomOverlayViewGenerator = FindFirstObjectByType<UIDocument>().GetComponent<BottomOverlayViewGenerator>();
-            bottomOverlayViewGenerator.Init(_config.availableBuildings, buildViewController);
-
+            // After creating EconomySystem
+            var economySync = gameObject.GetComponent<EconomySync>();
+            EconomyController economyController = gameObject.AddComponent<EconomyController>();
+            
+            // Only the server needs to initialize the EconomySystem
+            if (IsServer && !IsClient)
+            {
+                economySync.Init(selectedGrid.EconomySystem);
+                economyController.Init(selectedGrid.EconomySystem);
+            }
+            
             // Initialize view only on the main client, server and other clients don't need the individual views
             if (!IsClient || !IsOwner) return;
             
-            InitializeHexGridViews(_config, hexGridManager);
-        }
-
-        private void InitializeHexGridViews(GameStartConfiguration config, HexGridManager hexGridManager)
-        {
-            foreach (var data in hexGridManager.AllGrids)
-            {
-                HexGridView hexGridView = new GameObject("HexGridView_" + data.Id).AddComponent<HexGridView>();
-                hexGridView.transform.SetParent(transform);
-                hexGridView.Initialize(config.TilePrefab, data);
-            }
+            
+            TopOverlayViewGenerator topOverlayViewGenerator = FindFirstObjectByType<UIDocument>().GetComponent<TopOverlayViewGenerator>();
+            topOverlayViewGenerator.Init(economySync);
+            
+            BottomOverlayViewGenerator bottomOverlayViewGenerator = FindFirstObjectByType<UIDocument>().GetComponent<BottomOverlayViewGenerator>();
+            bottomOverlayViewGenerator.Init(_config.availableBuildings, buildViewController);
         }
     }
 }

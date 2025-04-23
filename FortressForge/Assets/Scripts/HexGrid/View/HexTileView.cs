@@ -32,6 +32,14 @@ namespace FortressForge.HexGrid.View
             _renderer = GetComponentInChildren<MeshRenderer>(); 
             UpdateVisuals(data);
         }
+        
+        private void OnDestroy()
+        {
+            if (_tileData != null)
+            {
+                _tileData.OnChanged -= UpdateVisuals;
+            }
+        }
 
         /// <summary>
         /// Changes the material of the HexTileView based on the IsOccupied property of the HexTileData.

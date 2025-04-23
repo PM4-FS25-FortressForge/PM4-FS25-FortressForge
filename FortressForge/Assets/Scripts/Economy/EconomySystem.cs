@@ -13,6 +13,8 @@ namespace FortressForge.Economy
     /// </summary>
     public class EconomySystem
     {
+        private const bool EnableDebugLogging = false;
+
         private static readonly ResourceType[] _allResourceTypes = (ResourceType[])Enum.GetValues(typeof(ResourceType));
         
         /// <summary>
@@ -60,10 +62,13 @@ namespace FortressForge.Economy
                 _currentResources[resourceType].CurrentAmount = positiveNewResources[resourceType];
             }
             
-            // Debug log for current resources
-            string logMessage = _currentResources.Aggregate("Current Resources: ", 
-                (current, resource) => current + $"{resource.Key}: {resource.Value.CurrentAmount}, ");
-            Debug.Log(logMessage);
+            if (EnableDebugLogging)
+            {
+                // Debug log for current resources
+                string logMessage = _currentResources.Aggregate("Current Resources: ", 
+                    (current, resource) => current + $"{resource.Key}: {resource.Value.CurrentAmount}, ");
+                Debug.Log(logMessage);
+            }
         }
 
         /// <summary>
