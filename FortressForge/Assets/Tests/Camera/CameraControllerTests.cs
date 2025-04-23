@@ -94,7 +94,8 @@ namespace Tests.Camera
             _cameraController.SetMoveSpeed(7.5f);
             _cameraController.SetRotationSpeed(60.0f);
             _cameraController.SetPitchSpeed(45.0f);
-            _cameraController.SetZoomSpeed(3.0f);
+            _cameraController.SetMouseWheelZoomSpeed(1f);
+            _cameraController.SetButtonsZoomSpeed(5f);
             _cameraController.SetPitchLimits(new Vector2(89, 0));
             _cameraController.SetZoomLimits(new Vector2(2.0f, 20.0f));
 
@@ -357,7 +358,7 @@ namespace Tests.Camera
             yield return SetupCustom(); //Ensure the scene is loaded in each new test and camera is set up
             SetInitialCameraValuesForEachTest(); //Ensure the camera is set to the initial values for each test
 
-            for (int i = 0; i < 3; i++) //Simulate mouse wheel scroll
+            for (int i = 0; i < 5; i++) //Simulate mouse wheel scroll
             {
                 yield return new WaitForSeconds(0.3f); // Let the system react to the input (Necessary for the smoothness of the camera movement)
                 Set(_mouse.scroll.up, 1);
@@ -373,7 +374,7 @@ namespace Tests.Camera
             yield return SetupCustom(); //Ensure the scene is loaded in each new test and camera is set up
             SetInitialCameraValuesForEachTest(); //Ensure the camera is set to the initial values for each test
 
-            for (int i = 0; i < 5; i++) //Simulate mouse wheel scroll
+            for (int i = 0; i < 7; i++) //Simulate mouse wheel scroll
             {
                 yield return new WaitForSeconds(0.3f); // Let the system react to the input (Necessary for the smoothness of the camera movement)
                 Set(_mouse.scroll.up, -1);

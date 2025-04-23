@@ -1,6 +1,7 @@
 using FortressForge.HexGrid;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 namespace FortressForge.CameraControll
 {
@@ -48,7 +49,8 @@ namespace FortressForge.CameraControll
         [SerializeField] public float MoveSpeed = 5.0f;
         [SerializeField] public float RotationSpeed = 50.0f;
         [SerializeField] public float PitchSpeed = 40.0f;
-        [SerializeField] public float ZoomSpeed = 2.0f;
+        [SerializeField] public float MouseWheelZoomSpeed = 1.0f; // Zoom input with mouse is smaller to make the step size of the mouse wheel smaller
+        [SerializeField] public float ButtonsZoomSpeed = 5f; // Zoom input with the Buttons is bigger to make the buttons more sensitive
         private float _targetZoom;  // Zoomtarget that will be reached by SmoothDamp
         private float _zoomVelocity; // SmoothDamp (used in HandleZoom methode) needs this velocity-Reference
         private float _zoomSmoothTime = 0.2f; // the time it takes to reach the _targetZoom (bigger value more smooth but less accurate)
@@ -168,11 +170,10 @@ namespace FortressForge.CameraControll
         private void HandleZoom(float deltaTime)
         {
             float zoomInput = _zoomAction.ReadValue<float>(); // Zoom input with mouse wheel (made more smooth with SmoothDamp)
-            zoomInput = zoomInput * 0.5f;   // Zoom input is split in half to make the step size of the mouse wheel smaller
-            _targetZoom = Mathf.Clamp(_targetZoom - zoomInput * ZoomSpeed, zoomLimits.x, zoomLimits.y); 
+            _targetZoom = Mathf.Clamp(_targetZoom - zoomInput * MouseWheelZoomSpeed, zoomLimits.x, zoomLimits.y); 
             
             float zoomButtonInput = _zoomButtons.ReadValue<float>(); // Zoom input with the Buttons
-            _targetZoom = Mathf.Clamp(_targetZoom - zoomButtonInput * ZoomSpeed * deltaTime * 2.5f, zoomLimits.x, zoomLimits.y);
+            _targetZoom = Mathf.Clamp(_targetZoom - zoomButtonInput * ButtonsZoomSpeed * deltaTime, zoomLimits.x, zoomLimits.y);
             
             Zoom = Mathf.SmoothDamp(Zoom, _targetZoom, ref _zoomVelocity, _zoomSmoothTime); // SmoothDamp for zooming smoothly in/out
             
@@ -279,11 +280,19 @@ namespace FortressForge.CameraControll
         }
 
         /// <summary>
-        /// Sets the speed at which the camera zooms in and out.
+        /// Sets the speed of the mpuse Wheel at which the camera zooms in and out.
         /// </summary>
-        public void SetZoomSpeed(float newZoomSpeed)
+        public void SetMouseWheelZoomSpeed(float newZoomSpeed)
         {
-            ZoomSpeed = newZoomSpeed;
+            MouseWheelZoomSpeed = newZoomSpeed;
+        }
+        
+        /// <summary>
+        /// Sets the speed of the buttons at which the camera zooms in and out.
+        /// </summary>
+        public void SetButtonsZoomSpeed(float newZoomSpeed)
+        {
+            ButtonsZoomSpeed = newZoomSpeed;
         }
 
         /// <summary>
