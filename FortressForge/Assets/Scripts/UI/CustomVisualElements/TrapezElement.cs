@@ -212,6 +212,8 @@ namespace FortressForge.UI.CustomVisualElements
         /// <returns>True if the point is inside the trapezium, false otherwise.</returns>
         public bool IsPointInTrapez()
         {
+            Debug.Log($"Screen width: {Screen.width}, Screen height: {Screen.height}");
+            Debug.Log($"VisualElement size: {panel.visualTree.layout.size}");
             Vector2 localPoint = GetVisualElementLocalCoordinates();
             float width = resolvedStyle.width;
             float height = resolvedStyle.height;
