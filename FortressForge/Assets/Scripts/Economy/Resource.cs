@@ -15,7 +15,18 @@ namespace FortressForge.Economy
 
         private float _currentAmount;
         
-        public float DeltaAmount { get; set; }
+        private float _deltaAmount;
+        
+        public float DeltaAmount 
+        { 
+            get => _deltaAmount; 
+            set
+            {
+                if (Math.Abs(_deltaAmount - value) <= Mathf.Epsilon) return;
+                _deltaAmount = value;
+                OnChanged?.Invoke();
+            } 
+        }
 
         /// <summary>
         /// The maximum amount this resource can hold.

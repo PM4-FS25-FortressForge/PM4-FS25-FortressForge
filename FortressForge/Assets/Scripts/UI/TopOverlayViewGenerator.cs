@@ -91,7 +91,7 @@ namespace FortressForge.UI
         /// <returns>A new instance of TrapezElement.</returns>
         private TrapezElement CreateTrapezElement(string selector, string className = null)
         {
-            TrapezElement trapezElement = new ();
+            TrapezElement trapezElement = new();
             trapezElement.SetParameters(90f, 180f, selector);
             if (!string.IsNullOrEmpty(className))
             {
@@ -170,9 +170,10 @@ namespace FortressForge.UI
             {
                 Debug.LogError("Current amount label not found!");
             }
+
             if (changeRateLabel != null)
             {
-                changeRateLabel.text = resource.DeltaAmount > 0 ? $"+{resource.DeltaAmount}" : $"{resource.DeltaAmount}";
+                changeRateLabel.text = resource.DeltaAmount > 0 ? $"+{resource.DeltaAmount}" : resource.DeltaAmount < 0 ? $"{resource.DeltaAmount}" : "0";
             }
             else
             {
