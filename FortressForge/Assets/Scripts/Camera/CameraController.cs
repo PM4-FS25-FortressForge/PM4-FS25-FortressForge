@@ -2,6 +2,7 @@ using FortressForge.HexGrid;
 using FortressForge.UI;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 namespace FortressForge.CameraControll
 {
@@ -49,7 +50,11 @@ namespace FortressForge.CameraControll
         [SerializeField] public float MoveSpeed = 5.0f;
         [SerializeField] public float RotationSpeed = 50.0f;
         [SerializeField] public float PitchSpeed = 40.0f;
-        [SerializeField] public float ZoomSpeed = 2.0f;
+        [SerializeField] public float MouseWheelZoomSpeed = 1.0f; // Zoom input with mouse is smaller to make the step size of the mouse wheel smaller
+        [SerializeField] public float ButtonsZoomSpeed = 5f; // Zoom input with the Buttons is bigger to make the buttons more sensitive
+        private float _targetZoom;  // Zoomtarget that will be reached by SmoothDamp
+        private float _zoomVelocity; // SmoothDamp (used in HandleZoom methode) needs this velocity-Reference
+        private float _zoomSmoothTime = 0.2f; // the time it takes to reach the _targetZoom (bigger value more smooth but less accurate)
 
         // Limits
         [Tooltip("To avoid the camera to flip or bug do not use value higher than 89\u00b0 or lower than 0\u00b0")] [SerializeField]
@@ -66,6 +71,14 @@ namespace FortressForge.CameraControll
         private InputAction _pitchAction;
 
         private ITerrainHeightProvider _terrainHeightProvider = new TerrainHeightProvider();
+        private float _targetHeight; // target terrain height that will be reached by SmoothDamp
+        private float _heightVelocity; // Needed for SmoothDamp (in the UpdateCameraPosition methode)
+        private float _heightSmoothTime = 0.5f; // Higher = smoother but less accurate
+        
+        private float _moveSpeedZoomSensitivity = 1f; // Zoom speed sensitivity for the WASD movement (from 0.4f, 3f, neutral is 1.0f)
+        private float _pitchAndRollSpeedZoomSensitivity = 1f; // Zoom speed sensitivity for the pitch and roll movement (from 0.85f, 1.5f, neutral is 1.0f)
+        private Vector2 _moveSensitivityLimits = new Vector2(0.4f, 3f); // Min/Max sensitivity for the WASD movement
+        private Vector2 _pitchAndRollSensitivityLimits = new Vector2(0.85f, 1.5f); // Min/Max sensitivity for the pitch and roll movement
 
         /// <summary>
         /// Start function to initialize the PlayerInput and the InputActions
@@ -90,7 +103,9 @@ namespace FortressForge.CameraControll
             _pitchAction = InitializeActionsButtons("Pitch"); // Up/Down arrow keys
             _zoomAction = InitializeActionsButtons("Zoom"); // Zoom in/out mouse Wheel
             _zoomButtons = InitializeActionsButtons("ZoomButtons"); // Zoom in/out Buttons (left/right arrow keys)
-            
+
+            _targetZoom = Zoom; // Set the initial target zoom to the initial zoom
+            _targetHeight = _terrainHeightProvider.SampleHeight(TargetPosition); // Set the initial target height to the initial height of the terrain
         }
 
         /// <summary>
@@ -105,7 +120,7 @@ namespace FortressForge.CameraControll
             HandleRotation(deltaTime); //Rotate around target (Q/E)
             HandlePitch(deltaTime); //Pitch control (Arrow keys)
             HandleZoom(deltaTime); //Zoom
-            UpdateCameraPosition(deltaTime); //Calculate at update camera position
+            UpdateCameraPosition(); //Calculate at update camera position
         }
 
         /// <summary>
@@ -119,7 +134,7 @@ namespace FortressForge.CameraControll
             Vector2 moveInput = _moveTargetAction.ReadValue<Vector2>(); // WASD input
             Vector3 moveDir = new Vector3(moveInput.x, 0, moveInput.y); // X (A/D), Z (W/S)
             Vector3 moveVector = Quaternion.Euler(0, Yaw, 0) * moveDir; // Move relative to current yaw
-            TargetPosition += moveVector * MoveSpeed * deltaTime; // calculate new target position
+            TargetPosition += moveVector * MoveSpeed * deltaTime * _moveSpeedZoomSensitivity; // calculate new target position
         }
 
         /// <summary>
@@ -131,7 +146,7 @@ namespace FortressForge.CameraControll
         private void HandleRotation(float deltaTime)
         {
             float rotateInput = _rotateAction.ReadValue<float>(); // Q/E input
-            Yaw = (Yaw + rotateInput * RotationSpeed * deltaTime) % 360f; // Rotate around target
+            Yaw = (Yaw + rotateInput * RotationSpeed * deltaTime * _pitchAndRollSpeedZoomSensitivity) % 360f; // Rotate around target
         }
 
         /// <summary>
@@ -143,7 +158,7 @@ namespace FortressForge.CameraControll
         private void HandlePitch(float deltaTime)
         {
             float pitchInput = _pitchAction.ReadValue<float>(); // Up/Down arrows
-            Pitch += pitchInput * PitchSpeed * deltaTime; // move camera in pitch angle to center
+            Pitch += pitchInput * PitchSpeed * deltaTime * _pitchAndRollSpeedZoomSensitivity; // move camera in pitch angle to center
             Pitch = Mathf.Clamp(Pitch, PitchLimits.y, PitchLimits.x); // Limit pitch angle
         }
 
@@ -156,11 +171,18 @@ namespace FortressForge.CameraControll
         private void HandleZoom(float deltaTime)
         {
             if (UIClickChecker.Instance.IsClickOnOverlay()) return;
-            float zoomInput = _zoomAction.ReadValue<float>(); // Zoom input with mouse wheel
-            Zoom = Mathf.Clamp(Zoom - zoomInput * ZoomSpeed, zoomLimits.x, zoomLimits.y); // Zoom without deltaTime to make it consistent and good feeling
+            float zoomInput = _zoomAction.ReadValue<float>(); // Zoom input with mouse wheel (made more smooth with SmoothDamp)
+            _targetZoom = Mathf.Clamp(_targetZoom - zoomInput * MouseWheelZoomSpeed, zoomLimits.x, zoomLimits.y); 
 
             float zoomButtonInput = _zoomButtons.ReadValue<float>(); // Zoom input with the Buttons
-            Zoom = Mathf.Clamp(Zoom - zoomButtonInput * ZoomSpeed * deltaTime * 2, zoomLimits.x, zoomLimits.y); // Zoom faster (multiplied by 2) with buttons but depends on the deltaTime
+            _targetZoom = Mathf.Clamp(_targetZoom - zoomButtonInput * ButtonsZoomSpeed * deltaTime, zoomLimits.x, zoomLimits.y);
+            
+            Zoom = Mathf.SmoothDamp(Zoom, _targetZoom, ref _zoomVelocity, _zoomSmoothTime); // SmoothDamp for zooming smoothly in/out
+            
+            // Linear mapping from [min, max Zoom] to [0.4, 3] for WASD movement
+            _moveSpeedZoomSensitivity = _moveSensitivityLimits.x + (Zoom - zoomLimits.x) * (_moveSensitivityLimits.y - _moveSensitivityLimits.x) / (zoomLimits.y - zoomLimits.x);
+            // Linear mapping from [min, max Zoom] to [0.85, 1.5] for pitch and roll
+            _pitchAndRollSpeedZoomSensitivity = _pitchAndRollSensitivityLimits.x + (Zoom - zoomLimits.x) * (_pitchAndRollSensitivityLimits.y - _pitchAndRollSensitivityLimits.x) / (zoomLimits.y - zoomLimits.x);
         }
 
         /// <summary>
@@ -169,11 +191,15 @@ namespace FortressForge.CameraControll
         /// It sets the new position of the camera and makes sure the camera always looks at the centred target
         /// </summary>
         /// <param name="deltaTime"></param>
-        private void UpdateCameraPosition(float deltaTime)
+        private void UpdateCameraPosition()
         {
             Quaternion rotation = Quaternion.Euler(Pitch, Yaw, 0); // Calculate the rotation around the centred object
             Vector3 offset = rotation * new Vector3(0, 0, -Zoom); // Calculate the offset of the camera
-            TargetPosition.y = _terrainHeightProvider.SampleHeight(TargetPosition); // Set the target position to the height of the terrain at the current position
+            
+            TargetPosition.y = _terrainHeightProvider.SampleHeight(TargetPosition); // get the height of the terrain at the current position
+            _targetHeight = Mathf.SmoothDamp(_targetHeight, TargetPosition.y, ref _heightVelocity, _heightSmoothTime);  // SmoothDamp for height
+            TargetPosition.y = _targetHeight; 
+
             transform.position = TargetPosition + offset; // Set the new position of the camera
             transform.LookAt(TargetPosition); // Always look at the center point
         }
@@ -256,11 +282,19 @@ namespace FortressForge.CameraControll
         }
 
         /// <summary>
-        /// Sets the speed at which the camera zooms in and out.
+        /// Sets the speed of the mpuse Wheel at which the camera zooms in and out.
         /// </summary>
-        public void SetZoomSpeed(float newZoomSpeed)
+        public void SetMouseWheelZoomSpeed(float newZoomSpeed)
         {
-            ZoomSpeed = newZoomSpeed;
+            MouseWheelZoomSpeed = newZoomSpeed;
+        }
+        
+        /// <summary>
+        /// Sets the speed of the buttons at which the camera zooms in and out.
+        /// </summary>
+        public void SetButtonsZoomSpeed(float newZoomSpeed)
+        {
+            ButtonsZoomSpeed = newZoomSpeed;
         }
 
         /// <summary>
