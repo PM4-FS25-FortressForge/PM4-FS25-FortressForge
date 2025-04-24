@@ -26,7 +26,7 @@ namespace Tests.GameOverlay
             InputSystem.AddDevice<Mouse>();
             _mouse = InputSystem.GetDevice<Mouse>();
             Assert.NotNull(_mouse, "Error: Mouse device not found.");
-            
+
             InitUIDocument();
         }
 
@@ -47,9 +47,8 @@ namespace Tests.GameOverlay
             UIDocument uiDocument = testingUiDocumentInstantiate.GetComponent<UIDocument>();
             Assert.IsNotNull(uiDocument, "UIDocument konnte nicht gefunden werden. Stellen Sie sicher, dass es dem GameObject hinzugefügt wurde.");
 
-            _root= uiDocument.rootVisualElement;
+            _root = uiDocument.rootVisualElement;
             Assert.IsNotNull(_root, "Root VisualElement sollte nicht null sein.");
-
         }
 
         private TrapezElement InitializeTrapezElement(float topAngle = 90f, float rotation = 180f, string selectorName = "")
@@ -76,60 +75,36 @@ namespace Tests.GameOverlay
 
             yield return null;
         }
-        
+
         [UnityTest]
         public IEnumerator TrapezElement_Constructor_ValidParameters_EmptySelector()
         {
             const float topAngle = 30f;
             const float rotation = 45f;
             TrapezElement trapezElement = InitializeTrapezElement(topAngle, rotation);
-            
+
             Assert.IsNotNull(trapezElement, "TrapezElement instance should not be null.");
             Assert.IsEmpty(trapezElement.GetClasses(), "Selector name should not be set.");
 
             yield return null;
         }
 
-        // [UnityTest]
-        // public IEnumerator TrapezElementIsPointInTrapez_ValidClick_ReturnsTrue()
-        // {
-        //     TrapezElement trapezElement = InitializeTrapezElement();
-        //     _root.Add(trapezElement);
-        //
-        //     Vector2 clickPosition = new(50f, 385f);
-        //     Move(_mouse.position, clickPosition);
-        //
-        //     yield return new WaitUntil(() => _mouse.position.ReadValue() == clickPosition);
-        //
-        //     Assert.IsTrue(trapezElement.IsPointInTrapez(), "Click should be inside the trapez element.");
-        //
-        //     yield return null;
-        // }
         [UnityTest]
         public IEnumerator TrapezElementIsPointInTrapez_ValidClick_ReturnsTrue()
         {
             TrapezElement trapezElement = InitializeTrapezElement();
-            Assert.NotNull(trapezElement, "TrapezElement instance should not be null.");
             _root.Add(trapezElement);
 
-            Vector2 clickPosition = new(50f, 385f);
-            Debug.Log($"Setting mouse position to: {clickPosition}");
+            Vector2 clickPosition = new(50f, 470f);
             Move(_mouse.position, clickPosition);
 
-            yield return new WaitUntil(() =>
-            {
-                Vector2 currentMousePosition = _mouse.position.ReadValue();
-                Debug.Log($"Current mouse position: {currentMousePosition}");
-                return currentMousePosition == clickPosition;
-            });
+            yield return new WaitUntil(() => _mouse.position.ReadValue() == clickPosition);
 
-            Rect trapezBounds = trapezElement.worldBound;
-            Debug.Log($"TrapezElement bounds: {trapezBounds}");
             Assert.IsTrue(trapezElement.IsPointInTrapez(), "Click should be inside the trapez element.");
 
             yield return null;
         }
-        
+
         [UnityTest]
         public IEnumerator TrapezElementIsPointInTrapez_InvalidClick_InsideVisualElement_ReturnsFalse()
         {
