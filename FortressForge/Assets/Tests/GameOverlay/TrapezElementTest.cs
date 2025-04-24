@@ -26,13 +26,8 @@ namespace Tests.GameOverlay
             InputSystem.AddDevice<Mouse>();
             _mouse = InputSystem.GetDevice<Mouse>();
             Assert.NotNull(_mouse, "Error: Mouse device not found.");
-
-            // Initialize the UIDocument
-            _root = InitUIDocument();
-
-            // add a camera to the scene
-            GameObject cameraObject = new GameObject("TestCamera");
-            UnityEngine.Camera camera = cameraObject.AddComponent<UnityEngine.Camera>();
+            
+            InitUIDocument();
         }
 
         [TearDown]
@@ -41,9 +36,8 @@ namespace Tests.GameOverlay
             base.TearDown();
         }
 
-        private VisualElement InitUIDocument()
+        private void InitUIDocument()
         {
-            // Laden des TestingUiDocument aus dem Resources/Tests-Ordner
             GameObject testingUiDocument = Resources.Load<GameObject>("Prefabs/Tests/UIDocumentTesting");
             Assert.IsNotNull(testingUiDocument, "TestingUiDocument konnte nicht geladen werden. Stellen Sie sicher, dass es sich im Ordner Resources/Tests befindet.");
 
@@ -53,10 +47,9 @@ namespace Tests.GameOverlay
             UIDocument uiDocument = testingUiDocumentInstantiate.GetComponent<UIDocument>();
             Assert.IsNotNull(uiDocument, "UIDocument konnte nicht gefunden werden. Stellen Sie sicher, dass es dem GameObject hinzugefügt wurde.");
 
-            VisualElement root = uiDocument.rootVisualElement;
-            Assert.IsNotNull(root, "Root VisualElement sollte nicht null sein.");
+            _root= uiDocument.rootVisualElement;
+            Assert.IsNotNull(_root, "Root VisualElement sollte nicht null sein.");
 
-            return root;
         }
 
         private TrapezElement InitializeTrapezElement(float topAngle = 90f, float rotation = 180f, string selectorName = "")
