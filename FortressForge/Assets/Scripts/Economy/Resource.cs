@@ -14,6 +14,8 @@ namespace FortressForge.Economy
         private readonly ResourceType _type;
 
         private float _currentAmount;
+        
+        public float DeltaAmount { get; set; }
 
         /// <summary>
         /// The maximum amount this resource can hold.
