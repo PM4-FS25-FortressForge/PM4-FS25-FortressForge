@@ -67,8 +67,6 @@ namespace FortressForge.CameraControll
 
         private ITerrainHeightProvider _terrainHeightProvider = new TerrainHeightProvider();
 
-        private UIClickChecker _uiHoverChecker;
-
         /// <summary>
         /// Start function to initialize the PlayerInput and the InputActions
         /// The PlayerInput is a Unity component that allows you to use the new Input System
@@ -93,7 +91,6 @@ namespace FortressForge.CameraControll
             _zoomAction = InitializeActionsButtons("Zoom"); // Zoom in/out mouse Wheel
             _zoomButtons = InitializeActionsButtons("ZoomButtons"); // Zoom in/out Buttons (left/right arrow keys)
             
-            _uiHoverChecker = new UIClickChecker(); // Initialize the UIClickChecker to check if the mouse is on the overlay
         }
 
         /// <summary>
@@ -158,7 +155,7 @@ namespace FortressForge.CameraControll
         /// <param name="deltaTime"></param>
         private void HandleZoom(float deltaTime)
         {
-            if (_uiHoverChecker.IsClickOnOverlay()) return;
+            if (UIClickChecker.Instance.IsClickOnOverlay()) return;
             float zoomInput = _zoomAction.ReadValue<float>(); // Zoom input with mouse wheel
             Zoom = Mathf.Clamp(Zoom - zoomInput * ZoomSpeed, zoomLimits.x, zoomLimits.y); // Zoom without deltaTime to make it consistent and good feeling
 
