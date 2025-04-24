@@ -103,3 +103,8 @@
     margin-left: 3px;
     margin-right: 3px;
 }
+
+.selected-building-card > #building-card-frame{
+    border-color: var(--outer-space-grey);
+    background-color: var(--paynes-grey);
+}
