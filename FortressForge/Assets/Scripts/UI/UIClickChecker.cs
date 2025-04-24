@@ -10,10 +10,13 @@ namespace FortressForge.UI
     /// </summary>
     public class UIClickChecker
     {
+        private static UIClickChecker _instance;
+        public static UIClickChecker Instance => _instance ??= new UIClickChecker();
+        
         private readonly TrapezElement _topTrapezOverlay;
         private readonly TrapezElement _bottomTrapezOverlay;
 
-        public UIClickChecker()
+        private UIClickChecker()
         {
             UIDocument[] uiDocuments = Object.FindObjectsByType<UIDocument>(FindObjectsSortMode.None);
             UIDocument uiDocument = uiDocuments.FirstOrDefault(document => document.name == "BuildingOverlay");
