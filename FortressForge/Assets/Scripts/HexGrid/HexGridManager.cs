@@ -21,7 +21,7 @@ namespace FortressForge.HexGrid
 
         public List<HexGridData> AllGrids { get; } = new();
         private readonly Dictionary<int, HexGridData> _gridsById = new();
-        private readonly Dictionary<string, HexGridData> _gridsByOwnerId = new();
+        private readonly Dictionary<int, HexGridData> _gridsByOwnerId = new();
 
         private TerrainHeightProvider _terrainHeightProvider;
 
@@ -78,12 +78,12 @@ namespace FortressForge.HexGrid
 
         public HexGridData GetGridById(int id)
         {
-            return _gridsById.TryGetValue(id, out var grid) ? grid : null;
+            return _gridsById.GetValueOrDefault(id);
         }
 
-        public HexGridData GetGridByOwner(string ownerId)
+        public HexGridData GetGridByOwner(int ownerId)
         {
-            return _gridsByOwnerId.TryGetValue(ownerId, out var grid) ? grid : null;
+            return _gridsByOwnerId.GetValueOrDefault(ownerId);
         }
     }
 }

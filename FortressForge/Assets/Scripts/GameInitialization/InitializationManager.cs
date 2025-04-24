@@ -51,15 +51,14 @@ namespace FortressForge.GameInitialization
             EconomyController economyController = gameObject.AddComponent<EconomyController>();
             
             // Only the server needs to initialize the EconomySystem
-            if (IsServer && !IsClient)
+            if (IsServerInitialized && !IsClientInitialized)
             {
                 economySync.Init(selectedGrid.EconomySystem);
                 economyController.Init(selectedGrid.EconomySystem);
             }
             
-            // Initialize view only on the main client, server and other clients don't need the individual views
-            if (!IsClient || !IsOwner) return;
-            
+            // Initialize view only on clients, server doesn't need the individual views
+            if (!IsClientInitialized || !IsOwner) return;
             
             TopOverlayViewGenerator topOverlayViewGenerator = FindFirstObjectByType<UIDocument>().GetComponent<TopOverlayViewGenerator>();
             topOverlayViewGenerator.Init(economySync);

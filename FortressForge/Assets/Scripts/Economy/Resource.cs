@@ -57,7 +57,7 @@ namespace FortressForge.Economy
         /// </summary>
         /// <param name="type">The type of resource this instance represents.</param>
         /// <param name="maxAmount">The maximum amount the resource can hold.</param>
-        public Resource(ResourceType type, float maxAmount = float.MaxValue)
+        public Resource(ResourceType type, float maxAmount = 0)
         {
             _type = type;
             MaxAmount = maxAmount;

@@ -3,7 +3,7 @@
     [System.Serializable]
     public struct PlayerIdHexGridIdTuples
     {
-        public string PlayerId;
+        public int PlayerId;
         public int HexGridId;
     }
 }

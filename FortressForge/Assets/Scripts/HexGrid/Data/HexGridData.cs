@@ -21,9 +21,6 @@ namespace FortressForge.HexGrid.Data
         public event Action<HexTileData> OnHoverTileChanged;
         public Vector3 Origin { get; private set; }
         public int Id { get; set; }
-
-        // Players that own this grid
-        public readonly List<string> PlayerIds = new();
         
         public readonly float TileRadius;
 
@@ -75,11 +72,6 @@ namespace FortressForge.HexGrid.Data
             TileMap[newHexCoords].OnHoverChanged += OnHoverTileChangedEvent;
         }
 
-        public void AddPlayer(string playerId)
-        {
-            PlayerIds.Add(playerId);
-        }
-
         /// <summary>
         /// Places buildings on the hex grid. This doesn't check if the placement is valid. Use Validate Building Placement first.
         /// </summary>
@@ -100,7 +92,7 @@ namespace FortressForge.HexGrid.Data
         /// <param name="buildingTemplate"></param>
         /// <returns>Returns true if placement is unoccupied</returns>
         public bool ValidateBuildingPlacement(HexTileCoordinate hexCoord, BaseBuildingTemplate buildingTemplate)
-        { // TODO: THis method does more then just validate the placement, consider renaming, or better splitting it up
+        {
             foreach (var coord in buildingTemplate.ShapeData)
             {
                 TileMap.TryGetValue((hexCoord + coord), out var tileData);
@@ -137,7 +129,6 @@ namespace FortressForge.HexGrid.Data
         {
             Vector3 worldPos = position.GetWorldPosition(TileRadius, TileHeight);
         
-            // Hier wird jetzt das Interface benutzt:
             float terrainHeight = _terrainHeightProvider.SampleHeight(worldPos);
 
             return new HexTileCoordinate(
