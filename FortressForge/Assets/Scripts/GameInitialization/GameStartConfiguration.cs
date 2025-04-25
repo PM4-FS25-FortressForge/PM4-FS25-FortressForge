@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using FortressForge.BuildingSystem.BuildingData;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,16 +13,19 @@ namespace FortressForge.GameInitialization
         public Terrain Terrain;
         
         [Header("This PlayerID")]
-        public string PlayerId;
+        public int PlayerId;
         
         [Header("PlayerIds und ihre HexGrid Zugehörigkeit")]
-        public List<(int PlayerId, int HexGridId)> PlayerIdsHexGridIdTuplesList;
+        [SerializeField]
+        private List<SerializablePair> _serializedList;
+        public List<(int PlayerId, int HexGridId)> PlayerIdsHexGridIdTuplesList =>
+            _serializedList.Select(p => (p.PlayerId, p.HexGridId)).ToList();
         
         [Header("HexGrid origin Koordinaten")]
         public List<Vector3> HexGridOrigins;
         
         [Header("Available Buildings")]
-        public List<BaseBuildingTemplate> availableBuildings = new List<BaseBuildingTemplate>();
+        public List<BaseBuildingTemplate> availableBuildings = new();
         
         [Header("HexGrid Konfiguration")]
         public int Radius;
@@ -30,5 +34,11 @@ namespace FortressForge.GameInitialization
         
         [Header("Referenzen für das GridView")] [SerializeField]
         public GameObject TilePrefab;
+        
+        [System.Serializable]
+        public class SerializablePair
+        {
+            public int PlayerId, HexGridId;
+        }
     }
 }

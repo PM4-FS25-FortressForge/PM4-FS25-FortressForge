@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using FortressForge.BuildingSystem.BuildManager;
 using FortressForge.Economy;
 using UnityEngine;
@@ -19,8 +20,6 @@ namespace FortressForge.HexGrid
         public static HexGridManager Instance { get; private set; }
 
         public List<HexGridData> AllGrids { get; } = new();
-        private readonly Dictionary<int, HexGridData> _gridsById = new();
-        private readonly Dictionary<int, HexGridData> _gridsByOwnerId = new();
 
         private TerrainHeightProvider _terrainHeightProvider;
 
@@ -38,29 +37,29 @@ namespace FortressForge.HexGrid
             _terrainHeightProvider = new TerrainHeightProvider();
         }
 
-        public void InitializeHexGridForPlayers(GameStartConfiguration gameStartConfiguration)
+        public void InitializeHexGrids(GameStartConfiguration gameStartConfiguration)
         {
-            foreach (var player in gameStartConfiguration.PlayerIdsHexGridIdTuplesList)
+            for (var index = 0; index < gameStartConfiguration.HexGridOrigins.Count; index++)
             {
-                Vector3 origin = gameStartConfiguration.HexGridOrigins[player.HexGridId];
+                var hexGridOrigin = gameStartConfiguration.HexGridOrigins[index];
                 int radius = gameStartConfiguration.Radius;
                 float tileSize = gameStartConfiguration.TileSize;
                 float tileHeight = gameStartConfiguration.TileHeight;
-                
+
                 BuildingManager buildingManager = new BuildingManager();
-                
+
                 // Example for max value application // TODO move or remove when actual max values are set
                 var maxValues = new Dictionary<ResourceType, float>
                 {
                     { ResourceType.Power, 0f },
                     { ResourceType.Metal, 10000f },
                 };
-                
+
                 EconomySystem economyController = new EconomySystem(buildingManager, maxValues);
-                
+
                 HexGridData gridData = new HexGridData(
-                    id: player.HexGridId,
-                    origin: origin,
+                    id: index,
+                    origin: hexGridOrigin,
                     radius: radius,
                     tileSize: tileSize,
                     tileHeight: tileHeight,
@@ -70,19 +69,7 @@ namespace FortressForge.HexGrid
                 );
 
                 AllGrids.Add(gridData);
-                _gridsById[player.HexGridId] = gridData;
-                _gridsByOwnerId[player.PlayerId] = gridData;
             }
-        }
-
-        public HexGridData GetGridById(int id)
-        {
-            return _gridsById.GetValueOrDefault(id);
-        }
-
-        public HexGridData GetGridByOwner(int ownerId)
-        {
-            return _gridsByOwnerId.GetValueOrDefault(ownerId);
         }
     }
 }

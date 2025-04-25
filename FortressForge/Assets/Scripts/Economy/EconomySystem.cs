@@ -41,7 +41,7 @@ namespace FortressForge.Economy
             {
                 float max = maxValues != null && maxValues.TryGetValue(type, out var value)
                     ? value
-                    : float.MaxValue;
+                    : 0;
 
                 _currentResources[type] = new Resource(type, max);
             }

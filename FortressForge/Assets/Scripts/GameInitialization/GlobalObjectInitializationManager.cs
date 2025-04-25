@@ -29,7 +29,7 @@ namespace FortressForge.GameInitialization
                 return;
             }
             
-            HexGridManager.Instance.InitializeHexGridForPlayers(_config);
+            HexGridManager.Instance.InitializeHexGrids(_config);
             
             InitializeHexGridViews(_config, HexGridManager.Instance);
         }

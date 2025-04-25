@@ -1,4 +1,5 @@
-﻿using FishNet;
+﻿using System.Collections.Generic;
+using FishNet;
 using FishNet.Object;
 using FortressForge.BuildingSystem.BuildManager;
 using FortressForge.Economy;
@@ -39,13 +40,15 @@ namespace FortressForge.GameInitialization
                 Debug.LogError("GameStartConfiguration is not set.");
                 return;
             }
-            
+            int clientId = Owner.ClientId;
+
             // Always select first grid for the player for now
-            HexGridData selectedGrid = HexGridManager.Instance.AllGrids[0];
+            HexGridData selectedGrid = HexGridManager.Instance.AllGrids[clientId];
             
             // initialize the grid view so allgrids is set
             BuildViewController buildViewController = gameObject.GetComponent<BuildViewController>();
-            buildViewController.Init(HexGridManager.Instance.AllGrids, selectedGrid.EconomySystem, selectedGrid.BuildingManager, _config);
+            buildViewController.Init(new List<HexGridData>{ selectedGrid }, 
+                selectedGrid.EconomySystem, selectedGrid.BuildingManager, _config, HexGridManager.Instance);
             
             // After creating EconomySystem
             var economySync = gameObject.GetComponent<EconomySync>();
