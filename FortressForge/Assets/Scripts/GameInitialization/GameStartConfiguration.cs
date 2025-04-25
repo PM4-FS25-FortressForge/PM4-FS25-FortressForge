@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using FortressForge.BuildingSystem.BuildingData;
-using FortressForge.Serializables;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,7 +15,7 @@ namespace FortressForge.GameInitialization
         public string PlayerId;
         
         [Header("PlayerIds und ihre HexGrid Zugehörigkeit")]
-        public List<PlayerIdHexGridIdTuples> PlayerIdsHexGridIdTuplesList;
+        public List<(int PlayerId, int HexGridId)> PlayerIdsHexGridIdTuplesList;
         
         [Header("HexGrid origin Koordinaten")]
         public List<Vector3> HexGridOrigins;

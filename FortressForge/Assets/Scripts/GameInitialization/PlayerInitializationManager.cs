@@ -14,7 +14,7 @@ using UnityEngine.UIElements;
 
 namespace FortressForge.GameInitialization
 {
-    public class InitializationManager : NetworkBehaviour
+    public class PlayerInitializationManager : NetworkBehaviour
     {
         [Header("Game Start Configuration")]
         [SerializeField] private GameStartConfiguration _config;
@@ -43,6 +43,7 @@ namespace FortressForge.GameInitialization
             // Always select first grid for the player for now
             HexGridData selectedGrid = HexGridManager.Instance.AllGrids[0];
             
+            // initialize the grid view so allgrids is set
             BuildViewController buildViewController = gameObject.GetComponent<BuildViewController>();
             buildViewController.Init(HexGridManager.Instance.AllGrids, selectedGrid.EconomySystem, selectedGrid.BuildingManager, _config);
             
@@ -58,13 +59,14 @@ namespace FortressForge.GameInitialization
             }
             
             // Initialize view only on clients, server doesn't need the individual views
-            if (!IsClientInitialized || !IsOwner) return;
-            
-            TopOverlayViewGenerator topOverlayViewGenerator = FindFirstObjectByType<UIDocument>().GetComponent<TopOverlayViewGenerator>();
-            topOverlayViewGenerator.Init(economySync);
-            
-            BottomOverlayViewGenerator bottomOverlayViewGenerator = FindFirstObjectByType<UIDocument>().GetComponent<BottomOverlayViewGenerator>();
-            bottomOverlayViewGenerator.Init(_config.availableBuildings, buildViewController);
+            if (IsClientInitialized && IsOwner)
+            {
+                TopOverlayViewGenerator topOverlayViewGenerator = FindFirstObjectByType<UIDocument>().GetComponent<TopOverlayViewGenerator>();
+                topOverlayViewGenerator.Init(economySync);
+
+                BottomOverlayViewGenerator bottomOverlayViewGenerator = FindFirstObjectByType<UIDocument>().GetComponent<BottomOverlayViewGenerator>();
+                bottomOverlayViewGenerator.Init(_config.availableBuildings, buildViewController);
+            }
         }
     }
 }

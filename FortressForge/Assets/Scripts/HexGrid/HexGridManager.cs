@@ -5,7 +5,6 @@ using FortressForge.Economy;
 using UnityEngine;
 using FortressForge.GameInitialization;
 using FortressForge.HexGrid.Data;
-using FortressForge.Serializables;
 
 namespace FortressForge.HexGrid
 {
