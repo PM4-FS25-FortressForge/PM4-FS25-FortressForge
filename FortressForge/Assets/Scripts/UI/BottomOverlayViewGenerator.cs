@@ -21,6 +21,7 @@ namespace FortressForge.UI
 
         private BuildViewController _buildViewController;
         private List<BaseBuildingTemplate> _availableBuildings;
+        private VisualElement _selectedCard;
 
         private void OnEnable()
         {
@@ -215,6 +216,11 @@ namespace FortressForge.UI
 
             item.RegisterCallback<PointerDownEvent>(_ =>
             {
+                _selectedCard?.RemoveFromClassList("selected-building-card");
+
+                _selectedCard = item;
+                _selectedCard.AddToClassList("selected-building-card");
+
                 SelectBuilding(index);
                 Debug.Log($"Selected building: {building.name}");
             });

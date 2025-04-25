@@ -1,5 +1,6 @@
 using System;
 using FortressForge.HexGrid.Data;
+using FortressForge.UI;
 using UnityEngine;
 
 namespace FortressForge.HexGrid.View
@@ -46,6 +47,11 @@ namespace FortressForge.HexGrid.View
                 _renderer.material = OccupiedMaterial;
             else
                 _renderer.material = FreeMaterial;
+            
+            if (UIClickChecker.Instance.IsClickOnOverlay() && !hexTileData.IsOccupied)
+            {
+                _renderer.material = FreeMaterial;
+            }
         }
 
         private void OnMouseEnter()

@@ -80,8 +80,6 @@ namespace FortressForge.CameraControll
         private Vector2 _moveSensitivityLimits = new Vector2(0.4f, 3f); // Min/Max sensitivity for the WASD movement
         private Vector2 _pitchAndRollSensitivityLimits = new Vector2(0.85f, 1.5f); // Min/Max sensitivity for the pitch and roll movement
 
-        private UIClickChecker _uiHoverChecker;
-
         /// <summary>
         /// Start function to initialize the PlayerInput and the InputActions
         /// The PlayerInput is a Unity component that allows you to use the new Input System
@@ -105,9 +103,9 @@ namespace FortressForge.CameraControll
             _pitchAction = InitializeActionsButtons("Pitch"); // Up/Down arrow keys
             _zoomAction = InitializeActionsButtons("Zoom"); // Zoom in/out mouse Wheel
             _zoomButtons = InitializeActionsButtons("ZoomButtons"); // Zoom in/out Buttons (left/right arrow keys)
+
             _targetZoom = Zoom; // Set the initial target zoom to the initial zoom
             _targetHeight = _terrainHeightProvider.SampleHeight(TargetPosition); // Set the initial target height to the initial height of the terrain
-            _uiHoverChecker = new UIClickChecker(); // Initialize the UIClickChecker to check if the mouse is on the overlay
         }
 
         /// <summary>
@@ -172,7 +170,7 @@ namespace FortressForge.CameraControll
         /// <param name="deltaTime"></param>
         private void HandleZoom(float deltaTime)
         {
-            if (_uiHoverChecker.IsClickOnOverlay()) return;
+            if (UIClickChecker.Instance.IsClickOnOverlay()) return;
             float zoomInput = _zoomAction.ReadValue<float>(); // Zoom input with mouse wheel (made more smooth with SmoothDamp)
             _targetZoom = Mathf.Clamp(_targetZoom - zoomInput * MouseWheelZoomSpeed, zoomLimits.x, zoomLimits.y); 
 
