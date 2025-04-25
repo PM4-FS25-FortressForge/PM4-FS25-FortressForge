@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: ec92c9d5c7814f95b5d0508e3c5ad9a4
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - towerBase: {fileID: 5730123698952501431, guid: 491f57a9568affa4087b850475f2a6a9, type: 3}
+  - cannonShaft: {fileID: 8590800036456592840, guid: 8d18e7d8fdaebb44c86b37fac4951e33, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

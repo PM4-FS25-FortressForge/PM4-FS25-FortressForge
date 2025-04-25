@@ -1,0 +1,138 @@
+{
+    "name": "ArtilleryActions",
+    "maps": [
+        {
+            "name": "ArtilleryActions",
+            "id": "f8965fbc-a0cb-42b4-ad93-b757cf19b42e",
+            "actions": [
+                {
+                    "name": "RotateArtillery",
+                    "type": "Button",
+                    "id": "db5aaf7f-bd50-4611-84b0-e934381b328e",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "AdjustCannonAngle",
+                    "type": "Button",
+                    "id": "28dab4ad-39b6-4981-b8bf-f926308543b8",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ExitFightMode",
+                    "type": "Button",
+                    "id": "a5c9cb25-94d5-4119-9698-a554d4ee842e",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "EnterFightMode",
+                    "type": "Button",
+                    "id": "bfeb53e5-5f9d-460b-a3f0-14f367c511d5",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "da103b83-4b68-490c-bc21-88d898d25ed8",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "Press",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ExitFightMode",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "99616a63-7877-4286-b868-5dbc2cf6ca76",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "Press",
+                    "processors": "",
+                    "groups": "",
+                    "action": "EnterFightMode",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "1D Axis",
+                    "id": "9dbb4186-a9fc-4380-ac59-8fb37d666495",
+                    "path": "1DAxis",
+                    "interactions": "Press(behavior=2)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RotateArtillery",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "cb9458d6-f801-40a0-98af-1f7db7ccfa38",
+                    "path": "<Keyboard>/j",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RotateArtillery",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "20cd3c0f-37a3-44b7-94d1-d387968566b7",
+                    "path": "<Keyboard>/l",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RotateArtillery",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "1D Axis",
+                    "id": "d9f49a42-9a49-4222-b039-d68778daa85b",
+                    "path": "1DAxis",
+                    "interactions": "Press(behavior=2)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "AdjustCannonAngle",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "Positive",
+                    "id": "c2592589-1028-4ff6-834e-ada4a3b17d4e",
+                    "path": "<Keyboard>/i",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "AdjustCannonAngle",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Negative",
+                    "id": "90c7cfd0-96af-4dcf-809f-4656a4389c85",
+                    "path": "<Keyboard>/k",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "AdjustCannonAngle",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
