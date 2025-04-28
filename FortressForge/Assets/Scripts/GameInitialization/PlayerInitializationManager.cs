@@ -40,13 +40,16 @@ namespace FortressForge.GameInitialization
                 Debug.LogError("GameStartConfiguration is not set.");
                 return;
             }
-            int clientId = Owner.ClientId;
 
-            // Always select first grid for the player for now
+            // Take the clientId from the owner of this object, also called the playerId
+            int clientId = Owner.ClientId;
+            // Use ClientId to get the corresponding HexGridData
             HexGridData selectedGrid = HexGridManager.Instance.AllGrids[clientId];
             
             // initialize the grid view so allgrids is set
             BuildViewController buildViewController = gameObject.GetComponent<BuildViewController>();
+            // We only initialize the view for the selected grid,
+            // theoretically you could add multiple grids per player here. But EconomySystem is only one per player. So there mustn't be overlaps.
             buildViewController.Init(new List<HexGridData>{ selectedGrid }, 
                 selectedGrid.EconomySystem, selectedGrid.BuildingManager, _config, HexGridManager.Instance);
             
