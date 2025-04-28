@@ -5,6 +5,7 @@
     --dark-grey: rgb(36, 45, 49);
     --red: rgb(191, 49, 49);
     --neon-green: rgb(34, 153, 34);
-    --pale-green: rgb(137, 184, 137);
+    --pale-green: rgb(116, 161, 116);
     --transparent: rgba(0, 0, 0, 0);
+    --custom-white: rgb(227, 220, 220);
 }

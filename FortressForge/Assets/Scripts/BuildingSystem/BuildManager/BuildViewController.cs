@@ -30,7 +30,6 @@ namespace FortressForge.BuildingSystem.BuildManager
         private MeshRenderer _previewBuildingMeshRenderer;
         private readonly List<HexTileCoordinate> _currentBuildTargets = new();
 
-        private UIClickChecker _uiClickChecker;
         private BuildActions _input;
         private int _selectedBuildingIndex = -1;
         private HexTileData _hoveredHexTile;
@@ -61,6 +60,11 @@ namespace FortressForge.BuildingSystem.BuildManager
         {
             if (_previewBuilding == null) return;
             _hoveredHexTile = hexTileData.IsMouseTarget ? hexTileData : null;
+            if (UIClickChecker.Instance.IsClickOnOverlay())
+            {
+                ClearPreviousBuildTargets();
+                return;
+            }
             MovePreviewObject(hexTileData);
         }
         
@@ -85,8 +89,6 @@ namespace FortressForge.BuildingSystem.BuildManager
         {
             _input.PreviewMode.SetCallbacks(this);
             _input.PreviewMode.Enable();
-
-            _uiClickChecker = new UIClickChecker();
         }
 
         /// <summary>
@@ -104,7 +106,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         public void OnPlaceAction(InputAction.CallbackContext context)
         {
             if (!IsOwner) return;
-            if (context.performed && IsPreviewMode && !_uiClickChecker.IsClickOnOverlay())
+            if (context.performed && IsPreviewMode && !UIClickChecker.Instance.IsClickOnOverlay())
                 TryBuyAndPlaceBuilding();
         }
 
@@ -189,7 +191,8 @@ namespace FortressForge.BuildingSystem.BuildManager
             }
 
             _currentBuildTargets.Clear();
-            _previewBuildingMeshRenderer.enabled = false;
+            if (_previewBuildingMeshRenderer)
+                _previewBuildingMeshRenderer.enabled = false;
         }
 
         /// <summary>

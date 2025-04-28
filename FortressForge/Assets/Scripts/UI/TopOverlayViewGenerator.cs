@@ -91,7 +91,7 @@ namespace FortressForge.UI
         /// <returns>A new instance of TrapezElement.</returns>
         private TrapezElement CreateTrapezElement(string selector, string className = null)
         {
-            TrapezElement trapezElement = new ();
+            TrapezElement trapezElement = new();
             trapezElement.SetParameters(90f, 180f, selector);
             if (!string.IsNullOrEmpty(className))
             {
@@ -159,14 +159,25 @@ namespace FortressForge.UI
         {
             if (resource == null) return;
             fillableRessourceContainer.FillPercentage = Mathf.Clamp(resource.CurrentAmount / resource.MaxAmount, 0f, 1f);
-            Label amountLabel = resourceContainer.Q<Label>(fillableRessourceContainer.name + "-amount");
-            if (amountLabel != null)
+            AutoSizeLabel amountAutoSizeLabel = resourceContainer.Q<AutoSizeLabel>(fillableRessourceContainer.name + "-amount");
+            Label changeRateLabel = resourceContainer.Q<Label>(fillableRessourceContainer.name + "-change-rate");
+            if (amountAutoSizeLabel != null)
             {
-                amountLabel.text = $"{resource.CurrentAmount}/{resource.MaxAmount}";
+                amountAutoSizeLabel.text = $"{resource.CurrentAmount}/{resource.MaxAmount}";
+                amountAutoSizeLabel.UpdateFontSize();
             }
             else
             {
                 Debug.LogError("Current amount label not found!");
+            }
+
+            if (changeRateLabel != null)
+            {
+                changeRateLabel.text = resource.DeltaAmount > 0 ? $"+{resource.DeltaAmount}" : resource.DeltaAmount < 0 ? $"{resource.DeltaAmount}" : "0";
+            }
+            else
+            {
+                Debug.LogError("Change rate label not found!");
             }
         }
     }

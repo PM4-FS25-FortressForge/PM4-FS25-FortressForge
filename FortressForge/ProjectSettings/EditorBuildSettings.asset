@@ -12,7 +12,7 @@ EditorBuildSettings:
     path: Assets/Scenes/GameView.unity
     guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1
-    path: Assets/Scenes/Unity Cammera implementation Test.unity
+    path: Assets/Scenes/Tests/CameraTestScene.unity
     guid: 20fd2a6261fdc234f935e1cda2ad329c
   - enabled: 1
     path: Assets/Scenes/Tests/EmptyScene.unity

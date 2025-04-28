@@ -30,6 +30,13 @@
     width: 150px;
 }
 
+.ressource-container-right > #ressource-element-container > FillableRessourceContainer {
+    align-self: flex-start;
+}
+.ressource-container-left > #ressource-element-container > FillableRessourceContainer {
+    align-self: flex-end;
+}
+
 .ressource-container-fill-element {
     background-color: var(--pale-green);
     border-radius: 5px;
@@ -53,6 +60,15 @@
 }
 
 .ressource-amount-text {
+    color: var(--custom-white);
+    -unity-font-style: bold;
+    -unity-text-align: middle-right;
+    position: absolute;
+    right: 0;
+    max-width: 100%;
+}
+
+.ressource-change-rate-text {
     color: var(--neon-green);
     font-size: 15px;
     -unity-font-style: bold;
