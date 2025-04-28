@@ -65,7 +65,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         {
             if (_previewBuilding == null) return;
             _hoveredHexTile = hexTileData.IsMouseTarget ? hexTileData : null;
-            if (UIClickChecker.Instance.IsClickOnOverlay())
+            if (!hexTileData.IsMouseTarget)
             {
                 ClearPreviousBuildTargets();
                 return;
@@ -111,7 +111,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         public void OnPlaceAction(InputAction.CallbackContext context)
         {
             if (!IsOwner) return;
-            if (context.performed && IsPreviewMode && _hoveredHexTile != null && !UIClickChecker.Instance.IsClickOnOverlay())
+            if (context.performed && IsPreviewMode && _hoveredHexTile != null)
             {
                 var coord = _hoveredHexTile.HexTileCoordinate;
                 var rotation = _previewBuilding.transform.rotation;

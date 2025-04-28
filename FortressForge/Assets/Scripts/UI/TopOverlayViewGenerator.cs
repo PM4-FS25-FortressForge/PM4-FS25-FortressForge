@@ -171,14 +171,14 @@ namespace FortressForge.UI
         /// <param name="resourceContainer">The container element that holds the resource information.</param>
         /// <param name="fillableRessourceContainer">The fillable resource container to update.</param>
         /// <param name="resource">The resource to get the current amount from.</param>
-        private void UpdateRessourceFillableContainer(VisualElement resourceContainer, FillableRessourceContainer container, ResourceDto resourceData)
+        private void UpdateRessourceFillableContainer(VisualElement resourceContainer, FillableRessourceContainer fillableRessourceContainer, ResourceDto resource)
         {
-            container.FillPercentage = Mathf.Clamp(resourceData.CurrentAmount / resourceData.MaxAmount, 0f, 1f);
+            fillableRessourceContainer.FillPercentage = Mathf.Clamp(resource.CurrentAmount / resource.MaxAmount, 0f, 1f);
             AutoSizeLabel amountAutoSizeLabel = resourceContainer.Q<AutoSizeLabel>(fillableRessourceContainer.name + "-amount");
-            Label changeRateLabel = resourceContainer.Q<Label>(container.name + "-change-rate");
+            Label changeRateLabel = resourceContainer.Q<Label>(fillableRessourceContainer.name + "-change-rate");
             if (amountAutoSizeLabel != null)
             {
-                amountAutoSizeLabel.text = $"{resourceData.CurrentAmount}/{resourceData.MaxAmount}";
+                amountAutoSizeLabel.text = $"{resource.CurrentAmount}/{resource.MaxAmount}";
                 amountAutoSizeLabel.UpdateFontSize();
             }
             else

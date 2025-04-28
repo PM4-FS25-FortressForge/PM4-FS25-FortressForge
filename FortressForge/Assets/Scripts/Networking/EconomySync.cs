@@ -35,7 +35,8 @@ namespace FortressForge.Networking
             {
                 Type = resource.Type,
                 CurrentAmount = resource.CurrentAmount,
-                MaxAmount = resource.MaxAmount
+                MaxAmount = resource.MaxAmount, 
+                DeltaAmount = resource.DeltaAmount,
             };
         }
     }

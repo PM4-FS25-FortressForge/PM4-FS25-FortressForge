@@ -170,7 +170,7 @@ namespace FortressForge.CameraControll
         /// <param name="deltaTime"></param>
         private void HandleZoom(float deltaTime)
         {
-            if (UIClickChecker.Instance.IsClickOnOverlay()) return;
+            if (UIClickChecker.Instance.IsMouseOnOverlay()) return;
             float zoomInput = _zoomAction.ReadValue<float>(); // Zoom input with mouse wheel (made more smooth with SmoothDamp)
             _targetZoom = Mathf.Clamp(_targetZoom - zoomInput * MouseWheelZoomSpeed, zoomLimits.x, zoomLimits.y); 
 

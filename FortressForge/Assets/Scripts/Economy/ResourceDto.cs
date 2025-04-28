@@ -14,5 +14,6 @@ namespace FortressForge.Networking.Dto
         public ResourceType Type;
         public float CurrentAmount;
         public float MaxAmount;
+        public float DeltaAmount;
     }
 }
