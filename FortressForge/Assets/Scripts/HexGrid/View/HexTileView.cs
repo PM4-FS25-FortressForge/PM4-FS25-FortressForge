@@ -66,5 +66,17 @@ namespace FortressForge.HexGrid.View
         {
             TileData.IsMouseTarget = false;
         }
+        
+        private void OnMouseOver()
+        {
+            if (UIClickChecker.Instance.IsMouseOnOverlay() && TileData.IsMouseTarget)
+            {
+                OnMouseExit();
+            }
+            else if (!UIClickChecker.Instance.IsMouseOnOverlay() && !TileData.IsMouseTarget)
+            {
+                OnMouseEnter();
+            }
+        }
     }
 }

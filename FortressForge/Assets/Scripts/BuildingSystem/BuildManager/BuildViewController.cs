@@ -45,7 +45,7 @@ namespace FortressForge.BuildingSystem.BuildManager
             _config = config;
             _hexGridManager = hexGridManager;
             
-            _hexGridManager.AllGrids.ForEach(gridData => gridData.OnHoverTileChanged += OnHexTileChanged);
+            _hexGridManager.AllGrids.ForEach(gridData => gridData.OnHoverTileChanged += OnHexTileChanged); // TODO consider using OnBuildTargetChange
         }
 
         public void PreviewSelectedBuilding(int buildingIndex)
