@@ -51,7 +51,7 @@ MonoBehaviour:
   _addedNetworkObject: {fileID: 7935336322730317849}
   _networkObjectCache: {fileID: 7935336322730317849}
   _gameStartConfiguration: {fileID: 11400000, guid: 5a14fda24b5e45a48a6e66352b2d350d, type: 2}
-  _gameSessionStartConfiguration: {fileID: 0}
+  _gameSessionStartConfiguration: {fileID: 11400000, guid: 4f4cf94a3791f8942832f1ce52f12292, type: 2}
 --- !u!114 &7935336322730317849
 MonoBehaviour:
   m_ObjectHideFlags: 0

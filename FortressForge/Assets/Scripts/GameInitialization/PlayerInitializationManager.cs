@@ -3,6 +3,7 @@ using System.Linq;
 using FishNet;
 using FishNet.Object;
 using FortressForge.BuildingSystem.BuildManager;
+using FortressForge.CameraControll;
 using FortressForge.Economy;
 using FortressForge.GameInitialization;
 using FortressForge.HexGrid;
@@ -72,6 +73,18 @@ namespace FortressForge.GameInitialization
             // Initialize view only on clients, server doesn't need the individual views
             if (IsClientInitialized && IsOwner)
             {
+                Vector3 gridOrigin = _gameSessionStartConfiguration.HexGridOrigins[gridId];
+                
+                Camera mainCamera = Camera.main;
+                if (mainCamera == null)
+                {
+                    Debug.LogError("Main camera not found!");
+                    return;
+                }
+                
+                mainCamera.GetComponent<CameraController>()
+                    .SetTargetPosition(gridOrigin);
+
                 TopOverlayViewGenerator topOverlayViewGenerator = FindFirstObjectByType<UIDocument>().GetComponent<TopOverlayViewGenerator>();
                 topOverlayViewGenerator.Init(economySync);
 

@@ -15,6 +15,11 @@ namespace Tests.Hexgrid
         {
             return 0f; // Simuliert flaches Terrain auf y=0
         }
+        
+        public float SampleHexHeight(Vector3 position, float tileHeight, float tileRadius)
+        {
+            return 0f; // Simuliert flaches Terrain auf y=0
+        }
     }
 
     [TestFixture]
