@@ -56,6 +56,10 @@ namespace FortressForge.CameraControll
         private float _targetZoom;  // Zoomtarget that will be reached by SmoothDamp
         private float _zoomVelocity; // SmoothDamp (used in HandleZoom methode) needs this velocity-Reference
         private float _zoomSmoothTime = 0.2f; // the time it takes to reach the _targetZoom (bigger value more smooth but less accurate)
+        
+        [FormerlySerializedAs("_config")]
+        [Header("Game Start Configuration")]
+        [SerializeField] public GameStartConfiguration Config;
 
         // Limits
         [Tooltip("To avoid the camera to flip or bug do not use value higher than 89\u00b0 or lower than 0\u00b0")] [SerializeField]
@@ -64,7 +68,6 @@ namespace FortressForge.CameraControll
         [SerializeField] public Vector2 zoomLimits = new Vector2(2.0f, 20.0f); // Min/Max distance from target Zoom
         
         // Internal
-        [SerializeField] private GameStartConfiguration _config;
         private PlayerInput _playerInput;
         private InputAction _moveTargetAction;
         private InputAction _rotateAction;
@@ -318,7 +321,7 @@ namespace FortressForge.CameraControll
 
         private float GetTerrainHeight(Vector3 targetPosition)
         {
-            return _terrainHeightProvider.SampleHexHeight(targetPosition, _config.TileHeight, _config.TileSize);
+            return _terrainHeightProvider.SampleHexHeight(targetPosition, Config.TileHeight, Config.TileSize);
         }
     }
 }

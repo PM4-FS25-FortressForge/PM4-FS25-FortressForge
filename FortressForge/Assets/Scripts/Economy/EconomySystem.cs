@@ -56,12 +56,10 @@ namespace FortressForge.Economy
             var resourceChanges = CalculateNewResourcesChanges();
             var newResources = CalculateSumOfNewResources(resourceChanges);
             var positiveNewResources = StabilizeEconomy(newResources, resourceChanges);
-            var changeRates = CalculateChangeRates(resourceChanges);
             
             foreach (ResourceType resourceType in _allResourceTypes)
             {
                 _currentResources[resourceType].CurrentAmount = positiveNewResources[resourceType];
-                _currentResources[resourceType].DeltaAmount = changeRates[resourceType];
             }
             
             if (EnableDebugLogging)
@@ -73,32 +71,6 @@ namespace FortressForge.Economy
             }
         }
         
-        /// <summary>
-        /// Calculates the change rates of resources based on the current state and the changes from actors.
-        /// </summary>
-        /// <param name="resourceChanges">Resource changes from actors.</param>
-        /// <returns>Change rates for resources.</returns>
-        private Dictionary<ResourceType, float> CalculateChangeRates(List<(IEconomyActor, Dictionary<ResourceType, float>)> resourceChanges)
-        {
-            var changeRates = new Dictionary<ResourceType, float>();
-            
-            foreach (var resource in _allResourceTypes)
-            {
-                changeRates[resource] = 0;
-            }
-
-            foreach (var resourceChange in resourceChanges)
-            {
-                foreach (var change in resourceChange.Item2)
-                {
-                    changeRates[change.Key] += change.Value;
-                }
-            }
-
-            return changeRates;
-        }
-        
-
         /// <summary>
         /// Checks if there are sufficient resources available for the specified costs.
         /// </summary>
