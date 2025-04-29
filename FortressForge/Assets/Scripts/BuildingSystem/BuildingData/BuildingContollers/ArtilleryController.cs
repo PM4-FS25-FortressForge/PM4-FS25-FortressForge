@@ -1,7 +1,7 @@
-using FortressForge.BuildingSystem.BuildManager;
+using FortressForge.BuildingSystem.BuildingData;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.Composites;
+
 
 public partial class ArtilleryController : MonoBehaviour, ArtilleryAction.IArtilleryActionsActions
 {
@@ -11,11 +11,8 @@ public partial class ArtilleryController : MonoBehaviour, ArtilleryAction.IArtil
     private bool isAdjustingCannonAngle = false;
     private float rotateInput;
     private float angleInput;
-    
-    public float minCannonAngle = 10f;  
-    public float maxCannonAngle = 90f; 
-    public float rotationSpeed = 100f; //TODO make this in scriptable object
-    public float pitchSpeed = 100f; //TODO make this in scriptable object
+
+    [SerializeField] private WeaponBuildingTemplate constants;
 
     void Awake()
     {
@@ -40,11 +37,12 @@ public partial class ArtilleryController : MonoBehaviour, ArtilleryAction.IArtil
             Transform towerBase = transform.Find("Geschuetzturm");
             if (towerBase != null)
             {
-                towerBase.Rotate(Vector3.forward, rotateInput * rotationSpeed * Time.deltaTime);
+                towerBase.Rotate(Vector3.forward);
+                towerBase.Rotate(Vector3.forward, rotateInput * constants.rotationSpeed * Time.deltaTime);
             }
         }
-        
-        if (Mathf.Abs(angleInput) > 0.01f)  //TODO max and min angles dont work as expected (they work somehow but to be fixed)
+
+        if (Mathf.Abs(angleInput) > 0.01f) //TODO max and min angles to be fixed
         {
             Transform cannonShaft = transform.Find("Geschuetzturm/Lauf");
             if (cannonShaft != null)
@@ -57,27 +55,15 @@ public partial class ArtilleryController : MonoBehaviour, ArtilleryAction.IArtil
                 if (currentPitch > 180f) currentPitch -= 360f;
 
                 // Calculate new pitch
-                float newPitch = currentPitch + angleInput * pitchSpeed * Time.deltaTime;
+                float newPitch = currentPitch + angleInput * constants.pitchSpeed * Time.deltaTime;
 
                 // Clamp angle
-                newPitch = Mathf.Clamp(newPitch, minCannonAngle, maxCannonAngle);
+                newPitch = Mathf.Clamp(newPitch, constants.minCannonAngle, constants.maxCannonAngle);
 
                 // Apply back to rotation
                 cannonShaft.localEulerAngles = new Vector3(newPitch, currentRotation.x, currentRotation.z);
             }
         }
-/*
-        if (Mathf.Abs(angleInput) > 0.01f)
-        {
-            Transform cannonShaft = transform.Find("Geschuetzturm/Lauf");
-            if (cannonShaft != null)
-            {
-                float newPitch = angleInput * pitchSpeed * Time.deltaTime;
-                newPitch = Mathf.Clamp(newPitch, minCannonAngle, maxCannonAngle);
-                
-                cannonShaft.Rotate(cannonShaft.localRotation.x,newPitch, cannonShaft.localRotation.z);
-            }
-        }*/
     }
 
 

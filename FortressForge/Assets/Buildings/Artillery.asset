@@ -26,3 +26,7 @@ MonoBehaviour:
   resourceCostType: 0
   baseDamage: 0
   reloadSpeed: 0
+  minCannonAngle: 10
+  maxCannonAngle: 60
+  rotationSpeed: 100
+  pitchSpeed: 100
