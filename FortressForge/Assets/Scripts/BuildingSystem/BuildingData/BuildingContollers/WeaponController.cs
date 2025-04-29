@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 
-public partial class ArtilleryController : MonoBehaviour, ArtilleryAction.IArtilleryActionsActions
+public partial class WeaponController : MonoBehaviour, ArtilleryAction.IArtilleryActionsActions
 {
     private ArtilleryAction artilleryControls;
     private bool isInFightMode = false;
