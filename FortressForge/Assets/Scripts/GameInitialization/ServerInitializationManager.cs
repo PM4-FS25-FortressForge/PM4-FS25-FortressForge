@@ -11,19 +11,12 @@ namespace FortressForge.GameInitialization
     public class ServerInitializationManager : NetworkBehaviour
     {
         public static ServerInitializationManager Instance { get; private set; }
-        
-        [Header("Game Start Configuration")]
-        [SerializeField] private GameStartConfiguration _config;
-
-        private BuildingManager _buildingManager;
-        private EconomyController _economyController;
-        private HexGridManager _hexGridManager;
 
         /// <summary>
         /// Gets called once when the server starts.
         /// Server initialization is done here.
         /// </summary>
-        public override void OnStartServer() 
+        public override void OnStartServer() // TODO Consider removing this if no use case arises
         {
             Instance = this;
         }

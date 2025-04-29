@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using FishNet;
 using FishNet.Object;
 using FortressForge.BuildingSystem.BuildManager;
@@ -18,7 +19,8 @@ namespace FortressForge.GameInitialization
     public class PlayerInitializationManager : NetworkBehaviour
     {
         [Header("Game Start Configuration")]
-        [SerializeField] private GameStartConfiguration _config;
+        [SerializeField] private GameStartConfiguration _gameStartConfiguration;
+        [SerializeField] private GameSessionStartConfiguration _gameSessionStartConfiguration;
         
         public override void OnStartClient()
         {
@@ -35,23 +37,26 @@ namespace FortressForge.GameInitialization
 
         private void Init()
         {
-            if (_config == null)
+            if (_gameStartConfiguration == null)
             {
                 Debug.LogError("GameStartConfiguration is not set.");
                 return;
             }
 
+            // Currently takes the playerId from the owner of this object
+            int playerId = Owner.ClientId;
+            
             // Take the clientId from the owner of this object, also called the playerId
-            int clientId = Owner.ClientId;
-            // Use ClientId to get the corresponding HexGridData
-            HexGridData selectedGrid = HexGridManager.Instance.AllGrids[clientId];
+            int gridId = _gameSessionStartConfiguration.GridPlayerIdTuples
+                .First(gpit => gpit.PlayerId == playerId).HexGridId;
+            HexGridData selectedGrid = HexGridManager.Instance.AllGrids[gridId];
             
             // initialize the grid view so allgrids is set
             BuildViewController buildViewController = gameObject.GetComponent<BuildViewController>();
             // We only initialize the view for the selected grid,
             // theoretically you could add multiple grids per player here. But EconomySystem is only one per player. So there mustn't be overlaps.
             buildViewController.Init(new List<HexGridData>{ selectedGrid }, 
-                selectedGrid.EconomySystem, selectedGrid.BuildingManager, _config, HexGridManager.Instance);
+                selectedGrid.EconomySystem, selectedGrid.BuildingManager, _gameStartConfiguration, HexGridManager.Instance);
             
             // After creating EconomySystem
             var economySync = gameObject.GetComponent<EconomySync>();
@@ -71,7 +76,7 @@ namespace FortressForge.GameInitialization
                 topOverlayViewGenerator.Init(economySync);
 
                 BottomOverlayViewGenerator bottomOverlayViewGenerator = FindFirstObjectByType<UIDocument>().GetComponent<BottomOverlayViewGenerator>();
-                bottomOverlayViewGenerator.Init(_config.availableBuildings, buildViewController);
+                bottomOverlayViewGenerator.Init(_gameStartConfiguration.availableBuildings, buildViewController);
             }
         }
     }

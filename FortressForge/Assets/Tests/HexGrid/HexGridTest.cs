@@ -1,7 +1,9 @@
-/*using NUnit.Framework;
+using NUnit.Framework;
 using UnityEngine;
 using System.Collections.Generic;
 using FortressForge.BuildingSystem.BuildingData;
+using FortressForge.BuildingSystem.BuildManager;
+using FortressForge.Economy;
 using FortressForge.HexGrid;
 using FortressForge.HexGrid.Data;
 
@@ -24,6 +26,17 @@ namespace Tests.Hexgrid
         [SetUp]
         public void Setup()
         {
+            BuildingManager buildingManager = new BuildingManager();
+
+            // Example for max value application // TODO move or remove when actual max values are set
+            var maxValues = new Dictionary<ResourceType, float>
+            {
+                { ResourceType.Power, 0f },
+                { ResourceType.Metal, 10000f },
+            };
+
+            EconomySystem economySystem = new EconomySystem(buildingManager, maxValues);
+            
             _fakeTerrain = new FakeTerrainHeightProvider();
             _gridData = new HexGridData(
                 id: 1,
@@ -31,7 +44,9 @@ namespace Tests.Hexgrid
                 radius: 7,
                 tileSize: 1f,
                 tileHeight: 2f,
-                terrainHeightProvider: _fakeTerrain
+                terrainHeightProvider: _fakeTerrain, 
+                economySystem: economySystem,
+                buildingManager: buildingManager
             );
         }
 
@@ -99,4 +114,4 @@ namespace Tests.Hexgrid
                 $"ValidateBuildingPlacement sollte true zurückgeben, wenn Tile ({x},{y},{z}) frei ist.");
         }
     }
-}*/
+}

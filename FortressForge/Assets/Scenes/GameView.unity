@@ -277,7 +277,8 @@ MonoBehaviour:
   MoveSpeed: 300
   RotationSpeed: 50
   PitchSpeed: 40
-  ZoomSpeed: 50
+  MouseWheelZoomSpeed: 1
+  ButtonsZoomSpeed: 5
   PitchLimits: {x: 89, y: 0}
   zoomLimits: {x: 2, y: 1000}
 --- !u!114 &330585549
@@ -658,7 +659,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa78fae40b0b47048993e8a19cce7be8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _config: {fileID: 11400000, guid: 5a14fda24b5e45a48a6e66352b2d350d, type: 2}
+  _gameStartConfiguration: {fileID: 11400000, guid: 5a14fda24b5e45a48a6e66352b2d350d, type: 2}
+  _gameSessionStartConfiguration: {fileID: 11400000, guid: 4f4cf94a3791f8942832f1ce52f12292, type: 2}
 --- !u!114 &1083548632560852017
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -806,7 +808,7 @@ MonoBehaviour:
   _runInBackground: 1
   _dontDestroyOnLoad: 1
   _objectPool: {fileID: 0}
-  _persistence: 0
+  _persistence: 2
   _logging: {fileID: 0}
   _spawnablePrefabs: {fileID: 11400000, guid: bdf46d53f7aa33b47bee0cf6d4d62cba, type: 2}
 --- !u!1 &2164771898202891155
@@ -963,7 +965,6 @@ MonoBehaviour:
   _componentIndexCache: 255
   _addedNetworkObject: {fileID: 2565508449727063749}
   _networkObjectCache: {fileID: 0}
-  _config: {fileID: 11400000, guid: 5a14fda24b5e45a48a6e66352b2d350d, type: 2}
 --- !u!1 &4811124693230337076
 GameObject:
   m_ObjectHideFlags: 0

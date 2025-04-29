@@ -1,20 +1,22 @@
 ﻿using FortressForge.HexGrid;
 using FortressForge.HexGrid.View;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace FortressForge.GameInitialization
 {
     public class GlobalObjectInitializationManager : MonoBehaviour
     {
         [Header("Game Start Configuration")]
-        [SerializeField] private GameStartConfiguration _config;
+        [SerializeField] private GameStartConfiguration _gameStartConfiguration;
+        [SerializeField] private GameSessionStartConfiguration _gameSessionStartConfiguration;
         
         /// <summary>
         /// Initializing all global objects.
         /// </summary>
         public void Awake()
         {
-            Instantiate(_config.Terrain);
+            Instantiate(_gameStartConfiguration.Terrain);
             gameObject.AddComponent<HexGridManager>();
         }
         
@@ -23,15 +25,15 @@ namespace FortressForge.GameInitialization
         /// </summary>
         public void Start()
         {
-            if (_config == null)
+            if (_gameStartConfiguration == null)
             {
                 Debug.LogError("GameStartConfiguration is not set.");
                 return;
             }
             
-            HexGridManager.Instance.InitializeHexGrids(_config);
+            HexGridManager.Instance.InitializeHexGrids(_gameSessionStartConfiguration, _gameStartConfiguration);
             
-            InitializeHexGridViews(_config, HexGridManager.Instance);
+            InitializeHexGridViews(_gameStartConfiguration, HexGridManager.Instance);
         }
 
         private void InitializeHexGridViews(GameStartConfiguration config, HexGridManager hexGridManager)

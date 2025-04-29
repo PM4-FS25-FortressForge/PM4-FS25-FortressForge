@@ -37,11 +37,12 @@ namespace FortressForge.HexGrid
             _terrainHeightProvider = new TerrainHeightProvider();
         }
 
-        public void InitializeHexGrids(GameStartConfiguration gameStartConfiguration)
+        public void InitializeHexGrids(GameSessionStartConfiguration gameSessionStartConfiguration, 
+            GameStartConfiguration gameStartConfiguration)
         {
-            for (var index = 0; index < gameStartConfiguration.HexGridOrigins.Count; index++)
+            for (var index = 0; index < gameSessionStartConfiguration.HexGridOrigins.Count; index++)
             {
-                var hexGridOrigin = gameStartConfiguration.HexGridOrigins[index];
+                var hexGridOrigin = gameSessionStartConfiguration.HexGridOrigins[index];
                 int radius = gameStartConfiguration.Radius;
                 float tileSize = gameStartConfiguration.TileSize;
                 float tileHeight = gameStartConfiguration.TileHeight;
@@ -55,7 +56,7 @@ namespace FortressForge.HexGrid
                     { ResourceType.Metal, 10000f },
                 };
 
-                EconomySystem economyController = new EconomySystem(buildingManager, maxValues);
+                EconomySystem economySystem = new EconomySystem(buildingManager, maxValues);
 
                 HexGridData gridData = new HexGridData(
                     id: index,
@@ -64,7 +65,7 @@ namespace FortressForge.HexGrid
                     tileSize: tileSize,
                     tileHeight: tileHeight,
                     terrainHeightProvider: _terrainHeightProvider,
-                    economySystem: economyController,
+                    economySystem: economySystem,
                     buildingManager: buildingManager
                 );
 
