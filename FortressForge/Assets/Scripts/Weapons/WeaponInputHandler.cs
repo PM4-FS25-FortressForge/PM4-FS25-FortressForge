@@ -1,47 +1,51 @@
+using System.Collections;
+using System.Collections.Generic;
 using FortressForge.BuildingSystem.BuildingData;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public partial class WeaponController : MonoBehaviour, ArtilleryAction.IArtilleryActionsActions
+public partial class WeaponInputHandler : MonoBehaviour, WeaponInputAction.IWeaponInputActionsActions
 {
-    private ArtilleryAction artilleryControls;
-    private bool isInFightMode = false;
-    private bool isRotating = false;
-    private bool isAdjustingCannonAngle = false;
-    private float rotateInput;
+    private WeaponInputAction _weaponInputAction;
+    
+    private bool _isInFightMode = false;
+    private bool _isReloading = true;
+    private bool _isRotating = false;
+    private bool _isAdjustingCannonAngle = false;
+    
+    private float _rotateInput;
     private float angleInput;
-
+    
     [SerializeField] private WeaponBuildingTemplate constants;
     [SerializeField] private GameObject cannonBallPrefab;
     [SerializeField] private Transform firePoint;
-
-
+    
     void Awake()
     {
-        artilleryControls = new ArtilleryAction();
-        artilleryControls.ArtilleryActions.SetCallbacks(this);
+        _weaponInputAction = new WeaponInputAction();
+        _weaponInputAction.WeaponInputActions.SetCallbacks(this);
     }
 
     void OnEnable()
     {
-        artilleryControls.ArtilleryActions.Disable();
+        _weaponInputAction.WeaponInputActions.Disable();
     }
 
     void OnDisable()
     {
-        artilleryControls.ArtilleryActions.Disable();
+        _weaponInputAction.WeaponInputActions.Disable();
     }
 
     void Update()
     {
         // Rotate the cannon tower
-        if (Mathf.Abs(rotateInput) > 0.01f)
+        if (Mathf.Abs(_rotateInput) > 0.01f)
         {
             Transform towerBase = transform.Find("Geschuetzturm");
             if (towerBase != null)
             {
-                towerBase.Rotate(Vector3.forward);
-                towerBase.Rotate(Vector3.forward, rotateInput * constants.rotationSpeed * Time.deltaTime);
+                // Apply rotation
+                towerBase.Rotate(Vector3.forward, _rotateInput * constants.rotationSpeed * Time.deltaTime);
             }
         }
 
@@ -51,6 +55,7 @@ public partial class WeaponController : MonoBehaviour, ArtilleryAction.IArtiller
             Transform cannonShaft = transform.Find("Geschuetzturm/Lauf");
             if (cannonShaft != null)
             {
+                // Get current rotation
                 Vector3 currentRotation = cannonShaft.localEulerAngles;
 
                 // Convert to signed angle (-180 to 180)
@@ -69,62 +74,60 @@ public partial class WeaponController : MonoBehaviour, ArtilleryAction.IArtiller
         }
     }
 
-
     void OnMouseDown()
     {
-        if (!isInFightMode)
+        if (!_isInFightMode)
         {
-            isInFightMode = true;
-            artilleryControls.ArtilleryActions.Enable();
+            _isInFightMode = true;
+            _weaponInputAction.WeaponInputActions.Enable();
             Debug.Log("Entered Fight Mode!");
         }
     }
 
     public void OnExitFightMode(InputAction.CallbackContext context)
     {
-        if (context.performed && isInFightMode)
+        if (context.performed && _isInFightMode)
         {
-            isInFightMode = false;
-            artilleryControls.ArtilleryActions.Disable();
+            _isInFightMode = false;
+            _weaponInputAction.WeaponInputActions.Disable();
             Debug.Log("Exited Fight Mode");
         }
     }
 
     public void OnEnterFightMode(InputAction.CallbackContext context)
     {
-        if (context.performed && !isInFightMode)
+        if (context.performed && !_isInFightMode)
         {
-            isInFightMode = true;
-            artilleryControls.ArtilleryActions.Enable();
+            _isInFightMode = true;
+            _weaponInputAction.WeaponInputActions.Enable();
             Debug.Log("Entered Fight Mode!");
         }
     }
 
     public void OnRotateArtillery(InputAction.CallbackContext context)
     {
-        if (!isInFightMode || context.canceled)
+        if (!_isInFightMode || context.canceled)
         {
-            rotateInput = 0f;
+            _rotateInput = 0f;
             return;
         }
 
-        rotateInput = context.ReadValue<float>();
+        _rotateInput = context.ReadValue<float>();
     }
 
     public void OnAdjustCannonAngle(InputAction.CallbackContext context)
     {
-        if (!isInFightMode || context.canceled)
+        if (!_isInFightMode || context.canceled)
         {
             angleInput = 0f;
             return;
         }
-
         angleInput = context.ReadValue<float>();
     }
 
     public void OnFireCannon(InputAction.CallbackContext context)
     {
-        if (!isInFightMode || !context.performed)
+        if (!_isInFightMode || !context.performed || !_isReloading)
             return;
 
         firePoint = transform.Find("Geschuetzturm/Lauf/FirePoint");
@@ -135,11 +138,19 @@ public partial class WeaponController : MonoBehaviour, ArtilleryAction.IArtiller
         }
 
         GameObject cannonball = Instantiate(cannonBallPrefab, firePoint.position, firePoint.rotation);
-        cannonball.GetComponent<Renderer>().material.color = Color.red;
         Rigidbody rb = cannonball.GetComponent<Rigidbody>();
 
         Quaternion barrelRotation = transform.Find("Geschuetzturm/Lauf/FirePoint").rotation;
 
         rb.linearVelocity = barrelRotation * -Vector3.right * constants.cannonForce;
+
+        _isReloading = false;
+        StartCoroutine(Reload());
+    }
+    private IEnumerator Reload()
+    {
+        _isReloading = false;
+        yield return new WaitForSeconds(constants.reloadSpeed);
+        _isReloading = true;
     }
 }

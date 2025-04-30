@@ -1,18 +1,14 @@
+using System.Linq;
+using Codice.CM.Common;
+using FortressForge.BuildingSystem.BuildingData;
 using UnityEngine;
 
 public class Cannonball : MonoBehaviour
 {
-    
-    void Start()
-    {
-        // Automatically destroy after 5 seconds, in case it doesn't hit anything
-        Destroy(gameObject, 5f);
-    }
-    
+    [SerializeField] private WeaponBuildingTemplate constants;
+
     void OnCollisionEnter(Collision collision)
     {
-        // TODO: Add damage/explosion logic here
-
         Destroy(gameObject);
     }
 }
