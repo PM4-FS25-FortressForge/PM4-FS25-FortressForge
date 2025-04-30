@@ -29,9 +29,10 @@ MonoBehaviour:
   - {x: 12869, y: 0, z: 3192}
   - {x: 13150, y: 0, z: 8029}
   availableBuildings:
-  - {fileID: 11400000, guid: 7ba111d719d345840ab9c8e5c62a3464, type: 2}
-  - {fileID: 11400000, guid: 2ed51e6f707565743a43896dec9b53b0, type: 2}
-  - {fileID: 11400000, guid: de8eeb04020297a4790e752b8f95080c, type: 2}
+  - {fileID: 11400000, guid: 42ba38511e794ec438d263554fe5be32, type: 2}
+  - {fileID: 11400000, guid: 600bfcd06f8bb4d4f89bd064add8f7f7, type: 2}
+  - {fileID: 11400000, guid: 96926859a2acf2c47891cf673274e7b2, type: 2}
+  - {fileID: 11400000, guid: 24b95824b8762f3468304e9ef38c7875, type: 2}
   Radius: 10
   TileSize: 10
   TileHeight: 10

@@ -61,10 +61,11 @@ namespace FortressForge.HexGrid.Data
             }
         }
 
-        private void CreateNewHexTile(HexTileCoordinate newHexCoords)
+        private HexTileData CreateNewHexTile(HexTileCoordinate newHexCoords)
         {
             TileMap[newHexCoords] = new HexTileData(newHexCoords);
             TileMap[newHexCoords].OnHoverChanged += OnHoverTileChangedEvent;
+            return TileMap[newHexCoords];
         }
 
         public void AddPlayer(string playerId)
@@ -116,11 +117,9 @@ namespace FortressForge.HexGrid.Data
             // unlock tile above
             TileMap.TryGetValue(hexCoord + new HexTileCoordinate(0, 0, 1), out var tileData);
 
-            if (tileData == null)
-            {
+            if (tileData == null) {
                 HexTileCoordinate newHexCoords = hexCoord + new HexTileCoordinate(0, 0, 1);
-                HexTileData hexTileData = new HexTileData(newHexCoords);
-                TileMap[newHexCoords] = hexTileData;
+                var hexTileData = CreateNewHexTile(newHexCoords);
                 OnNewTileCreated?.Invoke(hexTileData, newHexCoords); 
             }
         }

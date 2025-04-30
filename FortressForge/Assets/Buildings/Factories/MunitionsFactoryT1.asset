@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: feb593c3142f450da3978f2aa03124d7, type: 3}
+  m_Name: MunitionsFactoryT1
+  m_EditorClassIdentifier: 
+  ShapeData:
+  - Q: 0
+    R: 0
+    H: 0
+  - Q: -1
+    R: 1
+    H: 0
+  - Q: 0
+    R: 1
+    H: 0
+  - Q: 0
+    R: -1
+    H: 0
+  - Q: 1
+    R: -1
+    H: 0
+  BuildingPrefab: {fileID: 3289035730741839662, guid: 68ab3336ef76fc94e947edc0593689f3, type: 3}
+  Name: Munitionsfabrik
+  MetalCost: 800
+  MaxHealth: 500
+  resourceRate: 3
+  resourceRateType: 0
+  resourceCost: 0
+  resourceCostType: 0
+  MagmaPointsCost: 5

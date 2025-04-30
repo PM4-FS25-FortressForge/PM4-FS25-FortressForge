@@ -51,7 +51,7 @@ namespace FortressForge.BuildingSystem.BuildManager
                 Destroy(_previewBuilding);
             
             _selectedBuildingIndex = buildingIndex;
-            _previewBuilding = SpawnLocal(AvailableBuildings[_selectedBuildingIndex].BuildingPrefab);
+            _previewBuilding = SpawnLocal(SelectedBuildingTemplate.BuildingPrefab);
             _previewBuildingMeshRenderer = _previewBuilding.GetComponentInChildren<MeshRenderer>();
         }
         
@@ -266,6 +266,13 @@ namespace FortressForge.BuildingSystem.BuildManager
 
             // Apply rotation to the preview building tiles
             SelectedBuildingTemplate.ShapeData = RotateByAngle(SelectedBuildingTemplate.ShapeData, (int)angle);
+            
+            // Update the marked tiles
+            ClearPreviousBuildTargets();
+            if (_hoveredHexTile != null)
+            {
+                MarkNewTilesAsBuildTargets(_hoveredHexTile.HexTileCoordinate, SelectedBuildingTemplate.ShapeData);
+            }
         }
 
         private Vector3 GetAveragePosition(List<HexTileCoordinate> hexTileCoordinates)

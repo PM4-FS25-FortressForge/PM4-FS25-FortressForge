@@ -9,14 +9,28 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef29358a93271754a96b453372866827, type: 3}
-  m_Name: Mine
+  m_Script: {fileID: 11500000, guid: feb593c3142f450da3978f2aa03124d7, type: 3}
+  m_Name: StoneFactoryT1
   m_EditorClassIdentifier: 
-  BuildingPrefab: {fileID: 8461799468503079714, guid: d22a0ce999be4cc4c838e7ccd738ba95, type: 3}
-  Name: Mine
+  ShapeData:
+  - Q: 0
+    R: 0
+    H: 0
+  - Q: 0
+    R: -1
+    H: 0
+  - Q: 1
+    R: -1
+    H: 0
+  - Q: 1
+    R: 0
+    H: 0
+  BuildingPrefab: {fileID: 6072456617158700994, guid: 3634384451d82d243908a2cc99bc67ca, type: 3}
+  Name: Betonfabrik
   MetalCost: 0
   MaxHealth: 0
-  resourceRate: 100
+  resourceRate: 0
   resourceRateType: 0
   resourceCost: 0
   resourceCostType: 0
+  MagmaPointsCost: 0

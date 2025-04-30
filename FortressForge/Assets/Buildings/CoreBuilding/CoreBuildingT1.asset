@@ -9,24 +9,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0a724c598079413096e2f62eeecb9dd4, type: 3}
-  m_Name: Core
+  m_Script: {fileID: 11500000, guid: 9b5734fcf8584e75a8b4012aa2af5f70, type: 3}
+  m_Name: CoreBuildingT1
   m_EditorClassIdentifier: 
   ShapeData:
   - Q: 0
     R: 0
     H: 0
-  - Q: 1
+  - Q: 0
     R: 0
     H: 0
-  - Q: 0
-    R: 1
-    H: 0
-  BuildingPrefab: {fileID: 4295024953393921518, guid: 3fb942edbdbadf646a6668cd4668ae88, type: 3}
-  Name: Multi Inferno
+  BuildingPrefab: {fileID: 364309875405951780, guid: e9bb34a8c5e93ac4eaa4a29ddd293a0f, type: 3}
+  Name: 
   MetalCost: 0
   MaxHealth: 0
   resourceRate: 0
   resourceRateType: 0
   resourceCost: 0
   resourceCostType: 0
+  Level: 3
