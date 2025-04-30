@@ -24,9 +24,12 @@ MonoBehaviour:
   resourceRateType: 0
   resourceCost: 0
   resourceCostType: 0
+  BuildingHealth: 0
   baseDamage: 0
   reloadSpeed: 0
+  maxAmmo: 0
   minCannonAngle: 10
   maxCannonAngle: 60
   rotationSpeed: 100
   pitchSpeed: 100
+  cannonForce: 300

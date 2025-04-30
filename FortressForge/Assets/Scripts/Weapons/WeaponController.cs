@@ -2,7 +2,6 @@ using FortressForge.BuildingSystem.BuildingData;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-
 public partial class WeaponController : MonoBehaviour, ArtilleryAction.IArtilleryActionsActions
 {
     private ArtilleryAction artilleryControls;
@@ -13,6 +12,9 @@ public partial class WeaponController : MonoBehaviour, ArtilleryAction.IArtiller
     private float angleInput;
 
     [SerializeField] private WeaponBuildingTemplate constants;
+    [SerializeField] private GameObject cannonBallPrefab;
+    [SerializeField] private Transform firePoint;
+
 
     void Awake()
     {
@@ -32,6 +34,7 @@ public partial class WeaponController : MonoBehaviour, ArtilleryAction.IArtiller
 
     void Update()
     {
+        // Rotate the cannon tower
         if (Mathf.Abs(rotateInput) > 0.01f)
         {
             Transform towerBase = transform.Find("Geschuetzturm");
@@ -42,12 +45,12 @@ public partial class WeaponController : MonoBehaviour, ArtilleryAction.IArtiller
             }
         }
 
-        if (Mathf.Abs(angleInput) > 0.01f) //TODO max and min angles to be fixed
+        // Adjust cannon angle
+        if (Mathf.Abs(angleInput) > 0.01f)
         {
             Transform cannonShaft = transform.Find("Geschuetzturm/Lauf");
             if (cannonShaft != null)
             {
-                // Get current local rotation
                 Vector3 currentRotation = cannonShaft.localEulerAngles;
 
                 // Convert to signed angle (-180 to 180)
@@ -117,5 +120,26 @@ public partial class WeaponController : MonoBehaviour, ArtilleryAction.IArtiller
         }
 
         angleInput = context.ReadValue<float>();
+    }
+
+    public void OnFireCannon(InputAction.CallbackContext context)
+    {
+        if (!isInFightMode || !context.performed)
+            return;
+
+        firePoint = transform.Find("Geschuetzturm/Lauf/FirePoint");
+        if (firePoint == null)
+        {
+            Debug.LogWarning("FirePoint not found in hierarchy!");
+            return;
+        }
+
+        GameObject cannonball = Instantiate(cannonBallPrefab, firePoint.position, firePoint.rotation);
+        cannonball.GetComponent<Renderer>().material.color = Color.red;
+        Rigidbody rb = cannonball.GetComponent<Rigidbody>();
+
+        Quaternion barrelRotation = transform.Find("Geschuetzturm/Lauf/FirePoint").rotation;
+
+        rb.linearVelocity = barrelRotation * -Vector3.right * constants.cannonForce;
     }
 }

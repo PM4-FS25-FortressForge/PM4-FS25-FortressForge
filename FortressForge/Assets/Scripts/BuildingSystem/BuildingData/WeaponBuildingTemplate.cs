@@ -8,14 +8,18 @@ namespace FortressForge.BuildingSystem.BuildingData
     [CreateAssetMenu(fileName = "New Building", menuName = "Buildings/WeaponBuilding")]
     public class WeaponBuildingTemplate : BaseBuildingTemplate
     {
+        [Header("Building Data")] public int BuildingHealth;
+
         [Header("Weapon Data")] 
         public int baseDamage;
         public float reloadSpeed;
-        
-        [Header("Weapon Control Constants")]
-        public float minCannonAngle = 10f;  
-        public float maxCannonAngle = 90f; 
-        public float rotationSpeed = 100f;
-        public float pitchSpeed = 100f; 
+        public int maxAmmo;
+
+        [Header("Weapon Control Constants")] 
+        public float minCannonAngle;
+        public float maxCannonAngle;
+        public float rotationSpeed;
+        public float pitchSpeed;
+        public float cannonForce;
     }
 }

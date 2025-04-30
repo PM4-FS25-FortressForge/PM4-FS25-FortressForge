@@ -4,8 +4,9 @@ MonoImporter:
   externalObjects: {}
   serializedVersion: 2
   defaultReferences:
-  - towerBase: {fileID: 5730123698952501431, guid: 491f57a9568affa4087b850475f2a6a9, type: 3}
-  - cannonShaft: {fileID: 8590800036456592840, guid: 8d18e7d8fdaebb44c86b37fac4951e33, type: 3}
+  - constants: {instanceID: 0}
+  - cannonBallPrefab: {instanceID: 0}
+  - firePoint: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

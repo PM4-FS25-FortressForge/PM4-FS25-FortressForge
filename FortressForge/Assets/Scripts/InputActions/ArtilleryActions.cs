@@ -126,6 +126,15 @@ public partial class @ArtilleryAction: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""FireCannon"",
+                    ""type"": ""Button"",
+                    ""id"": ""507b0636-3e2b-451f-8580-0eef840fc67d"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -216,6 +225,17 @@ public partial class @ArtilleryAction: IInputActionCollection2, IDisposable
                     ""action"": ""AdjustCannonAngle"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3ac79c99-b45d-4f88-8a62-81303297844d"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": ""Press"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""FireCannon"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -228,6 +248,7 @@ public partial class @ArtilleryAction: IInputActionCollection2, IDisposable
         m_ArtilleryActions_AdjustCannonAngle = m_ArtilleryActions.FindAction("AdjustCannonAngle", throwIfNotFound: true);
         m_ArtilleryActions_ExitFightMode = m_ArtilleryActions.FindAction("ExitFightMode", throwIfNotFound: true);
         m_ArtilleryActions_EnterFightMode = m_ArtilleryActions.FindAction("EnterFightMode", throwIfNotFound: true);
+        m_ArtilleryActions_FireCannon = m_ArtilleryActions.FindAction("FireCannon", throwIfNotFound: true);
     }
 
     ~@ArtilleryAction()
@@ -312,6 +333,7 @@ public partial class @ArtilleryAction: IInputActionCollection2, IDisposable
     private readonly InputAction m_ArtilleryActions_AdjustCannonAngle;
     private readonly InputAction m_ArtilleryActions_ExitFightMode;
     private readonly InputAction m_ArtilleryActions_EnterFightMode;
+    private readonly InputAction m_ArtilleryActions_FireCannon;
     /// <summary>
     /// Provides access to input actions defined in input action map "ArtilleryActions".
     /// </summary>
@@ -339,6 +361,10 @@ public partial class @ArtilleryAction: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "ArtilleryActions/EnterFightMode".
         /// </summary>
         public InputAction @EnterFightMode => m_Wrapper.m_ArtilleryActions_EnterFightMode;
+        /// <summary>
+        /// Provides access to the underlying input action "ArtilleryActions/FireCannon".
+        /// </summary>
+        public InputAction @FireCannon => m_Wrapper.m_ArtilleryActions_FireCannon;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -377,6 +403,9 @@ public partial class @ArtilleryAction: IInputActionCollection2, IDisposable
             @EnterFightMode.started += instance.OnEnterFightMode;
             @EnterFightMode.performed += instance.OnEnterFightMode;
             @EnterFightMode.canceled += instance.OnEnterFightMode;
+            @FireCannon.started += instance.OnFireCannon;
+            @FireCannon.performed += instance.OnFireCannon;
+            @FireCannon.canceled += instance.OnFireCannon;
         }
 
         /// <summary>
@@ -400,6 +429,9 @@ public partial class @ArtilleryAction: IInputActionCollection2, IDisposable
             @EnterFightMode.started -= instance.OnEnterFightMode;
             @EnterFightMode.performed -= instance.OnEnterFightMode;
             @EnterFightMode.canceled -= instance.OnEnterFightMode;
+            @FireCannon.started -= instance.OnFireCannon;
+            @FireCannon.performed -= instance.OnFireCannon;
+            @FireCannon.canceled -= instance.OnFireCannon;
         }
 
         /// <summary>
@@ -468,5 +500,12 @@ public partial class @ArtilleryAction: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnEnterFightMode(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "FireCannon" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnFireCannon(InputAction.CallbackContext context);
     }
 }
