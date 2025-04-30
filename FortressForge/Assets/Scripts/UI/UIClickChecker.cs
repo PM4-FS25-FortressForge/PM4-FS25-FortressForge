@@ -35,10 +35,10 @@ namespace FortressForge.UI
         }
 
         /// <summary>
-        /// Checks if the click is on the overlay.
+        /// Checks if the mouse is on the overlay.
         /// </summary>
-        /// <returns>True if the click is on the overlay, false otherwise.</returns>
-        public bool IsClickOnOverlay()
+        /// <returns>True if the mouse is on the overlay, false otherwise.</returns>
+        public bool IsMouseOnOverlay()
         {
             return _topTrapezOverlay?.IsPointInTrapez() == true || _bottomTrapezOverlay?.IsPointInTrapez() == true;
         }

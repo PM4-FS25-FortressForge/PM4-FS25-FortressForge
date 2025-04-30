@@ -2,6 +2,8 @@ using NUnit.Framework;
 using UnityEngine;
 using System.Collections.Generic;
 using FortressForge.BuildingSystem.BuildingData;
+using FortressForge.BuildingSystem.BuildManager;
+using FortressForge.Economy;
 using FortressForge.HexGrid;
 using FortressForge.HexGrid.Data;
 
@@ -10,6 +12,11 @@ namespace Tests.Hexgrid
     public class FakeTerrainHeightProvider : ITerrainHeightProvider
     {
         public float SampleHeight(Vector3 position)
+        {
+            return 0f; // Simuliert flaches Terrain auf y=0
+        }
+        
+        public float SampleHexHeight(Vector3 position, float tileHeight, float tileRadius)
         {
             return 0f; // Simuliert flaches Terrain auf y=0
         }
@@ -24,6 +31,17 @@ namespace Tests.Hexgrid
         [SetUp]
         public void Setup()
         {
+            BuildingManager buildingManager = new BuildingManager();
+
+            // Example for max value application // TODO move or remove when actual max values are set
+            var maxValues = new Dictionary<ResourceType, float>
+            {
+                { ResourceType.Power, 0f },
+                { ResourceType.Metal, 10000f },
+            };
+
+            EconomySystem economySystem = new EconomySystem(buildingManager, maxValues);
+            
             _fakeTerrain = new FakeTerrainHeightProvider();
             _gridData = new HexGridData(
                 id: 1,
@@ -31,7 +49,9 @@ namespace Tests.Hexgrid
                 radius: 7,
                 tileSize: 1f,
                 tileHeight: 2f,
-                terrainHeightProvider: _fakeTerrain
+                terrainHeightProvider: _fakeTerrain, 
+                economySystem: economySystem,
+                buildingManager: buildingManager
             );
         }
 
@@ -61,7 +81,7 @@ namespace Tests.Hexgrid
             var placementCoord = new HexTileCoordinate(x, y, z);
 
             // Act
-            bool canPlace = _gridData.ValidateBuildingPlacement(placementCoord, buildingTemplate);
+            bool canPlace = _gridData.ValidateBuildingPlacement(placementCoord, buildingTemplate.ShapeData);
 
             // Assert
             Assert.IsFalse(canPlace,
@@ -92,7 +112,7 @@ namespace Tests.Hexgrid
             var placementCoord = new HexTileCoordinate(x, y, z);
 
             // Act
-            bool canPlace = _gridData.ValidateBuildingPlacement(placementCoord, buildingTemplate);
+            bool canPlace = _gridData.ValidateBuildingPlacement(placementCoord, buildingTemplate.ShapeData);
 
             // Assert
             Assert.IsTrue(canPlace,

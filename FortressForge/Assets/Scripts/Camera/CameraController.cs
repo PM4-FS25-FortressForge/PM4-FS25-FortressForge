@@ -1,3 +1,4 @@
+using FortressForge.GameInitialization;
 using FortressForge.HexGrid;
 using FortressForge.UI;
 using UnityEngine;
@@ -55,13 +56,17 @@ namespace FortressForge.CameraControll
         private float _targetZoom;  // Zoomtarget that will be reached by SmoothDamp
         private float _zoomVelocity; // SmoothDamp (used in HandleZoom methode) needs this velocity-Reference
         private float _zoomSmoothTime = 0.2f; // the time it takes to reach the _targetZoom (bigger value more smooth but less accurate)
+        
+        [FormerlySerializedAs("_config")]
+        [Header("Game Start Configuration")]
+        [SerializeField] public GameStartConfiguration Config;
 
         // Limits
         [Tooltip("To avoid the camera to flip or bug do not use value higher than 89\u00b0 or lower than 0\u00b0")] [SerializeField]
         public Vector2 PitchLimits = new Vector2(89, 0); // Pitch flat to fully top-dow (To avoid the camera to flip do not use value higher than 89°)
 
         [SerializeField] public Vector2 zoomLimits = new Vector2(2.0f, 20.0f); // Min/Max distance from target Zoom
-
+        
         // Internal
         private PlayerInput _playerInput;
         private InputAction _moveTargetAction;
@@ -105,7 +110,8 @@ namespace FortressForge.CameraControll
             _zoomButtons = InitializeActionsButtons("ZoomButtons"); // Zoom in/out Buttons (left/right arrow keys)
 
             _targetZoom = Zoom; // Set the initial target zoom to the initial zoom
-            _targetHeight = _terrainHeightProvider.SampleHeight(TargetPosition); // Set the initial target height to the initial height of the terrain
+            // Set the initial target height to the initial height of the terrain
+            _targetHeight = GetTerrainHeight(TargetPosition); 
         }
 
         /// <summary>
@@ -170,7 +176,7 @@ namespace FortressForge.CameraControll
         /// <param name="deltaTime"></param>
         private void HandleZoom(float deltaTime)
         {
-            if (UIClickChecker.Instance.IsClickOnOverlay()) return;
+            if (UIClickChecker.Instance.IsMouseOnOverlay()) return;
             float zoomInput = _zoomAction.ReadValue<float>(); // Zoom input with mouse wheel (made more smooth with SmoothDamp)
             _targetZoom = Mathf.Clamp(_targetZoom - zoomInput * MouseWheelZoomSpeed, zoomLimits.x, zoomLimits.y); 
 
@@ -196,7 +202,7 @@ namespace FortressForge.CameraControll
             Quaternion rotation = Quaternion.Euler(Pitch, Yaw, 0); // Calculate the rotation around the centred object
             Vector3 offset = rotation * new Vector3(0, 0, -Zoom); // Calculate the offset of the camera
             
-            TargetPosition.y = _terrainHeightProvider.SampleHeight(TargetPosition); // get the height of the terrain at the current position
+            TargetPosition.y = GetTerrainHeight(TargetPosition); // get the height of the terrain at the current position
             _targetHeight = Mathf.SmoothDamp(_targetHeight, TargetPosition.y, ref _heightVelocity, _heightSmoothTime);  // SmoothDamp for height
             TargetPosition.y = _targetHeight; 
 
@@ -311,6 +317,11 @@ namespace FortressForge.CameraControll
         public void SetZoomLimits(Vector2 newZoomLimits)
         {
             zoomLimits = newZoomLimits;
+        }
+
+        private float GetTerrainHeight(Vector3 targetPosition)
+        {
+            return _terrainHeightProvider.SampleHexHeight(targetPosition, Config.TileHeight, Config.TileSize);
         }
     }
 }

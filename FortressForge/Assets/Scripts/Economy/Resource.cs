@@ -12,21 +12,11 @@ namespace FortressForge.Economy
         public event Action OnChanged;
         
         private readonly ResourceType _type;
+        public ResourceType Type => _type;
 
         private float _currentAmount;
-        
-        private float _deltaAmount;
-        
-        public float DeltaAmount 
-        { 
-            get => _deltaAmount; 
-            set
-            {
-                if (Math.Abs(_deltaAmount - value) <= Mathf.Epsilon) return;
-                _deltaAmount = value;
-                OnChanged?.Invoke();
-            } 
-        }
+
+        public float DeltaAmount { get; private set; }
 
         /// <summary>
         /// The maximum amount this resource can hold.
@@ -51,10 +41,12 @@ namespace FortressForge.Economy
                 if (value > MaxAmount)
                 {
                     Debug.Log($"[Resource] { _type } exceeded max ({value} > {MaxAmount}). Clamping.");
+                    DeltaAmount = value - MaxAmount;
                     _currentAmount = MaxAmount;
                 }
                 else 
                 {
+                    DeltaAmount = value - _currentAmount;
                     _currentAmount = value;
                 }
                 if (Math.Abs(previousValue - _currentAmount) > Mathf.Epsilon)
@@ -69,10 +61,11 @@ namespace FortressForge.Economy
         /// </summary>
         /// <param name="type">The type of resource this instance represents.</param>
         /// <param name="maxAmount">The maximum amount the resource can hold.</param>
-        public Resource(ResourceType type, float maxAmount = float.MaxValue)
+        public Resource(ResourceType type, float maxAmount = 0)
         {
             _type = type;
             MaxAmount = maxAmount;
+            DeltaAmount = 0;
             _currentAmount = 0;
         }
     }

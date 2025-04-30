@@ -34,7 +34,7 @@ namespace FortressForge.HexGrid
 
             Q = Mathf.RoundToInt(x);
             R = Mathf.RoundToInt(z - (Q / 2f)); // Adjust for hex grid layout
-            H = (int) (origin.y / tileHeight); // Assuming h (height) is 0 for ground-level placement
+            H = Mathf.CeilToInt(origin.y / tileHeight); // Assuming h (height) is 0 for ground-level placement
         }
         
         /// <summary>

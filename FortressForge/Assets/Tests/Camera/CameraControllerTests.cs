@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using FortressForge.CameraControll;
+using FortressForge.GameInitialization;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -82,6 +83,7 @@ namespace Tests.Camera
 
             // Save the CameraController component
             _cameraController = _mainCamera.GetComponent<CameraController>();
+            _cameraController.Config = ScriptableObject.CreateInstance<GameStartConfiguration>();
         }
 
         private void SetInitialCameraValuesForEachTest()

@@ -21,8 +21,14 @@ namespace Tests.EconomyManager
         [SetUp]
         public void SetUp()
         {
+            var maxValues = new Dictionary<ResourceType, float>
+            {
+                { ResourceType.Power, 0f },
+                { ResourceType.Metal, 10000f },
+            };
+            
             _buildingManager = new BuildingManager();
-            _economySystem = new EconomySystem(_buildingManager);
+            _economySystem = new EconomySystem(_buildingManager, maxValues);
         }
 
         [Test]
@@ -95,22 +101,22 @@ namespace Tests.EconomyManager
             {
                 new()
                 {
-                    { ResourceType.Power, 200f } // Force negative resource
+                    { ResourceType.Power, 200f } 
                 },
                 new()
                 {
-                    { ResourceType.Power, -100f }, // Force negative resource
-                    { ResourceType.Metal, 200f } // Force negative resource
+                    { ResourceType.Power, -100f },
+                    { ResourceType.Metal, 200f } 
                 },
                 new()
                 {
-                    { ResourceType.Power, -200f }, // Force negative resource
-                    { ResourceType.Metal, 300f } // Force negative resource
+                    { ResourceType.Power, -200f }, 
+                    { ResourceType.Metal, 300f } 
                 },
                 new()
                 {
-                    { ResourceType.Power, -100f }, // Force negative resource
-                    { ResourceType.Metal, 150f } // Force negative resource
+                    { ResourceType.Power, -100f },
+                    { ResourceType.Metal, 150f } 
                 }
             };
 

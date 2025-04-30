@@ -33,6 +33,14 @@ namespace FortressForge.HexGrid.View
             _renderer = GetComponentInChildren<MeshRenderer>(); 
             UpdateVisuals(data);
         }
+        
+        private void OnDestroy()
+        {
+            if (_tileData != null)
+            {
+                _tileData.OnChanged -= UpdateVisuals;
+            }
+        }
 
         /// <summary>
         /// Changes the material of the HexTileView based on the IsOccupied property of the HexTileData.
@@ -47,11 +55,6 @@ namespace FortressForge.HexGrid.View
                 _renderer.material = OccupiedMaterial;
             else
                 _renderer.material = FreeMaterial;
-            
-            if (UIClickChecker.Instance.IsClickOnOverlay() && !hexTileData.IsOccupied)
-            {
-                _renderer.material = FreeMaterial;
-            }
         }
 
         private void OnMouseEnter()
@@ -62,6 +65,18 @@ namespace FortressForge.HexGrid.View
         private void OnMouseExit()
         {
             TileData.IsMouseTarget = false;
+        }
+        
+        private void OnMouseOver()
+        {
+            if (UIClickChecker.Instance.IsMouseOnOverlay() && TileData.IsMouseTarget)
+            {
+                OnMouseExit();
+            }
+            else if (!UIClickChecker.Instance.IsMouseOnOverlay() && !TileData.IsMouseTarget)
+            {
+                OnMouseEnter();
+            }
         }
     }
 }
