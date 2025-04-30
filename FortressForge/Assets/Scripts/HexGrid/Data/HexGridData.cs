@@ -1,10 +1,8 @@
 using System;
 using UnityEngine;
 using System.Collections.Generic;
-using FortressForge.BuildingSystem.BuildingData;
 using FortressForge.BuildingSystem.BuildManager;
 using FortressForge.Economy;
-using UnityEngine.Tilemaps;
 
 namespace FortressForge.HexGrid.Data
 {
@@ -76,10 +74,10 @@ namespace FortressForge.HexGrid.Data
         /// Places buildings on the hex grid. This doesn't check if the placement is valid. Use Validate Building Placement first.
         /// </summary>
         /// <param name="hexCoord"></param>
-        /// <param name="buildingTemplate"></param>
-        public void PlaceBuilding(HexTileCoordinate hexCoord, BaseBuildingTemplate buildingTemplate)
+        /// <param name="shapeData"></param>
+        public void PlaceBuilding(HexTileCoordinate hexCoord, List<HexTileCoordinate> shapeData)
         { 
-            foreach (var coord in buildingTemplate.ShapeData)
+            foreach (var coord in shapeData)
             {
                 OccupyHexTileAndUnlockNewTile(hexCoord + coord);
             }
@@ -89,11 +87,11 @@ namespace FortressForge.HexGrid.Data
         /// Validates if a building can be placed on the hex grid.
         /// </summary>
         /// <param name="hexCoord"></param>
-        /// <param name="buildingTemplate"></param>
+        /// <param name="shapeData"></param>
         /// <returns>Returns true if placement is unoccupied</returns>
-        public bool ValidateBuildingPlacement(HexTileCoordinate hexCoord, BaseBuildingTemplate buildingTemplate)
+        public bool ValidateBuildingPlacement(HexTileCoordinate hexCoord, List<HexTileCoordinate> shapeData)
         {
-            foreach (var coord in buildingTemplate.ShapeData)
+            foreach (var coord in shapeData)
             {
                 TileMap.TryGetValue((hexCoord + coord), out var tileData);
                 if (tileData == null || tileData.IsOccupied)

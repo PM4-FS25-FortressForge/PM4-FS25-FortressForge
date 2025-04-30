@@ -81,7 +81,7 @@ namespace Tests.Hexgrid
             var placementCoord = new HexTileCoordinate(x, y, z);
 
             // Act
-            bool canPlace = _gridData.ValidateBuildingPlacement(placementCoord, buildingTemplate);
+            bool canPlace = _gridData.ValidateBuildingPlacement(placementCoord, buildingTemplate.ShapeData);
 
             // Assert
             Assert.IsFalse(canPlace,
@@ -112,7 +112,7 @@ namespace Tests.Hexgrid
             var placementCoord = new HexTileCoordinate(x, y, z);
 
             // Act
-            bool canPlace = _gridData.ValidateBuildingPlacement(placementCoord, buildingTemplate);
+            bool canPlace = _gridData.ValidateBuildingPlacement(placementCoord, buildingTemplate.ShapeData);
 
             // Assert
             Assert.IsTrue(canPlace,

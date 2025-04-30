@@ -57,7 +57,7 @@ namespace FortressForge.GameInitialization
             // We only initialize the view for the selected grid,
             // theoretically you could add multiple grids per player here. But EconomySystem is only one per player. So there mustn't be overlaps.
             buildViewController.Init(new List<HexGridData>{ selectedGrid }, 
-                selectedGrid.EconomySystem, selectedGrid.BuildingManager, _gameStartConfiguration, HexGridManager.Instance);
+                _gameStartConfiguration, HexGridManager.Instance);
             
             // After creating EconomySystem
             var economySync = gameObject.GetComponent<EconomySync>();
