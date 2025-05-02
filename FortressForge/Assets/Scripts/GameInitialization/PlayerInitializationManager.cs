@@ -37,6 +37,10 @@ namespace FortressForge.GameInitialization
             Init();
         }
         
+        /// <summary>
+        /// Waits for the initialization of the HexGridManager and the AllGrids list.
+        /// </summary>
+        /// <returns>IEnumerator</returns>
         private IEnumerator WaitForInitialization()
         {
             while (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "LobbyScene" || 
@@ -49,6 +53,9 @@ namespace FortressForge.GameInitialization
             Init();
         }
 
+        /// <summary>
+        /// Initializes the player and the grid view.
+        /// </summary>
         private void Init()
         {
             if (_gameStartConfiguration == null)
