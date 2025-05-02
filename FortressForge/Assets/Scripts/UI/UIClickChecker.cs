@@ -30,7 +30,6 @@ namespace FortressForge.UI
 
             if (uiDocument is null)
             {
-                Debug.Log("No UIDocument found in the scene.");
                 _topTrapezOverlay = null;
                 _bottomTrapezOverlay = null;
                 return;
