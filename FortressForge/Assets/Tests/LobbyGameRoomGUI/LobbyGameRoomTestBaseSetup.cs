@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using FortressForge.UI.Manager;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -10,6 +11,7 @@ namespace Tests.LobbyGameRoomGUI
     {
         protected VisualElement LobbyMenuRoot;
         private const string TEST_STRING = "TestString";
+        private const string EMPTY_SCENE = "EmptyScene";
 
         [UnitySetUp]
         public virtual IEnumerator SetUp()
@@ -23,6 +25,12 @@ namespace Tests.LobbyGameRoomGUI
 
             LobbyMenuRoot = lobbyMenuGameObject.GetComponent<UIDocument>().rootVisualElement;
             Assert.NotNull(LobbyMenuRoot, "❌ LobbyMenuRoot not found!");
+            
+            GameObject viewManager = GameObject.Find("ViewManager");
+            Assert.NotNull(viewManager, "❌ ViewManager not found!");
+            ViewManager viewManagerComponent = viewManager.GetComponent<ViewManager>();
+            Assert.NotNull(viewManager, "❌ ViewManagerComponent not found!");
+            viewManagerComponent.NextScene = EMPTY_SCENE;
         }
 
         /// <summary>
