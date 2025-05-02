@@ -5,26 +5,24 @@ using UnityEngine.InputSystem;
 
 
 /// <summary>
-/// It's a WeaponInputHandler for each instance of the different deployable weapon buildings.
+/// Handles input and control logic for a deployable weapon.
+/// This Script is used for each instance of the deployed weapon.
 /// </summary>
 public class WeaponInputHandler : MonoBehaviour, WeaponInputAction.IWeaponInputActionsActions
 {
-    private WeaponInputAction _weaponInputAction;
-
-    private bool _isInFightMode = false;
-    private bool _isReloading = true;
-    private bool _isRotating = false;
-    private bool _isAdjustingCannonAngle = false;
-
-    private float _rotateInput;
-    private float angleInput;
-
-    private bool _isAutoFiring = false;
-    private Coroutine _autoFireCoroutine;
-
     [SerializeField] private WeaponBuildingTemplate constants;
     [SerializeField] private GameObject cannonBallPrefab;
     [SerializeField] private Transform firePoint;
+    
+    private WeaponInputAction _weaponInputAction;
+    private Coroutine _autoFireCoroutine;
+    
+    private bool _isInFightMode = false;
+    private bool _isReloading = true;
+    private bool _isAutoFiring = false;
+    
+    private float _rotateInput;
+    private float angleInput;
 
     /// <summary>
     /// Initializes the input system and sets this object as its callback handler.
@@ -33,6 +31,7 @@ public class WeaponInputHandler : MonoBehaviour, WeaponInputAction.IWeaponInputA
     {
         _weaponInputAction = new WeaponInputAction();
         _weaponInputAction.WeaponInputActions.SetCallbacks(this);
+        firePoint = transform.Find("Geschuetzturm/Lauf/FirePoint");
     }
 
     /// <summary>
@@ -195,13 +194,6 @@ public class WeaponInputHandler : MonoBehaviour, WeaponInputAction.IWeaponInputA
     /// </summary>
     private void FireOnce()
     {
-        firePoint = transform.Find("Geschuetzturm/Lauf/FirePoint");
-        if (firePoint == null)
-        {
-            Debug.LogWarning("FirePoint not found in hierarchy!");
-            return;
-        }
-
         // Instantiate the ammunition
         GameObject ammunition = Instantiate(cannonBallPrefab, firePoint.position, firePoint.rotation);
         Rigidbody rb = ammunition.GetComponent<Rigidbody>();

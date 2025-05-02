@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &64769193768511152
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5881804832093797622}
+  m_Layer: 0
+  m_Name: CannonViewPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5881804832093797622
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 64769193768511152}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.41, y: 0.499, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7111385468275132206}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &848166250828367921
 GameObject:
   m_ObjectHideFlags: 0
@@ -64,6 +95,7 @@ Transform:
   m_Children:
   - {fileID: 4863711499496905041}
   - {fileID: 2350695284981363781}
+  - {fileID: 5881804832093797622}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &-278075155736829277
@@ -81,6 +113,7 @@ MonoBehaviour:
   constants: {fileID: 11400000, guid: 144de24a11567824284fa9f68f35e9d6, type: 2}
   cannonBallPrefab: {fileID: 956282788987846253, guid: b7e4d5bc00f3f0146b14669c21c8ffe1, type: 3}
   firePoint: {fileID: 6955449243495526588, guid: 463ad9b9475611145817bf6154c1cedb, type: 3}
+  cannonViewPoint: {fileID: 5881804832093797622, guid: 4ae4dc909cfbb9c4c88aaa1eec2b4475, type: 3}
 --- !u!65 &-6598741634809457996
 BoxCollider:
   m_ObjectHideFlags: 0
