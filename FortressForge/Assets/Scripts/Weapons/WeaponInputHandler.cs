@@ -1,10 +1,9 @@
 using System.Collections;
-using System.Collections.Generic;
 using FortressForge.BuildingSystem.BuildingData;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public partial class WeaponInputHandler : MonoBehaviour, WeaponInputAction.IWeaponInputActionsActions
+public class WeaponInputHandler : MonoBehaviour, WeaponInputAction.IWeaponInputActionsActions
 {
     private WeaponInputAction _weaponInputAction;
     
