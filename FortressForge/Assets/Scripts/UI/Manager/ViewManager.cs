@@ -16,8 +16,15 @@ namespace FortressForge.UI.Manager
     {
         [SerializeField] private UIDocument lobbyViewDoc;
         [SerializeField] private UIDocument gameRoomViewDoc;
-        [SerializeField] private string nextScene = "GameView";
         [SerializeField] private string lobbyScene = "LobbyScene";
+
+        private string _nextScene = "GameView";
+
+        public string NextScene
+        {
+            get => _nextScene;
+            set => _nextScene = value;
+        }
 
         private UIDocument _currentView;
         private GameRoomView _gameRoomView;
@@ -43,6 +50,8 @@ namespace FortressForge.UI.Manager
             SetupLobbyButtons();
 
             _gameRoomView = FindFirstObjectByType<GameRoomView>();
+
+            PopulateTextFieldsForFasterDevelopment();
         }
 
         /// <summary>
@@ -196,7 +205,7 @@ namespace FortressForge.UI.Manager
             };
 
             if (!stoppedStates.Contains(args.ConnectionState)) return;
-            
+
             Debug.Log("❌ Verbindung zum Server verloren! ClientConnection");
             ShowView(lobbyViewDoc);
         }
@@ -235,8 +244,7 @@ namespace FortressForge.UI.Manager
         private void StartMatch()
         {
             BootstrapSceneManager sceneManager = FindAnyObjectByType<BootstrapSceneManager>();
-            sceneManager.UnloadScene(lobbyScene);
-            sceneManager.LoadScene(nextScene);
+            sceneManager.LoadScene(_nextScene);
         }
 
         /// <summary>
@@ -329,20 +337,11 @@ namespace FortressForge.UI.Manager
 
             Vector3 originalPosition = lobbyContainer.transform.position;
 
-            lobbyContainer.schedule.Execute(() =>
-            {
-                lobbyContainer.transform.position = originalPosition + new Vector3(SHAKE_STRENGTH, 0, 0);
-            }).StartingIn(50);
+            lobbyContainer.schedule.Execute(() => { lobbyContainer.transform.position = originalPosition + new Vector3(SHAKE_STRENGTH, 0, 0); }).StartingIn(50);
 
-            lobbyContainer.schedule.Execute(() =>
-            {
-                lobbyContainer.transform.position = originalPosition - new Vector3(SHAKE_STRENGTH, 0, 0);
-            }).StartingIn(100);
+            lobbyContainer.schedule.Execute(() => { lobbyContainer.transform.position = originalPosition - new Vector3(SHAKE_STRENGTH, 0, 0); }).StartingIn(100);
 
-            lobbyContainer.schedule.Execute(() =>
-            {
-                lobbyContainer.transform.position = originalPosition + new Vector3(SHAKE_STRENGTH / 2, 0, 0);
-            }).StartingIn(150);
+            lobbyContainer.schedule.Execute(() => { lobbyContainer.transform.position = originalPosition + new Vector3(SHAKE_STRENGTH / 2, 0, 0); }).StartingIn(150);
 
             lobbyContainer.schedule.Execute(() => { lobbyContainer.transform.position = originalPosition; })
                 .StartingIn(200);
@@ -487,6 +486,23 @@ namespace FortressForge.UI.Manager
         public PlayerClient GetPlayerClient()
         {
             return _playerClient;
+        }
+
+        private void PopulateTextFieldsForFasterDevelopment()
+        {
+            // set the name of the player to "TestPlayer" + random number
+            TextField playerNameField = lobbyViewDoc.rootVisualElement.Q<TextField>("PlayerNameTextField");
+            if (playerNameField != null)
+            {
+                playerNameField.value = "TestPlayer" + Random.Range(0, 1000);
+            }
+            
+            // also populate the ip address field with the current local ip address
+            TextField ipField = lobbyViewDoc.rootVisualElement.Q<TextField>("ip-join-text-input");
+            if (ipField != null)
+            {
+                ipField.value = GetLocalIPAddress();
+            }
         }
     }
 }
