@@ -119,15 +119,6 @@ public partial class @WeaponInputAction: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""EnterFightMode"",
-                    ""type"": ""Button"",
-                    ""id"": ""bfeb53e5-5f9d-460b-a3f0-14f367c511d5"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
                     ""name"": ""FireCannon"",
                     ""type"": ""Button"",
                     ""id"": ""507b0636-3e2b-451f-8580-0eef840fc67d"",
@@ -146,17 +137,6 @@ public partial class @WeaponInputAction: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""ExitFightMode"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""99616a63-7877-4286-b868-5dbc2cf6ca76"",
-                    ""path"": ""<Mouse>/leftButton"",
-                    ""interactions"": ""Press"",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""EnterFightMode"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -247,7 +227,6 @@ public partial class @WeaponInputAction: IInputActionCollection2, IDisposable
         m_WeaponInputActions_RotateArtillery = m_WeaponInputActions.FindAction("RotateArtillery", throwIfNotFound: true);
         m_WeaponInputActions_AdjustCannonAngle = m_WeaponInputActions.FindAction("AdjustCannonAngle", throwIfNotFound: true);
         m_WeaponInputActions_ExitFightMode = m_WeaponInputActions.FindAction("ExitFightMode", throwIfNotFound: true);
-        m_WeaponInputActions_EnterFightMode = m_WeaponInputActions.FindAction("EnterFightMode", throwIfNotFound: true);
         m_WeaponInputActions_FireCannon = m_WeaponInputActions.FindAction("FireCannon", throwIfNotFound: true);
     }
 
@@ -332,7 +311,6 @@ public partial class @WeaponInputAction: IInputActionCollection2, IDisposable
     private readonly InputAction m_WeaponInputActions_RotateArtillery;
     private readonly InputAction m_WeaponInputActions_AdjustCannonAngle;
     private readonly InputAction m_WeaponInputActions_ExitFightMode;
-    private readonly InputAction m_WeaponInputActions_EnterFightMode;
     private readonly InputAction m_WeaponInputActions_FireCannon;
     /// <summary>
     /// Provides access to input actions defined in input action map "WeaponInputActions".
@@ -357,10 +335,6 @@ public partial class @WeaponInputAction: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "WeaponInputActions/ExitFightMode".
         /// </summary>
         public InputAction @ExitFightMode => m_Wrapper.m_WeaponInputActions_ExitFightMode;
-        /// <summary>
-        /// Provides access to the underlying input action "WeaponInputActions/EnterFightMode".
-        /// </summary>
-        public InputAction @EnterFightMode => m_Wrapper.m_WeaponInputActions_EnterFightMode;
         /// <summary>
         /// Provides access to the underlying input action "WeaponInputActions/FireCannon".
         /// </summary>
@@ -400,9 +374,6 @@ public partial class @WeaponInputAction: IInputActionCollection2, IDisposable
             @ExitFightMode.started += instance.OnExitFightMode;
             @ExitFightMode.performed += instance.OnExitFightMode;
             @ExitFightMode.canceled += instance.OnExitFightMode;
-            @EnterFightMode.started += instance.OnEnterFightMode;
-            @EnterFightMode.performed += instance.OnEnterFightMode;
-            @EnterFightMode.canceled += instance.OnEnterFightMode;
             @FireCannon.started += instance.OnFireCannon;
             @FireCannon.performed += instance.OnFireCannon;
             @FireCannon.canceled += instance.OnFireCannon;
@@ -426,9 +397,6 @@ public partial class @WeaponInputAction: IInputActionCollection2, IDisposable
             @ExitFightMode.started -= instance.OnExitFightMode;
             @ExitFightMode.performed -= instance.OnExitFightMode;
             @ExitFightMode.canceled -= instance.OnExitFightMode;
-            @EnterFightMode.started -= instance.OnEnterFightMode;
-            @EnterFightMode.performed -= instance.OnEnterFightMode;
-            @EnterFightMode.canceled -= instance.OnEnterFightMode;
             @FireCannon.started -= instance.OnFireCannon;
             @FireCannon.performed -= instance.OnFireCannon;
             @FireCannon.canceled -= instance.OnFireCannon;
@@ -493,13 +461,6 @@ public partial class @WeaponInputAction: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnExitFightMode(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "EnterFightMode" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnEnterFightMode(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "FireCannon" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

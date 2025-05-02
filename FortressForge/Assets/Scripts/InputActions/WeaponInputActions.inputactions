@@ -33,15 +33,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "EnterFightMode",
-                    "type": "Button",
-                    "id": "bfeb53e5-5f9d-460b-a3f0-14f367c511d5",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "FireCannon",
                     "type": "Button",
                     "id": "507b0636-3e2b-451f-8580-0eef840fc67d",
@@ -60,17 +51,6 @@
                     "processors": "",
                     "groups": "",
                     "action": "ExitFightMode",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "99616a63-7877-4286-b868-5dbc2cf6ca76",
-                    "path": "<Mouse>/leftButton",
-                    "interactions": "Press",
-                    "processors": "",
-                    "groups": "",
-                    "action": "EnterFightMode",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

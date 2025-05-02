@@ -3,6 +3,10 @@ using FortressForge.BuildingSystem.BuildingData;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+
+/// <summary>
+/// It's a WeaponInputHandler for each instance of the different deployable weapon buildings.
+/// </summary>
 public class WeaponInputHandler : MonoBehaviour, WeaponInputAction.IWeaponInputActionsActions
 {
     private WeaponInputAction _weaponInputAction;
@@ -22,22 +26,35 @@ public class WeaponInputHandler : MonoBehaviour, WeaponInputAction.IWeaponInputA
     [SerializeField] private GameObject cannonBallPrefab;
     [SerializeField] private Transform firePoint;
 
+    /// <summary>
+    /// Initializes the input system and sets this object as its callback handler.
+    /// </summary>
     void Awake()
     {
         _weaponInputAction = new WeaponInputAction();
         _weaponInputAction.WeaponInputActions.SetCallbacks(this);
     }
 
+    /// <summary>
+    /// Disables the input system when the component is enabled,
+    /// so it doesn't start accepting input until explicitly allowed.
+    /// </summary>
     void OnEnable()
     {
         _weaponInputAction.WeaponInputActions.Disable();
     }
 
+    /// <summary>
+    /// Disables input when the component is disabled.
+    /// </summary>
     void OnDisable()
     {
         _weaponInputAction.WeaponInputActions.Disable();
     }
 
+    /// <summary>
+    /// Handles rotation and angle changes for each frame.
+    /// </summary>
     void Update()
     {
         // Rotate the cannon tower
@@ -56,7 +73,7 @@ public class WeaponInputHandler : MonoBehaviour, WeaponInputAction.IWeaponInputA
             Transform cannonShaft = transform.Find("Geschuetzturm/Lauf");
             if (cannonShaft != null)
             {
-                // Get current rotation
+                // current rotation
                 Vector3 currentRotation = cannonShaft.localEulerAngles;
 
                 // Convert to signed angle (-180 to 180)
@@ -69,12 +86,16 @@ public class WeaponInputHandler : MonoBehaviour, WeaponInputAction.IWeaponInputA
                 // Clamp angle
                 newPitch = Mathf.Clamp(newPitch, constants.minCannonAngle, constants.maxCannonAngle);
 
-                // Apply back to rotation
+                // Apply to rotation 
                 cannonShaft.localEulerAngles = new Vector3(newPitch, currentRotation.x, currentRotation.z);
             }
         }
     }
 
+    /// <summary>
+    /// Called when the cannon is clicked with the mouse.
+    /// Enters fight mode and enables input handling.
+    /// </summary>
     void OnMouseDown()
     {
         if (!_isInFightMode)
@@ -85,6 +106,10 @@ public class WeaponInputHandler : MonoBehaviour, WeaponInputAction.IWeaponInputA
         }
     }
 
+    /// <summary>
+    /// Called by the input system to enter fight mode.
+    /// Enables input controls.
+    /// </summary>
     public void OnExitFightMode(InputAction.CallbackContext context)
     {
         if (context.performed && _isInFightMode)
@@ -95,61 +120,58 @@ public class WeaponInputHandler : MonoBehaviour, WeaponInputAction.IWeaponInputA
         }
     }
 
-    public void OnEnterFightMode(InputAction.CallbackContext context)
-    {
-        if (context.performed && !_isInFightMode)
-        {
-            _isInFightMode = true;
-            _weaponInputAction.WeaponInputActions.Enable();
-            Debug.Log("Entered Fight Mode!");
-        }
-    }
-
+    /// <summary>
+    /// Called by the input system to enter fight mode.
+    /// Enables input controls.
+    /// </summary>
     public void OnRotateArtillery(InputAction.CallbackContext context)
     {
-        if (!_isInFightMode || context.canceled)
-        {
-            _rotateInput = 0f;
-            return;
-        }
-
         _rotateInput = context.ReadValue<float>();
+
+        // Stop auto-firing when adjusting rotation
+        if (_isAutoFiring)
+        {
+            _isAutoFiring = false;
+            StopCoroutine(AutoFire());
+            
+        }
     }
 
+    /// <summary>
+    /// Called by the input system to exit fight mode.
+    /// Disables input controls but does not stop firing.
+    /// </summary>
     public void OnAdjustCannonAngle(InputAction.CallbackContext context)
     {
-        if (context.canceled)
-        {
-            angleInput = 0f;
-            return;
-        }
-
         angleInput = context.ReadValue<float>();
 
         // Stop auto-firing when adjusting angle
         if (_isAutoFiring)
         {
             _isAutoFiring = false;
-            if (_autoFireCoroutine != null)
+            StopCoroutine(AutoFire());
+        }
+    }
+
+    /// <summary>
+    /// Handles rotation input for the cannon's base.
+    /// </summary>
+    public void OnFireCannon(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            if (!_isAutoFiring && _isReloading)
             {
-                StopCoroutine(_autoFireCoroutine);
-                _autoFireCoroutine = null;
+                _isAutoFiring = true;
+                StartCoroutine(AutoFire());
             }
         }
     }
 
-    public void OnFireCannon(InputAction.CallbackContext context)
-    {
-        if (!context.performed)
-            return;
-
-        if (!_isAutoFiring && _isReloading)
-        {
-            _isAutoFiring = true;
-            _autoFireCoroutine = StartCoroutine(AutoFire());
-        }
-    }
-
+    /// <summary>
+    /// Initiates auto-fire when triggered.
+    /// Will continue firing until interrupted.
+    /// </summary>
     private IEnumerator AutoFire()
     {
         while (_isAutoFiring)
@@ -168,6 +190,9 @@ public class WeaponInputHandler : MonoBehaviour, WeaponInputAction.IWeaponInputA
         }
     }
 
+    /// <summary>
+    /// Fires one cannonball from the fire point using the configured force.
+    /// </summary>
     private void FireOnce()
     {
         firePoint = transform.Find("Geschuetzturm/Lauf/FirePoint");
@@ -177,11 +202,12 @@ public class WeaponInputHandler : MonoBehaviour, WeaponInputAction.IWeaponInputA
             return;
         }
 
-        GameObject cannonball = Instantiate(cannonBallPrefab, firePoint.position, firePoint.rotation);
-        Rigidbody rb = cannonball.GetComponent<Rigidbody>();
+        // Instantiate the ammunition
+        GameObject ammunition = Instantiate(cannonBallPrefab, firePoint.position, firePoint.rotation);
+        Rigidbody rb = ammunition.GetComponent<Rigidbody>();
 
+        // Calculate the force to apply
         Quaternion barrelRotation = transform.Find("Geschuetzturm/Lauf/FirePoint").rotation;
-
         rb.linearVelocity = barrelRotation * -Vector3.right * constants.cannonForce;
     }
 }
