@@ -1,24 +1,53 @@
-﻿using System;
-using FishNet;
-using FishNet.Object;
-using FortressForge.BuildingSystem.BuildManager;
-using FortressForge.Economy;
-using FortressForge.HexGrid;
+﻿using System.Collections.Generic;
 using UnityEngine;
+using FishNet;
+using FishNet.Connection;
 
 namespace FortressForge.GameInitialization
 {
-    public class ServerInitializationManager : NetworkBehaviour
+    public class ServerInitializationManager : MonoBehaviour
     {
-        public static ServerInitializationManager Instance { get; private set; }
+        private static ServerInitializationManager Instance { get; set; }
 
-        /// <summary>
-        /// Gets called once when the server starts.
-        /// Server initialization is done here.
-        /// </summary>
-        public override void OnStartServer() // TODO Consider removing this if no use case arises
+        private void Awake()
         {
-            Instance = this;
+            if (Instance == null)
+            {
+                Instance = this;
+                DontDestroyOnLoad(gameObject);
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
+        }
+
+        private void Start()
+        {
+            StartGame();
+        }
+
+        private void StartGame()
+        {
+            if (InstanceFinder.IsServerStarted)
+            {
+                Debug.Log("Server startet das Spiel.");
+                foreach (KeyValuePair<int, NetworkConnection> client in InstanceFinder.ServerManager.Clients)
+                {
+                    Debug.Log($"Spawne PlayerManager für Client: {client.Value.ClientId}");
+                    GameObject playerManager = Instantiate(Resources.Load<GameObject>("Prefabs/PlayerManager"));
+                    InstanceFinder.ServerManager.Spawn(playerManager, client.Value);
+                }
+            }
+            else if (InstanceFinder.IsClientStarted)
+            {
+                Debug.Log("Client ist bereit.");
+                // Fügen Sie hier die Logik für den Client hinzu
+            }
+            else
+            {
+                Debug.Log("Server und Client sind nicht gestartet.");
+            }
         }
     }
 }

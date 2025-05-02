@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using FishNet;
 using FishNet.Object;
@@ -26,13 +27,25 @@ namespace FortressForge.GameInitialization
         public override void OnStartClient()
         {
             // Initialize Client for each player so ObserverRpc can be used
-            Init();
+            StartCoroutine(WaitForInitialization());
         }
         
         public override void OnStartServer()
         {
             // Initialize Server for each player so ObserverRpc can be used. This gets called on each joining client on server side.
             // This is a bit of a hack, for optimization but higher complexity you could differentiate between server and client more.
+            Init();
+        }
+        
+        private IEnumerator WaitForInitialization()
+        {
+            while (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "LobbyScene" || 
+                   HexGridManager.Instance is null || 
+                   HexGridManager.Instance.AllGrids is null || 
+                   HexGridManager.Instance.AllGrids.Count == 0)
+            {
+                yield return null;
+            }
             Init();
         }
 
