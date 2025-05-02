@@ -6,19 +6,22 @@ using UnityEngine.InputSystem;
 public class WeaponInputHandler : MonoBehaviour, WeaponInputAction.IWeaponInputActionsActions
 {
     private WeaponInputAction _weaponInputAction;
-    
+
     private bool _isInFightMode = false;
     private bool _isReloading = true;
     private bool _isRotating = false;
     private bool _isAdjustingCannonAngle = false;
-    
+
     private float _rotateInput;
     private float angleInput;
-    
+
+    private bool _isAutoFiring = false;
+    private Coroutine _autoFireCoroutine;
+
     [SerializeField] private WeaponBuildingTemplate constants;
     [SerializeField] private GameObject cannonBallPrefab;
     [SerializeField] private Transform firePoint;
-    
+
     void Awake()
     {
         _weaponInputAction = new WeaponInputAction();
@@ -43,7 +46,6 @@ public class WeaponInputHandler : MonoBehaviour, WeaponInputAction.IWeaponInputA
             Transform towerBase = transform.Find("Geschuetzturm");
             if (towerBase != null)
             {
-                // Apply rotation
                 towerBase.Rotate(Vector3.forward, _rotateInput * constants.rotationSpeed * Time.deltaTime);
             }
         }
@@ -116,19 +118,58 @@ public class WeaponInputHandler : MonoBehaviour, WeaponInputAction.IWeaponInputA
 
     public void OnAdjustCannonAngle(InputAction.CallbackContext context)
     {
-        if (!_isInFightMode || context.canceled)
+        if (context.canceled)
         {
             angleInput = 0f;
             return;
         }
+
         angleInput = context.ReadValue<float>();
+
+        // Stop auto-firing when adjusting angle
+        if (_isAutoFiring)
+        {
+            _isAutoFiring = false;
+            if (_autoFireCoroutine != null)
+            {
+                StopCoroutine(_autoFireCoroutine);
+                _autoFireCoroutine = null;
+            }
+        }
     }
 
     public void OnFireCannon(InputAction.CallbackContext context)
     {
-        if (!_isInFightMode || !context.performed || !_isReloading)
+        if (!context.performed)
             return;
 
+        if (!_isAutoFiring && _isReloading)
+        {
+            _isAutoFiring = true;
+            _autoFireCoroutine = StartCoroutine(AutoFire());
+        }
+    }
+
+    private IEnumerator AutoFire()
+    {
+        while (_isAutoFiring)
+        {
+            if (_isReloading)
+            {
+                FireOnce();
+                _isReloading = false;
+                yield return new WaitForSeconds(constants.reloadSpeed);
+                _isReloading = true;
+            }
+            else
+            {
+                yield return null;
+            }
+        }
+    }
+
+    private void FireOnce()
+    {
         firePoint = transform.Find("Geschuetzturm/Lauf/FirePoint");
         if (firePoint == null)
         {
@@ -142,14 +183,5 @@ public class WeaponInputHandler : MonoBehaviour, WeaponInputAction.IWeaponInputA
         Quaternion barrelRotation = transform.Find("Geschuetzturm/Lauf/FirePoint").rotation;
 
         rb.linearVelocity = barrelRotation * -Vector3.right * constants.cannonForce;
-
-        _isReloading = false;
-        StartCoroutine(Reload());
-    }
-    private IEnumerator Reload()
-    {
-        _isReloading = false;
-        yield return new WaitForSeconds(constants.reloadSpeed);
-        _isReloading = true;
     }
 }
