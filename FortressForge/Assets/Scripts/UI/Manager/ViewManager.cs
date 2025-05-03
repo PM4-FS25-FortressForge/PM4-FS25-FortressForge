@@ -1,11 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using FishNet;
 using FishNet.Transporting;
 using FortressForge.Network;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Debug = UnityEngine.Debug;
+using Random = UnityEngine.Random;
 
 namespace FortressForge.UI.Manager
 {
@@ -113,6 +116,13 @@ namespace FortressForge.UI.Manager
         /// </summary>
         private void StartGame()
         {
+            if (IsPortInUse())
+            {
+                Debug.LogError("Port 7777 ist bereits in Benutzung!");
+                ShowConnectionError();
+                return;
+            }
+
             Debug.Log("🎮 Spiel wird gestartet!");
             string playerName = GetPlayerName();
             string password = GetPassword();
@@ -123,6 +133,24 @@ namespace FortressForge.UI.Manager
             StartServer();
 
             EnterGameRoom(true, password, _serverIP);
+        }
+
+        /// <summary>
+        /// Check if the port is already in use
+        /// </summary>
+        /// <returns>True if the port is in use, false otherwise</returns>
+        private static bool IsPortInUse()
+        {
+            int portToCheck = InstanceFinder.TransportManager.Transport.GetPort();
+            try
+            {
+                using UdpClient udpClient = new(new IPEndPoint(IPAddress.Parse(GetLocalIPAddress()), portToCheck));
+                return false;
+            }
+            catch (SocketException)
+            {
+                return true;
+            }
         }
 
         /// <summary>
@@ -149,9 +177,21 @@ namespace FortressForge.UI.Manager
         {
             _serverIP = GetLocalIPAddress();
             InstanceFinder.TransportManager.Transport.SetServerBindAddress(_serverIP, IPAddressType.IPv4);
-            InstanceFinder.ServerManager.StartConnection();
+            try
+            {
+                bool trst = InstanceFinder.ServerManager.StartConnection();
+                Debug.Log("ServerManager StartConnection: " + trst);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError("❌ Server konnte nicht gestartet werden: " + e.Message);
+                ShowConnectionError();
+                return;
+            }
+
             InstanceFinder.ClientManager.StartConnection(_serverIP);
-            Debug.Log("✅ Server gestartet auf: " + _serverIP);
+            // Debug.Log("✅ Server gestartet auf: " + _serverIP);
+            Debug.Log($"✅ Server gestartet auf: {_serverIP}:{InstanceFinder.TransportManager.Transport.GetPort()}");
         }
 
         /// <summary>
@@ -496,7 +536,7 @@ namespace FortressForge.UI.Manager
             {
                 playerNameField.value = "TestPlayer" + Random.Range(0, 1000);
             }
-            
+
             // also populate the ip address field with the current local ip address
             TextField ipField = lobbyViewDoc.rootVisualElement.Q<TextField>("ip-join-text-input");
             if (ipField != null)
