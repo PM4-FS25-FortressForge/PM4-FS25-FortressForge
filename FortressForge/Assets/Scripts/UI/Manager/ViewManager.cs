@@ -528,16 +528,18 @@ namespace FortressForge.UI.Manager
             return _playerClient;
         }
 
+        /// <summary>
+        /// Populate the text fields with test data for faster development
+        /// This is only for development purposes and should be removed in production
+        /// </summary>
         private void PopulateTextFieldsForFasterDevelopment()
         {
-            // set the name of the player to "TestPlayer" + random number
             TextField playerNameField = lobbyViewDoc.rootVisualElement.Q<TextField>("PlayerNameTextField");
             if (playerNameField != null)
             {
                 playerNameField.value = "TestPlayer" + Random.Range(0, 1000);
             }
 
-            // also populate the ip address field with the current local ip address
             TextField ipField = lobbyViewDoc.rootVisualElement.Q<TextField>("ip-join-text-input");
             if (ipField != null)
             {
