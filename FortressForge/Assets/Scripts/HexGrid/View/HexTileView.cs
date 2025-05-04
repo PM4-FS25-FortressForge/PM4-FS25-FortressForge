@@ -1,4 +1,6 @@
+using System;
 using FortressForge.HexGrid.Data;
+using FortressForge.UI;
 using UnityEngine;
 
 namespace FortressForge.HexGrid.View
@@ -29,35 +31,51 @@ namespace FortressForge.HexGrid.View
             _tileData = data;
             _tileData.OnChanged += UpdateVisuals;
             _renderer = GetComponentInChildren<MeshRenderer>(); 
-            UpdateVisuals();
+            UpdateVisuals(data);
+        }
+        
+        private void OnDestroy()
+        {
+            if (_tileData != null)
+            {
+                _tileData.OnChanged -= UpdateVisuals;
+            }
         }
 
         /// <summary>
         /// Changes the material of the HexTileView based on the IsOccupied property of the HexTileData.
         /// </summary>
-        private void UpdateVisuals()
+        private void UpdateVisuals(HexTileData hexTileData)
         { // TODO maybe add custom colors for overlapping events such as build target and occupied
-            if (_tileData.IsBuildTarget) 
+            if (hexTileData.IsBuildTarget) 
                 _renderer.material = HighlightMaterial;
-            else if (_tileData.IsMouseTarget)
+            else if (hexTileData.IsMouseTarget)
                 _renderer.material = HighlightMaterial;
-            else if (_tileData.IsOccupied)
+            else if (hexTileData.IsOccupied)
                 _renderer.material = OccupiedMaterial;
             else
                 _renderer.material = FreeMaterial;
         }
 
-        /// <summary>
-        /// Changes the material of the HexTileView based on the IsOccupied property of the HexTileData.
-        /// </summary>
-        /// <param name="highlight">Whether the tile should be highlighted for a hover effect.</param>
-        private void UpdateVisuals(bool highlight)
+        private void OnMouseEnter()
         {
-            if (highlight)
-                _renderer.material = HighlightMaterial;
-            else
+            TileData.IsMouseTarget = true;
+        }
+        
+        private void OnMouseExit()
+        {
+            TileData.IsMouseTarget = false;
+        }
+        
+        private void OnMouseOver()
+        {
+            if (UIClickChecker.Instance.IsMouseOnOverlay() && TileData.IsMouseTarget)
             {
-                UpdateVisuals(); // TODO: Throws NullReferenceException in some cases check out why
+                OnMouseExit();
+            }
+            else if (!UIClickChecker.Instance.IsMouseOnOverlay() && !TileData.IsMouseTarget)
+            {
+                OnMouseEnter();
             }
         }
     }

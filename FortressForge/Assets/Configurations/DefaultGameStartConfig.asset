@@ -13,21 +13,17 @@ MonoBehaviour:
   m_Name: DefaultGameStartConfig
   m_EditorClassIdentifier: 
   Terrain: {fileID: 4565851599252019505, guid: 33502376c7d14c14ab0d550a3d4ee89a, type: 3}
-  PlayerId: Player1
-  PlayerIdsHexGridIdTuplesList:
-  - PlayerId: Player1
+  PlayerId: 0
+  _serializedList:
+  - PlayerId: 0
     HexGridId: 0
-  - PlayerId: Player1
+  - PlayerId: 1
     HexGridId: 1
-  - PlayerId: Player2
-    HexGridId: 2
-  - PlayerId: Player2
-    HexGridId: 3
+  - PlayerId: 0
+    HexGridId: 1
   HexGridOrigins:
   - {x: 3089, y: 0, z: 10559}
   - {x: 3345, y: 0, z: 8994}
-  - {x: 12869, y: 0, z: 3192}
-  - {x: 13150, y: 0, z: 8029}
   availableBuildings:
   - {fileID: 11400000, guid: 7ba111d719d345840ab9c8e5c62a3464, type: 2}
   - {fileID: 11400000, guid: 2ed51e6f707565743a43896dec9b53b0, type: 2}

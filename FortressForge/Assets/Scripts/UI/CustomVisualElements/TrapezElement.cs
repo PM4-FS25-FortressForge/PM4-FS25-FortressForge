@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 
 namespace FortressForge.UI.CustomVisualElements
@@ -208,10 +209,10 @@ namespace FortressForge.UI.CustomVisualElements
         /// <summary>
         /// Checks if a point is inside the trapezium.
         /// </summary>
-        /// <param name="localPoint"> The point to check.</param>
         /// <returns>True if the point is inside the trapezium, false otherwise.</returns>
-        public bool IsPointInTrapez(Vector2 localPoint)
+        public bool IsPointInTrapez()
         {
+            Vector2 localPoint = GetVisualElementLocalCoordinates();
             float width = resolvedStyle.width;
             float height = resolvedStyle.height;
             Vector2 pivot = new(width * 0.5f, height * 0.5f);
@@ -239,6 +240,30 @@ namespace FortressForge.UI.CustomVisualElements
             }
 
             return inside;
+        }
+
+        /// <summary>
+        /// Gets the local coordinates of the VisualElement.
+        /// </summary>
+        /// <returns>The local coordinates of the VisualElement.</returns>
+        private Vector2 GetVisualElementLocalCoordinates()
+        {
+            Vector2 mousePosition = MousePositionNdc;
+            Vector2 flippedPosition = new(mousePosition.x, 1 - mousePosition.y);
+            Vector2 adjustedPosition = flippedPosition * panel.visualTree.layout.size;
+            return this.WorldToLocal(adjustedPosition);
+        }
+
+        /// <summary>
+        /// Gets the mouse position in normalized device coordinates (NDC).
+        /// </summary>
+        private static Vector2 MousePositionNdc
+        {
+            get
+            {
+                Vector2 mousePosition = Mouse.current.position.ReadValue();
+                return new Vector2(mousePosition.x / Screen.width, mousePosition.y / Screen.height);
+            }
         }
     }
 }

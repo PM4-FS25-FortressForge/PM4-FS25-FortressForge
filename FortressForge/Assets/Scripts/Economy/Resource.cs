@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace FortressForge.Economy
 {
@@ -8,9 +9,14 @@ namespace FortressForge.Economy
     /// </summary>
     public class Resource
     {
+        public event Action OnChanged;
+        
         private readonly ResourceType _type;
+        public ResourceType Type => _type;
 
         private float _currentAmount;
+
+        public float DeltaAmount { get; private set; }
 
         /// <summary>
         /// The maximum amount this resource can hold.
@@ -31,14 +37,21 @@ namespace FortressForge.Economy
                     Debug.LogError($"[Resource] {_type} attempted to go below 0. Value: {value}");
                     throw new System.ArgumentOutOfRangeException(nameof(value), $"[Resource] {_type} cannot go below 0.");
                 }
+                float previousValue = _currentAmount;
                 if (value > MaxAmount)
                 {
                     Debug.Log($"[Resource] { _type } exceeded max ({value} > {MaxAmount}). Clamping.");
+                    DeltaAmount = value - MaxAmount;
                     _currentAmount = MaxAmount;
                 }
                 else 
                 {
+                    DeltaAmount = value - _currentAmount;
                     _currentAmount = value;
+                }
+                if (Math.Abs(previousValue - _currentAmount) > Mathf.Epsilon)
+                {
+                    OnChanged?.Invoke();
                 }
             }
         }
@@ -48,10 +61,11 @@ namespace FortressForge.Economy
         /// </summary>
         /// <param name="type">The type of resource this instance represents.</param>
         /// <param name="maxAmount">The maximum amount the resource can hold.</param>
-        public Resource(ResourceType type, float maxAmount = float.MaxValue)
+        public Resource(ResourceType type, float maxAmount = 0)
         {
             _type = type;
             MaxAmount = maxAmount;
+            DeltaAmount = 0;
             _currentAmount = 0;
         }
     }

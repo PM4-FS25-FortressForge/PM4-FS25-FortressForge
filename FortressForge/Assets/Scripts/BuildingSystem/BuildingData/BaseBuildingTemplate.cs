@@ -32,7 +32,7 @@ namespace FortressForge.BuildingSystem.BuildingData
         public ResourceType resourceCostType;
         
         
-        public void Awake()
+        public void OnEnable()
         {
             _resourceChange[resourceRateType] = resourceRate;
             _buildCost[resourceCostType] = resourceCost;

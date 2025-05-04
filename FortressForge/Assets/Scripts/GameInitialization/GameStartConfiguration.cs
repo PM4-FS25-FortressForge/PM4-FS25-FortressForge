@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using FortressForge.BuildingSystem.BuildingData;
-using FortressForge.Serializables;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace FortressForge.GameInitialization
@@ -12,17 +13,8 @@ namespace FortressForge.GameInitialization
         [Header("Map")]
         public Terrain Terrain;
         
-        [Header("This PlayerID")]
-        public string PlayerId;
-        
-        [Header("PlayerIds und ihre HexGrid Zugehörigkeit")]
-        public List<PlayerIdHexGridIdTuples> PlayerIdsHexGridIdTuplesList;
-        
-        [Header("HexGrid origin Koordinaten")]
-        public List<Vector3> HexGridOrigins;
-        
         [Header("Available Buildings")]
-        public List<BaseBuildingTemplate> availableBuildings = new List<BaseBuildingTemplate>();
+        public List<BaseBuildingTemplate> availableBuildings = new();
         
         [Header("HexGrid Konfiguration")]
         public int Radius;
