@@ -1,11 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using FishNet;
 using FishNet.Transporting;
 using FortressForge.Network;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Debug = UnityEngine.Debug;
+using Random = UnityEngine.Random;
 
 namespace FortressForge.UI.Manager
 {
@@ -16,8 +19,15 @@ namespace FortressForge.UI.Manager
     {
         [SerializeField] private UIDocument lobbyViewDoc;
         [SerializeField] private UIDocument gameRoomViewDoc;
-        [SerializeField] private string nextScene = "GameView";
         [SerializeField] private string lobbyScene = "LobbyScene";
+
+        private string _nextScene = "GameView";
+
+        public string NextScene
+        {
+            get => _nextScene;
+            set => _nextScene = value;
+        }
 
         private UIDocument _currentView;
         private GameRoomView _gameRoomView;
@@ -43,6 +53,8 @@ namespace FortressForge.UI.Manager
             SetupLobbyButtons();
 
             _gameRoomView = FindFirstObjectByType<GameRoomView>();
+
+            PopulateTextFieldsForFasterDevelopment();
         }
 
         /// <summary>
@@ -104,6 +116,13 @@ namespace FortressForge.UI.Manager
         /// </summary>
         private void StartGame()
         {
+            if (IsPortInUse())
+            {
+                Debug.LogError("Port 7777 ist bereits in Benutzung!");
+                ShowConnectionError();
+                return;
+            }
+
             Debug.Log("🎮 Spiel wird gestartet!");
             string playerName = GetPlayerName();
             string password = GetPassword();
@@ -114,6 +133,24 @@ namespace FortressForge.UI.Manager
             StartServer();
 
             EnterGameRoom(true, password, _serverIP);
+        }
+
+        /// <summary>
+        /// Check if the port is already in use
+        /// </summary>
+        /// <returns>True if the port is in use, false otherwise</returns>
+        private static bool IsPortInUse()
+        {
+            int portToCheck = InstanceFinder.TransportManager.Transport.GetPort();
+            try
+            {
+                using UdpClient udpClient = new(new IPEndPoint(IPAddress.Parse(GetLocalIPAddress()), portToCheck));
+                return false;
+            }
+            catch (SocketException)
+            {
+                return true;
+            }
         }
 
         /// <summary>
@@ -140,9 +177,21 @@ namespace FortressForge.UI.Manager
         {
             _serverIP = GetLocalIPAddress();
             InstanceFinder.TransportManager.Transport.SetServerBindAddress(_serverIP, IPAddressType.IPv4);
-            InstanceFinder.ServerManager.StartConnection();
+            try
+            {
+                bool trst = InstanceFinder.ServerManager.StartConnection();
+                Debug.Log("ServerManager StartConnection: " + trst);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError("❌ Server konnte nicht gestartet werden: " + e.Message);
+                ShowConnectionError();
+                return;
+            }
+
             InstanceFinder.ClientManager.StartConnection(_serverIP);
-            Debug.Log("✅ Server gestartet auf: " + _serverIP);
+            // Debug.Log("✅ Server gestartet auf: " + _serverIP);
+            Debug.Log($"✅ Server gestartet auf: {_serverIP}:{InstanceFinder.TransportManager.Transport.GetPort()}");
         }
 
         /// <summary>
@@ -196,7 +245,7 @@ namespace FortressForge.UI.Manager
             };
 
             if (!stoppedStates.Contains(args.ConnectionState)) return;
-            
+
             Debug.Log("❌ Verbindung zum Server verloren! ClientConnection");
             ShowView(lobbyViewDoc);
         }
@@ -235,8 +284,7 @@ namespace FortressForge.UI.Manager
         private void StartMatch()
         {
             BootstrapSceneManager sceneManager = FindAnyObjectByType<BootstrapSceneManager>();
-            sceneManager.UnloadScene(lobbyScene);
-            sceneManager.LoadScene(nextScene);
+            sceneManager.LoadScene(_nextScene);
         }
 
         /// <summary>
@@ -329,20 +377,11 @@ namespace FortressForge.UI.Manager
 
             Vector3 originalPosition = lobbyContainer.transform.position;
 
-            lobbyContainer.schedule.Execute(() =>
-            {
-                lobbyContainer.transform.position = originalPosition + new Vector3(SHAKE_STRENGTH, 0, 0);
-            }).StartingIn(50);
+            lobbyContainer.schedule.Execute(() => { lobbyContainer.transform.position = originalPosition + new Vector3(SHAKE_STRENGTH, 0, 0); }).StartingIn(50);
 
-            lobbyContainer.schedule.Execute(() =>
-            {
-                lobbyContainer.transform.position = originalPosition - new Vector3(SHAKE_STRENGTH, 0, 0);
-            }).StartingIn(100);
+            lobbyContainer.schedule.Execute(() => { lobbyContainer.transform.position = originalPosition - new Vector3(SHAKE_STRENGTH, 0, 0); }).StartingIn(100);
 
-            lobbyContainer.schedule.Execute(() =>
-            {
-                lobbyContainer.transform.position = originalPosition + new Vector3(SHAKE_STRENGTH / 2, 0, 0);
-            }).StartingIn(150);
+            lobbyContainer.schedule.Execute(() => { lobbyContainer.transform.position = originalPosition + new Vector3(SHAKE_STRENGTH / 2, 0, 0); }).StartingIn(150);
 
             lobbyContainer.schedule.Execute(() => { lobbyContainer.transform.position = originalPosition; })
                 .StartingIn(200);
@@ -487,6 +526,25 @@ namespace FortressForge.UI.Manager
         public PlayerClient GetPlayerClient()
         {
             return _playerClient;
+        }
+
+        /// <summary>
+        /// Populate the text fields with test data for faster development
+        /// This is only for development purposes and should be removed in production
+        /// </summary>
+        private void PopulateTextFieldsForFasterDevelopment()
+        {
+            TextField playerNameField = lobbyViewDoc.rootVisualElement.Q<TextField>("PlayerNameTextField");
+            if (playerNameField != null)
+            {
+                playerNameField.value = "TestPlayer" + Random.Range(0, 1000);
+            }
+
+            TextField ipField = lobbyViewDoc.rootVisualElement.Q<TextField>("ip-join-text-input");
+            if (ipField != null)
+            {
+                ipField.value = GetLocalIPAddress();
+            }
         }
     }
 }

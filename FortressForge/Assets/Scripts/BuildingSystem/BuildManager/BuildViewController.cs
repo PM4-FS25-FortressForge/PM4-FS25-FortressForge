@@ -1,9 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using FishNet;
 using FishNet.Object;
 using FortressForge.BuildingSystem.BuildingData;
-using FortressForge.Economy;
 using FortressForge.GameInitialization;
 using FortressForge.HexGrid;
 using FortressForge.HexGrid.Data;
@@ -30,6 +30,8 @@ namespace FortressForge.BuildingSystem.BuildManager
         private List<BaseBuildingTemplate> AvailableBuildings => _config.availableBuildings;
 
         private BuildActions _input;
+        
+        public static event Action OnExitBuildModeEvent;
 
         public void Init(List<HexGridData> hexGridData, GameStartConfiguration config,
             HexGridManager hexGridManager)
@@ -204,6 +206,8 @@ namespace FortressForge.BuildingSystem.BuildManager
         private void ExitBuildMode()
         {
             if (!IsPreviewMode) return;
+            
+            OnExitBuildModeEvent?.Invoke();
 
             Destroy(_previewBuilding);
             _selectedBuildingIndex = -1;
