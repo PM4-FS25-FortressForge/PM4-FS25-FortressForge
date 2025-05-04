@@ -11,6 +11,9 @@ namespace FortressForge.GameInitialization
     public class ServerInitializationManager : MonoBehaviour
     {
         private static ServerInitializationManager Instance { get; set; }
+        
+        [SerializeField]
+        private GameObject PlayerManagerPrefab;
 
         private void Awake()
         {
@@ -42,8 +45,8 @@ namespace FortressForge.GameInitialization
                 Debug.Log("Server startet das Spiel.");
                 foreach (KeyValuePair<int, NetworkConnection> client in InstanceFinder.ServerManager.Clients)
                 {
-                    Debug.Log($"Spawne PlayerManager für Client: {client.Value.ClientId}");
-                    GameObject playerManager = Instantiate(Resources.Load<GameObject>("Prefabs/PlayerManager"));
+                    Debug.Log($"Spawn PlayerManager for Client: {client.Value.ClientId}");
+                    GameObject playerManager = Instantiate(PlayerManagerPrefab);
                     InstanceFinder.ServerManager.Spawn(playerManager, client.Value);
                 }
             }
