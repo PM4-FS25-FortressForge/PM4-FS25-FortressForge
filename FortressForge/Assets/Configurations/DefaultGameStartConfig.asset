@@ -25,4 +25,4 @@ MonoBehaviour:
   OccupiedMaterial: {fileID: 2100000, guid: e73fde62696bb84439da0c059f3275a1, type: 2}
   HighlightMaterial: {fileID: 2100000, guid: 9b3a6bb7541955f4ba1690bd0dcbbe71, type: 2}
   NotAllowedMaterial: {fileID: 2100000, guid: e1fd348dc1bed4d839ffb25c11acfa9b, type: 2}
-  PreviewMaterial: {fileID: 2100000, guid: 15a077ea89f165e44938d08352278a6d, type: 2}
+  PreviewMaterial: {fileID: 2100000, guid: 848369def4c5b43adbbed19ee7f90924, type: 2}

@@ -170,7 +170,7 @@ namespace FortressForge.Economy
         {
             var resourceChanges = new List<(IEconomyActor, Dictionary<ResourceType, float>)>();
 
-            foreach (var resourceActor in EconomyActors)
+            foreach (var resourceActor in _buildingManager.PlacedBuildings.Select(data => data.BaseBuildingTemplate))
             {
                 resourceChanges.Add((resourceActor, resourceActor.GetNetResourceChange()));
             }

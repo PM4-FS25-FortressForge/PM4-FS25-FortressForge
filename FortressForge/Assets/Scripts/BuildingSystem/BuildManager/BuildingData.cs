@@ -15,6 +15,9 @@ namespace FortressForge.BuildingSystem.BuildManager {
         private GameObject _buildingPrefab;
         private List<HexTileData> _buildingTiles = new();
         private BaseBuildingTemplate _baseBuildingTemplate;
+        public GameObject BuildingPrefab => _buildingPrefab;
+        public List<HexTileData> BuildingTiles => _buildingTiles;
+        public BaseBuildingTemplate BaseBuildingTemplate => _baseBuildingTemplate;
         
         public event Action<BuildingData> OnChanged;
         
