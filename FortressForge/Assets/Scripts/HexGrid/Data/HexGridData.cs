@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using FortressForge.BuildingSystem.BuildManager;
 using FortressForge.Economy;
+using FortressForge.HexGrid.View;
 
 namespace FortressForge.HexGrid.Data
 {
@@ -64,10 +65,11 @@ namespace FortressForge.HexGrid.Data
             }
         }
 
-        private void CreateNewHexTile(HexTileCoordinate newHexCoords)
+        private HexTileData CreateNewHexTile(HexTileCoordinate newHexCoords)
         {
             TileMap[newHexCoords] = new HexTileData(newHexCoords);
             TileMap[newHexCoords].OnHoverChanged += OnHoverTileChangedEvent;
+            return TileMap[newHexCoords];
         }
 
         /// <summary>
@@ -75,7 +77,7 @@ namespace FortressForge.HexGrid.Data
         /// </summary>
         /// <param name="hexCoord"></param>
         /// <param name="shapeData"></param>
-        public void PlaceBuilding(HexTileCoordinate hexCoord, List<HexTileCoordinate> shapeData)
+        public void PlaceBuildingTiles(HexTileCoordinate hexCoord, List<HexTileCoordinate> shapeData)
         { 
             foreach (var coord in shapeData)
             {
@@ -117,8 +119,7 @@ namespace FortressForge.HexGrid.Data
             if (tileData == null)
             {
                 HexTileCoordinate newHexCoords = hexCoord + new HexTileCoordinate(0, 0, 1);
-                HexTileData hexTileData = new HexTileData(newHexCoords);
-                TileMap[newHexCoords] = hexTileData;
+                HexTileData hexTileData = CreateNewHexTile(newHexCoords);
                 OnNewTileCreated?.Invoke(hexTileData, newHexCoords); 
             }
         }

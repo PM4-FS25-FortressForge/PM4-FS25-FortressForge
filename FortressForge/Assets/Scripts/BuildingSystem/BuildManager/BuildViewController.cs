@@ -7,8 +7,10 @@ using FortressForge.BuildingSystem.BuildingData;
 using FortressForge.GameInitialization;
 using FortressForge.HexGrid;
 using FortressForge.HexGrid.Data;
+using FortressForge.HexGrid.View;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Tilemaps;
 
 namespace FortressForge.BuildingSystem.BuildManager
 {
@@ -55,6 +57,8 @@ namespace FortressForge.BuildingSystem.BuildManager
 
             _previewBuilding = SpawnLocal(_selectedBuildingTemplate.BuildingPrefab);
             _previewBuildingMeshRenderer = _previewBuilding.GetComponentInChildren<MeshRenderer>();
+            var collider = _previewBuilding.GetComponentInChildren<Collider>();
+            collider.enabled = false;
         }
 
         #region Input Callbacks
@@ -78,11 +82,10 @@ namespace FortressForge.BuildingSystem.BuildManager
             _ownedHexGridDatas.ForEach(gridData => gridData.OnHoverTileChanged -= OnHexTileChanged);
             ExitBuildMode();
         }
-
-        private void Awake() => _input = new BuildActions();
-
+        
         private void OnEnable()
         {
+            _input = new BuildActions();
             _input.PreviewMode.SetCallbacks(this);
             _input.PreviewMode.Enable();
         }
@@ -174,6 +177,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         {
             BaseBuildingTemplate template = AvailableBuildings[buildingIndex];
             List<HexTileCoordinate> rotatedShape = GetRotatedShape(template.ShapeData, rotation);
+            List<HexTileCoordinate> globalRotatedShape = rotatedShape.Select(tile => tile + coord).ToList();
 
             HexGridData targetGrid = _ownedHexGridDatas
                 .FirstOrDefault(grid => grid.ValidateBuildingPlacement(coord, rotatedShape));
@@ -184,23 +188,42 @@ namespace FortressForge.BuildingSystem.BuildManager
                 return;
             }
 
-            targetGrid.PlaceBuilding(coord, rotatedShape);
+            targetGrid.PlaceBuildingTiles(coord, rotatedShape);
             targetGrid.EconomySystem.PayResource(template.GetBuildCost());
-            targetGrid.BuildingManager.AddBuilding(template);
 
             Vector3 pos = coord.GetWorldPosition(_config.Radius, _config.TileHeight) + GetAveragePosition(rotatedShape);
             Quaternion rot = Quaternion.Euler(0f, rotation, 0f) * template.BuildingPrefab.transform.rotation;
-            SpawnNetworked(template.BuildingPrefab, pos, rot, transform);
-
-            UpdateGridClientRpc(buildingIndex, coord, targetGrid.Id, rotation);
+            GameObject prefab =  SpawnNetworked(template.BuildingPrefab, pos, rot, transform);
+            
+            // Add reference to building manager for later use.
+            List<HexTileData> tileDatas = globalRotatedShape
+                .Select(coord => targetGrid.TileMap[coord])
+                .ToList();
+            targetGrid.BuildingManager.AddBuilding(new BuildingData(prefab, tileDatas, template));
+            
+            UpdateGridClientRpc(buildingIndex, coord, targetGrid.Id, rotation, prefab);
         }
 
         [ObserversRpc]
-        private void UpdateGridClientRpc(int buildingIndex, HexTileCoordinate coord, int hexGridId, float rotation)
+        private void UpdateGridClientRpc(int buildingIndex, HexTileCoordinate coord, int hexGridId, float rotation,
+            GameObject prefab)
         {
             BaseBuildingTemplate template = AvailableBuildings[buildingIndex];
+            HexGridData targetGrid = _hexGridManager.AllGrids[hexGridId];
             List<HexTileCoordinate> rotatedShape = GetRotatedShape(template.ShapeData, rotation);
-            _hexGridManager.AllGrids[hexGridId].PlaceBuilding(coord, rotatedShape);
+            List<HexTileCoordinate> globalRotatedShape = rotatedShape.Select(tile => tile + coord).ToList();
+            
+            // Add local reference to building manager for later use.
+            List<HexTileData> tileDatas = globalRotatedShape
+                .Select(coord => targetGrid.TileMap[coord])
+                .ToList();
+            var buildingData = new BuildingData(prefab, tileDatas, template);
+            
+            var tileData = prefab.AddComponent<BuildingView>();
+            tileData.Init(buildingData, _config);
+            
+            targetGrid.BuildingManager.AddBuilding(buildingData);
+            _hexGridManager.AllGrids[hexGridId].PlaceBuildingTiles(coord, rotatedShape);
         }
 
         private void ExitBuildMode()

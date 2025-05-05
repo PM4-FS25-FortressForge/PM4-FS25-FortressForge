@@ -23,5 +23,12 @@ namespace FortressForge.GameInitialization
         
         [Header("Referenzen für das GridView")] [SerializeField]
         public GameObject TilePrefab;
+
+        [Header("GameObject Materials")] 
+        public Material FreeMaterial;
+        public Material OccupiedMaterial;
+        public Material HighlightMaterial;
+        public Material NotAllowedMaterial;
+        public Material PreviewMaterial;
     }
 }

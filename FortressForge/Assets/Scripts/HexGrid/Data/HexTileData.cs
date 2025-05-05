@@ -1,12 +1,17 @@
 ﻿using System;
+using FortressForge.HexGrid.View;
+using UnityEngine;
 
 namespace FortressForge.HexGrid.Data
 {
-    public class HexTileData
+    /// <summary>
+    /// Represents the data for a hexagonal tile in the grid.
+    /// </summary>
+    public class HexTileData : ISelectableGameObjectData<HexTileData>
     {
         public event Action<HexTileData> OnChanged;
         public event Action<HexTileData> OnHoverChanged;
-
+        
         private bool _isOccupied;
         public bool IsOccupied
         {
