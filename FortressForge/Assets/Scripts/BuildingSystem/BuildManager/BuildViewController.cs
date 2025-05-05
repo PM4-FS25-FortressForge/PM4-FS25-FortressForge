@@ -8,6 +8,7 @@ using FortressForge.GameInitialization;
 using FortressForge.HexGrid;
 using FortressForge.HexGrid.Data;
 using FortressForge.HexGrid.View;
+using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
@@ -176,7 +177,9 @@ namespace FortressForge.BuildingSystem.BuildManager
         private void TryPlaceBuildingServerRpc(int buildingIndex, HexTileCoordinate coord, float rotation)
         {
             BaseBuildingTemplate template = AvailableBuildings[buildingIndex];
-            List<HexTileCoordinate> rotatedShape = GetRotatedShape(template.ShapeData, rotation);
+            (var shapeData, var isStackableList) = ExtractShapeInformation(template.ShapeDataEntries);
+
+            List<HexTileCoordinate> rotatedShape = GetRotatedShape(shapeData, rotation);
             List<HexTileCoordinate> globalRotatedShape = rotatedShape.Select(tile => tile + coord).ToList();
 
             HexGridData targetGrid = _ownedHexGridDatas
@@ -188,7 +191,7 @@ namespace FortressForge.BuildingSystem.BuildManager
                 return;
             }
 
-            targetGrid.PlaceBuildingTiles(coord, rotatedShape);
+            targetGrid.MarkBuildingTiles(coord, rotatedShape, isStackableList);
             targetGrid.EconomySystem.PayResource(template.GetBuildCost());
 
             Vector3 pos = coord.GetWorldPosition(_config.Radius, _config.TileHeight) + GetAveragePosition(rotatedShape);
@@ -209,8 +212,9 @@ namespace FortressForge.BuildingSystem.BuildManager
             GameObject prefab)
         {
             BaseBuildingTemplate template = AvailableBuildings[buildingIndex];
+            (var shapeData, var isStackableList) = ExtractShapeInformation(template.ShapeDataEntries);
             HexGridData targetGrid = _hexGridManager.AllGrids[hexGridId];
-            List<HexTileCoordinate> rotatedShape = GetRotatedShape(template.ShapeData, rotation);
+            List<HexTileCoordinate> rotatedShape = GetRotatedShape(shapeData, rotation);
             List<HexTileCoordinate> globalRotatedShape = rotatedShape.Select(tile => tile + coord).ToList();
             
             // Add local reference to building manager for later use.
@@ -223,7 +227,8 @@ namespace FortressForge.BuildingSystem.BuildManager
             tileData.Init(buildingData, _config);
             
             targetGrid.BuildingManager.AddBuilding(buildingData);
-            _hexGridManager.AllGrids[hexGridId].PlaceBuildingTiles(coord, rotatedShape);
+            
+            _hexGridManager.AllGrids[hexGridId].MarkBuildingTiles(coord, rotatedShape, isStackableList);
         }
 
         private void ExitBuildMode()
@@ -243,7 +248,7 @@ namespace FortressForge.BuildingSystem.BuildManager
 
             _currentPreviewBuildingRotation = (_currentPreviewBuildingRotation + angle) % 360f;
             _previewBuilding.transform.rotation = Quaternion.Euler(0f, _currentPreviewBuildingRotation, 0f) * _selectedBuildingTemplate.BuildingPrefab.transform.rotation;
-
+            
             MovePreviewObject(_hoveredHexTile.HexTileCoordinate);
         }
 
@@ -293,6 +298,20 @@ namespace FortressForge.BuildingSystem.BuildManager
             GameObject obj = Instantiate(prefab, pos, rot, parent);
             InstanceFinder.ServerManager.Spawn(obj);
             return obj;
+        }
+        
+        private static (List<HexTileCoordinate> coordinates, List<bool> isStackable) ExtractShapeInformation(List<HexTileEntry> shapeDataEntries)
+        {
+            List<HexTileCoordinate> coordinates = new List<HexTileCoordinate>();
+            List<bool> isStackable = new List<bool>();
+
+            foreach (var entry in shapeDataEntries)
+            {
+                coordinates.Add(entry.Coordinate);
+                isStackable.Add(entry.IsStackable);
+            }
+
+            return (coordinates, isStackable);
         }
     }
 }
