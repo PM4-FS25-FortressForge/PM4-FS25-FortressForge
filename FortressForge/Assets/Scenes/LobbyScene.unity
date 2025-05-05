@@ -567,7 +567,7 @@ MonoBehaviour:
   _runInBackground: 1
   _dontDestroyOnLoad: 1
   _objectPool: {fileID: 0}
-  _persistence: 0
+  _persistence: 2
   _logging: {fileID: 0}
   _spawnablePrefabs: {fileID: 11400000, guid: bdf46d53f7aa33b47bee0cf6d4d62cba, type: 2}
 --- !u!114 &5238284367049718006
