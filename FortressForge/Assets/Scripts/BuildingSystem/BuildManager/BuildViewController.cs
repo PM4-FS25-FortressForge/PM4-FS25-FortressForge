@@ -227,7 +227,7 @@ namespace FortressForge.BuildingSystem.BuildManager
             ClearPreviousBuildTargets();
             if (_hoveredHexTile != null)
             {
-                MarkNewTilesAsBuildTargets(_hoveredHexTile.HexTileCoordinate, SelectedBuildingTemplate.ShapeData);
+                MarkNewTilesAsBuildTargets(_hoveredHexTile.HexTileCoordinate, _selectedBuildingTemplate.ShapeData);
             }
         }
 
