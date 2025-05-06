@@ -1,4 +1,5 @@
 using System.Collections;
+using FishNet.Object;
 using FortressForge.BuildingSystem.BuildingData;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -8,11 +9,14 @@ using UnityEngine.InputSystem;
 /// Handles input and control logic for a deployable weapon.
 /// This Script is used for each instance of the deployed weapon.
 /// </summary>
-public class WeaponInputHandler : MonoBehaviour, WeaponInputAction.IWeaponInputActionsActions
+public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInputActionsActions
 {
     [SerializeField] private WeaponBuildingTemplate constants;
     [SerializeField] private GameObject cannonBallPrefab;
     [SerializeField] private Transform firePoint;
+    
+    private Transform _towerBase;
+    private Transform _cannonShaft;
     
     private WeaponInputAction _weaponInputAction;
     private Coroutine _autoFireCoroutine;
@@ -22,7 +26,7 @@ public class WeaponInputHandler : MonoBehaviour, WeaponInputAction.IWeaponInputA
     private bool _isAutoFiring = false;
     
     private float _rotateInput;
-    private float angleInput;
+    private float _angleInput;
 
     /// <summary>
     /// Initializes the input system and sets this object as its callback handler.
@@ -32,6 +36,8 @@ public class WeaponInputHandler : MonoBehaviour, WeaponInputAction.IWeaponInputA
         _weaponInputAction = new WeaponInputAction();
         _weaponInputAction.WeaponInputActions.SetCallbacks(this);
         firePoint = transform.Find("Geschuetzturm/Lauf/FirePoint");
+        _towerBase = transform.Find("Geschuetzturm");
+        _cannonShaft = transform.Find("Geschuetzturm/Lauf");
     }
 
     /// <summary>
@@ -59,35 +65,13 @@ public class WeaponInputHandler : MonoBehaviour, WeaponInputAction.IWeaponInputA
         // Rotate the cannon tower
         if (Mathf.Abs(_rotateInput) > 0.01f)
         {
-            Transform towerBase = transform.Find("Geschuetzturm");
-            if (towerBase != null)
-            {
-                towerBase.Rotate(Vector3.forward, _rotateInput * constants.rotationSpeed * Time.deltaTime);
-            }
+            updateWeaponRotationServerRpc(_rotateInput, Time.deltaTime);
         }
 
         // Adjust cannon angle
-        if (Mathf.Abs(angleInput) > 0.01f)
+        if (Mathf.Abs(_angleInput) > 0.01f)
         {
-            Transform cannonShaft = transform.Find("Geschuetzturm/Lauf");
-            if (cannonShaft != null)
-            {
-                // current rotation
-                Vector3 currentRotation = cannonShaft.localEulerAngles;
-
-                // Convert to signed angle (-180 to 180)
-                float currentPitch = currentRotation.x;
-                if (currentPitch > 180f) currentPitch -= 360f;
-
-                // Calculate new pitch
-                float newPitch = currentPitch + angleInput * constants.pitchSpeed * Time.deltaTime;
-
-                // Clamp angle
-                newPitch = Mathf.Clamp(newPitch, constants.minCannonAngle, constants.maxCannonAngle);
-
-                // Apply to rotation 
-                cannonShaft.localEulerAngles = new Vector3(newPitch, currentRotation.x, currentRotation.z);
-            }
+            updateWeaponAngleServerRpc(_angleInput, Time.deltaTime);
         }
     }
 
@@ -135,14 +119,34 @@ public class WeaponInputHandler : MonoBehaviour, WeaponInputAction.IWeaponInputA
             
         }
     }
-
+    
+    [ServerRpc(RequireOwnership = false)]
+    public void updateWeaponRotationServerRpc(float rotationInput, float deltaTime)
+    {
+        if (_towerBase != null)
+        {
+            float rotationAmount = rotationInput * constants.rotationSpeed * deltaTime;
+            _towerBase.Rotate(Vector3.forward, rotationAmount);
+            UpdateWeaponRotationObserversRpc(_towerBase.localEulerAngles);
+        }
+    }
+    
+    [ObserversRpc]
+    private void UpdateWeaponRotationObserversRpc(Vector3 newRotation)
+    {
+        if (!IsServer && _towerBase != null)
+        {
+            _towerBase.localEulerAngles = newRotation;
+        }
+    }
+    
     /// <summary>
     /// Called by the input system to exit fight mode.
     /// Disables input controls but does not stop firing.
     /// </summary>
     public void OnAdjustCannonAngle(InputAction.CallbackContext context)
     {
-        angleInput = context.ReadValue<float>();
+        _angleInput = context.ReadValue<float>();
 
         // Stop auto-firing when adjusting angle
         if (_isAutoFiring)
@@ -151,7 +155,41 @@ public class WeaponInputHandler : MonoBehaviour, WeaponInputAction.IWeaponInputA
             StopCoroutine(AutoFire());
         }
     }
+    
+    [ServerRpc(RequireOwnership = false)]
+    public void updateWeaponAngleServerRpc(float angleInput, float deltaTime)
+    {
+        if (_cannonShaft != null)
+        {
+            // current rotation
+            Vector3 currentRotation = _cannonShaft.localEulerAngles;
 
+            // Convert to signed angle (-180 to 180)
+            float currentPitch = currentRotation.x;
+            if (currentPitch > 180f) currentPitch -= 360f;
+
+            // Calculate new pitch
+            float newPitch = currentPitch + angleInput * constants.pitchSpeed * Time.deltaTime;
+
+            // Clamp angle
+            newPitch = Mathf.Clamp(newPitch, constants.minCannonAngle, constants.maxCannonAngle);
+
+            // Apply to rotation 
+            _cannonShaft.localEulerAngles = new Vector3(newPitch, currentRotation.x, currentRotation.z);
+            
+            UpdateWeaponAngleObserversRpc(new Vector3(newPitch, currentRotation.x, currentRotation.z));
+        }
+    }
+
+    [ObserversRpc]
+    public void UpdateWeaponAngleObserversRpc(Vector3 newRotation)
+    {
+        if (!IsServer && _cannonShaft != null)
+        {
+            _cannonShaft.localEulerAngles = newRotation;
+        }
+    }
+    
     /// <summary>
     /// Handles rotation input for the cannon's base.
     /// </summary>
@@ -194,12 +232,43 @@ public class WeaponInputHandler : MonoBehaviour, WeaponInputAction.IWeaponInputA
     /// </summary>
     private void FireOnce()
     {
-        // Instantiate the ammunition
+        FireCannonServerRpc();
+    }
+    
+    [ServerRpc(RequireOwnership = false)]
+    private void FireCannonServerRpc()
+    {
+        if (cannonBallPrefab == null || firePoint == null) return;
+
+        GameObject ammunition = Instantiate(cannonBallPrefab, firePoint.position, firePoint.rotation);
+        NetworkObject netObj = ammunition.GetComponent<NetworkObject>();
+
+        if (netObj != null)
+        {
+            base.Spawn(ammunition); // Spawn over network
+        }
+        else
+        {
+            Debug.LogError("Cannonball prefab is missing NetworkObject!");
+        }
+
+        Rigidbody rb = ammunition.GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            Quaternion barrelRotation = firePoint.rotation;
+            rb.velocity = barrelRotation * -Vector3.right * constants.cannonForce;
+
+        }
+    }
+
+    /*
+     private void FireOnce(){
+     // Instantiate the ammunition
         GameObject ammunition = Instantiate(cannonBallPrefab, firePoint.position, firePoint.rotation);
         Rigidbody rb = ammunition.GetComponent<Rigidbody>();
 
         // Calculate the force to apply
         Quaternion barrelRotation = transform.Find("Geschuetzturm/Lauf/FirePoint").rotation;
-        rb.linearVelocity = barrelRotation * -Vector3.right * constants.cannonForce;
-    }
+        rb.linearVelocity = barrelRotation * -Vector3.right * constants.cannonForce;}
+     */
 }
