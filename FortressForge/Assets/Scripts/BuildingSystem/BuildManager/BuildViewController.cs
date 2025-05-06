@@ -60,6 +60,7 @@ namespace FortressForge.BuildingSystem.BuildManager
             _previewBuildingMeshRenderer = _previewBuilding.GetComponentInChildren<MeshRenderer>();
             var collider = _previewBuilding.GetComponentInChildren<Collider>();
             collider.enabled = false;
+            RotatePreviewBuilding(0);
         }
 
         #region Input Callbacks
@@ -248,6 +249,7 @@ namespace FortressForge.BuildingSystem.BuildManager
 
             _currentPreviewBuildingRotation = (_currentPreviewBuildingRotation + angle) % 360f;
             _previewBuilding.transform.rotation = Quaternion.Euler(0f, _currentPreviewBuildingRotation, 0f) * _selectedBuildingTemplate.BuildingPrefab.transform.rotation;
+            if (_hoveredHexTile == null) return;
             
             MovePreviewObject(_hoveredHexTile.HexTileCoordinate);
         }

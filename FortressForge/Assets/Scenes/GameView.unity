@@ -272,7 +272,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Yaw: 0
   Pitch: 45
-  Zoom: 400
+  Zoom: 200
   TargetPosition: {x: 3089, y: 0, z: 10559}
   MoveSpeed: 300
   RotationSpeed: 50
