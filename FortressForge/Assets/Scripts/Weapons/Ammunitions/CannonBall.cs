@@ -1,14 +1,43 @@
-using System.Linq;
-using Codice.CM.Common;
-using FortressForge.BuildingSystem.BuildingData;
+using FishNet.Object;
 using UnityEngine;
 
-public class Cannonball : MonoBehaviour
+public class Cannonball : NetworkBehaviour
 {
-    [SerializeField] private WeaponBuildingTemplate constants;
+    private Rigidbody _rigidbody;
 
-    void OnCollisionEnter(Collision collision)
+    void Awake()
     {
-        Destroy(gameObject);
+        _rigidbody = GetComponent<Rigidbody>();
+    }
+
+    [ObserversRpc]
+    public void SetInitialVelocity(Vector3 velocity)
+    {
+        if (_rigidbody != null)
+        {
+            _rigidbody.velocity = velocity;
+        }
+    }
+
+    public void Launch(Vector3 velocity)
+    {
+        if (_rigidbody != null)
+        {
+            _rigidbody.velocity = velocity;
+        }
+
+        if (IsServer)
+        {
+            SetInitialVelocity(velocity);
+        }
+    }
+
+    // Despawn when hitting something
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (IsServer)
+        {
+            Despawn();
+        }
     }
 }

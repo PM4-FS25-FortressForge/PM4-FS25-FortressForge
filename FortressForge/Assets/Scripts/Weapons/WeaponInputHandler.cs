@@ -245,30 +245,28 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
 
         if (netObj != null)
         {
-            base.Spawn(ammunition); // Spawn over network
+            base.Spawn(ammunition);
         }
         else
         {
             Debug.LogError("Cannonball prefab is missing NetworkObject!");
+            return;
         }
 
         Rigidbody rb = ammunition.GetComponent<Rigidbody>();
+        Vector3 velocity = firePoint.rotation * -Vector3.right * constants.cannonForce;
+
+        // Apply physics on server
         if (rb != null)
         {
-            Quaternion barrelRotation = firePoint.rotation;
-            rb.velocity = barrelRotation * -Vector3.right * constants.cannonForce;
+            rb.velocity = velocity;
+        }
 
+        // Also broadcast to clients so cannonball moves on all sides
+        Cannonball cbScript = ammunition.GetComponent<Cannonball>();
+        if (cbScript != null)
+        {
+            cbScript.SetInitialVelocity(velocity);
         }
     }
-
-    /*
-     private void FireOnce(){
-     // Instantiate the ammunition
-        GameObject ammunition = Instantiate(cannonBallPrefab, firePoint.position, firePoint.rotation);
-        Rigidbody rb = ammunition.GetComponent<Rigidbody>();
-
-        // Calculate the force to apply
-        Quaternion barrelRotation = transform.Find("Geschuetzturm/Lauf/FirePoint").rotation;
-        rb.linearVelocity = barrelRotation * -Vector3.right * constants.cannonForce;}
-     */
 }
