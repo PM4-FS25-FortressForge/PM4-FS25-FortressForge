@@ -17,17 +17,20 @@ MonoBehaviour:
     R: 0
     H: 0
   - Q: 1
+    R: -1
+    H: 0
+  - Q: 1
     R: 0
     H: 0
-  - Q: 0
-    R: 1
-    H: 0
-  BuildingPrefab: {fileID: 4295024953393921518, guid: 3fb942edbdbadf646a6668cd4668ae88, type: 3}
+  BuildingPrefab: {fileID: 6849168067370121489, guid: e10a276a0e8f8e140aedd6959342593f, type: 3}
   Name: Energtiefabrik
-  MetalCost: 10
   MaxHealth: 300
-  resourceRate: 50
-  resourceRateType: 1
-  resourceCost: 0
-  resourceCostType: 0
+  ResourceRates:
+  - Type: 1
+    Rate: 120
+  BuildCosts:
+  - Type: 4
+    Rate: 150
+  - Type: 0
+    Rate: 75
   MagmaPointsCost: 1

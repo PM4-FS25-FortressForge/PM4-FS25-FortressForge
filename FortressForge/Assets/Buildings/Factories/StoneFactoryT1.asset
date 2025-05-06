@@ -16,21 +16,26 @@ MonoBehaviour:
   - Q: 0
     R: 0
     H: 0
+  - Q: -1
+    R: 0
+    H: 0
   - Q: 0
     R: -1
     H: 0
   - Q: 1
     R: -1
     H: 0
-  - Q: 1
-    R: 0
-    H: 0
-  BuildingPrefab: {fileID: 6072456617158700994, guid: 3634384451d82d243908a2cc99bc67ca, type: 3}
+  BuildingPrefab: {fileID: 1678279406192525822, guid: 3826d0234011d8b4ea531e7b15ff8337, type: 3}
   Name: Betonfabrik
-  MetalCost: 0
   MaxHealth: 0
-  resourceRate: 0
-  resourceRateType: 0
-  resourceCost: 0
-  resourceCostType: 0
-  MagmaPointsCost: 0
+  ResourceRates:
+  - Type: 4
+    Rate: 45
+  BuildCosts:
+  - Type: 0
+    Rate: 100
+  - Type: 4
+    Rate: 300
+  - Type: 1
+    Rate: 75
+  MagmaPointsCost: 2

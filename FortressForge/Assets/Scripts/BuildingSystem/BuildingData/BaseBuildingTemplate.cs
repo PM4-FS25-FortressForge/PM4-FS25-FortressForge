@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using FortressForge.Economy;
 using FortressForge.HexGrid;
+using FortressForge.Serializables;
 using UnityEngine;
 
 namespace FortressForge.BuildingSystem.BuildingData
@@ -18,7 +19,6 @@ namespace FortressForge.BuildingSystem.BuildingData
 
         [Header("Building Data")] 
         public string Name;
-        public int MetalCost;
         public int MaxHealth; 
         
         [Header("Resource Data")]
@@ -26,16 +26,34 @@ namespace FortressForge.BuildingSystem.BuildingData
         protected Dictionary<ResourceType, float> _buildCost = new();
         protected bool _enabled = true;
         
-        public float resourceRate;
-        public ResourceType resourceRateType;
-        public float resourceCost;
-        public ResourceType resourceCostType;
+        public List<RessourceTypeRate> ResourceRates = new();
+        public List<RessourceTypeRate> BuildCosts = new();
         
         
         public void OnEnable()
         {
-            _resourceChange[resourceRateType] = resourceRate;
-            _buildCost[resourceCostType] = resourceCost;
+            foreach (var resourceRate in ResourceRates)
+            {
+                if (_resourceChange.ContainsKey(resourceRate.Type))
+                {
+                    _resourceChange[resourceRate.Type] += resourceRate.Rate;
+                }
+                else
+                {
+                    _resourceChange.Add(resourceRate.Type, resourceRate.Rate);
+                }
+            }
+            foreach (var resourceCost in BuildCosts)
+            {
+                if (_buildCost.ContainsKey(resourceCost.Type))
+                {
+                    _buildCost[resourceCost.Type] += resourceCost.Rate;
+                }
+                else
+                {
+                    _buildCost.Add(resourceCost.Type, resourceCost.Rate);
+                }
+            }
         }
         
         public virtual Dictionary<ResourceType, float> GetNetResourceChange()

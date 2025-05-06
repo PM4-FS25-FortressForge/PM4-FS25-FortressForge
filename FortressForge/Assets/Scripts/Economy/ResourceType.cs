@@ -21,6 +21,14 @@
         /// </summary>
         Magma,
         
-        Amunition
+        /// <summary>
+        /// Used for fireing weapons. Is being made from metal.
+        /// </summary>
+        Amunition,
+        
+        /// <summary>
+        /// Basic raw material, inferior to metal and in greater quantities.
+        /// </summary>
+        Concrete
     }
 }

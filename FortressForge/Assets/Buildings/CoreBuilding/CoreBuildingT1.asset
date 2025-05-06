@@ -16,15 +16,69 @@ MonoBehaviour:
   - Q: 0
     R: 0
     H: 0
+  - Q: 1
+    R: -1
+    H: 0
+  - Q: -1
+    R: 1
+    H: 0
   - Q: 0
+    R: -1
+    H: 0
+  - Q: -1
     R: 0
     H: 0
-  BuildingPrefab: {fileID: 364309875405951780, guid: e9bb34a8c5e93ac4eaa4a29ddd293a0f, type: 3}
-  Name: 
-  MetalCost: 0
-  MaxHealth: 0
-  resourceRate: 0
-  resourceRateType: 0
-  resourceCost: 0
-  resourceCostType: 0
-  Level: 3
+  - Q: 0
+    R: 1
+    H: 0
+  - Q: 1
+    R: 0
+    H: 0
+  - Q: 0
+    R: -2
+    H: 0
+  - Q: 1
+    R: -2
+    H: 0
+  - Q: 2
+    R: -2
+    H: 0
+  - Q: 2
+    R: -1
+    H: 0
+  - Q: 2
+    R: 0
+    H: 0
+  - Q: 1
+    R: 1
+    H: 0
+  - Q: 0
+    R: 2
+    H: 0
+  - Q: -1
+    R: 2
+    H: 0
+  - Q: -2
+    R: 2
+    H: 0
+  - Q: -2
+    R: 1
+    H: 0
+  - Q: -2
+    R: 0
+    H: 0
+  - Q: -1
+    R: -1
+    H: 0
+  BuildingPrefab: {fileID: 5190386381878412599, guid: 44054a7708fad414cba05e7391a64c55, type: 3}
+  Name: Spike T1
+  MaxHealth: 1000
+  ResourceRates:
+  - Type: 0
+    Rate: 10
+  - Type: 1
+    Rate: 20
+  - Type: 4
+    Rate: 15
+  BuildCosts: []
+  Level: 1

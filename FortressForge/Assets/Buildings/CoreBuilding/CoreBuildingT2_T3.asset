@@ -9,33 +9,44 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: feb593c3142f450da3978f2aa03124d7, type: 3}
-  m_Name: MetalFactoryT1
+  m_Script: {fileID: 11500000, guid: 9b5734fcf8584e75a8b4012aa2af5f70, type: 3}
+  m_Name: CoreBuildingT2_T3
   m_EditorClassIdentifier: 
   ShapeData:
   - Q: 0
     R: 0
     H: 0
+  - Q: 1
+    R: -1
+    H: 0
+  - Q: 0
+    R: -1
+    H: 0
   - Q: -1
     R: 0
+    H: 0
+  - Q: -1
+    R: 1
     H: 0
   - Q: 0
     R: 1
     H: 0
   - Q: 1
-    R: -1
+    R: 0
     H: 0
-  BuildingPrefab: {fileID: 9089495877187593000, guid: de3aec347ee2f564cbae1749f9794d07, type: 3}
-  Name: Metallfabrik
-  MaxHealth: 400
+  BuildingPrefab: {fileID: 5515854222252199270, guid: 38c333816d7a40d4ca02301d22c1d89e, type: 3}
+  Name: Spike T1_T2
+  MaxHealth: 1000
   ResourceRates:
   - Type: 0
+    Rate: 3
+  - Type: 1
+    Rate: 15
+  - Type: 4
     Rate: 10
   BuildCosts:
   - Type: 0
-    Rate: 125
-  - Type: 1
-    Rate: 50
+    Rate: 500
   - Type: 4
-    Rate: 350
-  MagmaPointsCost: 2
+    Rate: 1000
+  Level: 2
