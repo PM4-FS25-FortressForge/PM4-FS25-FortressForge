@@ -250,7 +250,17 @@ namespace FortressForge.UI.CustomVisualElements
         {
             Vector2 mousePosition = MousePositionNdc;
             Vector2 flippedPosition = new(mousePosition.x, 1 - mousePosition.y);
-            Vector2 adjustedPosition = flippedPosition * panel.visualTree.layout.size;
+            Vector2 panelSize;
+            try
+            {
+                panelSize = panel.visualTree.layout.size;
+            }
+            catch (System.Exception e)
+            {
+                return Vector2.zero;
+            }
+
+            Vector2 adjustedPosition = flippedPosition * panelSize;
             return this.WorldToLocal(adjustedPosition);
         }
 

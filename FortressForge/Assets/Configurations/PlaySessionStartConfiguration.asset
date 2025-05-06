@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 466a5b0448fa40f08e67d9b363be2bd3, type: 3}
+  m_Name: PlaySessionStartConfiguration
+  m_EditorClassIdentifier: 
+  PlayerId: 0
+  _gridPlayerIdPairs:
+  - PlayerId: 1
+    HexGridId: 0
+  - PlayerId: 0
+    HexGridId: 1
+  HexGridOrigins:
+  - {x: 3000, y: 0, z: 500}
+  - {x: 2500, y: 0, z: 500}

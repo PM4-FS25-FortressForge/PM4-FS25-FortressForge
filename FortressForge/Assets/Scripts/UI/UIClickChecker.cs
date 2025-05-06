@@ -10,17 +10,28 @@ namespace FortressForge.UI
     /// </summary>
     public class UIClickChecker
     {
-        private readonly TrapezElement _topTrapezOverlay;
-        private readonly TrapezElement _bottomTrapezOverlay;
+        private static UIClickChecker _instance;
+        public static UIClickChecker Instance => _instance ??= new UIClickChecker();
 
-        public UIClickChecker()
+        private TrapezElement _topTrapezOverlay;
+        private TrapezElement _bottomTrapezOverlay;
+
+        private UIClickChecker()
+        {
+        }
+
+        /// <summary>
+        /// Ensures the overlays are initialized for the current scene.
+        /// </summary>
+        private void InitializeOverlays()
         {
             UIDocument[] uiDocuments = Object.FindObjectsByType<UIDocument>(FindObjectsSortMode.None);
             UIDocument uiDocument = uiDocuments.FirstOrDefault(document => document.name == "BuildingOverlay");
 
-            if (uiDocument == null)
+            if (uiDocument is null)
             {
-                Debug.LogWarning("No UIDocument found in the scene.");
+                _topTrapezOverlay = null;
+                _bottomTrapezOverlay = null;
                 return;
             }
 
@@ -28,15 +39,20 @@ namespace FortressForge.UI
             _bottomTrapezOverlay = uiDocument.rootVisualElement.Q<TrapezElement>(className: "bottom-trapez-frame");
 
             if (_topTrapezOverlay == null || _bottomTrapezOverlay == null)
-                Debug.LogWarning("TrapezOverlay not found!");
+                Debug.Log("TrapezOverlay not found!");
         }
 
         /// <summary>
-        /// Checks if the click is on the overlay.
+        /// Checks if the mouse is on the overlay.
         /// </summary>
-        /// <returns>True if the click is on the overlay, false otherwise.</returns>
-        public bool IsClickOnOverlay()
+        /// <returns>True if the mouse is on the overlay, false otherwise.</returns>
+        public bool IsMouseOnOverlay()
         {
+            if (_topTrapezOverlay == null || _bottomTrapezOverlay == null)
+            {
+                InitializeOverlays();
+            }
+
             return _topTrapezOverlay?.IsPointInTrapez() == true || _bottomTrapezOverlay?.IsPointInTrapez() == true;
         }
     }

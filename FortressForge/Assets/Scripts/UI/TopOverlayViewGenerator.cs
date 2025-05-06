@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
+using FishNet.Object.Synchronizing;
 using FortressForge.Economy;
+using FortressForge.Networking;
+using FortressForge.Networking.Dto;
 using FortressForge.UI.CustomVisualElements;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -13,6 +16,7 @@ namespace FortressForge.UI
     {
         public UIDocument OverlayUIDocument;
         public VisualTreeAsset ResourceContainerAsset;
+
         private VisualElement _overlayRoot;
         private VisualElement _overlayFrame;
         private Image _overlayImage;
@@ -20,21 +24,33 @@ namespace FortressForge.UI
         private readonly Dictionary<ResourceType, FillableRessourceContainer> _fillableRessourceContainers = new();
 
         /// <summary>
-        /// Initializes the TopTrapezViewGenerator with the provided EconomySystem.
+        /// Initializes the TopTrapezViewGenerator with the provided EconomySync instance.
         /// </summary>
-        /// <param name="economySystem">The EconomySystem to initialize with.</param>
-        public void Init(EconomySystem economySystem)
+        /// <param name="economySync"> The EconomySync instance to use for synchronization.</param>
+        public void Init(EconomySync economySync)
         {
-            if (economySystem == null) return;
-            foreach (KeyValuePair<ResourceType, Resource> resource in economySystem.CurrentResources)
+            if (economySync == null)
             {
-                resource.Value.OnChanged += () =>
+                Debug.LogError("EconomySync is null in TopOverlayViewGenerator!");
+                return;
+            }
+
+            economySync.SyncedResources.OnChange += (op, key, value, asServer) =>
+            {
+                if (op != SyncDictionaryOperation.Set) return; // Only update on set operation
+                if (_fillableRessourceContainers.TryGetValue(key, out var container))
                 {
-                    if (_fillableRessourceContainers.TryGetValue(resource.Key, out FillableRessourceContainer fillableRessourceContainer))
-                    {
-                        UpdateRessourceFillableContainer(_overlayFrame, fillableRessourceContainer, resource.Value);
-                    }
-                };
+                    UpdateRessourceFillableContainer(_overlayFrame, container, value);
+                }
+            };
+
+            // Optionally preload initial values
+            foreach (var entry in economySync.SyncedResources)
+            {
+                if (_fillableRessourceContainers.TryGetValue(entry.Key, out var container))
+                {
+                    UpdateRessourceFillableContainer(_overlayFrame, container, entry.Value);
+                }
             }
         }
 
@@ -91,7 +107,7 @@ namespace FortressForge.UI
         /// <returns>A new instance of TrapezElement.</returns>
         private TrapezElement CreateTrapezElement(string selector, string className = null)
         {
-            TrapezElement trapezElement = new ();
+            TrapezElement trapezElement = new();
             trapezElement.SetParameters(90f, 180f, selector);
             if (!string.IsNullOrEmpty(className))
             {
@@ -155,18 +171,20 @@ namespace FortressForge.UI
         /// <param name="resourceContainer">The container element that holds the resource information.</param>
         /// <param name="fillableRessourceContainer">The fillable resource container to update.</param>
         /// <param name="resource">The resource to get the current amount from.</param>
-        private void UpdateRessourceFillableContainer(VisualElement resourceContainer, FillableRessourceContainer fillableRessourceContainer, Resource resource)
+        private void UpdateRessourceFillableContainer(VisualElement resourceContainer, FillableRessourceContainer fillableRessourceContainer, ResourceDto resource)
         {
-            if (resource == null) return;
             fillableRessourceContainer.FillPercentage = Mathf.Clamp(resource.CurrentAmount / resource.MaxAmount, 0f, 1f);
-            Label amountLabel = resourceContainer.Q<Label>(fillableRessourceContainer.name + "-amount");
-            if (amountLabel != null)
+            AutoSizeLabel amountAutoSizeLabel = resourceContainer.Q<AutoSizeLabel>(fillableRessourceContainer.name + "-amount");
+            Label changeRateLabel = resourceContainer.Q<Label>(fillableRessourceContainer.name + "-change-rate");
+            if (amountAutoSizeLabel != null)
             {
-                amountLabel.text = $"{resource.CurrentAmount}/{resource.MaxAmount}";
+                amountAutoSizeLabel.text = $"{resource.CurrentAmount}/{resource.MaxAmount}";
+                amountAutoSizeLabel.UpdateFontSize();
             }
-            else
+
+            if (changeRateLabel != null)
             {
-                Debug.LogError("Current amount label not found!");
+                changeRateLabel.text = resource.DeltaAmount > 0 ? $"+{resource.DeltaAmount}" : resource.DeltaAmount < 0 ? $"{resource.DeltaAmount}" : "0";
             }
         }
     }

@@ -21,6 +21,7 @@ namespace FortressForge.UI
 
         private BuildViewController _buildViewController;
         private List<BaseBuildingTemplate> _availableBuildings;
+        private VisualElement _selectedCard;
 
         private void OnEnable()
         {
@@ -32,6 +33,13 @@ namespace FortressForge.UI
 
             LoadBuildingSelectorView();
             AlignTabHeadersWithTrapezBorder();
+
+            BuildViewController.OnExitBuildModeEvent += HandleExitBuildMode;
+        }
+
+        private void OnDisable()
+        {
+            BuildViewController.OnExitBuildModeEvent -= HandleExitBuildMode;
         }
 
         /// <summary>
@@ -215,9 +223,25 @@ namespace FortressForge.UI
 
             item.RegisterCallback<PointerDownEvent>(_ =>
             {
+                _selectedCard?.RemoveFromClassList("selected-building-card");
+
+                _selectedCard = item;
+                _selectedCard.AddToClassList("selected-building-card");
+
                 SelectBuilding(index);
                 Debug.Log($"Selected building: {building.name}");
             });
+        }
+
+        /// <summary>
+        /// Handles the exit build mode event by removing the selected card from the class list.
+        /// </summary>
+        private void HandleExitBuildMode()
+        {
+            if (_selectedCard is null) return;
+            _selectedCard.RemoveFromClassList("selected-building-card");
+            _selectedCard = null;
+            Debug.Log("Building card unselected.");
         }
     }
 }
