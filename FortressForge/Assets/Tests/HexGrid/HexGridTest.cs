@@ -11,15 +11,8 @@ namespace Tests.Hexgrid
 {
     public class FakeTerrainHeightProvider : ITerrainHeightProvider
     {
-        public float SampleHeight(Vector3 position)
-        {
-            return 0f; // Simuliert flaches Terrain auf y=0
-        }
-        
-        public float SampleHexHeight(Vector3 position, float tileHeight, float tileRadius)
-        {
-            return 0f; // Simuliert flaches Terrain auf y=0
-        }
+        public float SampleHeight(Vector3 position) => 0f;
+        public float SampleHexHeight(Vector3 position, float tileHeight, float tileRadius) => 0f;
     }
 
     [TestFixture]
@@ -33,7 +26,6 @@ namespace Tests.Hexgrid
         {
             BuildingManager buildingManager = new BuildingManager();
 
-            // Example for max value application // TODO move or remove when actual max values are set
             var maxValues = new Dictionary<ResourceType, float>
             {
                 { ResourceType.Power, 0f },
@@ -41,7 +33,7 @@ namespace Tests.Hexgrid
             };
 
             EconomySystem economySystem = new EconomySystem(buildingManager, maxValues);
-            
+
             _fakeTerrain = new FakeTerrainHeightProvider();
             _gridData = new HexGridData(
                 id: 1,
@@ -49,7 +41,7 @@ namespace Tests.Hexgrid
                 radius: 7,
                 tileSize: 1f,
                 tileHeight: 2f,
-                terrainHeightProvider: _fakeTerrain, 
+                terrainHeightProvider: _fakeTerrain,
                 economySystem: economySystem,
                 buildingManager: buildingManager
             );
@@ -62,28 +54,25 @@ namespace Tests.Hexgrid
         [TestCase(5, 5, 0)]
         public void TestValidateBuildingPlacement_Returns_False(int x, int y, int z)
         {
-            // Arrange
-            HexTileCoordinate alreadyOccupiedCoord = new HexTileCoordinate(0, 0, 0);
+            var alreadyOccupiedCoord = new HexTileCoordinate(0, 0, 0);
             if (_gridData.TileMap.ContainsKey(alreadyOccupiedCoord))
             {
                 _gridData.TileMap[alreadyOccupiedCoord].IsOccupied = true;
             }
 
             var buildingTemplate = ScriptableObject.CreateInstance<WeaponBuildingTemplate>();
-            buildingTemplate.ShapeData = new List<HexTileCoordinate>
+            buildingTemplate.ShapeDataEntries = new List<HexTileEntry>
             {
-                new HexTileCoordinate(0, 0, 0),
-                new HexTileCoordinate(1, 0, 0),
-                new HexTileCoordinate(0, 1, 0),
-                new HexTileCoordinate(1, 1, 0)
+                new HexTileEntry(new HexTileCoordinate(0, 0, 0), true),
+                new HexTileEntry(new HexTileCoordinate(1, 0, 0), true),
+                new HexTileEntry(new HexTileCoordinate(0, 1, 0), true),
+                new HexTileEntry(new HexTileCoordinate(1, 1, 0), true)
             };
 
             var placementCoord = new HexTileCoordinate(x, y, z);
 
-            // Act
             bool canPlace = _gridData.ValidateBuildingPlacement(placementCoord, buildingTemplate.ShapeData);
 
-            // Assert
             Assert.IsFalse(canPlace,
                 $"ValidateBuildingPlacement sollte false zurückgeben, wenn Tile ({x},{y},{z}) bereits belegt oder ungültig ist.");
         }
@@ -93,28 +82,25 @@ namespace Tests.Hexgrid
         [TestCase(3, -3, 0)]
         public void TestValidateBuildingPlacement_Returns_True(int x, int y, int z)
         {
-            // Arrange
-            HexTileCoordinate alreadyOccupiedCoord = new HexTileCoordinate(0, 0, 0);
+            var alreadyOccupiedCoord = new HexTileCoordinate(0, 0, 0);
             if (_gridData.TileMap.ContainsKey(alreadyOccupiedCoord))
             {
                 _gridData.TileMap[alreadyOccupiedCoord].IsOccupied = true;
             }
 
             var buildingTemplate = ScriptableObject.CreateInstance<WeaponBuildingTemplate>();
-            buildingTemplate.ShapeData = new List<HexTileCoordinate>
+            buildingTemplate.ShapeDataEntries = new List<HexTileEntry>
             {
-                new HexTileCoordinate(0, 0, 0),
-                new HexTileCoordinate(1, 0, 0),
-                new HexTileCoordinate(0, 1, 0),
-                new HexTileCoordinate(1, 1, 0)
+                new HexTileEntry(new HexTileCoordinate(0, 0, 0), true),
+                new HexTileEntry(new HexTileCoordinate(1, 0, 0), true),
+                new HexTileEntry(new HexTileCoordinate(0, 1, 0), true),
+                new HexTileEntry(new HexTileCoordinate(1, 1, 0), true)
             };
 
             var placementCoord = new HexTileCoordinate(x, y, z);
 
-            // Act
             bool canPlace = _gridData.ValidateBuildingPlacement(placementCoord, buildingTemplate.ShapeData);
 
-            // Assert
             Assert.IsTrue(canPlace,
                 $"ValidateBuildingPlacement sollte true zurückgeben, wenn Tile ({x},{y},{z}) frei ist.");
         }

@@ -12,16 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a724c598079413096e2f62eeecb9dd4, type: 3}
   m_Name: Core
   m_EditorClassIdentifier: 
-  ShapeData:
-  - Q: 0
-    R: 0
-    H: 0
-  - Q: 1
-    R: 0
-    H: 0
-  - Q: 0
-    R: 1
-    H: 0
+  ShapeDataEntries:
+  - Coordinate:
+      Q: 0
+      R: 0
+      H: 0
+    IsStackable: 1
+  - Coordinate:
+      Q: 0
+      R: 1
+      H: 0
+    IsStackable: 1
+  - Coordinate:
+      Q: 1
+      R: 0
+      H: 0
+    IsStackable: 1
   BuildingPrefab: {fileID: 4295024953393921518, guid: 3fb942edbdbadf646a6668cd4668ae88, type: 3}
   Name: Multi Inferno
   MetalCost: 0

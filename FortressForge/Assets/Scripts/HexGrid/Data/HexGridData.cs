@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using FortressForge.BuildingSystem.BuildManager;
 using FortressForge.Economy;
+using FortressForge.HexGrid.View;
 
 namespace FortressForge.HexGrid.Data
 {
@@ -64,10 +65,11 @@ namespace FortressForge.HexGrid.Data
             }
         }
 
-        private void CreateNewHexTile(HexTileCoordinate newHexCoords)
+        private HexTileData CreateNewHexTile(HexTileCoordinate newHexCoords)
         {
             TileMap[newHexCoords] = new HexTileData(newHexCoords);
             TileMap[newHexCoords].OnHoverChanged += OnHoverTileChangedEvent;
+            return TileMap[newHexCoords];
         }
 
         /// <summary>
@@ -75,13 +77,25 @@ namespace FortressForge.HexGrid.Data
         /// </summary>
         /// <param name="hexCoord"></param>
         /// <param name="shapeData"></param>
-        public void PlaceBuilding(HexTileCoordinate hexCoord, List<HexTileCoordinate> shapeData)
-        { 
-            foreach (var coord in shapeData)
+        /// <param name="isStackable"></param>
+        public void MarkBuildingTiles(HexTileCoordinate hexCoord, List<HexTileCoordinate> shapeData, List<bool> isStackable)
+        {
+            if (shapeData.Count != isStackable.Count)
             {
-                OccupyHexTileAndUnlockNewTile(hexCoord + coord);
+                throw new ArgumentException("Shape data and stackable lists must have the same length.");
+            }
+            
+            for (int i = 0; i < shapeData.Count; i++)
+            {
+                var coord = shapeData[i];
+                OccupyHexTile(hexCoord + coord);
+                
+                if (isStackable[i]) {
+                    CreateNewTileAbove(hexCoord);
+                }
             }
         }
+         
 
         /// <summary>
         /// Validates if a building can be placed on the hex grid.
@@ -103,22 +117,25 @@ namespace FortressForge.HexGrid.Data
         }
 
         /// <summary>
-        /// Updates the specified hex tile by marking it as occupied and unlocking the tile directly above it.
-        /// If the tile above does not exist and is within the maximum build height,
-        /// a new tile is created and added to the tile map, and the OnNewTileCreated event is triggered.
+        /// Updates the specified hex tile by marking it as occupied.
         /// </summary>
-        private void OccupyHexTileAndUnlockNewTile(HexTileCoordinate hexCoord)
+        private void OccupyHexTile(HexTileCoordinate hexCoord)
         {
             TileMap[hexCoord].IsOccupied = true;
-            
+        }
+
+        /// <summary>
+        /// Creates a new tile above the specified hex tile coordinate if it doesn't already exist.
+        /// </summary>
+        /// <param name="hexCoord"></param>
+        private void CreateNewTileAbove(HexTileCoordinate hexCoord) {
             // unlock tile above
             TileMap.TryGetValue(hexCoord + new HexTileCoordinate(0, 0, 1), out var tileData);
 
             if (tileData == null)
             {
                 HexTileCoordinate newHexCoords = hexCoord + new HexTileCoordinate(0, 0, 1);
-                HexTileData hexTileData = new HexTileData(newHexCoords);
-                TileMap[newHexCoords] = hexTileData;
+                HexTileData hexTileData = CreateNewHexTile(newHexCoords);
                 OnNewTileCreated?.Invoke(hexTileData, newHexCoords); 
             }
         }

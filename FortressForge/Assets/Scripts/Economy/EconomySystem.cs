@@ -13,9 +13,9 @@ namespace FortressForge.Economy
     /// </summary>
     public class EconomySystem
     {
-        private const bool EnableDebugLogging = false;
+        private const bool ENABLE_DEBUG_LOGGING = false;
 
-        private static readonly ResourceType[] _allResourceTypes = (ResourceType[])Enum.GetValues(typeof(ResourceType));
+        private static readonly ResourceType[] AllResourceTypes = (ResourceType[])Enum.GetValues(typeof(ResourceType));
         
         /// <summary>
         /// Provides read-only access to the current state of all resources.
@@ -37,7 +37,7 @@ namespace FortressForge.Economy
         {
             _buildingManager = buildingManager;
             
-            foreach (ResourceType type in _allResourceTypes)
+            foreach (ResourceType type in AllResourceTypes)
             {
                 float max = maxValues != null && maxValues.TryGetValue(type, out var value)
                     ? value
@@ -57,12 +57,12 @@ namespace FortressForge.Economy
             var newResources = CalculateSumOfNewResources(resourceChanges);
             var positiveNewResources = StabilizeEconomy(newResources, resourceChanges);
             
-            foreach (ResourceType resourceType in _allResourceTypes)
+            foreach (ResourceType resourceType in AllResourceTypes)
             {
-                _currentResources[resourceType].CurrentAmount = positiveNewResources[resourceType];
+                _currentResources[resourceType].SetCurrentAmountWithDeltaTime(positiveNewResources[resourceType]);
             }
             
-            if (EnableDebugLogging)
+            if (ENABLE_DEBUG_LOGGING)
             {
                 // Debug log for current resources
                 string logMessage = _currentResources.Aggregate("Current Resources: ", 
@@ -92,7 +92,8 @@ namespace FortressForge.Economy
         {
             foreach (var resource in resourceCosts)
             {
-                _currentResources[resource.Key].CurrentAmount -= resource.Value;
+                var currentResource = _currentResources[resource.Key];
+                currentResource.CurrentAmount -= resource.Value;
             }
         }
 
@@ -107,7 +108,7 @@ namespace FortressForge.Economy
         {
             do
             {
-                foreach (ResourceType resourceType in _allResourceTypes)
+                foreach (ResourceType resourceType in AllResourceTypes)
                 {
                     if (newResources[resourceType] >= 0) continue;
 
@@ -145,7 +146,7 @@ namespace FortressForge.Economy
         private Dictionary<ResourceType, float> CalculateSumOfNewResources(List<(IEconomyActor, Dictionary<ResourceType, float>)> resourceChanges)
         {
             var newResources = new Dictionary<ResourceType, float>();
-            foreach (ResourceType type in _allResourceTypes)
+            foreach (ResourceType type in AllResourceTypes)
             {
                 newResources[type] = _currentResources[type].CurrentAmount;
             }
@@ -169,7 +170,7 @@ namespace FortressForge.Economy
         {
             var resourceChanges = new List<(IEconomyActor, Dictionary<ResourceType, float>)>();
 
-            foreach (var resourceActor in EconomyActors)
+            foreach (var resourceActor in _buildingManager.PlacedBuildings.Select(data => data.BaseBuildingTemplate))
             {
                 resourceChanges.Add((resourceActor, resourceActor.GetNetResourceChange()));
             }
