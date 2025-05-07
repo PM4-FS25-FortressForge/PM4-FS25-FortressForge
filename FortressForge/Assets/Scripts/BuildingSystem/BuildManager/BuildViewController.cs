@@ -205,11 +205,11 @@ namespace FortressForge.BuildingSystem.BuildManager
                 .ToList();
             targetGrid.BuildingManager.AddBuilding(new BuildingData(prefab, tileDatas, template));
             
-            UpdateGridClientRpc(buildingIndex, coord, targetGrid.Id, rotation, prefab);
+            SyncPlacedBuildingToClientsRpc(buildingIndex, coord, targetGrid.Id, rotation, prefab);
         }
 
         [ObserversRpc]
-        private void UpdateGridClientRpc(int buildingIndex, HexTileCoordinate coord, int hexGridId, float rotation,
+        private void SyncPlacedBuildingToClientsRpc(int buildingIndex, HexTileCoordinate coord, int hexGridId, float rotation,
             GameObject prefab)
         {
             BaseBuildingTemplate template = AvailableBuildings[buildingIndex];
