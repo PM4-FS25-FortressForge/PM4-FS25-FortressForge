@@ -58,8 +58,8 @@ namespace FortressForge.BuildingSystem.BuildManager
 
             _previewBuilding = SpawnLocal(_selectedBuildingTemplate.BuildingPrefab);
             _previewBuildingMeshRenderer = _previewBuilding.GetComponentInChildren<MeshRenderer>();
-            var collider = _previewBuilding.GetComponentInChildren<Collider>();
-            collider.enabled = false;
+            var tileCollider = _previewBuilding.GetComponentInChildren<Collider>();
+            tileCollider.enabled = false;
             RotatePreviewBuilding(0);
         }
 
@@ -137,23 +137,28 @@ namespace FortressForge.BuildingSystem.BuildManager
 
         private void MarkNewTilesAsBuildTargets(HexTileCoordinate origin, List<HexTileCoordinate> shape)
         {
-            foreach (HexTileCoordinate offset in shape)
+            foreach (var offset in shape)
             {
-                HexTileCoordinate worldCoord = offset + origin;
+                var worldCoord = offset + origin;
 
-                foreach (var grid in _ownedHexGridDatas)
+                var ownedTile = _ownedHexGridDatas
+                    .FirstOrDefault(grid => grid.TileMap.ContainsKey(worldCoord))
+                    ?.TileMap[worldCoord];
+
+                if (ownedTile != null)
                 {
-                    if (grid.TileMap.TryGetValue(worldCoord, out var tileData))
-                    {
-                        tileData.IsBuildTarget = true;
-                        _currentBuildTargets.Add(worldCoord);
-                        break;
-                    }
+                    ownedTile.IsBuildTarget = true;
+                    _currentBuildTargets.Add(worldCoord);
                 }
+
+                var unownedHexTile = _hexGridManager.GetHexTileData(worldCoord);
+
+                // TODO implement behaviour for unowned tiles
             }
 
             _previewBuildingMeshRenderer.enabled = true;
         }
+
 
         private void ClearPreviousBuildTargets()
         {

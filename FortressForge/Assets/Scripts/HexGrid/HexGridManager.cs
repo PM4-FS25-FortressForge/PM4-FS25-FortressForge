@@ -6,6 +6,7 @@ using FortressForge.Economy;
 using UnityEngine;
 using FortressForge.GameInitialization;
 using FortressForge.HexGrid.Data;
+using JetBrains.Annotations;
 
 namespace FortressForge.HexGrid
 {
@@ -72,5 +73,17 @@ namespace FortressForge.HexGrid
                 AllGrids.Add(gridData);
             }
         }
+
+        /// <summary>
+        /// Retrieves a HexGridData instance by its coordinate.
+        /// </summary>
+        /// <param name="coordinate"></param>
+        /// <returns>Returns the tile data or null if not found.</returns>
+        [CanBeNull]
+        public HexTileData GetHexTileData(HexTileCoordinate coordinate)
+        {
+            return AllGrids.FirstOrDefault(grid => grid.TileMap.ContainsKey(coordinate))
+                ?.TileMap[coordinate];
+        } 
     }
 }
