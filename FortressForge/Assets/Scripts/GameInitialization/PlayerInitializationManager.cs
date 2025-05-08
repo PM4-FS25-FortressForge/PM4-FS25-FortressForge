@@ -87,7 +87,7 @@ namespace FortressForge.GameInitialization
 
             // Only the server needs to initialize the EconomySystem
             if (IsServerInitialized && !IsClientInitialized)
-            {
+            { // TODO this is a bit of a hack, but it works for now
                 economySync.Init(selectedGrid.EconomySystem);
                 economyController.Init(selectedGrid.EconomySystem);
             }

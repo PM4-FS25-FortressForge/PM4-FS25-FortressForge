@@ -227,9 +227,11 @@ namespace FortressForge.BuildingSystem.BuildManager
             var tileData = prefab.AddComponent<BuildingView>();
             tileData.Init(buildingData, _config);
             
-            targetGrid.BuildingManager.AddBuilding(buildingData);
-            
-            _hexGridManager.AllGrids[hexGridId].MarkBuildingTiles(coord, rotatedShape, isStackableList);
+            // Repeated steps from serverrpc dont need to be repeated server side
+            if (!IsServerInitialized) { 
+                targetGrid.BuildingManager.AddBuilding(buildingData);
+                _hexGridManager.AllGrids[hexGridId].MarkBuildingTiles(coord, rotatedShape, isStackableList);
+            }
         }
 
         private void ExitBuildMode()
