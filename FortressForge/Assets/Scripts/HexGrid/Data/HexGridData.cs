@@ -88,7 +88,11 @@ namespace FortressForge.HexGrid.Data
             for (int i = 0; i < shapeData.Count; i++)
             {
                 var coord = shapeData[i];
-                OccupyHexTileAndUnlockNewTile(hexCoord + coord, isStackable[i]);
+                OccupyHexTile(hexCoord + coord);
+                
+                if (isStackable[i]) {
+                    CreateNewTileAbove(hexCoord);
+                }
             }
         }
          
@@ -113,16 +117,18 @@ namespace FortressForge.HexGrid.Data
         }
 
         /// <summary>
-        /// Updates the specified hex tile by marking it as occupied and unlocking the tile directly above it.
-        /// If the tile above does not exist and is within the maximum build height,
-        /// a new tile is created and added to the tile map, and the OnNewTileCreated event is triggered.
+        /// Updates the specified hex tile by marking it as occupied.
         /// </summary>
-        private void OccupyHexTileAndUnlockNewTile(HexTileCoordinate hexCoord, bool isStackable = true)
+        private void OccupyHexTile(HexTileCoordinate hexCoord)
         {
             TileMap[hexCoord].IsOccupied = true;
-            
-            if (!isStackable) return; 
-            
+        }
+
+        /// <summary>
+        /// Creates a new tile above the specified hex tile coordinate if it doesn't already exist.
+        /// </summary>
+        /// <param name="hexCoord"></param>
+        private void CreateNewTileAbove(HexTileCoordinate hexCoord) {
             // unlock tile above
             TileMap.TryGetValue(hexCoord + new HexTileCoordinate(0, 0, 1), out var tileData);
 
