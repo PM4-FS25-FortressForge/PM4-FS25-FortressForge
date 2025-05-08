@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace FortressForge.BuildingSystem.BuildingData
 {
+    [CreateAssetMenu(fileName = "New Base Building", menuName = "Buildings/BaseBuilding")]
     public class BaseBuildingTemplate : ScriptableObject, IEconomyActor
     {
         /// <summary>
