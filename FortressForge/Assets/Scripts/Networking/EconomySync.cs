@@ -27,8 +27,14 @@ namespace FortressForge.Networking
                     _syncedResources[resource.Key] = Convert(resource.Value);
                 };
             }
-            
-            _syncedResources[ResourceType.GlobalMagma] = Convert(globalEconomy.CurrentResources[ResourceType.Magma]);
+
+            // Add global resources manually
+            var globalMagma = globalEconomy.CurrentResources[ResourceType.Magma];
+            _syncedResources[ResourceType.GlobalMagma] = Convert(globalMagma);
+            globalMagma.OnChanged += () =>
+            {
+                _syncedResources[ResourceType.GlobalMagma] = Convert(globalMagma);
+            };
         }
 
         private ResourceDto Convert(Resource resource)
