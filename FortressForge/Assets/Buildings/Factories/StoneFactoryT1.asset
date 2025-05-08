@@ -12,19 +12,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: feb593c3142f450da3978f2aa03124d7, type: 3}
   m_Name: StoneFactoryT1
   m_EditorClassIdentifier: 
-  ShapeData:
-  - Q: 0
-    R: 0
-    H: 0
-  - Q: -1
-    R: 0
-    H: 0
-  - Q: 0
-    R: -1
-    H: 0
-  - Q: 1
-    R: -1
-    H: 0
+  ShapeDataEntries:
+  - Coordinate:
+      Q: 0
+      R: 0
+      H: 0
+    IsStackable: 1
+  - Coordinate:
+      Q: -1
+      R: 0
+      H: 0
+    IsStackable: 1
+  - Coordinate:
+      Q: 0
+      R: -1
+      H: 0
+    IsStackable: 1
+  - Coordinate:
+      Q: 1
+      R: -1
+      H: 0
+    IsStackable: 1
   BuildingPrefab: {fileID: 1678279406192525822, guid: 3826d0234011d8b4ea531e7b15ff8337, type: 3}
   Name: Betonfabrik
   MaxHealth: 0

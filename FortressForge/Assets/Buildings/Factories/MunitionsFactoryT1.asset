@@ -12,22 +12,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: feb593c3142f450da3978f2aa03124d7, type: 3}
   m_Name: MunitionsFactoryT1
   m_EditorClassIdentifier: 
-  ShapeData:
-  - Q: 0
-    R: 0
-    H: 0
-  - Q: 1
-    R: 0
-    H: 0
-  - Q: 1
-    R: -1
-    H: 0
-  - Q: -1
-    R: 1
-    H: 0
-  - Q: -1
-    R: 0
-    H: 0
+  ShapeDataEntries:
+  - Coordinate:
+      Q: 0
+      R: 0
+      H: 0
+    IsStackable: 1
+  - Coordinate:
+      Q: -1
+      R: 0
+      H: 0
+    IsStackable: 1
+  - Coordinate:
+      Q: 0
+      R: -1
+      H: 0
+    IsStackable: 1
+  - Coordinate:
+      Q: 0
+      R: 1
+      H: 0
+    IsStackable: 1
+  - Coordinate:
+      Q: 1
+      R: 0
+      H: 0
+    IsStackable: 1
   BuildingPrefab: {fileID: 74178496334042415, guid: a6c9ea889ffb50147a5eeaf316a20087, type: 3}
   Name: Munitionsfabrik
   MaxHealth: 500

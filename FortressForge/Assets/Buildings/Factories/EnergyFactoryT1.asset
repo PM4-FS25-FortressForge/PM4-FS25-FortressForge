@@ -12,16 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: feb593c3142f450da3978f2aa03124d7, type: 3}
   m_Name: EnergyFactoryT1
   m_EditorClassIdentifier: 
-  ShapeData:
-  - Q: 0
-    R: 0
-    H: 0
-  - Q: 1
-    R: -1
-    H: 0
-  - Q: 1
-    R: 0
-    H: 0
+  ShapeDataEntries:
+  - Coordinate:
+      Q: 0
+      R: 0
+      H: 0
+    IsStackable: 1
+  - Coordinate:
+      Q: 0
+      R: -1
+      H: 0
+    IsStackable: 1
+  - Coordinate:
+      Q: -1
+      R: 0
+      H: 0
+    IsStackable: 1
   BuildingPrefab: {fileID: 6849168067370121489, guid: e10a276a0e8f8e140aedd6959342593f, type: 3}
   Name: Energtiefabrik
   MaxHealth: 300

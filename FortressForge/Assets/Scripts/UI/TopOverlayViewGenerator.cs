@@ -94,9 +94,9 @@ namespace FortressForge.UI
             trapezElement.Add(resourceContainer);
 
             LoadRessourceFillContainer("FillableRessourceContainer-left-top", resourceContainer, ResourceType.Power, "Energy");
-            LoadRessourceFillContainer("FillableRessourceContainer-right-top", resourceContainer, ResourceType.Magma, "Munition");
+            LoadRessourceFillContainer("FillableRessourceContainer-right-top", resourceContainer, ResourceType.Amunition, "Munition");
             LoadRessourceFillContainer("FillableRessourceContainer-left-bottom", resourceContainer, ResourceType.Metal, "Metal");
-            LoadRessourceFillContainer("FillableRessourceContainer-right-bottom", resourceContainer, ResourceType.Metal, "Stone");
+            LoadRessourceFillContainer("FillableRessourceContainer-right-bottom", resourceContainer, ResourceType.Concrete, "Concrete");
         }
 
         /// <summary>
