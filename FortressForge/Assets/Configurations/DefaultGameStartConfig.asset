@@ -18,6 +18,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 600bfcd06f8bb4d4f89bd064add8f7f7, type: 2}
   - {fileID: 11400000, guid: 96926859a2acf2c47891cf673274e7b2, type: 2}
   - {fileID: 11400000, guid: 24b95824b8762f3468304e9ef38c7875, type: 2}
+  - {fileID: 11400000, guid: 5874729940006ef4f93f529aa9ebed96, type: 2}
   Radius: 10
   TileSize: 10
   TileHeight: 10
