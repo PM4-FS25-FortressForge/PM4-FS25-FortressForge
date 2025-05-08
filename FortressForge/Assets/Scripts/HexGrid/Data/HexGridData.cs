@@ -91,7 +91,7 @@ namespace FortressForge.HexGrid.Data
                 OccupyHexTile(hexCoord + coord);
                 
                 if (isStackable[i]) {
-                    CreateNewTileAbove(hexCoord);
+                    CreateNewTileAbove(hexCoord + coord);
                 }
             }
         }
