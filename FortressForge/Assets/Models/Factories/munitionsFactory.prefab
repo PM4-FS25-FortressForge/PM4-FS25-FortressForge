@@ -62,6 +62,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c032a8819a2d3934e807e18bf349daef, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8812358801703345032}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c032a8819a2d3934e807e18bf349daef, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7608666921122652123}
   m_SourcePrefab: {fileID: 100100000, guid: c032a8819a2d3934e807e18bf349daef, type: 3}
 --- !u!1 &74178496334042415 stripped
 GameObject:
@@ -106,7 +109,8 @@ MonoBehaviour:
   <ComponentIndex>k__BackingField: 0
   <PredictedSpawn>k__BackingField: {fileID: 0}
   <PredictedOwner>k__BackingField: {fileID: 0}
-  NetworkBehaviours: []
+  NetworkBehaviours:
+  - {fileID: 7608666921122652123}
   InitializedParentNetworkBehaviour: {fileID: 0}
   InitializedNestedNetworkObjects: []
   RuntimeParentNetworkBehaviour: {fileID: 0}
@@ -131,12 +135,27 @@ MonoBehaviour:
   _spectatorInterpolation: 2
   _enableTeleport: 0
   _teleportThreshold: 1
-  <PrefabId>k__BackingField: 65535
+  <PrefabId>k__BackingField: 0
   <SpawnableCollectionId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 1234030209769950053
   <SceneId>k__BackingField: 0
   SerializedTransformProperties:
-    Position: {x: 0, y: 0, z: 0}
-    Rotation: {x: 0, y: 0, z: 0, w: 0}
-    Scale: {x: 0, y: 0, z: 0}
-    IsValid: 0
+    Position: {x: -13.8, y: -0, z: 0}
+    Rotation: {x: -0.6830127, y: 0.18301274, z: 0.18301274, w: 0.6830127}
+    Scale: {x: 100, y: 100, z: 100}
+    IsValid: 1
+--- !u!114 &7608666921122652123
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 74178496334042415}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a6a39c46bf52104ba8efe3100bce3f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 0
+  _addedNetworkObject: {fileID: 8812358801703345032}
+  _networkObjectCache: {fileID: 8812358801703345032}

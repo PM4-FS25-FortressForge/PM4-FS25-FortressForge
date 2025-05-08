@@ -52,8 +52,10 @@ namespace FortressForge.HexGrid
                 // Example for max value application // TODO move or remove when actual max values are set
                 var maxValues = new Dictionary<ResourceType, float>
                 {
-                    { ResourceType.Power, 0f },
+                    { ResourceType.Power, 10000f },
                     { ResourceType.Metal, 10000f },
+                    { ResourceType.Amunition, 10000f },
+                    { ResourceType.Concrete, 10000f },
                 };
 
                 EconomySystem economySystem = new EconomySystem(buildingManager, maxValues);
