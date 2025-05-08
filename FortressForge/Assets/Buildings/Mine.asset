@@ -12,6 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef29358a93271754a96b453372866827, type: 3}
   m_Name: Mine
   m_EditorClassIdentifier: 
+  ShapeDataEntries:
+  - Coordinate:
+      Q: 0
+      R: 0
+      H: 0
+    IsStackable: 1
   BuildingPrefab: {fileID: 8461799468503079714, guid: d22a0ce999be4cc4c838e7ccd738ba95, type: 3}
   Name: Mine
   MetalCost: 0

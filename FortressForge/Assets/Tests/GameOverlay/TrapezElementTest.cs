@@ -143,8 +143,6 @@ namespace Tests.GameOverlay
 
             yield return new WaitUntil(() => _mouse.position.ReadValue() == clickPosition);
 
-            yield return new WaitForSeconds(3f);
-
             Assert.IsFalse(trapezElement.IsPointInTrapez(), "Click should be outside the trapez element.");
 
             yield return null;

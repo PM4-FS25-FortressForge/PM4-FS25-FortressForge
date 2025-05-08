@@ -16,7 +16,7 @@ namespace FortressForge.UI
     {
         public UIDocument OverlayUIDocument;
         public VisualTreeAsset ResourceContainerAsset;
-        
+
         private VisualElement _overlayRoot;
         private VisualElement _overlayFrame;
         private Image _overlayImage;
@@ -24,9 +24,9 @@ namespace FortressForge.UI
         private readonly Dictionary<ResourceType, FillableRessourceContainer> _fillableRessourceContainers = new();
 
         /// <summary>
-        /// Initializes the TopTrapezViewGenerator with the provided EconomySystem.
+        /// Initializes the TopTrapezViewGenerator with the provided EconomySync instance.
         /// </summary>
-        /// <param name="economySystem">The EconomySystem to initialize with.</param>
+        /// <param name="economySync"> The EconomySync instance to use for synchronization.</param>
         public void Init(EconomySync economySync)
         {
             if (economySync == null)
@@ -181,18 +181,10 @@ namespace FortressForge.UI
                 amountAutoSizeLabel.text = $"{resource.CurrentAmount}/{resource.MaxAmount}";
                 amountAutoSizeLabel.UpdateFontSize();
             }
-            else
-            {
-                Debug.LogError("Current amount label not found!");
-            }
 
             if (changeRateLabel != null)
             {
                 changeRateLabel.text = resource.DeltaAmount > 0 ? $"+{resource.DeltaAmount}" : resource.DeltaAmount < 0 ? $"{resource.DeltaAmount}" : "0";
-            }
-            else
-            {
-                Debug.LogError("Change rate label not found!");
             }
         }
     }

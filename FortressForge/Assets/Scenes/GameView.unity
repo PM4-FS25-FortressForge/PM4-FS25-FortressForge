@@ -273,13 +273,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Yaw: 0
   Pitch: 45
-  Zoom: 100
+  Zoom: 200
   TargetPosition: {x: 3089, y: 0, z: 10559}
   MoveSpeed: 300
   RotationSpeed: 50
   PitchSpeed: 40
-  MouseWheelZoomSpeed: 1
-  ButtonsZoomSpeed: 5
+  MouseWheelZoomSpeed: 10
+  ButtonsZoomSpeed: 250
   Config: {fileID: 11400000, guid: 5a14fda24b5e45a48a6e66352b2d350d, type: 2}
   PitchLimits: {x: 89, y: 0}
   zoomLimits: {x: 2, y: 1000}
@@ -824,7 +824,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &2164771898202891164
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -847,7 +847,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3760083159665761632}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
   m_Name: 
@@ -972,9 +972,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b57e3c2a5f244d78b3e092b966ebe9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 255
-  _addedNetworkObject: {fileID: 2565508449727063749}
-  _networkObjectCache: {fileID: 0}
+  PlayerManagerPrefab: {fileID: 6811327856764417488, guid: 2dce4e688cfb40743b0aa4caa8f44a2e, type: 3}
 --- !u!1 &4811124693230337076
 GameObject:
   m_ObjectHideFlags: 0

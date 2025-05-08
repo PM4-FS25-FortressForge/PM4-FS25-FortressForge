@@ -10,6 +10,8 @@ namespace FortressForge.UI.CustomVisualElements
     /// </summary>
     public class AutoSizeLabel : Label
     {
+        private const int DEFAULT_FONT_SIZE = 19;
+
         /// <summary>
         /// A nested class for serialized data specific to the AutoSizeLabel.
         /// </summary>
@@ -31,6 +33,12 @@ namespace FortressForge.UI.CustomVisualElements
             if (hierarchy.parent == null) return;
 
             Vector2 parentSize = hierarchy.parent.layout.size;
+
+            if (float.IsNaN(parentSize.x) || float.IsNaN(parentSize.y))
+            {
+                style.fontSize = DEFAULT_FONT_SIZE;
+                return;
+            }
 
             float horizontalMargins = resolvedStyle.marginLeft + resolvedStyle.marginRight;
             float verticalMargins = resolvedStyle.marginTop + resolvedStyle.marginBottom;
