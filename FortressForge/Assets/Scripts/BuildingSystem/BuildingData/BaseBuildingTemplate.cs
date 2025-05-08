@@ -39,25 +39,12 @@ namespace FortressForge.BuildingSystem.BuildingData
         {
             foreach (var resourceRate in ResourceRates)
             {
-                if (_resourceChange.ContainsKey(resourceRate.Type))
-                {
-                    _resourceChange[resourceRate.Type] += resourceRate.Rate;
-                }
-                else
-                {
-                    _resourceChange.Add(resourceRate.Type, resourceRate.Rate);
-                }
+                _resourceChange[resourceRate.Type] = _resourceChange.GetValueOrDefault(resourceRate.Type) + resourceRate.Rate;
             }
+
             foreach (var resourceCost in BuildCosts)
             {
-                if (_buildCost.ContainsKey(resourceCost.Type))
-                {
-                    _buildCost[resourceCost.Type] += resourceCost.Rate;
-                }
-                else
-                {
-                    _buildCost.Add(resourceCost.Type, resourceCost.Rate);
-                }
+                _buildCost[resourceCost.Type] = _buildCost.GetValueOrDefault(resourceCost.Type) + resourceCost.Rate;
             }
         }
         
