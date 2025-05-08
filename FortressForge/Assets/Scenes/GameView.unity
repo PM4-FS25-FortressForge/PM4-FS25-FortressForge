@@ -561,6 +561,50 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1666696308
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1666696310}
+  - component: {fileID: 1666696309}
+  m_Layer: 0
+  m_Name: RemoteConnectionHandler
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1666696309
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1666696308}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f632ddb10a949b0b8e5470f82d1267b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1666696310
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1666696308}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3089, y: 460.93555, z: 10554.758}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &664469343164215635
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -956,6 +1000,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PlayerManagerPrefab: {fileID: 6811327856764417488, guid: 2dce4e688cfb40743b0aa4caa8f44a2e, type: 3}
+  RemoteConnectionHandlerPrefab: {fileID: 1082325561587799854, guid: c807a8954e1433748afbf417ce903f80, type: 3}
 --- !u!1 &4811124693230337076
 GameObject:
   m_ObjectHideFlags: 0
@@ -1493,3 +1538,4 @@ SceneRoots:
   - {fileID: 1474430496298876826}
   - {fileID: 4862446767019969786}
   - {fileID: 1990043598416278489}
+  - {fileID: 1666696310}
