@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using System.Collections.Generic;
 using FortressForge.BuildingSystem;
+using FortressForge.GameInitialization;
 using FortressForge.HexGrid.Data;
 
 namespace FortressForge.HexGrid.View
@@ -16,13 +17,15 @@ namespace FortressForge.HexGrid.View
         private GameObject _tilePrefab;
         private readonly Dictionary<HexTileCoordinate, HexTileView> _tileViews = new ();
         private HexTileView _currentlyHoveredTile;
+        private GameStartConfiguration _config;
 
         /// <summary>
         /// Creates a new HexTileView for each tile in the HexGrid and initializes the visuals.
         /// </summary>
-        public void Initialize(GameObject tilePrefab, HexGridData hexGrid)
+        public void Initialize(GameObject tilePrefab, HexGridData hexGrid, GameStartConfiguration config)
         {
             _tilePrefab = tilePrefab;
+            _config = config;
             _hexGrid = hexGrid;
             _hexGrid.OnNewTileCreated += HandleNewTileCreated;
 
@@ -69,9 +72,9 @@ namespace FortressForge.HexGrid.View
                     _tilePrefab.transform.rotation,
                     transform
                 );
-
-                HexTileView tileView = tileObj.GetComponent<HexTileView>();
-                tileView.Init(tileData);
+                
+                var tileView = tileObj.AddComponent<HexTileView>();
+                tileView.Init(tileData, _config);
                 _tileViews[coord] = tileView;
             }
         }

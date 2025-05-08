@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using FortressForge.Economy;
 using FortressForge.HexGrid;
 using FortressForge.Serializables;
@@ -11,10 +12,14 @@ namespace FortressForge.BuildingSystem.BuildingData
         /// <summary>
         /// Information about the shape of the building, in the form of a list of HexTileCoordinates.
         /// </summary>
-        [Header("Shape Data")] 
-        [SerializeField]
-        public List<HexTileCoordinate> ShapeData = new() { new HexTileCoordinate(0,0,0) };
+        [Header("Shape Data")]
+        public List<HexTileCoordinate> ShapeData
+        {
+            get { return ShapeDataEntries.Select(data => data.Coordinate).ToList(); }
+        }
 
+        public List<HexTileEntry> ShapeDataEntries = new();
+        
         public GameObject BuildingPrefab;
 
         [Header("Building Data")] 

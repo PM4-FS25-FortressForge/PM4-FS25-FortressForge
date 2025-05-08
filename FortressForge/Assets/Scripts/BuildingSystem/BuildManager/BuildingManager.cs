@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using FortressForge.BuildingSystem.BuildingData;
+using NUnit.Framework;
 
 namespace FortressForge.BuildingSystem.BuildManager
 {
     public class BuildingManager
     {
-        private readonly List<BaseBuildingTemplate> _placedBuildings = new();
-        public ReadOnlyCollection<BaseBuildingTemplate> PlacedBuildings { get; private set; }
+        private readonly List<BuildingData> _placedBuildings = new();
+        public ReadOnlyCollection<BuildingData> PlacedBuildings { get; private set; }
         
         public BuildingManager()
         {
@@ -20,7 +21,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         /// </summary>
         /// <param name="building"></param>
         /// <exception cref="ArgumentNullException"></exception>
-        public void AddBuilding(BaseBuildingTemplate building)
+        public void AddBuilding(BuildingData building)
         {
             if (building == null)
             {
