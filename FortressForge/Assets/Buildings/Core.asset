@@ -32,7 +32,7 @@ MonoBehaviour:
   Name: Multi Inferno
   MetalCost: 0
   MaxHealth: 0
-  resourceRate: 0
-  resourceRateType: 0
+  resourceRate: 50
+  resourceRateType: 2
   resourceCost: 0
-  resourceCostType: 0
+  resourceCostType: 2

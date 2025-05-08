@@ -37,9 +37,11 @@ namespace FortressForge.HexGrid
             _terrainHeightProvider = new TerrainHeightProvider();
         }
 
-        public void InitializeHexGrids(GameSessionStartConfiguration gameSessionStartConfiguration, 
+        public void InitializeHexGrids(GameSessionStartConfiguration gameSessionStartConfiguration,
             GameStartConfiguration gameStartConfiguration)
         {
+            GlobalEconomy globalEconomy = new GlobalEconomy(gameStartConfiguration.GlobalMagmaAmount);
+
             for (var index = 0; index < gameSessionStartConfiguration.HexGridOrigins.Count; index++)
             {
                 var hexGridOrigin = gameSessionStartConfiguration.HexGridOrigins[index];
@@ -54,9 +56,9 @@ namespace FortressForge.HexGrid
                 {
                     { ResourceType.Power, 0f },
                     { ResourceType.Metal, 10000f },
+                    { ResourceType.Magma, 100000f }, //TODO this value should be equivalent to max global
                 };
-
-                EconomySystem economySystem = new EconomySystem(buildingManager, maxValues);
+                EconomySystem economySystem = new EconomySystem(buildingManager, globalEconomy, maxValues);
 
                 HexGridData gridData = new HexGridData(
                     id: index,

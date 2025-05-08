@@ -18,7 +18,7 @@ namespace FortressForge.Networking
         public void Init(EconomySystem economySystem)
         {
             _economySystem = economySystem;
-
+            GlobalEconomy globalEconomy = economySystem.GlobalEconomy;
             foreach (var resource in _economySystem.CurrentResources)
             {
                 _syncedResources[resource.Key] = Convert(resource.Value);
@@ -27,6 +27,8 @@ namespace FortressForge.Networking
                     _syncedResources[resource.Key] = Convert(resource.Value);
                 };
             }
+            
+            _syncedResources[ResourceType.GlobalMagma] = Convert(globalEconomy.CurrentResources[ResourceType.Magma]);
         }
 
         private ResourceDto Convert(Resource resource)

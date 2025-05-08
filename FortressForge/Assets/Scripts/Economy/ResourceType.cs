@@ -20,5 +20,11 @@
         /// The main source of energy and life. Used in various processes and buildings.
         /// </summary>
         Magma,
+        
+        /// <summary>
+        /// Represents Magma shared across all clients. And the whole Planet.
+        /// Only used for Networking.
+        /// </summary>
+        GlobalMagma,
     }
 }

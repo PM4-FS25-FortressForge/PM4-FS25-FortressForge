@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using FortressForge.BuildingSystem.BuildManager;
+using NUnit.Framework;
 using UnityEngine;
 
 namespace FortressForge.Economy
@@ -21,22 +22,19 @@ namespace FortressForge.Economy
         /// Provides read-only access to the current state of all resources.
         /// </summary>
         public IReadOnlyDictionary<ResourceType, Resource> CurrentResources => _currentResources;
-
-        // List of all active resource-producing or consuming actors.
-        private ReadOnlyCollection<IEconomyActor> EconomyActors => new (
-            _buildingManager.PlacedBuildings.Cast<IEconomyActor>().ToList()
-        );
         
         private readonly Dictionary<ResourceType, Resource> _currentResources = new();
         private readonly BuildingManager _buildingManager;
+        public readonly GlobalEconomy GlobalEconomy;
 
         /// <summary>
         /// Initializes the economy system with default values for all resource types.
         /// </summary>
-        public EconomySystem(BuildingManager buildingManager, Dictionary<ResourceType, float> maxValues = null)
+        public EconomySystem(BuildingManager buildingManager, GlobalEconomy globalEconomy, Dictionary<ResourceType, float> maxValues = null)
         {
             _buildingManager = buildingManager;
-            
+            GlobalEconomy = globalEconomy;
+
             foreach (ResourceType type in AllResourceTypes)
             {
                 float max = maxValues != null && maxValues.TryGetValue(type, out var value)
@@ -53,13 +51,16 @@ namespace FortressForge.Economy
         /// </summary>
         public void UpdateEconomy()
         {
-            var resourceChanges = CalculateNewResourcesChanges();
-            var newResources = CalculateSumOfNewResources(resourceChanges);
-            var positiveNewResources = StabilizeEconomy(newResources, resourceChanges);
+            List<(IEconomyActor, Dictionary<ResourceType, float>)> resourceChangesPerActor = CalculateNewResourcesChanges();
+            Dictionary<ResourceType, float> totalResourceChanges = GetResourceChanges(resourceChangesPerActor);
+            
+            Dictionary<ResourceType, float> newResources = CalculateSumOfNewResources(totalResourceChanges);
+            Dictionary<ResourceType, float> positiveNewResources = StabilizeEconomy(ref newResources, ref resourceChangesPerActor);
+            ApplyMagmaChanges(positiveNewResources[ResourceType.Magma]);
             
             foreach (ResourceType resourceType in AllResourceTypes)
             {
-                _currentResources[resourceType].SetCurrentAmountWithDeltaTime(positiveNewResources[resourceType]);
+                _currentResources[resourceType].SetCurrentAmountWithDeltaAmount(positiveNewResources[resourceType]);
             }
             
             if (ENABLE_DEBUG_LOGGING)
@@ -70,7 +71,17 @@ namespace FortressForge.Economy
                 Debug.Log(logMessage);
             }
         }
-        
+
+        private static Dictionary<ResourceType, float> GetResourceChanges(List<(IEconomyActor, Dictionary<ResourceType, float>)> resourceChangesPerActor) {
+            return resourceChangesPerActor
+                .SelectMany(rc => rc.Item2)
+                .GroupBy(kvp => kvp.Key)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.Sum(kvp => kvp.Value)
+                );
+        }
+
         /// <summary>
         /// Checks if there are sufficient resources available for the specified costs.
         /// </summary>
@@ -104,7 +115,7 @@ namespace FortressForge.Economy
         /// <param name="newResources">The total projected resource amounts after applying changes.</param>
         /// <param name="resourceChanges">The list of all actor resource deltas.</param>
         /// <returns>The adjusted resource totals after stabilizing the economy.</returns>
-        private Dictionary<ResourceType, float> StabilizeEconomy(Dictionary<ResourceType, float> newResources, List<(IEconomyActor, Dictionary<ResourceType, float>)> resourceChanges)
+        private static Dictionary<ResourceType, float> StabilizeEconomy(ref Dictionary<ResourceType, float> newResources, ref List<(IEconomyActor, Dictionary<ResourceType, float>)> resourceChanges)
         {
             do
             {
@@ -143,22 +154,15 @@ namespace FortressForge.Economy
         /// </summary>
         /// <param name="resourceChanges">All actor contributions or consumptions for this tick.</param>
         /// <returns>A dictionary representing projected new resource totals.</returns>
-        private Dictionary<ResourceType, float> CalculateSumOfNewResources(List<(IEconomyActor, Dictionary<ResourceType, float>)> resourceChanges)
+        private Dictionary<ResourceType, float> CalculateSumOfNewResources(Dictionary<ResourceType, float> resourceChanges)
         {
             var newResources = new Dictionary<ResourceType, float>();
-            foreach (ResourceType type in AllResourceTypes)
+            foreach (ResourceType type in AllResourceTypes) 
             {
-                newResources[type] = _currentResources[type].CurrentAmount;
+                resourceChanges.TryGetValue(type, out var resourceChange);
+                newResources[type] = _currentResources[type].CurrentAmount + resourceChange;
             }
-
-            foreach (var resource in resourceChanges)
-            {
-                foreach (var resourceFromChange in resource.Item2)
-                {
-                    newResources[resourceFromChange.Key] += resourceFromChange.Value;
-                }
-            }
-
+            
             return newResources;
         }
 
@@ -176,6 +180,14 @@ namespace FortressForge.Economy
             }
 
             return resourceChanges;
+        }
+
+        private void ApplyMagmaChanges(float magmaResourceChange) {
+            GlobalEconomy.CurrentResources[ResourceType.Magma].AddAmountWithDeltaAmount(-magmaResourceChange);
+
+            if (GlobalEconomy.CurrentResources[ResourceType.Magma].CurrentAmount <= 0) {
+                // Handle the case when magma is depleted
+            }
         }
     }
 }

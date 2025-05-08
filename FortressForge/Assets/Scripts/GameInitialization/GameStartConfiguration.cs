@@ -30,5 +30,6 @@ namespace FortressForge.GameInitialization
         public Material HighlightMaterial;
         public Material NotAllowedMaterial;
         public Material PreviewMaterial;
+        public float GlobalMagmaAmount = 100000;
     }
 }
