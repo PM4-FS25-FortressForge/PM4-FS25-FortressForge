@@ -75,6 +75,7 @@ GameObject:
   - component: {fileID: -6598741634809457996}
   - component: {fileID: -2940466027783819273}
   - component: {fileID: -4506312223431254080}
+  - component: {fileID: 768717479293063548}
   m_Layer: 0
   m_Name: Tier_1_Konzept
   m_TagString: Untagged
@@ -115,9 +116,9 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: -2940466027783819273}
   _networkObjectCache: {fileID: -2940466027783819273}
-  constants: {fileID: 11400000, guid: 144de24a11567824284fa9f68f35e9d6, type: 2}
-  cannonBallPrefab: {fileID: 956282788987846253, guid: b7e4d5bc00f3f0146b14669c21c8ffe1, type: 3}
-  firePoint: {fileID: 6955449243495526588, guid: 463ad9b9475611145817bf6154c1cedb, type: 3}
+  _constants: {fileID: 11400000, guid: 144de24a11567824284fa9f68f35e9d6, type: 2}
+  _ammunitionPrefab: {fileID: 956282788987846253, guid: b7e4d5bc00f3f0146b14669c21c8ffe1, type: 3}
+  _firePoint: {fileID: 6955449243495526588, guid: 463ad9b9475611145817bf6154c1cedb, type: 3}
 --- !u!65 &-6598741634809457996
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -206,6 +207,49 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: -2940466027783819273}
   _networkObjectCache: {fileID: -2940466027783819273}
+--- !u!114 &768717479293063548
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2769958289302531891}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2836e36774ca1c4bbbee976e17b649c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: -2940466027783819273}
+  _networkObjectCache: {fileID: 0}
+  _componentConfiguration: 0
+  _synchronizeParent: 0
+  _packing:
+    Position: 1
+    Rotation: 1
+    Scale: 0
+  _interpolation: 2
+  _extrapolation: 2
+  _enableTeleport: 0
+  _teleportThreshold: 1
+  _clientAuthoritative: 1
+  _sendToOwner: 1
+  _interval: 1
+  _synchronizePosition: 1
+  _positionSnapping:
+    X: 0
+    Y: 0
+    Z: 0
+  _synchronizeRotation: 1
+  _rotationSnapping:
+    X: 0
+    Y: 0
+    Z: 0
+  _synchronizeScale: 1
+  _scaleSnapping:
+    X: 0
+    Y: 0
+    Z: 0
 --- !u!1 &3313136294588837289
 GameObject:
   m_ObjectHideFlags: 0
@@ -219,6 +263,7 @@ GameObject:
   - component: {fileID: 2983377272468727745}
   - component: {fileID: 862909995200839376}
   - component: {fileID: 6473202475021336477}
+  - component: {fileID: 5649453677918417649}
   m_Layer: 0
   m_Name: Lauf
   m_TagString: Untagged
@@ -360,6 +405,49 @@ MonoBehaviour:
     Rotation: {x: 0, y: 0, z: 0, w: 0}
     Scale: {x: 0, y: 0, z: 0}
     IsValid: 0
+--- !u!114 &5649453677918417649
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3313136294588837289}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2836e36774ca1c4bbbee976e17b649c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 6473202475021336477}
+  _networkObjectCache: {fileID: 0}
+  _componentConfiguration: 0
+  _synchronizeParent: 0
+  _packing:
+    Position: 1
+    Rotation: 1
+    Scale: 0
+  _interpolation: 2
+  _extrapolation: 2
+  _enableTeleport: 0
+  _teleportThreshold: 1
+  _clientAuthoritative: 1
+  _sendToOwner: 1
+  _interval: 1
+  _synchronizePosition: 1
+  _positionSnapping:
+    X: 0
+    Y: 0
+    Z: 0
+  _synchronizeRotation: 1
+  _rotationSnapping:
+    X: 0
+    Y: 0
+    Z: 0
+  _synchronizeScale: 1
+  _scaleSnapping:
+    X: 0
+    Y: 0
+    Z: 0
 --- !u!1 &4194330369006783995
 GameObject:
   m_ObjectHideFlags: 0
@@ -545,6 +633,7 @@ GameObject:
   - component: {fileID: 4250727574346002395}
   - component: {fileID: 8090244960283999250}
   - component: {fileID: 457356341139885803}
+  - component: {fileID: 1948973296604991250}
   m_Layer: 0
   m_Name: Geschuetzturm
   m_TagString: Untagged
@@ -687,3 +776,46 @@ MonoBehaviour:
     Rotation: {x: 0, y: 0, z: 0, w: 0}
     Scale: {x: 0, y: 0, z: 0}
     IsValid: 0
+--- !u!114 &1948973296604991250
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4852291746004157661}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2836e36774ca1c4bbbee976e17b649c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: 457356341139885803}
+  _networkObjectCache: {fileID: 0}
+  _componentConfiguration: 0
+  _synchronizeParent: 0
+  _packing:
+    Position: 1
+    Rotation: 1
+    Scale: 0
+  _interpolation: 2
+  _extrapolation: 2
+  _enableTeleport: 0
+  _teleportThreshold: 1
+  _clientAuthoritative: 1
+  _sendToOwner: 1
+  _interval: 1
+  _synchronizePosition: 1
+  _positionSnapping:
+    X: 0
+    Y: 0
+    Z: 0
+  _synchronizeRotation: 1
+  _rotationSnapping:
+    X: 0
+    Y: 0
+    Z: 0
+  _synchronizeScale: 1
+  _scaleSnapping:
+    X: 0
+    Y: 0
+    Z: 0

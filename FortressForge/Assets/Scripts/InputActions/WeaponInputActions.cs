@@ -92,7 +92,7 @@ public partial class @WeaponInputAction: IInputActionCollection2, IDisposable
             ""id"": ""f8965fbc-a0cb-42b4-ad93-b757cf19b42e"",
             ""actions"": [
                 {
-                    ""name"": ""RotateArtillery"",
+                    ""name"": ""RotateWeapon"",
                     ""type"": ""Button"",
                     ""id"": ""db5aaf7f-bd50-4611-84b0-e934381b328e"",
                     ""expectedControlType"": """",
@@ -101,7 +101,7 @@ public partial class @WeaponInputAction: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""AdjustCannonAngle"",
+                    ""name"": ""AdjustWeaponAngle"",
                     ""type"": ""Button"",
                     ""id"": ""28dab4ad-39b6-4981-b8bf-f926308543b8"",
                     ""expectedControlType"": """",
@@ -119,7 +119,7 @@ public partial class @WeaponInputAction: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""FireCannon"",
+                    ""name"": ""FireWeapon"",
                     ""type"": ""Button"",
                     ""id"": ""507b0636-3e2b-451f-8580-0eef840fc67d"",
                     ""expectedControlType"": """",
@@ -147,7 +147,7 @@ public partial class @WeaponInputAction: IInputActionCollection2, IDisposable
                     ""interactions"": ""Press(behavior=2)"",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""RotateArtillery"",
+                    ""action"": ""RotateWeapon"",
                     ""isComposite"": true,
                     ""isPartOfComposite"": false
                 },
@@ -158,7 +158,7 @@ public partial class @WeaponInputAction: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""RotateArtillery"",
+                    ""action"": ""RotateWeapon"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -169,7 +169,7 @@ public partial class @WeaponInputAction: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""RotateArtillery"",
+                    ""action"": ""RotateWeapon"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -180,7 +180,7 @@ public partial class @WeaponInputAction: IInputActionCollection2, IDisposable
                     ""interactions"": ""Press(behavior=2)"",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""AdjustCannonAngle"",
+                    ""action"": ""AdjustWeaponAngle"",
                     ""isComposite"": true,
                     ""isPartOfComposite"": false
                 },
@@ -191,7 +191,7 @@ public partial class @WeaponInputAction: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""AdjustCannonAngle"",
+                    ""action"": ""AdjustWeaponAngle"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -202,7 +202,7 @@ public partial class @WeaponInputAction: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""AdjustCannonAngle"",
+                    ""action"": ""AdjustWeaponAngle"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -213,7 +213,7 @@ public partial class @WeaponInputAction: IInputActionCollection2, IDisposable
                     ""interactions"": ""Press"",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""FireCannon"",
+                    ""action"": ""FireWeapon"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -224,10 +224,10 @@ public partial class @WeaponInputAction: IInputActionCollection2, IDisposable
 }");
         // WeaponInputActions
         m_WeaponInputActions = asset.FindActionMap("WeaponInputActions", throwIfNotFound: true);
-        m_WeaponInputActions_RotateArtillery = m_WeaponInputActions.FindAction("RotateArtillery", throwIfNotFound: true);
-        m_WeaponInputActions_AdjustCannonAngle = m_WeaponInputActions.FindAction("AdjustCannonAngle", throwIfNotFound: true);
+        m_WeaponInputActions_RotateWeapon = m_WeaponInputActions.FindAction("RotateWeapon", throwIfNotFound: true);
+        m_WeaponInputActions_AdjustWeaponAngle = m_WeaponInputActions.FindAction("AdjustWeaponAngle", throwIfNotFound: true);
         m_WeaponInputActions_ExitFightMode = m_WeaponInputActions.FindAction("ExitFightMode", throwIfNotFound: true);
-        m_WeaponInputActions_FireCannon = m_WeaponInputActions.FindAction("FireCannon", throwIfNotFound: true);
+        m_WeaponInputActions_FireWeapon = m_WeaponInputActions.FindAction("FireWeapon", throwIfNotFound: true);
     }
 
     ~@WeaponInputAction()
@@ -308,10 +308,10 @@ public partial class @WeaponInputAction: IInputActionCollection2, IDisposable
     // WeaponInputActions
     private readonly InputActionMap m_WeaponInputActions;
     private List<IWeaponInputActionsActions> m_WeaponInputActionsActionsCallbackInterfaces = new List<IWeaponInputActionsActions>();
-    private readonly InputAction m_WeaponInputActions_RotateArtillery;
-    private readonly InputAction m_WeaponInputActions_AdjustCannonAngle;
+    private readonly InputAction m_WeaponInputActions_RotateWeapon;
+    private readonly InputAction m_WeaponInputActions_AdjustWeaponAngle;
     private readonly InputAction m_WeaponInputActions_ExitFightMode;
-    private readonly InputAction m_WeaponInputActions_FireCannon;
+    private readonly InputAction m_WeaponInputActions_FireWeapon;
     /// <summary>
     /// Provides access to input actions defined in input action map "WeaponInputActions".
     /// </summary>
@@ -324,21 +324,21 @@ public partial class @WeaponInputAction: IInputActionCollection2, IDisposable
         /// </summary>
         public WeaponInputActionsActions(@WeaponInputAction wrapper) { m_Wrapper = wrapper; }
         /// <summary>
-        /// Provides access to the underlying input action "WeaponInputActions/RotateArtillery".
+        /// Provides access to the underlying input action "WeaponInputActions/RotateWeapon".
         /// </summary>
-        public InputAction @RotateArtillery => m_Wrapper.m_WeaponInputActions_RotateArtillery;
+        public InputAction @RotateWeapon => m_Wrapper.m_WeaponInputActions_RotateWeapon;
         /// <summary>
-        /// Provides access to the underlying input action "WeaponInputActions/AdjustCannonAngle".
+        /// Provides access to the underlying input action "WeaponInputActions/AdjustWeaponAngle".
         /// </summary>
-        public InputAction @AdjustCannonAngle => m_Wrapper.m_WeaponInputActions_AdjustCannonAngle;
+        public InputAction @AdjustWeaponAngle => m_Wrapper.m_WeaponInputActions_AdjustWeaponAngle;
         /// <summary>
         /// Provides access to the underlying input action "WeaponInputActions/ExitFightMode".
         /// </summary>
         public InputAction @ExitFightMode => m_Wrapper.m_WeaponInputActions_ExitFightMode;
         /// <summary>
-        /// Provides access to the underlying input action "WeaponInputActions/FireCannon".
+        /// Provides access to the underlying input action "WeaponInputActions/FireWeapon".
         /// </summary>
-        public InputAction @FireCannon => m_Wrapper.m_WeaponInputActions_FireCannon;
+        public InputAction @FireWeapon => m_Wrapper.m_WeaponInputActions_FireWeapon;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -365,18 +365,18 @@ public partial class @WeaponInputAction: IInputActionCollection2, IDisposable
         {
             if (instance == null || m_Wrapper.m_WeaponInputActionsActionsCallbackInterfaces.Contains(instance)) return;
             m_Wrapper.m_WeaponInputActionsActionsCallbackInterfaces.Add(instance);
-            @RotateArtillery.started += instance.OnRotateArtillery;
-            @RotateArtillery.performed += instance.OnRotateArtillery;
-            @RotateArtillery.canceled += instance.OnRotateArtillery;
-            @AdjustCannonAngle.started += instance.OnAdjustCannonAngle;
-            @AdjustCannonAngle.performed += instance.OnAdjustCannonAngle;
-            @AdjustCannonAngle.canceled += instance.OnAdjustCannonAngle;
+            @RotateWeapon.started += instance.OnRotateWeapon;
+            @RotateWeapon.performed += instance.OnRotateWeapon;
+            @RotateWeapon.canceled += instance.OnRotateWeapon;
+            @AdjustWeaponAngle.started += instance.OnAdjustWeaponAngle;
+            @AdjustWeaponAngle.performed += instance.OnAdjustWeaponAngle;
+            @AdjustWeaponAngle.canceled += instance.OnAdjustWeaponAngle;
             @ExitFightMode.started += instance.OnExitFightMode;
             @ExitFightMode.performed += instance.OnExitFightMode;
             @ExitFightMode.canceled += instance.OnExitFightMode;
-            @FireCannon.started += instance.OnFireCannon;
-            @FireCannon.performed += instance.OnFireCannon;
-            @FireCannon.canceled += instance.OnFireCannon;
+            @FireWeapon.started += instance.OnFireWeapon;
+            @FireWeapon.performed += instance.OnFireWeapon;
+            @FireWeapon.canceled += instance.OnFireWeapon;
         }
 
         /// <summary>
@@ -388,18 +388,18 @@ public partial class @WeaponInputAction: IInputActionCollection2, IDisposable
         /// <seealso cref="WeaponInputActionsActions" />
         private void UnregisterCallbacks(IWeaponInputActionsActions instance)
         {
-            @RotateArtillery.started -= instance.OnRotateArtillery;
-            @RotateArtillery.performed -= instance.OnRotateArtillery;
-            @RotateArtillery.canceled -= instance.OnRotateArtillery;
-            @AdjustCannonAngle.started -= instance.OnAdjustCannonAngle;
-            @AdjustCannonAngle.performed -= instance.OnAdjustCannonAngle;
-            @AdjustCannonAngle.canceled -= instance.OnAdjustCannonAngle;
+            @RotateWeapon.started -= instance.OnRotateWeapon;
+            @RotateWeapon.performed -= instance.OnRotateWeapon;
+            @RotateWeapon.canceled -= instance.OnRotateWeapon;
+            @AdjustWeaponAngle.started -= instance.OnAdjustWeaponAngle;
+            @AdjustWeaponAngle.performed -= instance.OnAdjustWeaponAngle;
+            @AdjustWeaponAngle.canceled -= instance.OnAdjustWeaponAngle;
             @ExitFightMode.started -= instance.OnExitFightMode;
             @ExitFightMode.performed -= instance.OnExitFightMode;
             @ExitFightMode.canceled -= instance.OnExitFightMode;
-            @FireCannon.started -= instance.OnFireCannon;
-            @FireCannon.performed -= instance.OnFireCannon;
-            @FireCannon.canceled -= instance.OnFireCannon;
+            @FireWeapon.started -= instance.OnFireWeapon;
+            @FireWeapon.performed -= instance.OnFireWeapon;
+            @FireWeapon.canceled -= instance.OnFireWeapon;
         }
 
         /// <summary>
@@ -441,19 +441,19 @@ public partial class @WeaponInputAction: IInputActionCollection2, IDisposable
     public interface IWeaponInputActionsActions
     {
         /// <summary>
-        /// Method invoked when associated input action "RotateArtillery" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "RotateWeapon" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnRotateArtillery(InputAction.CallbackContext context);
+        void OnRotateWeapon(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "AdjustCannonAngle" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "AdjustWeaponAngle" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnAdjustCannonAngle(InputAction.CallbackContext context);
+        void OnAdjustWeaponAngle(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "ExitFightMode" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
@@ -462,11 +462,11 @@ public partial class @WeaponInputAction: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnExitFightMode(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "FireCannon" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "FireWeapon" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnFireCannon(InputAction.CallbackContext context);
+        void OnFireWeapon(InputAction.CallbackContext context);
     }
 }

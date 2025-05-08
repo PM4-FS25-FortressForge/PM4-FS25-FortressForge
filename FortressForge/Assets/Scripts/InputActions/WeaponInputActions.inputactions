@@ -6,7 +6,7 @@
             "id": "f8965fbc-a0cb-42b4-ad93-b757cf19b42e",
             "actions": [
                 {
-                    "name": "RotateArtillery",
+                    "name": "RotateWeapon",
                     "type": "Button",
                     "id": "db5aaf7f-bd50-4611-84b0-e934381b328e",
                     "expectedControlType": "",
@@ -15,7 +15,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "AdjustCannonAngle",
+                    "name": "AdjustWeaponAngle",
                     "type": "Button",
                     "id": "28dab4ad-39b6-4981-b8bf-f926308543b8",
                     "expectedControlType": "",
@@ -33,7 +33,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "FireCannon",
+                    "name": "FireWeapon",
                     "type": "Button",
                     "id": "507b0636-3e2b-451f-8580-0eef840fc67d",
                     "expectedControlType": "",
@@ -61,7 +61,7 @@
                     "interactions": "Press(behavior=2)",
                     "processors": "",
                     "groups": "",
-                    "action": "RotateArtillery",
+                    "action": "RotateWeapon",
                     "isComposite": true,
                     "isPartOfComposite": false
                 },
@@ -72,7 +72,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "RotateArtillery",
+                    "action": "RotateWeapon",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -83,7 +83,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "RotateArtillery",
+                    "action": "RotateWeapon",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -94,7 +94,7 @@
                     "interactions": "Press(behavior=2)",
                     "processors": "",
                     "groups": "",
-                    "action": "AdjustCannonAngle",
+                    "action": "AdjustWeaponAngle",
                     "isComposite": true,
                     "isPartOfComposite": false
                 },
@@ -105,7 +105,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "AdjustCannonAngle",
+                    "action": "AdjustWeaponAngle",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -116,7 +116,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "AdjustCannonAngle",
+                    "action": "AdjustWeaponAngle",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -127,7 +127,7 @@
                     "interactions": "Press",
                     "processors": "",
                     "groups": "",
-                    "action": "FireCannon",
+                    "action": "FireWeapon",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
