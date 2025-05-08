@@ -41,18 +41,28 @@ namespace FortressForge.Economy
                 if (value > MaxAmount)
                 {
                     Debug.Log($"[Resource] { _type } exceeded max ({value} > {MaxAmount}). Clamping.");
-                    DeltaAmount = value - MaxAmount;
                     _currentAmount = MaxAmount;
                 }
                 else 
                 {
-                    DeltaAmount = value - _currentAmount;
                     _currentAmount = value;
                 }
                 if (Math.Abs(previousValue - _currentAmount) > Mathf.Epsilon)
                 {
                     OnChanged?.Invoke();
                 }
+            }
+        }
+        
+        public void SetCurrentAmountWithDeltaTime(float value)
+        {
+            var pastDeltaAmount = _currentAmount;
+            DeltaAmount = value - _currentAmount;
+            CurrentAmount = value;
+            
+            if (Math.Abs(pastDeltaAmount - DeltaAmount) > Mathf.Epsilon)
+            {
+                OnChanged?.Invoke();
             }
         }
 

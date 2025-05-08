@@ -272,13 +272,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Yaw: 0
   Pitch: 45
-  Zoom: 100
+  Zoom: 200
   TargetPosition: {x: 3089, y: 0, z: 10559}
   MoveSpeed: 300
   RotationSpeed: 50
   PitchSpeed: 40
-  MouseWheelZoomSpeed: 1
-  ButtonsZoomSpeed: 5
+  MouseWheelZoomSpeed: 10
+  ButtonsZoomSpeed: 250
   Config: {fileID: 11400000, guid: 5a14fda24b5e45a48a6e66352b2d350d, type: 2}
   PitchLimits: {x: 89, y: 0}
   zoomLimits: {x: 2, y: 1000}
@@ -1436,7 +1436,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 155.1, y: -52.7}
+  m_AnchoredPosition: {x: 155.1001, y: -52.69995}
   m_SizeDelta: {x: 298, y: 96}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &8738844065069846213

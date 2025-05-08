@@ -1,24 +1,30 @@
 using System.Collections.Generic;
+using System.Linq;
 using FortressForge.Economy;
 using FortressForge.HexGrid;
+using FortressForge.Serializables;
 using UnityEngine;
 
 namespace FortressForge.BuildingSystem.BuildingData
 {
+    [CreateAssetMenu(fileName = "New Base Building", menuName = "Buildings/BaseBuilding")]
     public class BaseBuildingTemplate : ScriptableObject, IEconomyActor
     {
         /// <summary>
         /// Information about the shape of the building, in the form of a list of HexTileCoordinates.
         /// </summary>
-        [Header("Shape Data")] 
-        [SerializeField]
-        public List<HexTileCoordinate> ShapeData = new() { new HexTileCoordinate(0,0,0) };
+        [Header("Shape Data")]
+        public List<HexTileCoordinate> ShapeData
+        {
+            get { return ShapeDataEntries.Select(data => data.Coordinate).ToList(); }
+        }
 
+        public List<HexTileEntry> ShapeDataEntries = new();
+        
         public GameObject BuildingPrefab;
 
         [Header("Building Data")] 
         public string Name;
-        public int MetalCost;
         public int MaxHealth; 
         
         [Header("Resource Data")]
@@ -26,16 +32,26 @@ namespace FortressForge.BuildingSystem.BuildingData
         protected Dictionary<ResourceType, float> _buildCost = new();
         protected bool _enabled = true;
         
-        public float resourceRate;
-        public ResourceType resourceRateType;
-        public float resourceCost;
-        public ResourceType resourceCostType;
+        public List<RessourceTypeRate> ResourceRates = new();
+        public List<RessourceTypeRate> BuildCosts = new();
         
         
         public void OnEnable()
         {
-            _resourceChange[resourceRateType] = resourceRate;
-            _buildCost[resourceCostType] = resourceCost;
+            ResourceRates
+                .GroupBy(r => r.Type)
+                .ToList()
+                .ForEach(g =>
+                {
+                    _resourceChange[g.Key] = g.Sum(x => x.Rate);
+                });
+            BuildCosts
+                .GroupBy(r => r.Type)
+                .ToList()
+                .ForEach(g =>
+                {
+                    _buildCost[g.Key] = g.Sum(x => x.Rate);
+                });
         }
         
         public virtual Dictionary<ResourceType, float> GetNetResourceChange()

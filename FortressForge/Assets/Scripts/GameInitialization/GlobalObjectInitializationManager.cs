@@ -40,9 +40,10 @@ namespace FortressForge.GameInitialization
         {
             foreach (var data in hexGridManager.AllGrids)
             {
-                HexGridView hexGridView = new GameObject("HexGridView_" + data.Id).AddComponent<HexGridView>();
+                HexGridView hexGridView = new GameObject("HexGridView_" + data.Id)
+                        .AddComponent<HexGridView>();
                 hexGridView.transform.SetParent(transform);
-                hexGridView.Initialize(config.TilePrefab, data);
+                hexGridView.Initialize(config.TilePrefab, data, _gameStartConfiguration);
                 
                 GameObject buildingContainer = new ("BuildingContainer_Grid_" + data.Id);
             }

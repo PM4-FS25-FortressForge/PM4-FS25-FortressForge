@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using FortressForge.BuildingSystem.BuildingData;
 using FortressForge.BuildingSystem.BuildManager;
 using FortressForge.Economy;
+using FortressForge.HexGrid;
+using FortressForge.HexGrid.Data;
 using UnityEngine;
 
 namespace Tests.EconomyManager
@@ -40,8 +42,10 @@ namespace Tests.EconomyManager
             {
                 { ResourceType.Metal, -100f } // Force negative resource
             };
-
-            _buildingManager.AddBuilding(mockActor);
+            
+            var fakePrefab = new GameObject("MockBuilding");
+            var fakeTiles = new List<HexTileData> { new(new HexTileCoordinate()) };
+            _buildingManager.AddBuilding(new BuildingData(fakePrefab, fakeTiles, mockActor));
 
             // Act
             _economySystem.UpdateEconomy();
@@ -82,7 +86,9 @@ namespace Tests.EconomyManager
                 mockActors.Add(mock);
             }
 
-            mockActors.ForEach(mock => _buildingManager.AddBuilding(mock));
+            var fakePrefab = new GameObject("MockBuilding");
+            var fakeTiles = new List<HexTileData> { new(new HexTileCoordinate()) };
+            mockActors.ForEach(mock => _buildingManager.AddBuilding(new BuildingData(fakePrefab,fakeTiles, mock)));
 
             // Act
             _economySystem.UpdateEconomy();
@@ -128,7 +134,9 @@ namespace Tests.EconomyManager
                 mockActors.Add(mock);
             }
 
-            mockActors.ForEach(mock => _buildingManager.AddBuilding(mock));
+            var fakePrefab = new GameObject("MockBuilding");
+            var fakeTiles = new List<HexTileData> { new(new HexTileCoordinate()) };
+            mockActors.ForEach(mock => _buildingManager.AddBuilding(new BuildingData(fakePrefab, fakeTiles, mock)));
 
             // Act
             _economySystem.UpdateEconomy();

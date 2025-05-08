@@ -1,82 +1,14 @@
-using System;
+using FortressForge.GameInitialization;
 using FortressForge.HexGrid.Data;
 using FortressForge.UI;
 using UnityEngine;
 
-namespace FortressForge.HexGrid.View
-{
+namespace FortressForge.HexGrid.View {
     /// <summary>
     /// Represents the visual representation of a HexTile.
+    /// Unity can't handle generic MonoBehaviours, so we need to create a concrete class.
     /// </summary>
-    public class HexTileView : MonoBehaviour
+    public class HexTileView : GameObjectView<HexTileData>
     {
-        public HexTileCoordinate HexTileCoordinate { get; set; }
-        
-        private HexTileData _tileData;
-        public HexTileData TileData => _tileData;
-
-        public Material FreeMaterial;
-        public Material OccupiedMaterial;
-        public Material HighlightMaterial;
-
-        private MeshRenderer _renderer;
-
-        /// <summary>
-        /// Initializes the HexTileView with the given HexTileData.
-        /// </summary>
-        /// <param name="data"></param>
-        public void Init(HexTileData data)
-        {
-            HexTileCoordinate = data.HexTileCoordinate;
-            _tileData = data;
-            _tileData.OnChanged += UpdateVisuals;
-            _renderer = GetComponentInChildren<MeshRenderer>(); 
-            UpdateVisuals(data);
-        }
-        
-        private void OnDestroy()
-        {
-            if (_tileData != null)
-            {
-                _tileData.OnChanged -= UpdateVisuals;
-            }
-        }
-
-        /// <summary>
-        /// Changes the material of the HexTileView based on the IsOccupied property of the HexTileData.
-        /// </summary>
-        private void UpdateVisuals(HexTileData hexTileData)
-        { // TODO maybe add custom colors for overlapping events such as build target and occupied
-            if (hexTileData.IsBuildTarget) 
-                _renderer.material = HighlightMaterial;
-            else if (hexTileData.IsMouseTarget)
-                _renderer.material = HighlightMaterial;
-            else if (hexTileData.IsOccupied)
-                _renderer.material = OccupiedMaterial;
-            else
-                _renderer.material = FreeMaterial;
-        }
-
-        private void OnMouseEnter()
-        {
-            TileData.IsMouseTarget = true;
-        }
-        
-        private void OnMouseExit()
-        {
-            TileData.IsMouseTarget = false;
-        }
-        
-        private void OnMouseOver()
-        {
-            if (UIClickChecker.Instance.IsMouseOnOverlay() && TileData.IsMouseTarget)
-            {
-                OnMouseExit();
-            }
-            else if (!UIClickChecker.Instance.IsMouseOnOverlay() && !TileData.IsMouseTarget)
-            {
-                OnMouseEnter();
-            }
-        }
     }
 }
