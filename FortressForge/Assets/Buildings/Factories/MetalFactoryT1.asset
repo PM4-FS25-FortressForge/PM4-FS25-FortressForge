@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: feb593c3142f450da3978f2aa03124d7, type: 3}
+  m_Name: MetalFactoryT1
+  m_EditorClassIdentifier: 
+  ShapeDataEntries:
+  - Coordinate:
+      Q: 0
+      R: 0
+      H: 0
+    IsStackable: 1
+  - Coordinate:
+      Q: -1
+      R: 0
+      H: 0
+    IsStackable: 1
+  - Coordinate:
+      Q: 1
+      R: -1
+      H: 0
+    IsStackable: 1
+  - Coordinate:
+      Q: 0
+      R: 1
+      H: 0
+    IsStackable: 1
+  BuildingPrefab: {fileID: 9089495877187593000, guid: de3aec347ee2f564cbae1749f9794d07, type: 3}
+  Name: Metallfabrik
+  MaxHealth: 400
+  ResourceRates:
+  - Type: 0
+    Rate: 10
+  BuildCosts:
+  - Type: 0
+    Rate: 125
+  - Type: 1
+    Rate: 50
+  - Type: 4
+    Rate: 350
+  MagmaPointsCost: 2
