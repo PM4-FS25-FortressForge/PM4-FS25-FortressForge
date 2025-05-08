@@ -20,7 +20,8 @@ namespace Tests.EconomyManager
                 { ResourceType.Magma, 100 }
             };
 
-            _economySystem = new EconomySystem(buildingManager, maxValues);
+            var gloabalEconomy = new GlobalEconomy(0f);
+            _economySystem = new EconomySystem(buildingManager, gloabalEconomy, maxValues);
 
             // Set initial amounts manually for full control
             _economySystem.CurrentResources[ResourceType.Metal].CurrentAmount = 80;
