@@ -280,9 +280,9 @@ MonoBehaviour:
   PitchSpeed: 40
   MouseWheelZoomSpeed: 1
   ButtonsZoomSpeed: 5
+  Config: {fileID: 11400000, guid: 5a14fda24b5e45a48a6e66352b2d350d, type: 2}
   PitchLimits: {x: 89, y: 0}
   zoomLimits: {x: 2, y: 1000}
-  _config: {fileID: 11400000, guid: 5a14fda24b5e45a48a6e66352b2d350d, type: 2}
 --- !u!114 &330585549
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1500,23 +1500,6 @@ RectTransform:
   m_AnchoredPosition: {x: 232.6, y: -121.4}
   m_SizeDelta: {x: 145, y: 35}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &2033831303
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2033831302}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_IgnoreReversedGraphics: 0
-  m_BlockingObjects: 0
-  m_BlockingMask:
-    serializedVersion: 2
-    m_Bits: 51
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
