@@ -42,14 +42,14 @@ namespace FortressForge.BuildingSystem.BuildingData
                 .ToList()
                 .ForEach(g =>
                 {
-                    _resourceChange[g.Key] += g.Sum(x => x.Rate);
+                    _resourceChange[g.Key] = g.Sum(x => x.Rate);
                 });
             BuildCosts
                 .GroupBy(r => r.Type)
                 .ToList()
                 .ForEach(g =>
                 {
-                    _buildCost[g.Key] += g.Sum(x => x.Rate);
+                    _buildCost[g.Key] = g.Sum(x => x.Rate);
                 });
         }
         
