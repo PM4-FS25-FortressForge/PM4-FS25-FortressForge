@@ -58,7 +58,7 @@ namespace FortressForge.HexGrid.Data
                 {
                     HexTileCoordinate newHexCoords = new HexTileCoordinate(q, r, 0) +
                                                      new HexTileCoordinate(TileRadius, TileHeight, origin);
-                    newHexCoords = GetTerrainHeightFromHexTileCoordinate(newHexCoords);
+                    newHexCoords = GetTerrainHeightFromHexTileCoordinate(newHexCoords, TileRadius, TileHeight);
                                                      
                     CreateNewHexTile(newHexCoords);
                 }
@@ -140,16 +140,16 @@ namespace FortressForge.HexGrid.Data
             }
         }
 
-        private HexTileCoordinate GetTerrainHeightFromHexTileCoordinate(HexTileCoordinate position)
+        private HexTileCoordinate GetTerrainHeightFromHexTileCoordinate(HexTileCoordinate position, float tileRadius, float tileHeight)
         {
-            Vector3 worldPos = position.GetWorldPosition(TileRadius, TileHeight);
+            Vector3 worldPos = position.GetWorldPosition(tileRadius, tileHeight);
         
             float terrainHeight = _terrainHeightProvider.SampleHeight(worldPos);
 
             return new HexTileCoordinate(
                 position.Q, 
                 position.R, 
-                Mathf.CeilToInt(terrainHeight / TileHeight)
+                Mathf.CeilToInt(terrainHeight / tileHeight)
             );
         }
         

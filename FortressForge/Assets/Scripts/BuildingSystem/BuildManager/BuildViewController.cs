@@ -127,7 +127,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         private void MovePreviewObject(HexTileCoordinate targetCoord)
         {
             ClearPreviousBuildTargets();
-            Vector3 snappedPos = targetCoord.GetWorldPosition(_config.Radius, _config.TileHeight);
+            Vector3 snappedPos = targetCoord.GetWorldPosition(_config.GridRadius, _config.TileHeight);
             List<HexTileCoordinate> rotatedShape = GetRotatedShape(_selectedBuildingTemplate.ShapeData, _currentPreviewBuildingRotation);
             Vector3 avgPos = GetAveragePosition(rotatedShape);
 
@@ -200,7 +200,7 @@ namespace FortressForge.BuildingSystem.BuildManager
             targetGrid.MarkBuildingTiles(coord, rotatedShape, isStackableList);
             targetGrid.EconomySystem.PayResource(template.GetBuildCost());
 
-            Vector3 pos = coord.GetWorldPosition(_config.Radius, _config.TileHeight) + GetAveragePosition(rotatedShape);
+            Vector3 pos = coord.GetWorldPosition(_config.GridRadius, _config.TileHeight) + GetAveragePosition(rotatedShape);
             Quaternion rot = Quaternion.Euler(0f, rotation, 0f) * template.BuildingPrefab.transform.rotation;
             GameObject prefab =  SpawnNetworked(template.BuildingPrefab, pos, rot, transform);
             
@@ -264,7 +264,7 @@ namespace FortressForge.BuildingSystem.BuildManager
             Vector3 avg = Vector3.zero;
             foreach (var coord in hexTileCoordinates)
             {
-                avg += coord.GetWorldPosition(_config.Radius, _config.TileHeight);
+                avg += coord.GetWorldPosition(_config.GridRadius, _config.TileHeight);
             }
             return avg / hexTileCoordinates.Count;
         }

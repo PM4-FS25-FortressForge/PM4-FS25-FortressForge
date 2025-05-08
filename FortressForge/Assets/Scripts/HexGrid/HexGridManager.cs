@@ -44,7 +44,7 @@ namespace FortressForge.HexGrid
             for (var index = 0; index < gameSessionStartConfiguration.HexGridOrigins.Count; index++)
             {
                 var hexGridOrigin = gameSessionStartConfiguration.HexGridOrigins[index];
-                int radius = gameStartConfiguration.Radius;
+                int radius = gameStartConfiguration.GridRadius;
                 float tileSize = gameStartConfiguration.TileSize;
                 float tileHeight = gameStartConfiguration.TileHeight;
 

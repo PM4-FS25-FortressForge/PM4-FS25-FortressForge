@@ -220,8 +220,7 @@ namespace FortressForge.CameraControll
         /// <returns>returns the desiredButtonAction as InputAction</returns>
         private InputAction InitializeActionsButtons(string Action)
         {
-            InputAction
-                desiredButtonAction = _playerInput.actions[Action]; // Get the desired action from the playerInput ActionMap
+            InputAction desiredButtonAction = _playerInput.actions[Action]; // Get the desired action from the playerInput ActionMap
             if (desiredButtonAction == null) //Test if the desired action / Button is found in the playerInput ActionMap
             {
                 Debug.LogError(Action + ": This action or button was not found in ActionMap");

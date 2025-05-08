@@ -18,6 +18,8 @@ namespace FortressForge.GameInitialization
         {
             Instantiate(_gameStartConfiguration.Terrain);
             gameObject.AddComponent<HexGridManager>();
+            var meshRenderer = gameObject.AddComponent<GlobalGridMeshRenderer>();
+            meshRenderer.Init(new TerrainHeightProvider(), _gameStartConfiguration);
         }
         
         /// <summary>
