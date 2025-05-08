@@ -19,6 +19,14 @@ namespace FortressForge.UI
         private UIClickChecker()
         {
         }
+        
+        /// <summary>
+        /// Resets the instance and overlays.
+        /// </summary>
+        public static void ResetInstance()
+        {
+            _instance = null;
+        }
 
         /// <summary>
         /// Ensures the overlays are initialized for the current scene.
