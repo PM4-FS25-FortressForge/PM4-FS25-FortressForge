@@ -43,6 +43,8 @@ namespace FortressForge.GameInitialization
                 HexGridView hexGridView = new GameObject("HexGridView_" + data.Id).AddComponent<HexGridView>();
                 hexGridView.transform.SetParent(transform);
                 hexGridView.Initialize(config.TilePrefab, data);
+                
+                GameObject buildingContainer = new ("BuildingContainer_Grid_" + data.Id);
             }
         }
     }
