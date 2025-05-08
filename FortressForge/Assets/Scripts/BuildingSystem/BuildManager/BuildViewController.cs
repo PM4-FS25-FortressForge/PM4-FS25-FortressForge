@@ -252,13 +252,6 @@ namespace FortressForge.BuildingSystem.BuildManager
             if (_hoveredHexTile == null) return;
             
             MovePreviewObject(_hoveredHexTile.HexTileCoordinate);
-            
-            // Update the marked tiles
-            ClearPreviousBuildTargets();
-            if (_hoveredHexTile != null)
-            {
-                MarkNewTilesAsBuildTargets(_hoveredHexTile.HexTileCoordinate, _selectedBuildingTemplate.ShapeData);
-            }
         }
 
         private Vector3 GetAveragePosition(List<HexTileCoordinate> hexTileCoordinates)

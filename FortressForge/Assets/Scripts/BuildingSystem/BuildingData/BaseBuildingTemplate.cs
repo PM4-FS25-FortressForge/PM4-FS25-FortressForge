@@ -37,15 +37,20 @@ namespace FortressForge.BuildingSystem.BuildingData
         
         public void OnEnable()
         {
-            foreach (var resourceRate in ResourceRates)
-            {
-                _resourceChange[resourceRate.Type] = _resourceChange.GetValueOrDefault(resourceRate.Type) + resourceRate.Rate;
-            }
-
-            foreach (var resourceCost in BuildCosts)
-            {
-                _buildCost[resourceCost.Type] = _buildCost.GetValueOrDefault(resourceCost.Type) + resourceCost.Rate;
-            }
+            ResourceRates
+                .GroupBy(r => r.Type)
+                .ToList()
+                .ForEach(g =>
+                {
+                    _resourceChange[g.Key] += g.Sum(x => x.Rate);
+                });
+            BuildCosts
+                .GroupBy(r => r.Type)
+                .ToList()
+                .ForEach(g =>
+                {
+                    _buildCost[g.Key] += g.Sum(x => x.Rate);
+                });
         }
         
         public virtual Dictionary<ResourceType, float> GetNetResourceChange()
