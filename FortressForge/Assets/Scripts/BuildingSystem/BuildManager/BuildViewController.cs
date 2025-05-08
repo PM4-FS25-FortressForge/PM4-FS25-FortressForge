@@ -59,7 +59,8 @@ namespace FortressForge.BuildingSystem.BuildManager
             _previewBuilding = SpawnLocal(_selectedBuildingTemplate.BuildingPrefab);
             _previewBuildingMeshRenderer = _previewBuilding.GetComponentInChildren<MeshRenderer>();
             var collider = _previewBuilding.GetComponentInChildren<Collider>();
-            collider.enabled = false;
+            if (collider != null)
+                collider.enabled = false;
             RotatePreviewBuilding(0);
         }
 
