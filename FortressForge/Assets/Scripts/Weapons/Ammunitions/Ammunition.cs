@@ -1,0 +1,44 @@
+using FishNet.Object;
+using UnityEngine;
+
+/// <summary>
+/// Represents a network-synced projectile fired from a weapon.
+/// Handles physics-based movement and automatic despawning upon collision.
+/// </summary>
+public class Ammunition : NetworkBehaviour
+{
+    private Rigidbody _rigidbody;
+
+    /// <summary>
+    /// Caches the Rigidbody component on initialization.
+    /// </summary>
+    void Awake()
+    {
+        _rigidbody = GetComponent<Rigidbody>();
+    }
+
+    /// <summary>
+    /// Sets the projectile's velocity on all clients to synchronize its initial motion.
+    /// Called from the server after spawning.
+    /// </summary>
+    [ObserversRpc]
+    public void SetInitialVelocity(Vector3 velocity)
+    {
+        if (_rigidbody != null)
+        {
+            _rigidbody.velocity = velocity;
+        }
+    }
+
+    /// <summary>
+    /// Automatically despawns the projectile when it collides with another object.
+    /// Only executed on the server and broadcasted to all clients.
+    /// </summary>
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (IsServer)
+        {
+            Despawn();
+        }
+    }
+}
