@@ -2,10 +2,12 @@ using System.Collections.Generic;
 using System.Linq;
 using FortressForge.Economy;
 using FortressForge.HexGrid;
+using FortressForge.Serializables;
 using UnityEngine;
 
 namespace FortressForge.BuildingSystem.BuildingData
 {
+    [CreateAssetMenu(fileName = "New Base Building", menuName = "Buildings/BaseBuilding")]
     public class BaseBuildingTemplate : ScriptableObject, IEconomyActor
     {
         /// <summary>
@@ -23,7 +25,6 @@ namespace FortressForge.BuildingSystem.BuildingData
 
         [Header("Building Data")] 
         public string Name;
-        public int MetalCost;
         public int MaxHealth; 
         
         [Header("Resource Data")]
@@ -31,16 +32,26 @@ namespace FortressForge.BuildingSystem.BuildingData
         protected Dictionary<ResourceType, float> _buildCost = new();
         protected bool _enabled = true;
         
-        public float resourceRate;
-        public ResourceType resourceRateType;
-        public float resourceCost;
-        public ResourceType resourceCostType;
+        public List<RessourceTypeRate> ResourceRates = new();
+        public List<RessourceTypeRate> BuildCosts = new();
         
         
         public void OnEnable()
         {
-            _resourceChange[resourceRateType] = resourceRate;
-            _buildCost[resourceCostType] = resourceCost;
+            ResourceRates
+                .GroupBy(r => r.Type)
+                .ToList()
+                .ForEach(g =>
+                {
+                    _resourceChange[g.Key] = g.Sum(x => x.Rate);
+                });
+            BuildCosts
+                .GroupBy(r => r.Type)
+                .ToList()
+                .ForEach(g =>
+                {
+                    _buildCost[g.Key] = g.Sum(x => x.Rate);
+                });
         }
         
         public virtual Dictionary<ResourceType, float> GetNetResourceChange()
