@@ -16,10 +16,12 @@ namespace FortressForge.UI
         private TrapezElement _topTrapezOverlay;
         private TrapezElement _bottomTrapezOverlay;
 
+        private VisualElement _pauseMenuRoot;
+
         private UIClickChecker()
         {
         }
-        
+
         /// <summary>
         /// Resets the instance and overlays.
         /// </summary>
@@ -35,19 +37,24 @@ namespace FortressForge.UI
         {
             UIDocument[] uiDocuments = Object.FindObjectsByType<UIDocument>(FindObjectsSortMode.None);
             UIDocument uiDocument = uiDocuments.FirstOrDefault(document => document.name == "BuildingOverlay");
+            UIDocument pauseMenuDocument = uiDocuments.FirstOrDefault(document => document.name == "PauseMenu");
 
-            if (uiDocument is null)
+            if (uiDocument is null || pauseMenuDocument is null)
+
             {
                 _topTrapezOverlay = null;
                 _bottomTrapezOverlay = null;
+                _pauseMenuRoot = null;
                 return;
             }
+
+            _pauseMenuRoot = pauseMenuDocument.rootVisualElement;
 
             _topTrapezOverlay = uiDocument.rootVisualElement.Q<TrapezElement>(className: "top-trapez-frame");
             _bottomTrapezOverlay = uiDocument.rootVisualElement.Q<TrapezElement>(className: "bottom-trapez-frame");
 
-            if (_topTrapezOverlay == null || _bottomTrapezOverlay == null)
-                Debug.Log("TrapezOverlay not found!");
+            if (_topTrapezOverlay == null || _bottomTrapezOverlay == null || _pauseMenuRoot == null)
+                Debug.Log("TrapezOverlay or PauseContainer not found!");
         }
 
         /// <summary>
@@ -56,9 +63,14 @@ namespace FortressForge.UI
         /// <returns>True if the mouse is on the overlay, false otherwise.</returns>
         public bool IsMouseOnOverlay()
         {
-            if (_topTrapezOverlay == null || _bottomTrapezOverlay == null)
+            if (_topTrapezOverlay == null || _bottomTrapezOverlay == null || _pauseMenuRoot == null)
             {
                 InitializeOverlays();
+            }
+
+            if (_pauseMenuRoot is not null && _pauseMenuRoot.resolvedStyle.display == DisplayStyle.Flex)
+            {
+                return true;
             }
 
             return _topTrapezOverlay?.IsPointInTrapez() == true || _bottomTrapezOverlay?.IsPointInTrapez() == true;
