@@ -46,12 +46,12 @@ namespace FortressForge.HexGrid.View
         { // TODO maybe add custom colors for overlapping events such as build target and occupied
             if ((data.IsBuildTarget && data.IsOccupied) || (data.IsBuildTarget && !data.IsOwned))
                 _renderer.material = _config.NotAllowedMaterial;
-            else if (!data.IsOwned)
-                _renderer.material = _config.UnownedHexMaterial;
             else if (data.IsBuildTarget) 
                 _renderer.material = _config.PreviewMaterial;
             else if (data.IsMouseTarget)
                 _renderer.material = _config.HighlightMaterial;
+            else if (!data.IsOwned)
+                _renderer.material = _config.UnownedHexMaterial;
             else if (data.IsOccupied)
                 _renderer.material = _config.OccupiedMaterial;
             else

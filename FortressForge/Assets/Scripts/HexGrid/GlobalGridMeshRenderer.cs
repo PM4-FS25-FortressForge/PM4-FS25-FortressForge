@@ -71,8 +71,6 @@ namespace FortressForge.HexGrid
             int maxQ = Mathf.CeilToInt(maxX / hexWidth);
             int maxR = Mathf.CeilToInt(maxZ / vertStep);
 
-            bool firstTileLogged = false;
-
             // Iterate all hex coordinates within estimated bounds
             for (int r = -maxR; r <= maxR; r++)
             {
@@ -87,13 +85,6 @@ namespace FortressForge.HexGrid
                     // Clip tiles outside terrain bounds
                     if (basePos.x < 0 || basePos.x > maxX || basePos.z < 0 || basePos.z > maxZ)
                         continue;
-
-                    // Log the first tile for debugging purposes
-                    if (!firstTileLogged)
-                    {
-                        Debug.Log($"First hex edge at world pos: {basePos}");
-                        firstTileLogged = true;
-                    }
 
                     // Generate edges for each side of the hex tile
                     for (int i = 0; i < 6; i++)
