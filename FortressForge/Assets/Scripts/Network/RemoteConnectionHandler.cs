@@ -20,24 +20,6 @@ namespace FortressForge.Network
                 InstanceFinder.ClientManager.OnClientConnectionState += HandleServerDisconnect;
         }
 
-        public void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.Escape))
-            {
-                if (InstanceFinder.IsServerStarted)
-                {
-                    InstanceFinder.ServerManager.StopConnection(true);
-                    LoadCleanScene(NEW_SCENE);
-                }
-                else if (InstanceFinder.IsClientStarted)
-                {
-                    InstanceFinder.ClientManager.OnClientConnectionState -= HandleServerDisconnect;
-                    InstanceFinder.ClientManager.StopConnection();
-                    LoadCleanScene(NEW_SCENE);
-                }
-            }
-        }
-
         /// <summary>
         /// Handles the server disconnect event. This is called when the client disconnects from the server.
         /// </summary>
@@ -81,6 +63,24 @@ namespace FortressForge.Network
             {
                 if (obj.name != "[Debug Updater]")
                     Destroy(obj);
+            }
+        }
+
+        /// <summary>
+        /// Leaves the server and loads a new scene.
+        /// </summary>
+        public void LeaveServer()
+        {
+            if (InstanceFinder.IsServerStarted)
+            {
+                InstanceFinder.ServerManager.StopConnection(true);
+                LoadCleanScene(NEW_SCENE);
+            }
+            else if (InstanceFinder.IsClientStarted)
+            {
+                InstanceFinder.ClientManager.OnClientConnectionState -= HandleServerDisconnect;
+                InstanceFinder.ClientManager.StopConnection();
+                LoadCleanScene(NEW_SCENE);
             }
         }
     }
