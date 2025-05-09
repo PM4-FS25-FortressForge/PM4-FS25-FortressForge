@@ -59,7 +59,8 @@ namespace FortressForge.BuildingSystem.BuildManager
             _previewBuilding = SpawnLocal(_selectedBuildingTemplate.BuildingPrefab);
             _previewBuildingMeshRenderer = _previewBuilding.GetComponentInChildren<MeshRenderer>();
             var collider = _previewBuilding.GetComponentInChildren<Collider>();
-            collider.enabled = false;
+            if (collider != null)
+                collider.enabled = false;
             RotatePreviewBuilding(0);
         }
 
@@ -192,12 +193,18 @@ namespace FortressForge.BuildingSystem.BuildManager
                 return;
             }
 
-            targetGrid.MarkBuildingTiles(coord, rotatedShape, isStackableList);
-            targetGrid.EconomySystem.PayResource(template.GetBuildCost());
-
             Vector3 pos = coord.GetWorldPosition(_config.Radius, _config.TileHeight) + GetAveragePosition(rotatedShape);
             Quaternion rot = Quaternion.Euler(0f, rotation, 0f) * template.BuildingPrefab.transform.rotation;
             GameObject prefab =  SpawnNetworked(template.BuildingPrefab, pos, rot, transform);
+            
+            if (prefab == null)
+            {
+                Debug.LogError("Failed to spawn building prefab.");
+                return;
+            }
+
+            targetGrid.MarkBuildingTiles(coord, rotatedShape, isStackableList);
+            targetGrid.EconomySystem.PayResource(template.GetBuildCost());
             
             // Add reference to building manager for later use.
             List<HexTileData> tileDatas = globalRotatedShape
@@ -299,6 +306,11 @@ namespace FortressForge.BuildingSystem.BuildManager
 
         private static GameObject SpawnNetworked(GameObject prefab, Vector3 pos, Quaternion rot, Transform parent = null)
         {
+            if (prefab.GetComponent<NetworkObject>() == null)
+            {
+                Debug.LogError("Prefab does not have a NetworkObject component.");
+                return null;
+            }
             GameObject obj = Instantiate(prefab, pos, rot, parent);
             InstanceFinder.ServerManager.Spawn(obj);
             return obj;

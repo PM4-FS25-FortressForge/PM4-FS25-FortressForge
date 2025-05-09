@@ -35,7 +35,7 @@ namespace FortressForge.Economy
                 if (value < 0)
                 {
                     Debug.LogError($"[Resource] {_type} attempted to go below 0. Value: {value}");
-                    throw new System.ArgumentOutOfRangeException(nameof(value), $"[Resource] {_type} cannot go below 0.");
+                    return;
                 }
                 float previousValue = _currentAmount;
                 if (value > MaxAmount)

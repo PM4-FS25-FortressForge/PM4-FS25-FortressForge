@@ -1,0 +1,74 @@
+﻿.root-frame {
+    flex-direction: row;
+    justify-content: flex-end;
+
+    /* Offset so it shares a container with resource container. Slight workaround. */
+    left: 0;
+    width: 30%;
+    height: 100%;
+}
+
+.planet-container {
+    margin-left: auto;
+    width: 140px;
+    height: 140px;
+    position: relative;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: black; /* planet background */
+
+    flex-shrink: 0; /* 🛡️ prevent horizontal squishing */
+    flex-grow: 0;   /* prevent expansion if container stretches */
+}
+
+.planet-fill-mask {
+    position: absolute;
+    background-color: black;
+    top: 0;
+    width: 100%;
+    height: 0%; /* This is what changes dynamically from C# */
+    overflow: hidden;
+}
+
+/* Base: dark rocky planet */
+.planet-base {
+    background-image: url("../image/rocky_planet.png");
+    background-size: cover;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+}
+
+.planet-overlay-dark {
+    background-color: rgba(0, 0, 0, 0.8); /* adjust alpha as needed */
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+/* Fill: bright glowing magma layer */
+.planet-fill {
+    background-image: url("../image/rocky_planet.png");
+    background-size: cover;
+    background-position: bottom;
+    overflow: hidden;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    height: 100%; /* this gets decreased via C# */
+    transition: height 0.3s ease-in-out;
+}
+
+.resource-change-test {
+    position: absolute;
+    top: 35%;
+    right: 20%;
+
+    color: white;
+    font-size: 20px;
+    padding: 4px 8px;
+    background-color: rgba(0, 0, 0, 0.5); /* Optional contrast */
+    border-radius: 5px;
+    white-space: nowrap;
+}
+
