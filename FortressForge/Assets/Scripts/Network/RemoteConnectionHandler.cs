@@ -49,7 +49,6 @@ namespace FortressForge.Network
         private void LoadScene(string sceneName)
         {
             UIClickChecker.ResetInstance();
-            SceneManager.UnloadSceneAsync(SceneManager.GetActiveScene(), UnloadSceneOptions.UnloadAllEmbeddedSceneObjects);
             SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
         }
 

@@ -1,4 +1,5 @@
-﻿using FortressForge.Network;
+﻿using FishNet;
+using FortressForge.Network;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -48,6 +49,8 @@ namespace FortressForge.UI.Manager
 
             RemoteConnectionHandler remoteConnectionHandler = FindFirstObjectByType<RemoteConnectionHandler>();
             _exitGameButton.RegisterCallback<ClickEvent>(ev => remoteConnectionHandler.LeaveServer());
+
+            if (InstanceFinder.IsServerStarted) _exitGameButton.text = "Stop Server";
         }
 
         /// <summary>
