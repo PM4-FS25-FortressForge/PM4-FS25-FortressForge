@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 using FortressForge.BuildingSystem.BuildManager;
 using FortressForge.Economy;
 using FortressForge.HexGrid.View;
@@ -24,6 +25,8 @@ namespace FortressForge.HexGrid.Data
         public readonly float TileRadius;
 
         public readonly float TileHeight;
+        
+        public bool IsOwned { get; set; }
         
         public Dictionary<HexTileCoordinate, HexTileData> TileMap = new();
         public EconomySystem EconomySystem { get; private set; }
@@ -67,7 +70,10 @@ namespace FortressForge.HexGrid.Data
 
         private HexTileData CreateNewHexTile(HexTileCoordinate newHexCoords)
         {
-            TileMap[newHexCoords] = new HexTileData(newHexCoords);
+            TileMap[newHexCoords] = new HexTileData(newHexCoords)
+            {
+                IsOwned = IsOwned
+            };
             TileMap[newHexCoords].OnHoverChanged += OnHoverTileChangedEvent;
             return TileMap[newHexCoords];
         }
@@ -114,6 +120,12 @@ namespace FortressForge.HexGrid.Data
                 }
             }
             return true;
+        }
+
+        public void MarkGridAsOwned()
+        {
+            TileMap.ToList().ForEach(tile => tile.Value.IsOwned = true);
+            IsOwned = true;
         }
 
         /// <summary>

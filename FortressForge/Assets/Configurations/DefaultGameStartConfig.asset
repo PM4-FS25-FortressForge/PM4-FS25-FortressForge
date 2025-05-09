@@ -17,7 +17,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 7ba111d719d345840ab9c8e5c62a3464, type: 2}
   - {fileID: 11400000, guid: 2ed51e6f707565743a43896dec9b53b0, type: 2}
   - {fileID: 11400000, guid: de8eeb04020297a4790e752b8f95080c, type: 2}
-  Radius: 10
+  GridRadius: 10
   TileSize: 10
   TileHeight: 10
   TilePrefab: {fileID: 7913461861453834581, guid: 72362361af6bac54e8d1c8804d9c1b41, type: 3}
@@ -27,3 +27,4 @@ MonoBehaviour:
   NotAllowedMaterial: {fileID: 2100000, guid: e1fd348dc1bed4d839ffb25c11acfa9b, type: 2}
   PreviewMaterial: {fileID: 2100000, guid: 848369def4c5b43adbbed19ee7f90924, type: 2}
   MeshTilesMaterial: {fileID: 2100000, guid: 7f13f616d7117754ca079137192c07bf, type: 2}
+  UnownedHexMaterial: {fileID: 2100000, guid: 8492c74ba0433664b8b666bf799baa6f, type: 2}

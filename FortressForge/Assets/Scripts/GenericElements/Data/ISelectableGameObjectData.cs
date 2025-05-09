@@ -18,5 +18,10 @@ namespace FortressForge.HexGrid.View {
             get => false;
             set => throw new NotImplementedException();
         }
+        
+        bool IsOwned {
+            get => true;
+            set => throw new NotImplementedException();
+        }
     }
 }

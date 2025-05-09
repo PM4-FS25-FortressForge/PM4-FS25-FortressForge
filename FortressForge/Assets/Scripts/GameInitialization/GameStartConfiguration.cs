@@ -31,5 +31,6 @@ namespace FortressForge.GameInitialization
         public Material NotAllowedMaterial;
         public Material PreviewMaterial;
         public Material MeshTilesMaterial;
+        public Material UnownedHexMaterial;
     }
 }

@@ -141,37 +141,27 @@ namespace FortressForge.BuildingSystem.BuildManager
             {
                 var worldCoord = offset + origin;
 
-                var ownedTile = _ownedHexGridDatas
-                    .FirstOrDefault(grid => grid.TileMap.ContainsKey(worldCoord))
-                    ?.TileMap[worldCoord];
+                // Take any grid and mark the tile as a build target
+                var tile = _hexGridManager.GetHexTileData(worldCoord);
 
-                if (ownedTile != null)
+                if (tile != null)
                 {
-                    ownedTile.IsBuildTarget = true;
+                    tile.IsBuildTarget = true;
                     _currentBuildTargets.Add(worldCoord);
                 }
-
-                var unownedHexTile = _hexGridManager.GetHexTileData(worldCoord);
-
-                // TODO implement behaviour for unowned tiles
             }
 
             _previewBuildingMeshRenderer.enabled = true;
         }
-
-
+        
         private void ClearPreviousBuildTargets()
         {
             foreach (HexTileCoordinate coord in _currentBuildTargets)
             {
-                foreach (var grid in _ownedHexGridDatas)
-                {
-                    if (grid.TileMap.TryGetValue(coord, out var tileData))
-                    {
-                        tileData.IsBuildTarget = false;
-                        break;
-                    }
-                }
+                var tile = _hexGridManager.GetHexTileData(coord);
+                if (tile == null) continue;
+                
+                tile.IsBuildTarget = false;
             }
 
             _currentBuildTargets.Clear();

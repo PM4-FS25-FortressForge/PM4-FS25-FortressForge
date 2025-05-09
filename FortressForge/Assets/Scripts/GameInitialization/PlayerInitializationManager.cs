@@ -95,6 +95,7 @@ namespace FortressForge.GameInitialization
             // Initialize view only on clients, server doesn't need the individual views
             if (IsClientInitialized && IsOwner)
             {
+                selectedGrid.MarkGridAsOwned();
                 Vector3 gridOrigin = _gameSessionStartConfiguration.HexGridOrigins[gridId];
 
                 Camera mainCamera = Camera.main;
