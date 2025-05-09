@@ -21,15 +21,6 @@
     flex-grow: 0;   /* prevent expansion if container stretches */
 }
 
-.planet-fill-mask {
-    position: absolute;
-    background-color: black;
-    top: 0;
-    width: 100%;
-    height: 0%; /* This is what changes dynamically from C# */
-    overflow: hidden;
-}
-
 /* Base: dark rocky planet */
 .planet-base {
     background-image: url("../image/rocky_planet.png");
