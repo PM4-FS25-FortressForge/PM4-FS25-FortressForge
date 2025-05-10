@@ -19,6 +19,7 @@ namespace FortressForge.HexGrid.Data
     public class HexGridData
     {
         public event Action<HexTileData> OnHoverTileChanged;
+        public event Action<HexTileData> OnChanged;
         public int Id { get; set; }
         
         public readonly float TileRadius;
@@ -27,6 +28,7 @@ namespace FortressForge.HexGrid.Data
         
         public bool IsOwned { get; set; }
         public bool IsInvisible { get; set; }
+        public bool IsIndependent => Id == -1;
         
         public Dictionary<HexTileCoordinate, HexTileData> TileMap = new();
         public EconomySystem EconomySystem { get; private set; }
@@ -59,6 +61,9 @@ namespace FortressForge.HexGrid.Data
             BuildingManager = buildingManager;
             _hexGridManager = hexGridManager;
             IsInvisible = isInvisible;
+
+            if (IsIndependent)
+                OnChanged += RemoveTileIfNotTarget;
         }
 
         /// <summary>
@@ -127,10 +132,8 @@ namespace FortressForge.HexGrid.Data
             };
             
             // Create and store the delegate
-            Action<HexTileData> handler = tileData => OnHoverTileChanged?.Invoke(tileData);
-            _hoverHandlers[newHexCoords] = handler;
-
-            tile.OnHoverChanged += handler;
+            tile.OnHoverChanged += tileData => OnHoverTileChanged?.Invoke(tileData);
+            tile.OnChanged += hexTileData => OnChanged?.Invoke(hexTileData);
             OnNewTileCreated?.Invoke(tile, newHexCoords);
             TileMap[newHexCoords] = tile;                
         }
@@ -139,15 +142,18 @@ namespace FortressForge.HexGrid.Data
         {
             if (TileMap.TryGetValue(hexCoord, out var tile))
             {
-                if (_hoverHandlers.TryGetValue(hexCoord, out var handler))
-                {
-                    tile.OnHoverChanged -= handler;
-                    _hoverHandlers.Remove(hexCoord);
-                }
-
                 TileMap.Remove(hexCoord);
             }
+            
+            // Removes all events from the tile as it gets destroyed
             OnTileRemoved?.Invoke(hexCoord);
+        }
+        
+        private void RemoveTileIfNotTarget(HexTileData tile)
+        {
+            if (tile == null) return;
+            if (tile.IsMouseTarget || tile.IsBuildTarget) return;
+            RemoveTile(tile.HexTileCoordinate);
         }
 
         /// <summary>
@@ -173,8 +179,7 @@ namespace FortressForge.HexGrid.Data
                 }
             }
         }
-         
-
+        
         /// <summary>
         /// Validates if a building can be placed on the hex grid.
         /// </summary>
