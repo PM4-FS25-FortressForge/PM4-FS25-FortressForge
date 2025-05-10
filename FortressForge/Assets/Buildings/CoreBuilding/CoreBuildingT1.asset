@@ -1,0 +1,122 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b5734fcf8584e75a8b4012aa2af5f70, type: 3}
+  m_Name: CoreBuildingT1
+  m_EditorClassIdentifier: 
+  ShapeDataEntries:
+  - Coordinate:
+      Q: 0
+      R: 0
+      H: 0
+    IsStackable: 1
+  - Coordinate:
+      Q: 0
+      R: -1
+      H: 0
+    IsStackable: 1
+  - Coordinate:
+      Q: 1
+      R: -1
+      H: 0
+    IsStackable: 1
+  - Coordinate:
+      Q: 1
+      R: 0
+      H: 0
+    IsStackable: 1
+  - Coordinate:
+      Q: 0
+      R: 1
+      H: 0
+    IsStackable: 1
+  - Coordinate:
+      Q: -1
+      R: 1
+      H: 0
+    IsStackable: 1
+  - Coordinate:
+      Q: -1
+      R: 0
+      H: 0
+    IsStackable: 1
+  - Coordinate:
+      Q: 0
+      R: -2
+      H: 0
+    IsStackable: 0
+  - Coordinate:
+      Q: 1
+      R: -2
+      H: 0
+    IsStackable: 0
+  - Coordinate:
+      Q: 2
+      R: -2
+      H: 0
+    IsStackable: 0
+  - Coordinate:
+      Q: 2
+      R: -1
+      H: 0
+    IsStackable: 0
+  - Coordinate:
+      Q: 2
+      R: 0
+      H: 0
+    IsStackable: 0
+  - Coordinate:
+      Q: 1
+      R: 1
+      H: 0
+    IsStackable: 0
+  - Coordinate:
+      Q: 0
+      R: 2
+      H: 0
+    IsStackable: 0
+  - Coordinate:
+      Q: -1
+      R: 2
+      H: 0
+    IsStackable: 0
+  - Coordinate:
+      Q: -2
+      R: 2
+      H: 0
+    IsStackable: 0
+  - Coordinate:
+      Q: -2
+      R: 1
+      H: 0
+    IsStackable: 0
+  - Coordinate:
+      Q: -2
+      R: 0
+      H: 0
+    IsStackable: 0
+  - Coordinate:
+      Q: -1
+      R: -1
+      H: 0
+    IsStackable: 0
+  BuildingPrefab: {fileID: 5190386381878412599, guid: 44054a7708fad414cba05e7391a64c55, type: 3}
+  Name: Spike T1
+  MaxHealth: 1000
+  ResourceRates:
+  - Type: 0
+    Rate: 10
+  - Type: 1
+    Rate: 20
+  - Type: 4
+    Rate: 15
+  BuildCosts: []
+  Level: 1

@@ -20,5 +20,15 @@
         /// The main source of energy and life. Used in various processes and buildings.
         /// </summary>
         Magma,
+        
+        /// <summary>
+        /// Used for fireing weapons. Is being made from metal.
+        /// </summary>
+        Amunition,
+        
+        /// <summary>
+        /// Basic raw material, inferior to metal and in greater quantities.
+        /// </summary>
+        Concrete
     }
 }

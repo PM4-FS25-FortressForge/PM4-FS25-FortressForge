@@ -14,10 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Terrain: {fileID: 4565851599252019505, guid: 33502376c7d14c14ab0d550a3d4ee89a, type: 3}
   availableBuildings:
-  - {fileID: 11400000, guid: 7ba111d719d345840ab9c8e5c62a3464, type: 2}
-  - {fileID: 11400000, guid: 2ed51e6f707565743a43896dec9b53b0, type: 2}
-  - {fileID: 11400000, guid: de8eeb04020297a4790e752b8f95080c, type: 2}
-  - {fileID: 11400000, guid: 144de24a11567824284fa9f68f35e9d6, type: 2}
+  - {fileID: 11400000, guid: 42ba38511e794ec438d263554fe5be32, type: 2}
+  - {fileID: 11400000, guid: 600bfcd06f8bb4d4f89bd064add8f7f7, type: 2}
+  - {fileID: 11400000, guid: 96926859a2acf2c47891cf673274e7b2, type: 2}
+  - {fileID: 11400000, guid: 24b95824b8762f3468304e9ef38c7875, type: 2}
+  - {fileID: 11400000, guid: 5874729940006ef4f93f529aa9ebed96, type: 2}
+  - {fileID: 11400000, guid: cc6f27b0f71c3dd479cfb2593d91a340, type: 2}
   Radius: 10
   TileSize: 10
   TileHeight: 10
