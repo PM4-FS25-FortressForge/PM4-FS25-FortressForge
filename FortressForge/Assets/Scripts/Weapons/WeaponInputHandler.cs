@@ -1,0 +1,265 @@
+using System.Collections;
+using FishNet.Object;
+using FortressForge.BuildingSystem.BuildingData;
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+/// <summary>
+/// Handles input, aiming, and firing logic for a networked deployable weapon.
+/// This script is attached to each deployed weapon instance, managing local input and syncing actions across the network.
+/// </summary>
+public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInputActionsActions
+{
+    [SerializeField] private WeaponBuildingTemplate _constants;
+    [SerializeField] private GameObject _ammunitionPrefab;
+    [SerializeField] private Transform _firePoint;
+
+    private Transform _towerBase;
+    private Transform _cannonShaft;
+
+    private WeaponInputAction _weaponInputAction;
+    private Coroutine _autoFireCoroutine;
+
+    private bool _isInFightMode = false;
+    private bool _isReloading = true;
+    private bool _isAutoFiring = false;
+
+    private float _rotateInput;
+    private float _angleInput;
+
+    /// <summary>
+    /// Initializes the input system and finds the required child transforms.
+    /// Throws an exception if any of them are missing.
+    /// </summary>
+    void Awake()
+    {
+        _weaponInputAction = new WeaponInputAction();
+        _weaponInputAction.WeaponInputActions.SetCallbacks(this);
+        _firePoint = transform.Find("Geschuetzturm/Lauf/FirePoint");
+        _towerBase = transform.Find("Geschuetzturm");
+        _cannonShaft = transform.Find("Geschuetzturm/Lauf");
+        if (_firePoint == null || _towerBase == null || _cannonShaft == null)
+        {
+            throw new System.Exception("Could not find required transforms!");
+        }
+    }
+
+    /// <summary>
+    /// Ensures input actions are disabled when the component is turned off.
+    /// </summary>
+    void OnDisable()
+    {
+        _weaponInputAction.WeaponInputActions.Disable();
+    }
+
+    /// <summary>
+    /// Processes input each frame to rotate the weapon base and adjust weapon angle.
+    /// Syncs these changes with the server via RPC.
+    /// </summary>
+    void Update()
+    {
+        // Rotate the weapon "tower"
+        if (Mathf.Abs(_rotateInput) > 0.01f)
+        {
+            updateWeaponRotationServerRpc(_rotateInput, Time.deltaTime);
+        }
+
+        // Adjust weapon angle
+        if (Mathf.Abs(_angleInput) > 0.01f)
+        {
+            updateWeaponAngleServerRpc(_angleInput, Time.deltaTime);
+        }
+    }
+
+    /// <summary>
+    /// Called when the weapon prefab is clicked with the mouse.
+    /// Enters fight mode and enables input handling.
+    /// </summary>
+    void OnMouseDown()
+    {
+        if (!_isInFightMode)
+        {
+            _isInFightMode = true;
+            _weaponInputAction.WeaponInputActions.Enable();
+            Debug.Log("Entered Fight Mode!");
+        }
+    }
+
+    /// <summary>
+    /// Handles input to exit fight mode. Disables weapon input when the action is performed.
+    /// </summary>
+    public void OnExitFightMode(InputAction.CallbackContext context)
+    {
+        if (context.performed && _isInFightMode)
+        {
+            _isInFightMode = false;
+            _weaponInputAction.WeaponInputActions.Disable();
+            Debug.Log("Exited Fight Mode");
+        }
+    }
+
+    /// <summary>
+    /// Handles rotation input from the input system and stops auto-firing if active.
+    /// </summary>
+    public void OnRotateWeapon(InputAction.CallbackContext context)
+    {
+        _rotateInput = context.ReadValue<float>();
+        stopAutoFire();
+    }
+
+    /// <summary>
+    /// Server-side method to rotate the weapon base.
+    /// Syncs the rotation with clients.
+    /// </summary>
+    [ServerRpc(RequireOwnership = false)]
+    public void updateWeaponRotationServerRpc(float rotationInput, float deltaTime)
+    {
+        _towerBase.Rotate(Vector3.forward, rotationInput * _constants.rotationSpeed * deltaTime);
+        UpdateWeaponRotationObserversRpc(_towerBase.localEulerAngles);
+    }
+
+    /// <summary>
+    /// RPC to update the tower base rotation for all observing clients.
+    /// </summary>
+    [ObserversRpc]
+    private void UpdateWeaponRotationObserversRpc(Vector3 newRotation)
+    {
+        if (!IsServer)
+        {
+            _towerBase.localEulerAngles = newRotation;
+        }
+    }
+
+    /// <summary>
+    /// Handles cannon pitch (angle) input from the input system and stops auto-firing if active.
+    /// </summary>
+    public void OnAdjustWeaponAngle(InputAction.CallbackContext context)
+    {
+        _angleInput = context.ReadValue<float>();
+        stopAutoFire();
+    }
+
+
+    /// <summary>
+    /// Server-side method to adjust the cannon’s elevation angle, with clamping.
+    /// Syncs the updated angle with all clients.
+    /// </summary>
+    [ServerRpc(RequireOwnership = false)]
+    public void updateWeaponAngleServerRpc(float angleInput, float deltaTime)
+    {
+        // current rotation
+        Vector3 currentRotation = _cannonShaft.localEulerAngles;
+
+        // Convert to signed angle (-180 to 180)
+        float currentPitch = currentRotation.x;
+        if (currentPitch > 180f) currentPitch -= 360f;
+
+        // Calculate new pitch
+        float newPitch = currentPitch + angleInput * _constants.pitchSpeed * deltaTime;
+
+        // Clamp angle
+        newPitch = Mathf.Clamp(newPitch, _constants.minCannonAngle, _constants.maxCannonAngle);
+
+        // Apply adjusted angle
+        _cannonShaft.localEulerAngles = new Vector3(newPitch, currentRotation.x, currentRotation.z);
+
+        UpdateWeaponAngleObserversRpc(new Vector3(newPitch, currentRotation.x, currentRotation.z));
+    }
+
+    /// <summary>
+    /// RPC to update the cannon shaft angle on all observing clients.
+    /// </summary>
+    [ObserversRpc]
+    public void UpdateWeaponAngleObserversRpc(Vector3 newRotation)
+    {
+        if (!IsServer)
+        {
+            _cannonShaft.localEulerAngles = newRotation;
+        }
+    }
+
+    /// <summary>
+    /// Starts auto-firing when fire input is received, if not already firing and reloaded.
+    /// </summary>
+    public void OnFireWeapon(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            if (!_isAutoFiring && _isReloading)
+            {
+                _isAutoFiring = true;
+                StartCoroutine(AutoFire());
+            }
+        }
+    }
+
+    /// <summary>
+    /// Coroutine to continuously fire the weapon at a fixed rate until stopped.
+    /// Waits for reload time between shots.
+    /// </summary>
+    private IEnumerator AutoFire()
+    {
+        while (_isAutoFiring)
+        {
+            if (_isReloading)
+            {
+                FireOnce();
+                _isReloading = false;
+                yield return new WaitForSeconds(_constants.reloadSpeed);
+                _isReloading = true;
+            }
+            else
+            {
+                yield return null;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Stops auto-firing and ends the firing coroutine.
+    /// Called when aim is adjusted.
+    /// </summary>
+    private void stopAutoFire()
+    {
+        if (_isAutoFiring)
+        {
+            _isAutoFiring = false;
+            StopCoroutine(AutoFire());
+        }
+    }
+
+    /// <summary>
+    /// Triggers a single shot by calling the server-side fire method.
+    /// </summary>
+    private void FireOnce()
+    {
+        FireCannonServerRpc();
+    }
+
+    /// <summary>
+    /// Server-side method to spawn ammunition, set its velocity, and broadcast the shot to all clients.
+    /// </summary>
+    [ServerRpc(RequireOwnership = false)]
+    private void FireCannonServerRpc()
+    {
+        GameObject ammunition = Instantiate(_ammunitionPrefab, _firePoint.position, _firePoint.rotation);
+        NetworkObject netObj = ammunition.GetComponent<NetworkObject>();
+
+        if (netObj != null)
+        {
+            base.Spawn(ammunition);
+        }
+
+        Rigidbody rb = ammunition.GetComponent<Rigidbody>();
+        Vector3 velocity = _firePoint.rotation * -Vector3.right * _constants.cannonForce;
+
+        // Apply physics on server
+        rb.velocity = velocity;
+
+
+        // Also broadcast to clients so cannonball moves on all sides
+        Ammunition cbScript = ammunition.GetComponent<Ammunition>();
+
+        cbScript.SetInitialVelocity(velocity);
+    }
+}
