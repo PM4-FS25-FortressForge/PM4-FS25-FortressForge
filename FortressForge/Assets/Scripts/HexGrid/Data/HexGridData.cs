@@ -175,7 +175,7 @@ namespace FortressForge.HexGrid.Data
                 OccupyHexTile(hexCoord + coord);
                 
                 if (isStackable[i]) {
-                    CreateNewTileAbove(hexCoord);
+                    CreateNewTileAbove(hexCoord + coord);
                 }
             }
         }
@@ -221,8 +221,7 @@ namespace FortressForge.HexGrid.Data
             // unlock tile above
             TileMap.TryGetValue(hexCoord + new HexTileCoordinate(0, 0, 1), out var tileData);
 
-            if (tileData == null)
-            {
+            if (tileData == null) {
                 HexTileCoordinate newHexCoords = hexCoord + new HexTileCoordinate(0, 0, 1);
                 CreateOrClaimHexTile(newHexCoords);
             }

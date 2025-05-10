@@ -1,0 +1,18 @@
+*{
+    color: rgb(255, 255, 255);
+    -unity-font-definition: url("project://database/Assets/UI%20Toolkit/Fonts/RisingSun-Black.otf?fileID=12800000&guid=79332651dbfdb144a9d958bcba5e2bef&type=3#RisingSun-Black");
+}
+
+.pauseMenuContainer {
+    /*Mak the background semi transparent us the outer-space-grey variable*/
+    /*background-color: rgba(132, 125, 125, 0.9);*/
+    background-color: var(--outer-space-grey);
+    opacity: 0.9;
+}
+
+.pauseMenuExitGameButton {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+}

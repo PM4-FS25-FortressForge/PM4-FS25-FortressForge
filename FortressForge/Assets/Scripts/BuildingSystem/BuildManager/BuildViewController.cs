@@ -58,8 +58,9 @@ namespace FortressForge.BuildingSystem.BuildManager
 
             _previewBuilding = SpawnLocal(_selectedBuildingTemplate.BuildingPrefab);
             _previewBuildingMeshRenderer = _previewBuilding.GetComponentInChildren<MeshRenderer>();
-            var tileCollider = _previewBuilding.GetComponentInChildren<Collider>();
-            tileCollider.enabled = false;
+            var collider = _previewBuilding.GetComponentInChildren<Collider>();
+            if (collider != null)
+                collider.enabled = false;
             RotatePreviewBuilding(0);
         }
 
@@ -192,7 +193,7 @@ namespace FortressForge.BuildingSystem.BuildManager
 
             Vector3 pos = coord.GetWorldPosition(_config.GridRadius, _config.TileHeight) + GetAveragePosition(rotatedShape);
             Quaternion rot = Quaternion.Euler(0f, rotation, 0f) * template.BuildingPrefab.transform.rotation;
-            GameObject prefab =  SpawnNetworked(template.BuildingPrefab, pos, rot, transform);
+            GameObject prefab =  SpawnNetworked(template.BuildingPrefab, pos, rot);
             
             // Add reference to building manager for later use.
             List<HexTileData> tileDatas = globalRotatedShape
@@ -290,8 +291,13 @@ namespace FortressForge.BuildingSystem.BuildManager
             return obj;
         }
 
-        private static GameObject SpawnNetworked(GameObject prefab, Vector3 pos, Quaternion rot, Transform parent = null)
+        private GameObject SpawnNetworked(GameObject prefab, Vector3 pos, Quaternion rot, Transform parent = null)
         {
+            if (parent == null)
+            {
+                int gridId = _ownedHexGridDatas[0].Id;
+                parent = GameObject.Find("BuildingContainer_Grid_" + gridId).transform;
+            }
             GameObject obj = Instantiate(prefab, pos, rot, parent);
             InstanceFinder.ServerManager.Spawn(obj);
             return obj;

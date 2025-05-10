@@ -107,11 +107,12 @@ namespace FortressForge.GameInitialization
 
                 mainCamera.GetComponent<CameraController>()
                     .SetTargetPosition(gridOrigin);
-
-                TopOverlayViewGenerator topOverlayViewGenerator = FindFirstObjectByType<UIDocument>().GetComponent<TopOverlayViewGenerator>();
+                
+                GameObject buildingOverlay = GameObject.Find("BuildingOverlay");
+                TopOverlayViewGenerator topOverlayViewGenerator = buildingOverlay.GetComponent<TopOverlayViewGenerator>();
                 topOverlayViewGenerator.Init(economySync);
 
-                BottomOverlayViewGenerator bottomOverlayViewGenerator = FindFirstObjectByType<UIDocument>().GetComponent<BottomOverlayViewGenerator>();
+                BottomOverlayViewGenerator bottomOverlayViewGenerator = buildingOverlay.GetComponent<BottomOverlayViewGenerator>();
                 bottomOverlayViewGenerator.Init(_gameStartConfiguration.availableBuildings, buildViewController);
             }
         }
