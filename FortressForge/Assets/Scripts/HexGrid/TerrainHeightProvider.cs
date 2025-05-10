@@ -19,10 +19,15 @@ namespace FortressForge.HexGrid
         /// <returns>The interpreted y position.</returns>
         public float SampleHexHeight(Vector3 position, float tileHeight, float tileSize)
         {
+            return GetHexTileCoordinate(position, tileHeight, tileSize)
+                .GetWorldPosition(tileSize, tileHeight).y;
+        }
+        
+        public HexTileCoordinate GetHexTileCoordinate(Vector3 position, float tileHeight, float tileSize) 
+        {
             float height = SampleHeight(position);
             position.y = height;
-            return new HexTileCoordinate(tileSize, tileHeight, position)
-                .GetWorldPosition(tileSize, tileHeight).y;
+            return new HexTileCoordinate(tileSize, tileHeight, position);
         }
     }
 }

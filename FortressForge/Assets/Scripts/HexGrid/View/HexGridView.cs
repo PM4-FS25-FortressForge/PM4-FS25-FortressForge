@@ -16,6 +16,7 @@ namespace FortressForge.HexGrid.View
         private HexGridData _hexGrid;
         private GameObject _tilePrefab;
         private readonly Dictionary<HexTileCoordinate, HexTileView> _tileViews = new ();
+        private readonly Dictionary<HexTileCoordinate, GameObject> _tileObjViews = new ();
         private HexTileView _currentlyHoveredTile;
         private GameStartConfiguration _config;
 
@@ -28,11 +29,20 @@ namespace FortressForge.HexGrid.View
             _config = config;
             _hexGrid = hexGrid;
             _hexGrid.OnNewTileCreated += HandleNewTileCreated;
+            _hexGrid.OnTileRemoved += HandleTileRemoved;
 
             if (_hexGrid == null || _tilePrefab == null)
                 throw new InvalidOperationException("HexGridView: Invalid reference to HexGrid or TilePrefab.");
             
             InitializeHexGridView();
+        }
+        
+        /// <summary>
+        /// Handles setup when a new tile is created.
+        /// </summary>
+        private void HandleTileRemoved(HexTileCoordinate coords)
+        { 
+            DestroyTile(coords);
         }
         
         /// <summary>
@@ -76,6 +86,17 @@ namespace FortressForge.HexGrid.View
                 var tileView = tileObj.AddComponent<HexTileView>();
                 tileView.Init(tileData, _config);
                 _tileViews[coord] = tileView;
+                _tileObjViews[coord] = tileObj;
+            }
+        }
+        
+        private void DestroyTile(HexTileCoordinate coord) 
+        {
+            if (_tileViews.TryGetValue(coord, out var tileView))
+            {
+                Destroy(tileView.gameObject);
+                _tileViews.Remove(coord);
+                _tileObjViews.Remove(coord);
             }
         }
     }

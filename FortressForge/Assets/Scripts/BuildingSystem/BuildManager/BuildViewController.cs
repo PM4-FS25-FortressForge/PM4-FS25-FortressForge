@@ -128,7 +128,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         private void MovePreviewObject(HexTileCoordinate targetCoord)
         {
             ClearPreviousBuildTargets();
-            Vector3 snappedPos = targetCoord.GetWorldPosition(_config.Radius, _config.TileHeight);
+            Vector3 snappedPos = targetCoord.GetWorldPosition(_config.GridRadius, _config.TileHeight);
             List<HexTileCoordinate> rotatedShape = GetRotatedShape(_selectedBuildingTemplate.ShapeData, _currentPreviewBuildingRotation);
             Vector3 avgPos = GetAveragePosition(rotatedShape);
 
@@ -138,36 +138,31 @@ namespace FortressForge.BuildingSystem.BuildManager
 
         private void MarkNewTilesAsBuildTargets(HexTileCoordinate origin, List<HexTileCoordinate> shape)
         {
-            foreach (HexTileCoordinate offset in shape)
+            foreach (var offset in shape)
             {
-                HexTileCoordinate worldCoord = offset + origin;
+                var worldCoord = offset + origin;
 
-                foreach (var grid in _ownedHexGridDatas)
+                // Take any grid and mark the tile as a build target
+                var tile = _hexGridManager.GetHexTileDataOrCreate(worldCoord);
+
+                if (tile != null)
                 {
-                    if (grid.TileMap.TryGetValue(worldCoord, out var tileData))
-                    {
-                        tileData.IsBuildTarget = true;
-                        _currentBuildTargets.Add(worldCoord);
-                        break;
-                    }
+                    tile.IsBuildTarget = true;
+                    _currentBuildTargets.Add(worldCoord);
                 }
             }
 
             _previewBuildingMeshRenderer.enabled = true;
         }
-
+        
         private void ClearPreviousBuildTargets()
         {
             foreach (HexTileCoordinate coord in _currentBuildTargets)
             {
-                foreach (var grid in _ownedHexGridDatas)
-                {
-                    if (grid.TileMap.TryGetValue(coord, out var tileData))
-                    {
-                        tileData.IsBuildTarget = false;
-                        break;
-                    }
-                }
+                var tile = _hexGridManager.GetHexTileDataOrCreate(coord);
+                if (tile == null) continue;
+                
+                tile.IsBuildTarget = false;
             }
 
             _currentBuildTargets.Clear();
@@ -196,7 +191,7 @@ namespace FortressForge.BuildingSystem.BuildManager
             targetGrid.MarkBuildingTiles(coord, rotatedShape, isStackableList);
             targetGrid.EconomySystem.PayResource(template.GetBuildCost());
 
-            Vector3 pos = coord.GetWorldPosition(_config.Radius, _config.TileHeight) + GetAveragePosition(rotatedShape);
+            Vector3 pos = coord.GetWorldPosition(_config.GridRadius, _config.TileHeight) + GetAveragePosition(rotatedShape);
             Quaternion rot = Quaternion.Euler(0f, rotation, 0f) * template.BuildingPrefab.transform.rotation;
             GameObject prefab =  SpawnNetworked(template.BuildingPrefab, pos, rot);
             
@@ -260,7 +255,7 @@ namespace FortressForge.BuildingSystem.BuildManager
             Vector3 avg = Vector3.zero;
             foreach (var coord in hexTileCoordinates)
             {
-                avg += coord.GetWorldPosition(_config.Radius, _config.TileHeight);
+                avg += coord.GetWorldPosition(_config.GridRadius, _config.TileHeight);
             }
             return avg / hexTileCoordinates.Count;
         }

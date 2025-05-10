@@ -72,7 +72,7 @@ namespace FortressForge.GameInitialization
             // Take the clientId from the owner of this object, also called the playerId
             int gridId = _gameSessionStartConfiguration.GridPlayerIdTuples
                 .First(gpit => gpit.PlayerId == playerId).HexGridId;
-            HexGridData selectedGrid = HexGridManager.Instance.AllGrids[gridId];
+            HexGridData selectedGrid = HexGridManager.Instance.AllGrids.First(grid => grid.Id == gridId);
 
             // initialize the grid view so allgrids is set
             BuildViewController buildViewController = gameObject.GetComponent<BuildViewController>();
@@ -95,6 +95,7 @@ namespace FortressForge.GameInitialization
             // Initialize view only on clients, server doesn't need the individual views
             if (IsClientInitialized && IsOwner)
             {
+                selectedGrid.MarkGridAsOwned();
                 Vector3 gridOrigin = _gameSessionStartConfiguration.HexGridOrigins[gridId];
 
                 Camera mainCamera = Camera.main;
