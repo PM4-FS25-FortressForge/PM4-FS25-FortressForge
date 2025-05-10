@@ -18,6 +18,7 @@ namespace FortressForge.HexGrid
     /// </summary>
     public class HexGridManager : MonoBehaviour
     {
+        public event Action<HexTileData> OnHoverTileChanged;
         public static HexGridManager Instance { get; private set; }
 
         public List<HexGridData> AllGrids { get; } = new();
@@ -41,12 +42,13 @@ namespace FortressForge.HexGrid
         public void InitializeHexGrids(GameSessionStartConfiguration gameSessionStartConfiguration, 
             GameStartConfiguration gameStartConfiguration)
         {
+            int radius = gameStartConfiguration.GridRadius;
+            float tileSize = gameStartConfiguration.TileSize;
+            float tileHeight = gameStartConfiguration.TileHeight;
+            
             for (var index = 0; index < gameSessionStartConfiguration.HexGridOrigins.Count; index++)
             {
                 var hexGridOrigin = gameSessionStartConfiguration.HexGridOrigins[index];
-                int radius = gameStartConfiguration.GridRadius;
-                float tileSize = gameStartConfiguration.TileSize;
-                float tileHeight = gameStartConfiguration.TileHeight;
 
                 BuildingManager buildingManager = new BuildingManager();
 
@@ -71,6 +73,7 @@ namespace FortressForge.HexGrid
                 );
 
                 AllGrids.Add(gridData);
+                gridData.OnHoverTileChanged += tileData => OnHoverTileChanged?.Invoke(tileData);
             }
         }
 

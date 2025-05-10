@@ -6,5 +6,6 @@ namespace FortressForge.HexGrid
     {
         float SampleHeight(Vector3 position);
         float SampleHexHeight(Vector3 position, float tileHeight, float tileSize);
+        HexTileCoordinate GetHexTileCoordinate(Vector3 position, float tileHeight, float tileSize);
     }
 }

@@ -74,7 +74,7 @@ namespace FortressForge.HexGrid.Data
             {
                 IsOwned = IsOwned
             };
-            TileMap[newHexCoords].OnHoverChanged += OnHoverTileChangedEvent;
+            TileMap[newHexCoords].OnHoverChanged += tileData => OnHoverTileChanged?.Invoke(tileData);
             return TileMap[newHexCoords];
         }
 
@@ -163,11 +163,6 @@ namespace FortressForge.HexGrid.Data
                 position.R, 
                 Mathf.CeilToInt(terrainHeight / tileHeight)
             );
-        }
-        
-        private void OnHoverTileChangedEvent(HexTileData hexTileData)
-        {
-            OnHoverTileChanged?.Invoke(hexTileData);
         }
     }
 }

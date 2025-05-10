@@ -64,12 +64,8 @@ namespace FortressForge.HexGrid
             int vertexOffset = 0;
 
             // Estimate the grid bounds in axial coordinate space
-            float hexWidth = Mathf.Sqrt(3f) * tileRadius;
-            float hexHeight = 2f * tileRadius;
-            float vertStep = 0.75f * hexHeight;
-
-            int maxQ = Mathf.CeilToInt(maxX / hexWidth);
-            int maxR = Mathf.CeilToInt(maxZ / vertStep);
+            int maxQ = Mathf.CeilToInt(maxX / (tileRadius * Mathf.Sqrt(3f)));
+            int maxR = Mathf.CeilToInt(maxZ / (tileRadius * 1.5f));
 
             // Iterate all hex coordinates within estimated bounds
             for (int r = -maxR; r <= maxR; r++)
@@ -86,17 +82,7 @@ namespace FortressForge.HexGrid
                     if (basePos.x < 0 || basePos.x > maxX || basePos.z < 0 || basePos.z > maxZ)
                         continue;
 
-                    // Generate edges for each side of the hex tile
-                    for (int i = 0; i < 6; i++)
-                    {
-                        Vector3 v0 = basePos + hexDirs[i] * tileRadius;
-                        Vector3 v1 = basePos + hexDirs[(i + 1) % 6] * tileRadius;
-
-                        allVertices.Add(v0);
-                        allVertices.Add(v1);
-                        allIndices.Add(vertexOffset++);
-                        allIndices.Add(vertexOffset++);
-                    }
+                    vertexOffset = CreateRenderTile(basePos, hexDirs, tileRadius, allVertices, allIndices, vertexOffset);
                 }
             }
 
@@ -120,6 +106,23 @@ namespace FortressForge.HexGrid
 
             _meshFilter.mesh = mesh;
             gameObject.isStatic = true; // Enable static batching (optional)
+        }
+
+        private static int CreateRenderTile(Vector3 basePos, Vector3[] hexDirs, float tileRadius, List<Vector3> allVertices, List<int> allIndices, int vertexOffset)
+        {
+            // Generate edges for each side of the hex tile
+            for (int i = 0; i < 6; i++)
+            {
+                Vector3 v0 = basePos + hexDirs[i] * tileRadius;
+                Vector3 v1 = basePos + hexDirs[(i + 1) % 6] * tileRadius;
+
+                allVertices.Add(v0);
+                allVertices.Add(v1);
+                allIndices.Add(vertexOffset++);
+                allIndices.Add(vertexOffset++);
+            }
+
+            return vertexOffset;
         }
     }
 }

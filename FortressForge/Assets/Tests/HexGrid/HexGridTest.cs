@@ -13,6 +13,10 @@ namespace Tests.Hexgrid
     {
         public float SampleHeight(Vector3 position) => 0f;
         public float SampleHexHeight(Vector3 position, float tileHeight, float tileRadius) => 0f;
+        public HexTileCoordinate GetHexTileCoordinate(Vector3 position, float tileHeight, float tileRadius)
+        {
+            return new HexTileCoordinate(0, 0, 0);
+        }
     }
 
     [TestFixture]
