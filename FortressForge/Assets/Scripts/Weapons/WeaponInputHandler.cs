@@ -3,8 +3,6 @@ using FishNet.Object;
 using FortressForge.BuildingSystem.BuildingData;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Serialization;
-
 
 /// <summary>
 /// Handles input, aiming, and firing logic for a networked deployable weapon.
@@ -44,14 +42,6 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
         {
             throw new System.Exception("Could not find required transforms!");
         }
-    }
-
-    /// <summary>
-    /// Disables input actions on component enable. Input is only enabled manually (e.g., via mouse click).
-    /// </summary>
-    void OnEnable()
-    {
-        _weaponInputAction.WeaponInputActions.Disable();
     }
 
     /// <summary>
@@ -148,8 +138,8 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
         _angleInput = context.ReadValue<float>();
         stopAutoFire();
     }
-    
-    
+
+
     /// <summary>
     /// Server-side method to adjust the cannon’s elevation angle, with clamping.
     /// Syncs the updated angle with all clients.

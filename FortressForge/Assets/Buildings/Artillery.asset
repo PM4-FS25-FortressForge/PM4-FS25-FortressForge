@@ -12,10 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ad156cbb789edb4489d0d9e206747c9, type: 3}
   m_Name: Artillery
   m_EditorClassIdentifier: 
-  ShapeData:
-  - Q: 0
-    R: 0
-    H: 0
+  ShapeDataEntries:
+  - Coordinate:
+      Q: 0
+      R: 0
+      H: 0
+    IsStackable: 1
   BuildingPrefab: {fileID: 2769958289302531891, guid: 76360c13862af3348ba5d83bf754ccb8, type: 3}
   Name: Artillery
   MetalCost: 0
