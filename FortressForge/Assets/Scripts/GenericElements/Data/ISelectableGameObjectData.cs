@@ -23,5 +23,10 @@ namespace FortressForge.HexGrid.View {
             get => true;
             set => throw new NotImplementedException();
         }
+        
+        bool IsInvisible {
+            get => false;
+            set => throw new NotImplementedException();
+        }
     }
 }

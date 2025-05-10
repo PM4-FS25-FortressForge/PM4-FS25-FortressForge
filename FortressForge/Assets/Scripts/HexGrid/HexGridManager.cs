@@ -22,6 +22,7 @@ namespace FortressForge.HexGrid
         public static HexGridManager Instance { get; private set; }
 
         public List<HexGridData> AllGrids { get; } = new();
+        public HexGridData IndependentGrid => AllGrids.First(grid => grid.Id == -1);
 
         private TerrainHeightProvider _terrainHeightProvider;
 
@@ -46,10 +47,8 @@ namespace FortressForge.HexGrid
             float tileSize = gameStartConfiguration.TileSize;
             float tileHeight = gameStartConfiguration.TileHeight;
             
-            for (var index = 0; index < gameSessionStartConfiguration.HexGridOrigins.Count; index++)
+            for (var index = -1; index < gameSessionStartConfiguration.HexGridOrigins.Count; index++)
             {
-                var hexGridOrigin = gameSessionStartConfiguration.HexGridOrigins[index];
-
                 BuildingManager buildingManager = new BuildingManager();
 
                 // Example for max value application // TODO move or remove when actual max values are set
@@ -63,15 +62,21 @@ namespace FortressForge.HexGrid
 
                 HexGridData gridData = new HexGridData(
                     id: index,
-                    origin: hexGridOrigin,
-                    radius: radius,
                     tileSize: tileSize,
                     tileHeight: tileHeight,
                     terrainHeightProvider: _terrainHeightProvider,
                     economySystem: economySystem,
-                    buildingManager: buildingManager
+                    buildingManager: buildingManager,
+                    hexGridManager: this,
+                    isInvisible: index == -1
                 );
-
+                
+                if (index != -1)
+                {
+                    var hexGridOrigin = gameSessionStartConfiguration.HexGridOrigins[index];
+                    gridData.CreateStarterGrid(hexGridOrigin, radius);
+                }
+                
                 AllGrids.Add(gridData);
                 gridData.OnHoverTileChanged += tileData => OnHoverTileChanged?.Invoke(tileData);
             }
@@ -83,10 +88,17 @@ namespace FortressForge.HexGrid
         /// <param name="coordinate"></param>
         /// <returns>Returns the tile data or null if not found.</returns>
         [CanBeNull]
-        public HexTileData GetHexTileData(HexTileCoordinate coordinate)
+        public HexTileData GetHexTileDataOrCreate(HexTileCoordinate coordinate)
         {
-            return AllGrids.FirstOrDefault(grid => grid.TileMap.ContainsKey(coordinate))
+            // Find tile if it exist
+            var tile = AllGrids.FirstOrDefault(grid => grid.TileMap.ContainsKey(coordinate))
                 ?.TileMap[coordinate];
+            
+            // If not found, create a new tile
+            if (tile == null)
+                tile = IndependentGrid.CreateOrClaimHexTile(coordinate);
+            
+            return tile;
         } 
     }
 }

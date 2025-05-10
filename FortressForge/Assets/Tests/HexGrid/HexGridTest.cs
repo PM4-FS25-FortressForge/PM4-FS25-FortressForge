@@ -41,14 +41,15 @@ namespace Tests.Hexgrid
             _fakeTerrain = new FakeTerrainHeightProvider();
             _gridData = new HexGridData(
                 id: 1,
-                origin: Vector3.zero,
-                radius: 7,
                 tileSize: 1f,
                 tileHeight: 2f,
                 terrainHeightProvider: _fakeTerrain,
                 economySystem: economySystem,
-                buildingManager: buildingManager
+                buildingManager: buildingManager, 
+                hexGridManager: null
             );
+            
+            _gridData.CreateStarterGrid(Vector3.zero, 7);
         }
 
         [Test]

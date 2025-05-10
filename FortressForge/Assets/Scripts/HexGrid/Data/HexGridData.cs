@@ -19,7 +19,6 @@ namespace FortressForge.HexGrid.Data
     public class HexGridData
     {
         public event Action<HexTileData> OnHoverTileChanged;
-        public Vector3 Origin { get; private set; }
         public int Id { get; set; }
         
         public readonly float TileRadius;
@@ -27,32 +26,49 @@ namespace FortressForge.HexGrid.Data
         public readonly float TileHeight;
         
         public bool IsOwned { get; set; }
+        public bool IsInvisible { get; set; }
         
         public Dictionary<HexTileCoordinate, HexTileData> TileMap = new();
         public EconomySystem EconomySystem { get; private set; }
         public BuildingManager BuildingManager { get; private set; }
+        private HexGridManager _hexGridManager;
         
         public event Action<HexTileData, HexTileCoordinate> OnNewTileCreated;
+        public event Action<HexTileCoordinate> OnTileRemoved;
+        private readonly Dictionary<HexTileCoordinate, Action<HexTileData>> _hoverHandlers = new();
         
         private readonly ITerrainHeightProvider _terrainHeightProvider;
 
+        /// <summary>
+        /// Create a starter hex grid with the specified parameters.
+        /// </summary>
         public HexGridData(int id,
-            Vector3 origin,
-            int radius,
             float tileSize,
             float tileHeight,
             ITerrainHeightProvider terrainHeightProvider,
             EconomySystem economySystem,
-            BuildingManager buildingManager)
+            BuildingManager buildingManager,
+            HexGridManager hexGridManager,
+            bool isInvisible = false)
         {
             Id = id;
-            Origin = origin;
             TileRadius = tileSize;
             TileHeight = tileHeight;
             _terrainHeightProvider = terrainHeightProvider;
             EconomySystem = economySystem;
             BuildingManager = buildingManager;
+            _hexGridManager = hexGridManager;
+            IsInvisible = isInvisible;
+        }
 
+        /// <summary>
+        /// Create a starter hex grid with the specified parameters.
+        /// </summary>
+        /// <param name="origin"></param>
+        /// <param name="radius"></param>
+        /// <returns></returns>
+        public void CreateStarterGrid(Vector3 origin, int radius)
+        {
             for (int q = -radius; q <= radius; q++)
             {
                 int r1 = Math.Max(-radius, -q - radius);
@@ -63,19 +79,75 @@ namespace FortressForge.HexGrid.Data
                                                      new HexTileCoordinate(TileRadius, TileHeight, origin);
                     newHexCoords = GetTerrainHeightFromHexTileCoordinate(newHexCoords, TileRadius, TileHeight);
                                                      
-                    CreateNewHexTile(newHexCoords);
+                    CreateOrClaimHexTile(newHexCoords);
                 }
             }
         }
 
-        private HexTileData CreateNewHexTile(HexTileCoordinate newHexCoords)
+        public HexTileData CreateOrClaimHexTile(HexTileCoordinate newHexCoords)
         {
-            TileMap[newHexCoords] = new HexTileData(newHexCoords)
+            // Find if tile is in another grid already
+            HexGridData previousOwner = _hexGridManager.AllGrids
+                .FirstOrDefault(grid => grid.TileMap.ContainsKey(newHexCoords));
+            if (previousOwner != null)
             {
-                IsOwned = IsOwned
-            };
-            TileMap[newHexCoords].OnHoverChanged += tileData => OnHoverTileChanged?.Invoke(tileData);
+                // Check if the owner is the independent grid, in this case, we can just claim it.
+                if (previousOwner == _hexGridManager.IndependentGrid)
+                {
+                    ClaimTile(newHexCoords);
+                }
+                else
+                {
+                    // If the tile is owned by another grid, do nothing and return null.
+                    Debug.LogWarning("Tile already owned by another grid. Cannot create new tile.");
+                    return null;
+                }
+            }
+            else
+            {
+                CreateTile(newHexCoords);
+            }
+            
+
             return TileMap[newHexCoords];
+        }
+        
+        private void ClaimTile(HexTileCoordinate newHexCoords)
+        {
+            RemoveTile(newHexCoords);
+            CreateTile(newHexCoords);
+        }
+
+        private void CreateTile(HexTileCoordinate newHexCoords)
+        {
+            var tile = new HexTileData(newHexCoords)
+            {
+                IsOwned = IsOwned,
+                IsInvisible = IsInvisible,
+            };
+            
+            // Create and store the delegate
+            Action<HexTileData> handler = tileData => OnHoverTileChanged?.Invoke(tileData);
+            _hoverHandlers[newHexCoords] = handler;
+
+            tile.OnHoverChanged += handler;
+            OnNewTileCreated?.Invoke(tile, newHexCoords);
+            TileMap[newHexCoords] = tile;                
+        }
+        
+        private void RemoveTile(HexTileCoordinate hexCoord)
+        {
+            if (TileMap.TryGetValue(hexCoord, out var tile))
+            {
+                if (_hoverHandlers.TryGetValue(hexCoord, out var handler))
+                {
+                    tile.OnHoverChanged -= handler;
+                    _hoverHandlers.Remove(hexCoord);
+                }
+
+                TileMap.Remove(hexCoord);
+            }
+            OnTileRemoved?.Invoke(hexCoord);
         }
 
         /// <summary>
@@ -147,8 +219,7 @@ namespace FortressForge.HexGrid.Data
             if (tileData == null)
             {
                 HexTileCoordinate newHexCoords = hexCoord + new HexTileCoordinate(0, 0, 1);
-                HexTileData hexTileData = CreateNewHexTile(newHexCoords);
-                OnNewTileCreated?.Invoke(hexTileData, newHexCoords); 
+                CreateOrClaimHexTile(newHexCoords);
             }
         }
 

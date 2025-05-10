@@ -142,7 +142,7 @@ namespace FortressForge.BuildingSystem.BuildManager
                 var worldCoord = offset + origin;
 
                 // Take any grid and mark the tile as a build target
-                var tile = _hexGridManager.GetHexTileData(worldCoord);
+                var tile = _hexGridManager.GetHexTileDataOrCreate(worldCoord);
 
                 if (tile != null)
                 {
@@ -158,7 +158,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         {
             foreach (HexTileCoordinate coord in _currentBuildTargets)
             {
-                var tile = _hexGridManager.GetHexTileData(coord);
+                var tile = _hexGridManager.GetHexTileDataOrCreate(coord);
                 if (tile == null) continue;
                 
                 tile.IsBuildTarget = false;

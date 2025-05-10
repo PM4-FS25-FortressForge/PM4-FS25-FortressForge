@@ -17,6 +17,7 @@ namespace FortressForge.HexGrid.Data
         private bool _isBuildTarget;
         private bool _isMouseTarget;
         private bool _isOwned;
+        private bool _isInvisible;
 
         public bool IsOccupied
         {
@@ -66,6 +67,19 @@ namespace FortressForge.HexGrid.Data
                 if (_isOwned != value)
                 {
                     _isOwned = value;
+                    OnChanged?.Invoke(this);
+                }
+            }
+        }
+        
+        public bool IsInvisible
+        {
+            get => _isInvisible;
+            set
+            {
+                if (_isInvisible != value)
+                {
+                    _isInvisible = value;
                     OnChanged?.Invoke(this);
                 }
             }
