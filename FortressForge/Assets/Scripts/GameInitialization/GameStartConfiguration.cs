@@ -16,6 +16,9 @@ namespace FortressForge.GameInitialization
         [Header("Available Buildings")]
         public List<BaseBuildingTemplate> availableBuildings = new();
         
+        [Header("Core Building")]
+        public BaseBuildingTemplate coreBuilding;
+        
         [Header("HexGrid Konfiguration")]
         public int Radius;
         public float TileSize;

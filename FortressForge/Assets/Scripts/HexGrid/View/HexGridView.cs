@@ -35,6 +35,19 @@ namespace FortressForge.HexGrid.View
             InitializeHexGridView();
         }
         
+        public HexTileView GetTileView(HexTileCoordinate coords)
+        {
+            if (_tileViews.TryGetValue(coords, out var tileView))
+            {
+                return tileView;
+            }
+            else
+            {
+                Debug.LogWarning($"HexGridView: TileView not found for coordinates {coords}");
+                return null;
+            }
+        }
+        
         /// <summary>
         /// Handles setup when a new tile is created.
         /// </summary>

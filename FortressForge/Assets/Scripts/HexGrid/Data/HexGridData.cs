@@ -64,6 +64,35 @@ namespace FortressForge.HexGrid.Data
                 }
             }
         }
+        
+        public HexGridData (
+            int gridId,
+            Vector3 terrainOrigin,
+            int terrainWidth,
+            int terrainLength,
+            float tileSize,
+            float tileHeight,
+            ITerrainHeightProvider terrainHeightProvider)
+        {
+            TileRadius = tileSize;
+            TileHeight = tileHeight;
+            _terrainHeightProvider = terrainHeightProvider;
+            
+            for (int x = 0; x < terrainWidth; x++)
+            {
+                for (int z = 0; z < terrainLength; z++)
+                {
+                    int q = x;
+                    int r = z;
+
+                    HexTileCoordinate newHexCoords = new HexTileCoordinate(q, r, 0);
+                    newHexCoords = newHexCoords + new HexTileCoordinate(tileSize, tileHeight, terrainOrigin);
+                    newHexCoords = GetTerrainHeightFromHexTileCoordinate(newHexCoords);
+                    
+                    CreateNewHexTile(newHexCoords);
+                }
+            }
+        }
 
         private HexTileData CreateNewHexTile(HexTileCoordinate newHexCoords)
         {
