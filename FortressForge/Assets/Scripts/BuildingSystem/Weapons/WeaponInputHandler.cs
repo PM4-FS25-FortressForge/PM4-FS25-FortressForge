@@ -121,11 +121,17 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
         }
     }
 
+    /// <summary>
+    /// Rotation logic
+    /// </summary>
     private void RotateTowerBase(float rotationInput, float deltaTime)
     {
         _towerBase.Rotate(Vector3.forward, rotationInput * _constants.rotationSpeed * deltaTime);
     }
 
+    /// <summary>
+    /// Angle logic
+    /// </summary>
     private void AdjustCannonAngle(float angleInput, float deltaTime)
     {
         // current rotation

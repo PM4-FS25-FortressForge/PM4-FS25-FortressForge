@@ -8,7 +8,8 @@ namespace FortressForge.BuildingSystem.BuildingData
     [CreateAssetMenu(fileName = "New Building", menuName = "Buildings/WeaponBuilding")]
     public class WeaponBuildingTemplate : BaseBuildingTemplate
     {
-        [Header("Building Data")] public int BuildingHealth;
+        [Header("Building Data")] 
+        public int BuildingHealth;
 
         [Header("Weapon Data")] 
         public int baseDamage;
