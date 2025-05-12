@@ -67,6 +67,10 @@ namespace Tests.GameOverlay
             // get the TemplateContainer
             VisualElement resourceView = _root.Q<VisualElement>(className: "ressource-root");
             Assert.IsNotNull(resourceView, "Resource View not found in the scene.");
+            
+            // check for magma container
+            VisualElement planetView = _root.Q<VisualElement>(className: "root-frame");
+            Assert.IsNotNull(planetView, "Planet View not found in the scene.");
 
             // check if there are two RessourceContainers
             List<VisualElement> resourceContainersLeft = resourceView.Query<VisualElement>("ressource-container-left").Children<VisualElement>().ToList();
