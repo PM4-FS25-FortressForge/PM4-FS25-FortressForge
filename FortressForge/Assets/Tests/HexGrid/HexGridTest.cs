@@ -32,7 +32,8 @@ namespace Tests.Hexgrid
                 { ResourceType.Metal, 10000f },
             };
 
-            EconomySystem economySystem = new EconomySystem(buildingManager, maxValues);
+            var gloabalEconomy = new GlobalEconomy(0f);
+            EconomySystem economySystem = new EconomySystem(buildingManager, gloabalEconomy, maxValues);
 
             _fakeTerrain = new FakeTerrainHeightProvider();
             _gridData = new HexGridData(

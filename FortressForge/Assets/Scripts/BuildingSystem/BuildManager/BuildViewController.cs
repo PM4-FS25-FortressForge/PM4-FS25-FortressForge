@@ -193,12 +193,18 @@ namespace FortressForge.BuildingSystem.BuildManager
                 return;
             }
 
-            targetGrid.MarkBuildingTiles(coord, rotatedShape, isStackableList);
-            targetGrid.EconomySystem.PayResource(template.GetBuildCost());
-
             Vector3 pos = coord.GetWorldPosition(_config.Radius, _config.TileHeight) + GetAveragePosition(rotatedShape);
             Quaternion rot = Quaternion.Euler(0f, rotation, 0f) * template.BuildingPrefab.transform.rotation;
             GameObject prefab =  SpawnNetworked(template.BuildingPrefab, pos, rot);
+            
+            if (prefab == null)
+            {
+                Debug.LogError("Failed to spawn building prefab.");
+                return;
+            }
+
+            targetGrid.MarkBuildingTiles(coord, rotatedShape, isStackableList);
+            targetGrid.EconomySystem.PayResource(template.GetBuildCost());
             
             // Add reference to building manager for later use.
             List<HexTileData> tileDatas = globalRotatedShape
@@ -304,6 +310,11 @@ namespace FortressForge.BuildingSystem.BuildManager
             {
                 int gridId = _ownedHexGridDatas[0].Id;
                 parent = GameObject.Find("BuildingContainer_Grid_" + gridId).transform;
+            }
+            if (prefab.GetComponent<NetworkObject>() == null)
+            {
+                Debug.LogError("Prefab does not have a NetworkObject component.");
+                return null;
             }
             GameObject obj = Instantiate(prefab, pos, rot, parent);
             InstanceFinder.ServerManager.Spawn(obj);

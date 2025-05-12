@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using FishNet.Object.Synchronizing;
 using FortressForge.Economy;
 using FortressForge.Networking;
@@ -16,12 +17,15 @@ namespace FortressForge.UI
     {
         public UIDocument OverlayUIDocument;
         public VisualTreeAsset ResourceContainerAsset;
+        public VisualTreeAsset PlanetViewContainerAsset;
 
         private VisualElement _overlayRoot;
         private VisualElement _overlayFrame;
         private Image _overlayImage;
 
         private readonly Dictionary<ResourceType, FillableRessourceContainer> _fillableRessourceContainers = new();
+        private VisualElement _planetFill;
+        private Label _planetChangeRateLabel;
 
         /// <summary>
         /// Initializes the TopTrapezViewGenerator with the provided EconomySync instance.
@@ -38,6 +42,12 @@ namespace FortressForge.UI
             economySync.SyncedResources.OnChange += (op, key, value, asServer) =>
             {
                 if (op != SyncDictionaryOperation.Set) return; // Only update on set operation
+                if (key == ResourceType.GlobalMagma)
+                {
+                    UpdatePlanetMagmaFillableContainer(value);
+                    return;
+                }
+                
                 if (_fillableRessourceContainers.TryGetValue(key, out var container))
                 {
                     UpdateRessourceFillableContainer(_overlayFrame, container, value);
@@ -47,6 +57,12 @@ namespace FortressForge.UI
             // Optionally preload initial values
             foreach (var entry in economySync.SyncedResources)
             {
+                if (entry.Key == ResourceType.GlobalMagma)
+                {
+                    UpdatePlanetMagmaFillableContainer(entry.Value);
+                    break;
+                }
+                
                 if (_fillableRessourceContainers.TryGetValue(entry.Key, out var container))
                 {
                     UpdateRessourceFillableContainer(_overlayFrame, container, entry.Value);
@@ -76,7 +92,7 @@ namespace FortressForge.UI
                 Debug.Log("OverlayFrame not found!");
                 return;
             }
-
+            
             TrapezElement trapezElement = CreateTrapezElement("trapez-frame", "top-trapez-frame");
             _overlayFrame.Add(trapezElement);
 
@@ -90,11 +106,21 @@ namespace FortressForge.UI
             }
 
             VisualElement resourceContainer = ResourceContainerAsset.CloneTree();
-            resourceContainer.AddToClassList("ressource-container");
-            trapezElement.Add(resourceContainer);
+            VisualElement planetContainer = PlanetViewContainerAsset.CloneTree();
+            
+            _planetFill = planetContainer.Q<VisualElement>("PlanetFill");
+            _planetChangeRateLabel = planetContainer.Q<Label>("MagmaPercentageLabel");
+
+            if (_planetFill == null)
+            {
+                Debug.LogError("PlanetFill element not found in UXML!");
+            }
+            
+            trapezElement.Add(planetContainer);
+            ressourceContainerTrapezoid.Add(resourceContainer);
 
             LoadRessourceFillContainer("FillableRessourceContainer-left-top", resourceContainer, ResourceType.Power, "Energy");
-            LoadRessourceFillContainer("FillableRessourceContainer-right-top", resourceContainer, ResourceType.Amunition, "Munition");
+            LoadRessourceFillContainer("FillableRessourceContainer-right-top", resourceContainer, ResourceType.Magma, "Magma");
             LoadRessourceFillContainer("FillableRessourceContainer-left-bottom", resourceContainer, ResourceType.Metal, "Metal");
             LoadRessourceFillContainer("FillableRessourceContainer-right-bottom", resourceContainer, ResourceType.Concrete, "Concrete");
         }
@@ -185,6 +211,20 @@ namespace FortressForge.UI
             if (changeRateLabel != null)
             {
                 changeRateLabel.text = resource.DeltaAmount > 0 ? $"+{resource.DeltaAmount}" : resource.DeltaAmount < 0 ? $"{resource.DeltaAmount}" : "0";
+            }
+        }
+
+        private void UpdatePlanetMagmaFillableContainer(ResourceDto resource)
+        {
+            if (resource.Type == ResourceType.GlobalMagma && _planetFill != null)
+            {
+                float fillPercent = Mathf.Clamp01(resource.CurrentAmount / resource.MaxAmount);
+                _planetFill.style.height = new Length(fillPercent * 100f, LengthUnit.Percent);
+
+                if (_planetChangeRateLabel != null)
+                {
+                    _planetChangeRateLabel.text = $"{Math.Round(fillPercent * 100f)}%";
+                }
             }
         }
     }

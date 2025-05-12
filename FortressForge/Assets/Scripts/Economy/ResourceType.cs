@@ -22,12 +22,6 @@
         Magma,
         
         /// <summary>
-        /// Represents Magma shared across all clients. And the whole Planet.
-        /// Only used for Networking.
-        /// </summary>
-        GlobalMagma,
-        
-        /// <summary>
         /// Used for fireing weapons. Is being made from metal.
         /// </summary>
         Amunition,
@@ -35,6 +29,12 @@
         /// <summary>
         /// Basic raw material, inferior to metal and in greater quantities.
         /// </summary>
-        Concrete
+        Concrete,
+        
+        /// <summary>
+        /// Represents Magma shared across all clients. And the whole Planet.
+        /// Only used for Networking.
+        /// </summary>
+        GlobalMagma,
     }
 }

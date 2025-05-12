@@ -56,7 +56,11 @@ namespace FortressForge.Economy
             
             Dictionary<ResourceType, float> newResources = CalculateSumOfNewResources(totalResourceChanges);
             Dictionary<ResourceType, float> positiveNewResources = StabilizeEconomy(ref newResources, ref resourceChangesPerActor);
-            ApplyMagmaChanges(positiveNewResources[ResourceType.Magma]);
+            
+            // Revert magma changes to the global economy
+            var resourceChanges = GetResourceChanges(resourceChangesPerActor);
+            if (resourceChanges.TryGetValue(ResourceType.Magma, out var magmaResourceChange)) 
+                ApplyMagmaChanges(magmaResourceChange);
             
             foreach (ResourceType resourceType in AllResourceTypes)
             {
