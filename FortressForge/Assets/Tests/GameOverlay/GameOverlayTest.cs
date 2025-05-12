@@ -65,7 +65,7 @@ namespace Tests.GameOverlay
         public IEnumerator TestRessourceViewExists()
         {
             // get the TemplateContainer
-            TemplateContainer resourceView = _root.Q<TemplateContainer>(className: "ressource-container");
+            VisualElement resourceView = _root.Q<VisualElement>(className: "ressource-root");
             Assert.IsNotNull(resourceView, "Resource View not found in the scene.");
 
             // check if there are two RessourceContainers
