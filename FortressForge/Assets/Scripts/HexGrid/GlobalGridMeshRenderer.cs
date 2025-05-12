@@ -1,7 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading.Tasks;
 using UnityEngine;
 using FortressForge.GameInitialization;
 using FortressForge.HexGrid.Data;
+using Debug = UnityEngine.Debug;
 
 namespace FortressForge.HexGrid
 {
@@ -35,15 +38,17 @@ namespace FortressForge.HexGrid
             _meshRenderer = GetComponent<MeshRenderer>();
             _meshRenderer.material = _gameStartConfiguration.MeshTilesMaterial;
 
-            BakeHexEdgeMesh();
+            BakeHexEdgeMesh1();
         }
 
         /// <summary>
         /// Builds a mesh containing the wireframe edges of all valid hex tiles on the terrain.
         /// Tiles are adjusted to match terrain height using the height provider.
         /// </summary>
-        private void BakeHexEdgeMesh()
+        private void BakeHexEdgeMesh1()
         {
+            var sw = Stopwatch.StartNew();
+            
             float tileRadius = _gameStartConfiguration.TileSize;
             float tileHeight = _gameStartConfiguration.TileHeight;
             var terrainSize = _gameStartConfiguration.Terrain.terrainData.size;
@@ -57,15 +62,15 @@ namespace FortressForge.HexGrid
                 float angle = Mathf.Deg2Rad * (60f * i);
                 hexDirs[i] = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle));
             }
+            
+            // Estimate the grid bounds in axial coordinate space
+            int maxQ = Mathf.CeilToInt(maxX / (tileRadius * Mathf.Sqrt(3f)));
+            int maxR = Mathf.CeilToInt(maxZ / (tileRadius * 1.5f));
 
             // Accumulators for building a single wireframe mesh
             List<Vector3> allVertices = new();
             List<int> allIndices = new();
             int vertexOffset = 0;
-
-            // Estimate the grid bounds in axial coordinate space
-            int maxQ = Mathf.CeilToInt(maxX / (tileRadius * Mathf.Sqrt(3f)));
-            int maxR = Mathf.CeilToInt(maxZ / (tileRadius * 1.5f));
 
             // Iterate all hex coordinates within estimated bounds
             for (int r = -maxR; r <= maxR; r++)
@@ -74,18 +79,18 @@ namespace FortressForge.HexGrid
                 {
                     var coord = new HexTileCoordinate(q, r, 0);
                     Vector3 basePos = coord.GetWorldPosition(tileRadius, tileHeight);
-
-                    // Sample terrain height at the tile center
-                    basePos.y = _terrainHeightProvider.SampleHexHeight(basePos, tileHeight, tileRadius);
-
+                    
                     // Clip tiles outside terrain bounds
                     if (basePos.x < 0 || basePos.x > maxX || basePos.z < 0 || basePos.z > maxZ)
                         continue;
-
+                    
+                    // Sample terrain height at the tile center
+                    basePos.y = _terrainHeightProvider.SampleHexHeight(basePos, tileHeight, tileRadius);
+                    
                     vertexOffset = CreateRenderTile(basePos, hexDirs, tileRadius, allVertices, allIndices, vertexOffset);
                 }
             }
-
+            
             // If no tiles were generated, print a warning
             if (allVertices.Count == 0)
             {
@@ -106,12 +111,14 @@ namespace FortressForge.HexGrid
 
             _meshFilter.mesh = mesh;
             gameObject.isStatic = true; // Enable static batching (optional)
+
+            Debug.Log($"Hex grid mesh generated in {sw.Elapsed.Ticks / 10000} ms");
         }
 
         private static int CreateRenderTile(Vector3 basePos, Vector3[] hexDirs, float tileRadius, List<Vector3> allVertices, List<int> allIndices, int vertexOffset)
         {
             // Generate edges for each side of the hex tile
-            for (int i = 0; i < 6; i++)
+            for (int i = 0; i < 3; i++)
             {
                 Vector3 v0 = basePos + hexDirs[i] * tileRadius;
                 Vector3 v1 = basePos + hexDirs[(i + 1) % 6] * tileRadius;

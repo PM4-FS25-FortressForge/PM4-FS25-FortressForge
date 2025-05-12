@@ -75,7 +75,7 @@ namespace FortressForge.CameraControll
         private InputAction _zoomButtons;
         private InputAction _pitchAction;
 
-        private ITerrainHeightProvider _terrainHeightProvider = new TerrainHeightProvider();
+        private ITerrainHeightProvider _terrainHeightProvider;
         private float _targetHeight; // target terrain height that will be reached by SmoothDamp
         private float _heightVelocity; // Needed for SmoothDamp (in the UpdateCameraPosition methode)
         private float _heightSmoothTime = 0.5f; // Higher = smoother but less accurate
@@ -93,6 +93,7 @@ namespace FortressForge.CameraControll
         /// </summary>
         void Start()
         {
+            _terrainHeightProvider = new TerrainHeightProvider();
             // Input initialization of playerInput Unity Object and error managment
             _playerInput = GetComponent<PlayerInput>();
             if (_playerInput == null) //Test if the playerInput Unity Object is found
