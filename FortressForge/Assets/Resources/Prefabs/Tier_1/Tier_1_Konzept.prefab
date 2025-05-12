@@ -45,6 +45,7 @@ GameObject:
   - component: {fileID: -2940466027783819273}
   - component: {fileID: -4506312223431254080}
   - component: {fileID: 768717479293063548}
+  - component: {fileID: -2864747656303959849}
   m_Layer: 0
   m_Name: Tier_1_Konzept
   m_TagString: Untagged
@@ -218,6 +219,22 @@ MonoBehaviour:
     X: 0
     Y: 0
     Z: 0
+--- !u!114 &-2864747656303959849
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2769958289302531891}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89965f26f713f834f924ec2e0400175a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _componentIndexCache: 255
+  _addedNetworkObject: {fileID: -2940466027783819273}
+  _networkObjectCache: {fileID: 0}
+  _constants: {fileID: 11400000, guid: 144de24a11567824284fa9f68f35e9d6, type: 2}
 --- !u!1 &3313136294588837289
 GameObject:
   m_ObjectHideFlags: 0

@@ -27,6 +27,7 @@ public class Ammunition : NetworkBehaviour
     {
         if (!IsServer) return;
 
+        
         BuildingHealthStateTracker target = collision.gameObject.GetComponentInParent<BuildingHealthStateTracker>();
         if (target != null)
         {

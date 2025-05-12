@@ -41,7 +41,6 @@ public class BuildingHealthStateTracker : NetworkBehaviour
     [Server]
     public void ApplyDamage(int damage)
     {
-        if (IsDestroyed) return;
         _constants.BuildingHealth -= damage;
         HandleBuildingStatus();
     }
