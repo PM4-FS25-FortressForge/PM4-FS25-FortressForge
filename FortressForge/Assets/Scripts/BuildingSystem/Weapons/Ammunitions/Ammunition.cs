@@ -18,20 +18,7 @@ public class Ammunition : NetworkBehaviour
     {
         _rigidbody = GetComponent<Rigidbody>();
     }
-/*
-    /// <summary>
-    /// Sets the projectile's velocity on all clients to synchronize its initial motion.
-    /// Called from the server after spawning.
-    /// </summary>
-    [ObserversRpc]
-    public void SetInitialVelocity(Vector3 velocity)
-    {
-        if (_rigidbody != null)
-        {
-            _rigidbody.velocity = velocity;
-        }
-    }
-*/
+
     /// <summary>
     /// Automatically despawns the projectile when it collides with another object.
     /// Only executed on the server and broadcasted to all clients.
