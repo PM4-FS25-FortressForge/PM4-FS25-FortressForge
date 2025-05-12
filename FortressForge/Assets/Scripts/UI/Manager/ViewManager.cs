@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -55,6 +56,11 @@ namespace FortressForge.UI.Manager
             _gameRoomView = FindFirstObjectByType<GameRoomView>();
 
             PopulateTextFieldsForFasterDevelopment();
+        }
+
+        public void OnDisable()
+        {
+            UnregisterCallbacks();
         }
 
         /// <summary>
@@ -179,10 +185,10 @@ namespace FortressForge.UI.Manager
             InstanceFinder.TransportManager.Transport.SetServerBindAddress(_serverIP, IPAddressType.IPv4);
             try
             {
-                bool trst = InstanceFinder.ServerManager.StartConnection();
-                Debug.Log("ServerManager StartConnection: " + trst);
+                InstanceFinder.ServerManager.StartConnection();
+                Debug.Log("ServerManager StartConnection: ");
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 Debug.LogError("❌ Server konnte nicht gestartet werden: " + e.Message);
                 ShowConnectionError();
@@ -190,7 +196,6 @@ namespace FortressForge.UI.Manager
             }
 
             InstanceFinder.ClientManager.StartConnection(_serverIP);
-            // Debug.Log("✅ Server gestartet auf: " + _serverIP);
             Debug.Log($"✅ Server gestartet auf: {_serverIP}:{InstanceFinder.TransportManager.Transport.GetPort()}");
         }
 
@@ -497,7 +502,7 @@ namespace FortressForge.UI.Manager
 
             foreach (IPAddress ip in Dns.GetHostAddresses(Dns.GetHostName()))
             {
-                if (ip.AddressFamily != System.Net.Sockets.AddressFamily.InterNetwork) continue;
+                if (ip.AddressFamily != AddressFamily.InterNetwork) continue;
                 localIP = ip.ToString();
                 break;
             }
@@ -544,6 +549,25 @@ namespace FortressForge.UI.Manager
             if (ipField != null)
             {
                 ipField.value = GetLocalIPAddress();
+            }
+        }
+
+        /// <summary>
+        /// Unregister all callbacks to avoid memory leaks
+        /// </summary>
+        private void UnregisterCallbacks()
+        {
+            try
+            {
+                InstanceFinder.ClientManager.OnClientConnectionState -= OnServerEndedConnection;
+                _startGameButton?.UnregisterCallback((ClickEvent _) => StartGame());
+                _joinGameButton?.UnregisterCallback((ClickEvent _) => JoinGame());
+                _returnToLobbyButton?.UnregisterCallback((ClickEvent _) => ReturnToLobby());
+                _startMatchButton?.UnregisterCallback((ClickEvent _) => StartMatch());
+            }
+            catch (Exception e)
+            {
+                Debug.Log($"Error unregistering callbacks: {e.Message}");
             }
         }
     }

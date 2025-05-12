@@ -94,11 +94,11 @@ namespace FortressForge.UI
             trapezElement.Add(resourceContainer);
 
             LoadRessourceFillContainer("FillableRessourceContainer-left-top", resourceContainer, ResourceType.Power, "Energy");
-            LoadRessourceFillContainer("FillableRessourceContainer-right-top", resourceContainer, ResourceType.Magma, "Magma");
+            LoadRessourceFillContainer("FillableRessourceContainer-right-top", resourceContainer, ResourceType.Amunition, "Munition");
             LoadRessourceFillContainer("FillableRessourceContainer-left-bottom", resourceContainer, ResourceType.Metal, "Metal");
-            LoadRessourceFillContainer("FillableRessourceContainer-right-bottom", resourceContainer, ResourceType.GlobalMagma, "Global Magma");
+            LoadRessourceFillContainer("FillableRessourceContainer-right-bottom", resourceContainer, ResourceType.Concrete, "Concrete");
         }
-
+ 
         /// <summary>
         /// Creates a new TrapezElement with the specified selector and optional class name.
         /// </summary>
