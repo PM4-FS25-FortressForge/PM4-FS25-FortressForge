@@ -1,4 +1,5 @@
 using FishNet.Object;
+using FortressForge.BuildingSystem.BuildingData;
 using UnityEngine;
 
 /// <summary>
@@ -7,6 +8,7 @@ using UnityEngine;
 /// </summary>
 public class Ammunition : NetworkBehaviour
 {
+    [SerializeField] private WeaponBuildingTemplate _constants;
     private Rigidbody _rigidbody;
 
     /// <summary>
@@ -16,7 +18,7 @@ public class Ammunition : NetworkBehaviour
     {
         _rigidbody = GetComponent<Rigidbody>();
     }
-
+/*
     /// <summary>
     /// Sets the projectile's velocity on all clients to synchronize its initial motion.
     /// Called from the server after spawning.
@@ -29,16 +31,21 @@ public class Ammunition : NetworkBehaviour
             _rigidbody.velocity = velocity;
         }
     }
-
+*/
     /// <summary>
     /// Automatically despawns the projectile when it collides with another object.
     /// Only executed on the server and broadcasted to all clients.
     /// </summary>
     private void OnCollisionEnter(Collision collision)
     {
-        if (IsServer)
+        if (!IsServer) return;
+
+        BuildingHealthStateTracker target = collision.gameObject.GetComponentInParent<BuildingHealthStateTracker>();
+        if (target != null)
         {
-            Despawn();
+            target.ApplyDamage(_constants.baseDamage);
         }
+
+        Despawn();
     }
 }
