@@ -35,6 +35,8 @@ namespace FortressForge.HexGrid
             
             if (_currentlyHoveredTile == null)
             {
+                // We get the currently hovered tile so it gets spawned. 
+                // We dont attach it to the _currentlyHoveredTile yet, because we want the tile to trigger this via onHoverTileChanged
                 GetCurrentlyHoveredTile();
             }
         }

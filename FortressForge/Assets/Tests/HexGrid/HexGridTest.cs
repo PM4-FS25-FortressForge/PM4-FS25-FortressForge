@@ -37,7 +37,9 @@ namespace Tests.Hexgrid
             };
 
             EconomySystem economySystem = new EconomySystem(buildingManager, maxValues);
-
+            // Test only need monobehaviour for test so we can initialize via contructor
+            HexGridManager hexGridManager = new HexGridManager();
+            
             _fakeTerrain = new FakeTerrainHeightProvider();
             _gridData = new HexGridData(
                 id: 1,
@@ -46,9 +48,10 @@ namespace Tests.Hexgrid
                 terrainHeightProvider: _fakeTerrain,
                 economySystem: economySystem,
                 buildingManager: buildingManager, 
-                hexGridManager: null
+                hexGridManager: hexGridManager
             );
             
+            hexGridManager.AddGrid(_gridData);
             _gridData.CreateStarterGrid(Vector3.zero, 7);
         }
 

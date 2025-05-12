@@ -101,6 +101,11 @@ namespace FortressForge.HexGrid
                 tile = IndependentGrid.CreateOrClaimHexTile(coordinate);
             
             return tile;
-        } 
+        }
+
+        public void AddGrid(HexGridData gridData) {
+            AllGrids.Add(gridData);
+            gridData.OnHoverTileChanged += tileData => OnHoverTileChanged?.Invoke(tileData);
+        }
     }
 }
