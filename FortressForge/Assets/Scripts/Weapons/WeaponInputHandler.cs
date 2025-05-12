@@ -35,6 +35,7 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
     {
         _weaponInputAction = new WeaponInputAction();
         _weaponInputAction.WeaponInputActions.SetCallbacks(this);
+
         _firePoint = transform.Find("Geschuetzturm/Lauf/FirePoint");
         _towerBase = transform.Find("Geschuetzturm");
         _cannonShaft = transform.Find("Geschuetzturm/Lauf");
@@ -58,16 +59,14 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
     /// </summary>
     void Update()
     {
-        // Rotate the weapon "tower"
         if (Mathf.Abs(_rotateInput) > 0.01f)
         {
-            updateWeaponRotationServerRpc(_rotateInput, Time.deltaTime);
+            RotateTowerBase(_rotateInput, Time.deltaTime);
         }
 
-        // Adjust weapon angle
         if (Mathf.Abs(_angleInput) > 0.01f)
         {
-            updateWeaponAngleServerRpc(_angleInput, Time.deltaTime);
+            AdjustCannonAngle(_angleInput, Time.deltaTime);
         }
     }
 
@@ -77,7 +76,7 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
     /// </summary>
     void OnMouseDown()
     {
-        if (!_isInFightMode)
+        if (!_isInFightMode && IsOwner)
         {
             _isInFightMode = true;
             _weaponInputAction.WeaponInputActions.Enable();
@@ -90,7 +89,7 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
     /// </summary>
     public void OnExitFightMode(InputAction.CallbackContext context)
     {
-        if (context.performed && _isInFightMode)
+        if (context.performed && _isInFightMode && IsOwner)
         {
             _isInFightMode = false;
             _weaponInputAction.WeaponInputActions.Disable();
@@ -103,30 +102,10 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
     /// </summary>
     public void OnRotateWeapon(InputAction.CallbackContext context)
     {
-        _rotateInput = context.ReadValue<float>();
-        stopAutoFire();
-    }
-
-    /// <summary>
-    /// Server-side method to rotate the weapon base.
-    /// Syncs the rotation with clients.
-    /// </summary>
-    [ServerRpc(RequireOwnership = false)]
-    public void updateWeaponRotationServerRpc(float rotationInput, float deltaTime)
-    {
-        _towerBase.Rotate(Vector3.forward, rotationInput * _constants.rotationSpeed * deltaTime);
-        UpdateWeaponRotationObserversRpc(_towerBase.localEulerAngles);
-    }
-
-    /// <summary>
-    /// RPC to update the tower base rotation for all observing clients.
-    /// </summary>
-    [ObserversRpc]
-    private void UpdateWeaponRotationObserversRpc(Vector3 newRotation)
-    {
-        if (!IsServer)
+        if (context.performed && IsOwner)
         {
-            _towerBase.localEulerAngles = newRotation;
+            _rotateInput = context.ReadValue<float>();
+            stopAutoFire();
         }
     }
 
@@ -135,23 +114,26 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
     /// </summary>
     public void OnAdjustWeaponAngle(InputAction.CallbackContext context)
     {
-        _angleInput = context.ReadValue<float>();
-        stopAutoFire();
+        if (context.performed && IsOwner)
+        {
+            _angleInput = context.ReadValue<float>();
+            stopAutoFire();
+        }
     }
 
+    private void RotateTowerBase(float rotationInput, float deltaTime)
+    {
+        _towerBase.Rotate(Vector3.forward, rotationInput * _constants.rotationSpeed * deltaTime);
+    }
 
-    /// <summary>
-    /// Server-side method to adjust the cannon’s elevation angle, with clamping.
-    /// Syncs the updated angle with all clients.
-    /// </summary>
-    [ServerRpc(RequireOwnership = false)]
-    public void updateWeaponAngleServerRpc(float angleInput, float deltaTime)
+    private void AdjustCannonAngle(float angleInput, float deltaTime)
     {
         // current rotation
         Vector3 currentRotation = _cannonShaft.localEulerAngles;
 
         // Convert to signed angle (-180 to 180)
         float currentPitch = currentRotation.x;
+
         if (currentPitch > 180f) currentPitch -= 360f;
 
         // Calculate new pitch
@@ -162,20 +144,6 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
 
         // Apply adjusted angle
         _cannonShaft.localEulerAngles = new Vector3(newPitch, currentRotation.x, currentRotation.z);
-
-        UpdateWeaponAngleObserversRpc(new Vector3(newPitch, currentRotation.x, currentRotation.z));
-    }
-
-    /// <summary>
-    /// RPC to update the cannon shaft angle on all observing clients.
-    /// </summary>
-    [ObserversRpc]
-    public void UpdateWeaponAngleObserversRpc(Vector3 newRotation)
-    {
-        if (!IsServer)
-        {
-            _cannonShaft.localEulerAngles = newRotation;
-        }
     }
 
     /// <summary>
@@ -183,7 +151,7 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
     /// </summary>
     public void OnFireWeapon(InputAction.CallbackContext context)
     {
-        if (context.performed)
+        if (context.performed && IsOwner)
         {
             if (!_isAutoFiring && _isReloading)
             {
@@ -203,7 +171,7 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
         {
             if (_isReloading)
             {
-                FireOnce();
+                FireCannonServerRpc();
                 _isReloading = false;
                 yield return new WaitForSeconds(_constants.reloadSpeed);
                 _isReloading = true;
@@ -226,14 +194,6 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
             _isAutoFiring = false;
             StopCoroutine(AutoFire());
         }
-    }
-
-    /// <summary>
-    /// Triggers a single shot by calling the server-side fire method.
-    /// </summary>
-    private void FireOnce()
-    {
-        FireCannonServerRpc();
     }
 
     /// <summary>

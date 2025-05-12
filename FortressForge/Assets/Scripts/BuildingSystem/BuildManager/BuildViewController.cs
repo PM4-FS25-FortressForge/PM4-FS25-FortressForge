@@ -200,6 +200,14 @@ namespace FortressForge.BuildingSystem.BuildManager
             Quaternion rot = Quaternion.Euler(0f, rotation, 0f) * template.BuildingPrefab.transform.rotation;
             GameObject prefab =  SpawnNetworked(template.BuildingPrefab, pos, rot);
             
+            // Give ownership to the player who placed the building.
+            // Enforces that only the owner can interact with the placed buildings.
+            NetworkObject netObj = prefab.GetComponent<NetworkObject>();
+            if (netObj != null && base.Owner.IsValid)
+            {
+                netObj.GiveOwnership(base.Owner);
+            }
+            
             // Add reference to building manager for later use.
             List<HexTileData> tileDatas = globalRotatedShape
                 .Select(coord => targetGrid.TileMap[coord])
