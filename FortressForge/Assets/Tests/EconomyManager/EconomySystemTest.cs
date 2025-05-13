@@ -30,7 +30,8 @@ namespace Tests.EconomyManager
             };
             
             _buildingManager = new BuildingManager();
-            _economySystem = new EconomySystem(_buildingManager, maxValues);
+            var gloabalEconomy = new GlobalEconomy(0f);
+            _economySystem = new EconomySystem(_buildingManager, gloabalEconomy, maxValues);
         }
 
         [Test]

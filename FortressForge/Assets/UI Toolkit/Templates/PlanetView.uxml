@@ -1,0 +1,15 @@
+﻿<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI Toolkit/Style/ColorPaletteStyle.uss" />
+    <Style src="project://database/Assets/UI Toolkit/Style/PlanetView.uss" />
+    <engine:VisualElement name="root-frame" class="root-frame" style="flex-grow: 1;">
+        <!-- Planet Fill (Left) -->
+        <engine:VisualElement name="PlanetFillContainer" class="planet-container">
+            <engine:VisualElement name="PlanetBase" class="planet-base" />
+            <engine:VisualElement name="PlanetOverlayDark" class="planet-overlay-dark" />
+            <engine:VisualElement name="PlanetFill" class="planet-fill" />
+            
+            <engine:Label text="100%" name="MagmaPercentageLabel" class="resource-change-test" />
+        </engine:VisualElement>
+
+    </engine:VisualElement>
+</engine:UXML>

@@ -1570,6 +1570,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   OverlayUIDocument: {fileID: 7705381497506477094}
   ResourceContainerAsset: {fileID: 9197481963319205126, guid: 2291da1f5d0e8df42a9d657525ba362a, type: 3}
+  PlanetViewContainerAsset: {fileID: 9197481963319205126, guid: 9e9c09be951947489af9950ff70ace2a, type: 3}
 --- !u!224 &8947569315363460456
 RectTransform:
   m_ObjectHideFlags: 0
