@@ -43,13 +43,18 @@ namespace FortressForge.HexGrid.View
         /// Changes the material of the HexTileView based on the IsOccupied property of the HexTileData.
         /// </summary>
         private void UpdateVisuals(T data)
-        { // TODO maybe add custom colors for overlapping events such as build target and occupied
-            if (data.IsBuildTarget && data.IsOccupied)
+        { 
+            _renderer.enabled = true;
+            if ((data.IsBuildTarget && data.IsOccupied) || (data.IsBuildTarget && !data.IsOwned))
                 _renderer.material = _config.NotAllowedMaterial;
             else if (data.IsBuildTarget) 
                 _renderer.material = _config.PreviewMaterial;
-            else if (data.IsMouseTarget)
+            else if (data.IsHighlighted)
                 _renderer.material = _config.HighlightMaterial;
+            else if (data.IsInvisible)
+                _renderer.enabled = false;
+            else if (!data.IsOwned)
+                _renderer.material = _config.UnownedHexMaterial;
             else if (data.IsOccupied)
                 _renderer.material = _config.OccupiedMaterial;
             else
@@ -59,11 +64,13 @@ namespace FortressForge.HexGrid.View
         private void OnMouseEnter()
         {
             _data.IsMouseTarget = true;
+            _data.IsHighlighted = true;
         }
         
         private void OnMouseExit()
         {
             _data.IsMouseTarget = false;
+            _data.IsHighlighted = false;
         }
         
         private void OnMouseOver()

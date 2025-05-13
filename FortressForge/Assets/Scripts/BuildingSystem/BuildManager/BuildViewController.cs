@@ -33,17 +33,19 @@ namespace FortressForge.BuildingSystem.BuildManager
         private List<BaseBuildingTemplate> AvailableBuildings => _config.availableBuildings;
 
         private BuildActions _input;
-        
+        private HexTileHoverController _hexTileHoverController;
+
         public static event Action OnExitBuildModeEvent;
 
         public void Init(List<HexGridData> hexGridData, GameStartConfiguration config,
-            HexGridManager hexGridManager)
+            HexGridManager hexGridManager, HexTileHoverController hoverController)
         {
             _ownedHexGridDatas = hexGridData;
             _config = config;
             _hexGridManager = hexGridManager;
-
-            _hexGridManager.AllGrids.ForEach(gridData => gridData.OnHoverTileChanged += OnHexTileChanged);
+            _hexTileHoverController = hoverController;
+            
+            _hexTileHoverController.OnHoverTileChanged += OnHexTileChanged;
         }
 
         public void PreviewSelectedBuilding(int buildingIndex)
@@ -69,7 +71,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         private void OnHexTileChanged(HexTileData hexTileData)
         {
             if (_previewBuilding == null) return;
-            _hoveredHexTile = hexTileData.IsMouseTarget ? hexTileData : null;
+            _hoveredHexTile = hexTileData;
 
             if (_hoveredHexTile == null)
             {
@@ -82,7 +84,7 @@ namespace FortressForge.BuildingSystem.BuildManager
 
         private void OnDestroy()
         {
-            _ownedHexGridDatas.ForEach(gridData => gridData.OnHoverTileChanged -= OnHexTileChanged);
+            _hexTileHoverController.OnHoverTileChanged -= OnHexTileChanged;
             ExitBuildMode();
         }
         
@@ -128,7 +130,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         private void MovePreviewObject(HexTileCoordinate targetCoord)
         {
             ClearPreviousBuildTargets();
-            Vector3 snappedPos = targetCoord.GetWorldPosition(_config.Radius, _config.TileHeight);
+            Vector3 snappedPos = targetCoord.GetWorldPosition(_config.GridRadius, _config.TileHeight);
             List<HexTileCoordinate> rotatedShape = GetRotatedShape(_selectedBuildingTemplate.ShapeData, _currentPreviewBuildingRotation);
             Vector3 avgPos = GetAveragePosition(rotatedShape);
 
@@ -138,36 +140,31 @@ namespace FortressForge.BuildingSystem.BuildManager
 
         private void MarkNewTilesAsBuildTargets(HexTileCoordinate origin, List<HexTileCoordinate> shape)
         {
-            foreach (HexTileCoordinate offset in shape)
+            foreach (var offset in shape)
             {
-                HexTileCoordinate worldCoord = offset + origin;
+                var worldCoord = offset + origin;
 
-                foreach (var grid in _ownedHexGridDatas)
+                // Take any grid and mark the tile as a build target
+                var tile = _hexGridManager.GetHexTileDataOrCreate(worldCoord);
+
+                if (tile != null)
                 {
-                    if (grid.TileMap.TryGetValue(worldCoord, out var tileData))
-                    {
-                        tileData.IsBuildTarget = true;
-                        _currentBuildTargets.Add(worldCoord);
-                        break;
-                    }
+                    tile.IsBuildTarget = true;
+                    _currentBuildTargets.Add(worldCoord);
                 }
             }
 
             _previewBuildingMeshRenderer.enabled = true;
         }
-
+        
         private void ClearPreviousBuildTargets()
         {
             foreach (HexTileCoordinate coord in _currentBuildTargets)
             {
-                foreach (var grid in _ownedHexGridDatas)
-                {
-                    if (grid.TileMap.TryGetValue(coord, out var tileData))
-                    {
-                        tileData.IsBuildTarget = false;
-                        break;
-                    }
-                }
+                var tile = _hexGridManager.GetHexTileDataOrCreate(coord);
+                if (tile == null) continue;
+                
+                tile.IsBuildTarget = false;
             }
 
             _currentBuildTargets.Clear();
@@ -193,7 +190,7 @@ namespace FortressForge.BuildingSystem.BuildManager
                 return;
             }
 
-            Vector3 pos = coord.GetWorldPosition(_config.Radius, _config.TileHeight) + GetAveragePosition(rotatedShape);
+            Vector3 pos = coord.GetWorldPosition(_config.GridRadius, _config.TileHeight) + GetAveragePosition(rotatedShape);
             Quaternion rot = Quaternion.Euler(0f, rotation, 0f) * template.BuildingPrefab.transform.rotation;
             GameObject prefab =  SpawnNetworked(template.BuildingPrefab, pos, rot);
             
@@ -221,9 +218,10 @@ namespace FortressForge.BuildingSystem.BuildManager
         {
             BaseBuildingTemplate template = AvailableBuildings[buildingIndex];
             (var shapeData, var isStackableList) = ExtractShapeInformation(template.ShapeDataEntries);
-            HexGridData targetGrid = _hexGridManager.AllGrids[hexGridId];
+            HexGridData targetGrid = _hexGridManager.AllGrids.FirstOrDefault(grid => grid.Id == hexGridId);
             List<HexTileCoordinate> rotatedShape = GetRotatedShape(shapeData, rotation);
             List<HexTileCoordinate> globalRotatedShape = rotatedShape.Select(tile => tile + coord).ToList();
+            targetGrid.MarkBuildingTiles(coord, rotatedShape, isStackableList);
             
             // Add local reference to building manager for later use.
             List<HexTileData> tileDatas = globalRotatedShape
@@ -237,7 +235,7 @@ namespace FortressForge.BuildingSystem.BuildManager
             // Repeated steps from serverrpc dont need to be repeated server side
             if (!IsServerInitialized) { 
                 targetGrid.BuildingManager.AddBuilding(buildingData);
-                _hexGridManager.AllGrids[hexGridId].MarkBuildingTiles(coord, rotatedShape, isStackableList);
+                targetGrid.MarkBuildingTiles(coord, rotatedShape, isStackableList);
             }
         }
 
@@ -268,7 +266,7 @@ namespace FortressForge.BuildingSystem.BuildManager
             Vector3 avg = Vector3.zero;
             foreach (var coord in hexTileCoordinates)
             {
-                avg += coord.GetWorldPosition(_config.Radius, _config.TileHeight);
+                avg += coord.GetWorldPosition(_config.GridRadius, _config.TileHeight);
             }
             return avg / hexTileCoordinates.Count;
         }

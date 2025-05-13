@@ -20,7 +20,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 24b95824b8762f3468304e9ef38c7875, type: 2}
   - {fileID: 11400000, guid: 5874729940006ef4f93f529aa9ebed96, type: 2}
   - {fileID: 11400000, guid: cc6f27b0f71c3dd479cfb2593d91a340, type: 2}
-  Radius: 10
+  GridRadius: 10
   TileSize: 10
   TileHeight: 10
   TilePrefab: {fileID: 7913461861453834581, guid: 72362361af6bac54e8d1c8804d9c1b41, type: 3}
@@ -29,4 +29,6 @@ MonoBehaviour:
   HighlightMaterial: {fileID: 2100000, guid: 9b3a6bb7541955f4ba1690bd0dcbbe71, type: 2}
   NotAllowedMaterial: {fileID: 2100000, guid: e1fd348dc1bed4d839ffb25c11acfa9b, type: 2}
   PreviewMaterial: {fileID: 2100000, guid: 848369def4c5b43adbbed19ee7f90924, type: 2}
+  MeshTilesMaterial: {fileID: 2100000, guid: 7f13f616d7117754ca079137192c07bf, type: 2}
+  UnownedHexMaterial: {fileID: 2100000, guid: 8492c74ba0433664b8b666bf799baa6f, type: 2}
   GlobalMagmaAmount: 10000

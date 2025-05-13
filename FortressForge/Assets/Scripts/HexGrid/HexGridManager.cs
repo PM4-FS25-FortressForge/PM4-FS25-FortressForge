@@ -6,6 +6,7 @@ using FortressForge.Economy;
 using UnityEngine;
 using FortressForge.GameInitialization;
 using FortressForge.HexGrid.Data;
+using JetBrains.Annotations;
 
 namespace FortressForge.HexGrid
 {
@@ -17,9 +18,11 @@ namespace FortressForge.HexGrid
     /// </summary>
     public class HexGridManager : MonoBehaviour
     {
+        public event Action<HexTileData> OnHoverTileChanged;
         public static HexGridManager Instance { get; private set; }
 
         public List<HexGridData> AllGrids { get; } = new();
+        public HexGridData IndependentGrid => AllGrids.First(grid => grid.Id == -1);
 
         private TerrainHeightProvider _terrainHeightProvider;
 
@@ -40,15 +43,15 @@ namespace FortressForge.HexGrid
         public void InitializeHexGrids(GameSessionStartConfiguration gameSessionStartConfiguration,
             GameStartConfiguration gameStartConfiguration)
         {
-            GlobalEconomy globalEconomy = new GlobalEconomy(gameStartConfiguration.GlobalMagmaAmount);
+            var magmaAmount = gameStartConfiguration.GlobalMagmaAmount;
+            GlobalEconomy globalEconomy = new GlobalEconomy(magmaAmount);
 
-            for (var index = 0; index < gameSessionStartConfiguration.HexGridOrigins.Count; index++)
+            int radius = gameStartConfiguration.GridRadius;
+            float tileSize = gameStartConfiguration.TileSize;
+            float tileHeight = gameStartConfiguration.TileHeight;
+            
+            for (var index = -1; index < gameSessionStartConfiguration.HexGridOrigins.Count; index++)
             {
-                var hexGridOrigin = gameSessionStartConfiguration.HexGridOrigins[index];
-                int radius = gameStartConfiguration.Radius;
-                float tileSize = gameStartConfiguration.TileSize;
-                float tileHeight = gameStartConfiguration.TileHeight;
-
                 BuildingManager buildingManager = new BuildingManager();
 
                 // Example for max value application // TODO move or remove when actual max values are set
@@ -56,7 +59,7 @@ namespace FortressForge.HexGrid
                 {
                     { ResourceType.Power, 10000f },
                     { ResourceType.Metal, 10000f },
-                    { ResourceType.Magma, 100000f }, //TODO this value should be equivalent to max global
+                    { ResourceType.Magma, magmaAmount },
                     { ResourceType.Amunition, 10000f },
                     { ResourceType.Concrete, 10000f },
                 };
@@ -64,17 +67,48 @@ namespace FortressForge.HexGrid
 
                 HexGridData gridData = new HexGridData(
                     id: index,
-                    origin: hexGridOrigin,
-                    radius: radius,
                     tileSize: tileSize,
                     tileHeight: tileHeight,
                     terrainHeightProvider: _terrainHeightProvider,
                     economySystem: economySystem,
-                    buildingManager: buildingManager
+                    buildingManager: buildingManager,
+                    hexGridManager: this,
+                    isInvisible: index == -1
                 );
-
+                
+                if (index != -1)
+                {
+                    var hexGridOrigin = gameSessionStartConfiguration.HexGridOrigins[index];
+                    gridData.CreateStarterGrid(hexGridOrigin, radius);
+                }
+                
                 AllGrids.Add(gridData);
+                gridData.OnHoverTileChanged += tileData => OnHoverTileChanged?.Invoke(tileData);
             }
+        }
+
+        /// <summary>
+        /// Retrieves a HexGridData instance by its coordinate.
+        /// </summary>
+        /// <param name="coordinate"></param>
+        /// <returns>Returns the tile data or null if not found.</returns>
+        [CanBeNull]
+        public HexTileData GetHexTileDataOrCreate(HexTileCoordinate coordinate)
+        {
+            // Find tile if it exist
+            var tile = AllGrids.FirstOrDefault(grid => grid.TileMap.ContainsKey(coordinate))
+                ?.TileMap[coordinate];
+            
+            // If not found, create a new tile on the independent grid
+            if (tile != null) 
+                return tile;
+            
+            return IndependentGrid.CreateTile(coordinate);
+        }
+
+        public void AddGrid(HexGridData gridData) {
+            AllGrids.Add(gridData);
+            gridData.OnHoverTileChanged += tileData => OnHoverTileChanged?.Invoke(tileData);
         }
     }
 }

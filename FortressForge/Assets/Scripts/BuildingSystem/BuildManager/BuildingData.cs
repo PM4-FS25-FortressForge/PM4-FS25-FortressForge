@@ -12,14 +12,26 @@ namespace FortressForge.BuildingSystem.BuildManager {
     /// Class to contain all data related to a build building.
     /// </summary>
     public class BuildingData : ISelectableGameObjectData<BuildingData> {
-        private GameObject _buildingPrefab;
-        private List<HexTileData> _buildingTiles = new();
-        private BaseBuildingTemplate _baseBuildingTemplate;
+        private readonly GameObject _buildingPrefab;
+        private readonly List<HexTileData> _buildingTiles;
+        private readonly BaseBuildingTemplate _baseBuildingTemplate;
         public GameObject BuildingPrefab => _buildingPrefab;
         public List<HexTileData> BuildingTiles => _buildingTiles;
         public BaseBuildingTemplate BaseBuildingTemplate => _baseBuildingTemplate;
         
         public event Action<BuildingData> OnChanged;
+        
+        private bool _isHighlighted;
+        public bool IsHighlighted
+        {
+            get => _isHighlighted;
+            set {
+                if (_isHighlighted == value) return;
+                
+                _isHighlighted = value;
+                OnChanged?.Invoke(this);
+            }
+        }
         
         private bool _isMouseTarget;
         public bool IsMouseTarget
@@ -46,28 +58,28 @@ namespace FortressForge.BuildingSystem.BuildManager {
         
         private void HandleTileDataChange(HexTileData tileData) {
             // Handle the change in tile data here
-            if (tileData.IsMouseTarget) {
+            if (tileData.IsHighlighted) {
                 _buildingTiles.ForEach(tile => {
-                    tile.IsMouseTarget = true;
+                    tile.IsHighlighted = true;
                 });
-                IsMouseTarget = true;
+                IsHighlighted = true;
             } else {
                 _buildingTiles.ForEach(tile => {
-                    tile.IsMouseTarget = false;
+                    tile.IsHighlighted = false;
                 });
-                IsMouseTarget = false;
+                IsHighlighted = false;
             }
         }
         
         private void HandleBuildingDataChange(BuildingData buildingData) {
             // Handle the change in building data here
-            if (buildingData.IsMouseTarget) {
+            if (buildingData.IsHighlighted) {
                 _buildingTiles.ForEach(tile => {
-                    tile.IsMouseTarget = true;
+                    tile.IsHighlighted = true;
                 });
             } else {
                 _buildingTiles.ForEach(tile => {
-                    tile.IsMouseTarget = false;
+                    tile.IsHighlighted = false;
                 });
             }
         }

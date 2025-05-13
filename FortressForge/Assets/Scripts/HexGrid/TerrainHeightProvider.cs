@@ -4,10 +4,17 @@ namespace FortressForge.HexGrid
 {
     public class TerrainHeightProvider : ITerrainHeightProvider
     {
+        private readonly Terrain _terrain;
+        
+        public TerrainHeightProvider()
+        {
+            _terrain = Terrain.activeTerrain;
+        }
+        
         public float SampleHeight(Vector3 position)
         {
-            if (Terrain.activeTerrain == null) return 0f;
-            return Terrain.activeTerrain.SampleHeight(position);
+            if (!_terrain) return 0f;
+            return _terrain.SampleHeight(position);
         }
         
         /// <summary>
@@ -19,10 +26,15 @@ namespace FortressForge.HexGrid
         /// <returns>The interpreted y position.</returns>
         public float SampleHexHeight(Vector3 position, float tileHeight, float tileSize)
         {
+            return GetHexTileCoordinate(position, tileHeight, tileSize)
+                .GetWorldPosition(tileSize, tileHeight).y;
+        }
+        
+        public HexTileCoordinate GetHexTileCoordinate(Vector3 position, float tileHeight, float tileRadius) 
+        {
             float height = SampleHeight(position);
             position.y = height;
-            return new HexTileCoordinate(tileSize, tileHeight, position)
-                .GetWorldPosition(tileSize, tileHeight).y;
+            return new HexTileCoordinate(tileRadius, tileHeight, position);
         }
     }
 }
