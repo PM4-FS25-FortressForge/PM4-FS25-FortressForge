@@ -30,8 +30,14 @@ namespace FortressForge.GameInitialization
                 Debug.LogError("GameStartConfiguration is not set.");
                 return;
             }
+            var terrainHeightProvider = new TerrainHeightProvider();
+            var meshRenderer = gameObject.AddComponent<GlobalGridMeshRenderer>();
+            meshRenderer.Init(terrainHeightProvider, _gameStartConfiguration);
             
             HexGridManager.Instance.InitializeHexGrids(_gameSessionStartConfiguration, _gameStartConfiguration);
+            
+            HexTileHoverController hexTileHoverController = gameObject.AddComponent<HexTileHoverController>();
+            hexTileHoverController.Init(terrainHeightProvider, HexGridManager.Instance, _gameStartConfiguration);
             
             InitializeHexGridViews(_gameStartConfiguration, HexGridManager.Instance);
         }

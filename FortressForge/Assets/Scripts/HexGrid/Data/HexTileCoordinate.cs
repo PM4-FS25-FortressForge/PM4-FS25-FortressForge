@@ -29,7 +29,7 @@ namespace FortressForge.HexGrid
         public HexTileCoordinate(float tileRadius, float tileHeight, Vector3 origin=default) 
         { 
             // Convert world position to hex grid axial coordinates
-            float x = origin.x / (tileRadius * 3f / 2f); // TODO throws exception regularly
+            float x = origin.x / (tileRadius * 3f / 2f); 
             float z = origin.z / (tileRadius * Mathf.Sqrt(3));
 
             Q = Mathf.RoundToInt(x);

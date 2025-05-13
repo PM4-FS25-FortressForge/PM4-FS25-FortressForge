@@ -206,6 +206,29 @@ namespace FortressForge.UI
             if (index < 0 || index >= _availableBuildings.Count) return;
 
             BaseBuildingTemplate building = _availableBuildings[index];
+            
+            // Erstelle ein Tooltip-Element und füge es der Karte hinzu
+            Label tooltip = new Label();
+            tooltip.AddToClassList("building-tooltip");
+            tooltip.style.display = DisplayStyle.None; // Anfangs nicht sichtbar
+            item.Add(tooltip);
+
+            // Tooltip-Text vorbereiten
+            tooltip.text = GetBuildCostText(building);
+
+            // Maus-Events registrieren
+            item.RegisterCallback<MouseEnterEvent>(_ =>
+            {
+                tooltip.style.display = DisplayStyle.Flex;
+            });
+
+            item.RegisterCallback<MouseLeaveEvent>(_ =>
+            {
+                tooltip.style.display = DisplayStyle.None;
+            });
+            
+            tooltip.style.whiteSpace = WhiteSpace.Normal;
+            tooltip.style.flexWrap = Wrap.Wrap;
 
             item.AddToClassList("building-card-template-container");
 
@@ -243,5 +266,15 @@ namespace FortressForge.UI
             _selectedCard = null;
             Debug.Log("Building card unselected.");
         }
+        
+        private string GetBuildCostText(BaseBuildingTemplate building)
+        {
+            var costs = building.GetBuildCost();
+            if (costs.Count == 0) return "Kostenlos";
+
+            return string.Join("\n", costs.Select(c =>
+                $"{c.Key}: {c.Value}"));
+        }
+
     }
 }
