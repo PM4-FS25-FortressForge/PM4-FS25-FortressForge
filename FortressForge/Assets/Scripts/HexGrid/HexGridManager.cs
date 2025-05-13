@@ -96,11 +96,11 @@ namespace FortressForge.HexGrid
             var tile = AllGrids.FirstOrDefault(grid => grid.TileMap.ContainsKey(coordinate))
                 ?.TileMap[coordinate];
             
-            // If not found, create a new tile
-            if (tile == null)
-                tile = IndependentGrid.CreateOrClaimHexTile(coordinate);
+            // If not found, create a new tile on the independent grid
+            if (tile != null) 
+                return tile;
             
-            return tile;
+            return IndependentGrid.CreateTile(coordinate);
         }
 
         public void AddGrid(HexGridData gridData) {

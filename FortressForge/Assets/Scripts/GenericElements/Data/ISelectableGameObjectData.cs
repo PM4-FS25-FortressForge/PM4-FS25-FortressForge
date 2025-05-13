@@ -28,5 +28,10 @@ namespace FortressForge.HexGrid.View {
             get => false;
             set => throw new NotImplementedException();
         }
+        
+        bool IsHighlighted {
+            get => false;
+            set => throw new NotImplementedException();
+        }
     }
 }

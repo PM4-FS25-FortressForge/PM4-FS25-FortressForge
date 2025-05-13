@@ -33,17 +33,19 @@ namespace FortressForge.BuildingSystem.BuildManager
         private List<BaseBuildingTemplate> AvailableBuildings => _config.availableBuildings;
 
         private BuildActions _input;
-        
+        private HexTileHoverController _hexTileHoverController;
+
         public static event Action OnExitBuildModeEvent;
 
         public void Init(List<HexGridData> hexGridData, GameStartConfiguration config,
-            HexGridManager hexGridManager)
+            HexGridManager hexGridManager, HexTileHoverController hoverController)
         {
             _ownedHexGridDatas = hexGridData;
             _config = config;
             _hexGridManager = hexGridManager;
-
-            _hexGridManager.AllGrids.ForEach(gridData => gridData.OnHoverTileChanged += OnHexTileChanged);
+            _hexTileHoverController = hoverController;
+            
+            _hexTileHoverController.OnHoverTileChanged += OnHexTileChanged;
         }
 
         public void PreviewSelectedBuilding(int buildingIndex)
@@ -69,7 +71,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         private void OnHexTileChanged(HexTileData hexTileData)
         {
             if (_previewBuilding == null) return;
-            _hoveredHexTile = hexTileData.IsMouseTarget ? hexTileData : null;
+            _hoveredHexTile = hexTileData;
 
             if (_hoveredHexTile == null)
             {
@@ -82,7 +84,7 @@ namespace FortressForge.BuildingSystem.BuildManager
 
         private void OnDestroy()
         {
-            _ownedHexGridDatas.ForEach(gridData => gridData.OnHoverTileChanged -= OnHexTileChanged);
+            _hexTileHoverController.OnHoverTileChanged -= OnHexTileChanged;
             ExitBuildMode();
         }
         
@@ -210,9 +212,10 @@ namespace FortressForge.BuildingSystem.BuildManager
         {
             BaseBuildingTemplate template = AvailableBuildings[buildingIndex];
             (var shapeData, var isStackableList) = ExtractShapeInformation(template.ShapeDataEntries);
-            HexGridData targetGrid = _hexGridManager.AllGrids[hexGridId];
+            HexGridData targetGrid = _hexGridManager.AllGrids.FirstOrDefault(grid => grid.Id == hexGridId);
             List<HexTileCoordinate> rotatedShape = GetRotatedShape(shapeData, rotation);
             List<HexTileCoordinate> globalRotatedShape = rotatedShape.Select(tile => tile + coord).ToList();
+            targetGrid.MarkBuildingTiles(coord, rotatedShape, isStackableList);
             
             // Add local reference to building manager for later use.
             List<HexTileData> tileDatas = globalRotatedShape
@@ -225,7 +228,7 @@ namespace FortressForge.BuildingSystem.BuildManager
             
             targetGrid.BuildingManager.AddBuilding(buildingData);
             
-            _hexGridManager.AllGrids[hexGridId].MarkBuildingTiles(coord, rotatedShape, isStackableList);
+            targetGrid.MarkBuildingTiles(coord, rotatedShape, isStackableList);
         }
 
         private void ExitBuildMode()

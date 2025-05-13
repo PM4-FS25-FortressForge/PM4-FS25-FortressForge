@@ -30,11 +30,11 @@ namespace FortressForge.HexGrid
                 .GetWorldPosition(tileSize, tileHeight).y;
         }
         
-        public HexTileCoordinate GetHexTileCoordinate(Vector3 position, float tileHeight, float tileSize) 
+        public HexTileCoordinate GetHexTileCoordinate(Vector3 position, float tileHeight, float tileRadius) 
         {
             float height = SampleHeight(position);
             position.y = height;
-            return new HexTileCoordinate(tileSize, tileHeight, position);
+            return new HexTileCoordinate(tileRadius, tileHeight, position);
         }
     }
 }

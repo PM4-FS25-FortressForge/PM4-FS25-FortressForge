@@ -33,11 +33,10 @@ namespace FortressForge.HexGrid.Data
         public Dictionary<HexTileCoordinate, HexTileData> TileMap = new();
         public EconomySystem EconomySystem { get; private set; }
         public BuildingManager BuildingManager { get; private set; }
-        private HexGridManager _hexGridManager;
+        private readonly HexGridManager _hexGridManager;
         
         public event Action<HexTileData, HexTileCoordinate> OnNewTileCreated;
         public event Action<HexTileCoordinate> OnTileRemoved;
-        private readonly Dictionary<HexTileCoordinate, Action<HexTileData>> _hoverHandlers = new();
         
         private readonly ITerrainHeightProvider _terrainHeightProvider;
 
@@ -61,9 +60,6 @@ namespace FortressForge.HexGrid.Data
             BuildingManager = buildingManager;
             _hexGridManager = hexGridManager;
             IsInvisible = isInvisible;
-
-            if (IsIndependent)
-                OnChanged += RemoveTileIfNotTarget;
         }
 
         /// <summary>
@@ -89,42 +85,51 @@ namespace FortressForge.HexGrid.Data
             }
         }
 
+        /// <summary>
+        /// Searches for a tile in the grid. If it doesn't exist, it creates a new one.
+        /// If the tile is already owned by another grid, it does nothing and returns null.
+        /// </summary>
+        /// <param name="newHexCoords"></param>
+        /// <returns></returns>
         public HexTileData CreateOrClaimHexTile(HexTileCoordinate newHexCoords)
         {
             // Find if tile is in another grid already
             HexGridData previousOwner = _hexGridManager.AllGrids
                 .FirstOrDefault(grid => grid.TileMap.ContainsKey(newHexCoords));
-            if (previousOwner != null)
-            {
-                // Check if the owner is the independent grid, in this case, we can just claim it.
-                if (previousOwner == _hexGridManager.IndependentGrid)
-                {
-                    ClaimTile(newHexCoords);
-                }
-                else
-                {
-                    // If the tile is owned by another grid, do nothing and return null.
-                    Debug.LogWarning("Tile already owned by another grid. Cannot create new tile.");
-                    return null;
-                }
-            }
-            else
-            {
-                CreateTile(newHexCoords);
-            }
-            
 
-            return TileMap[newHexCoords];
+            if (previousOwner == this)
+                return TileMap[newHexCoords];
+            
+            // If the tile is not owned by any grid, create a new tile.
+            if (previousOwner == null) 
+                return CreateTile(newHexCoords);
+            
+            // Check if the owner is the independent grid, in this case, we can just claim it.
+            if (previousOwner == _hexGridManager.IndependentGrid)
+                return ClaimTile(newHexCoords);
+ 
+            // If the tile is owned by another grid, do nothing and return null.
+            Debug.LogWarning("Tile already owned by another grid. Cannot create new tile.");
+            return null;
         }
         
-        private void ClaimTile(HexTileCoordinate newHexCoords)
+        private HexTileData ClaimTile(HexTileCoordinate newHexCoords)
         {
             RemoveTile(newHexCoords);
-            CreateTile(newHexCoords);
+            return CreateTile(newHexCoords);
         }
 
-        private void CreateTile(HexTileCoordinate newHexCoords)
+        /// <summary>
+        /// Always creates a new tile. Use this if you want to create a new tile and not check if it already exists.
+        /// This can cause conflicts so use it with caution.
+        /// </summary>
+        /// <param name="newHexCoords"></param>
+        /// <returns></returns>
+        public HexTileData CreateTile(HexTileCoordinate newHexCoords)
         {
+            if (!ValidateTilePlacement(newHexCoords))
+                return null;
+            
             var tile = new HexTileData(newHexCoords)
             {
                 IsOwned = IsOwned,
@@ -135,25 +140,17 @@ namespace FortressForge.HexGrid.Data
             tile.OnHoverChanged += tileData => OnHoverTileChanged?.Invoke(tileData);
             tile.OnChanged += hexTileData => OnChanged?.Invoke(hexTileData);
             OnNewTileCreated?.Invoke(tile, newHexCoords);
-            TileMap[newHexCoords] = tile;                
+            TileMap[newHexCoords] = tile;
+            
+            return tile;
         }
         
         private void RemoveTile(HexTileCoordinate hexCoord)
         {
-            if (TileMap.TryGetValue(hexCoord, out var tile))
-            {
-                TileMap.Remove(hexCoord);
-            }
-            
-            // Removes all events from the tile as it gets destroyed
+            TileMap.Remove(hexCoord);
+
+            // Execute event for removal
             OnTileRemoved?.Invoke(hexCoord);
-        }
-        
-        private void RemoveTileIfNotTarget(HexTileData tile)
-        {
-            if (tile == null) return;
-            if (tile.IsMouseTarget || tile.IsBuildTarget) return;
-            RemoveTile(tile.HexTileCoordinate);
         }
 
         /// <summary>
@@ -196,6 +193,26 @@ namespace FortressForge.HexGrid.Data
                     return false;
                 }
             }
+            return true;
+        }
+        
+        public bool ValidateTilePlacement(HexTileCoordinate hexCoord)
+        {
+            // Check if lowest on the grid
+            var lowestTile = _terrainHeightProvider.GetHexTileCoordinate(
+                hexCoord.GetWorldPosition(TileRadius, TileHeight),
+                TileHeight, TileRadius);
+            if (lowestTile.H != hexCoord.H)
+            {
+                // Independent grid are not allowed to be placed on top of other grids
+                if (IsIndependent) 
+                    return false;
+                
+                // Check if tile below
+                hexCoord.H -= 1;
+                return TileMap.ContainsKey(hexCoord);
+            }
+            
             return true;
         }
 

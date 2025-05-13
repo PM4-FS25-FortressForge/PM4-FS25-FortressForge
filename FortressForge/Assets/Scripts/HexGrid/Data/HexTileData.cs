@@ -12,10 +12,11 @@ namespace FortressForge.HexGrid.Data
         public event Action<HexTileData> OnChanged;
         public event Action<HexTileData> OnHoverChanged;
         
+        private bool _isMouseTarget;
         // The following properties are used to determine the visual state of the tile.
         private bool _isOccupied;        
         private bool _isBuildTarget;
-        private bool _isMouseTarget;
+        private bool _isHighlighted;
         private bool _isOwned;
         private bool _isInvisible;
 
@@ -80,6 +81,19 @@ namespace FortressForge.HexGrid.Data
                 if (_isInvisible != value)
                 {
                     _isInvisible = value;
+                    OnChanged?.Invoke(this);
+                }
+            }
+        }
+        
+        public bool IsHighlighted
+        {
+            get => _isHighlighted;
+            set
+            {
+                if (_isHighlighted != value)
+                {
+                    _isHighlighted = value;
                     OnChanged?.Invoke(this);
                 }
             }
