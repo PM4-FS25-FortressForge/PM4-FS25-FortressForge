@@ -43,7 +43,8 @@ namespace FortressForge.HexGrid
         public void InitializeHexGrids(GameSessionStartConfiguration gameSessionStartConfiguration,
             GameStartConfiguration gameStartConfiguration)
         {
-            GlobalEconomy globalEconomy = new GlobalEconomy(gameStartConfiguration.GlobalMagmaAmount);
+            var magmaAmount = gameStartConfiguration.GlobalMagmaAmount;
+            GlobalEconomy globalEconomy = new GlobalEconomy(magmaAmount);
 
             int radius = gameStartConfiguration.GridRadius;
             float tileSize = gameStartConfiguration.TileSize;
@@ -58,7 +59,7 @@ namespace FortressForge.HexGrid
                 {
                     { ResourceType.Power, 10000f },
                     { ResourceType.Metal, 10000f },
-                    { ResourceType.Magma, 100000f }, //TODO this value should be equivalent to max global
+                    { ResourceType.Magma, magmaAmount },
                     { ResourceType.Amunition, 10000f },
                     { ResourceType.Concrete, 10000f },
                 };
