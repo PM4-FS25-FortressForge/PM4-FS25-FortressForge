@@ -118,5 +118,7 @@ MonoBehaviour:
     Rate: 20
   - Type: 4
     Rate: 15
+  - Type: 2
+    Rate: 10
   BuildCosts: []
   Level: 1

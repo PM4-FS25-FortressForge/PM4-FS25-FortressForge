@@ -26,9 +26,15 @@ namespace FortressForge.Network
         /// <param name="state">The connection state of the client.</param>
         private void HandleServerDisconnect(ClientConnectionStateArgs state)
         {
-            InstanceFinder.ClientManager.OnClientConnectionState -= HandleServerDisconnect;
-            InstanceFinder.ClientManager.StopConnection();
-            LoadCleanScene(NEW_SCENE);
+            if (state.ConnectionState == LocalConnectionState.Stopped 
+                || state.ConnectionState == LocalConnectionState.Stopping 
+                || state.ConnectionState == LocalConnectionState.StoppedClosed 
+                || state.ConnectionState == LocalConnectionState.StoppedError)
+            {
+                InstanceFinder.ClientManager.OnClientConnectionState -= HandleServerDisconnect;
+                InstanceFinder.ClientManager.StopConnection();
+                LoadCleanScene(NEW_SCENE);
+            }
         }
 
         /// <summary>

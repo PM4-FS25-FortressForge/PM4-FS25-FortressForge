@@ -35,7 +35,7 @@ namespace FortressForge.Economy
                 if (value < 0)
                 {
                     Debug.LogError($"[Resource] {_type} attempted to go below 0. Value: {value}");
-                    throw new System.ArgumentOutOfRangeException(nameof(value), $"[Resource] {_type} cannot go below 0.");
+                    return;
                 }
                 float previousValue = _currentAmount;
                 if (value > MaxAmount)
@@ -54,13 +54,23 @@ namespace FortressForge.Economy
             }
         }
         
-        public void SetCurrentAmountWithDeltaTime(float value)
+        public void SetCurrentAmountWithDeltaAmount(float amount)
         {
             var pastDeltaAmount = _currentAmount;
-            DeltaAmount = value - _currentAmount;
-            CurrentAmount = value;
+            DeltaAmount = amount - _currentAmount;
+            CurrentAmount = amount;
             
             if (Math.Abs(pastDeltaAmount - DeltaAmount) > Mathf.Epsilon)
+            {
+                OnChanged?.Invoke();
+            }
+        }
+
+        public void AddAmountWithDeltaAmount(float amount) {
+            DeltaAmount = amount;
+            CurrentAmount += amount;
+            
+            if (Math.Abs(amount) > Mathf.Epsilon)
             {
                 OnChanged?.Invoke();
             }
@@ -71,12 +81,13 @@ namespace FortressForge.Economy
         /// </summary>
         /// <param name="type">The type of resource this instance represents.</param>
         /// <param name="maxAmount">The maximum amount the resource can hold.</param>
-        public Resource(ResourceType type, float maxAmount = 0)
+        /// <param name="currentAmount">The current amount the resource holds.</param>
+        public Resource(ResourceType type, float maxAmount = 0, float currentAmount = 0)
         {
             _type = type;
             MaxAmount = maxAmount;
             DeltaAmount = 0;
-            _currentAmount = 0;
+            _currentAmount = currentAmount;
         }
     }
 }
