@@ -8,6 +8,8 @@ namespace FortressForge.BuildingSystem.BuildingData
     [CreateAssetMenu(fileName = "New Building", menuName = "Buildings/WeaponBuilding")]
     public class WeaponBuildingTemplate : BaseBuildingTemplate
     {
+        [SerializeField] public GameObject ammunitionPrefab;
+        
         [Header("Building Data")] 
         public int BuildingHealth;
 

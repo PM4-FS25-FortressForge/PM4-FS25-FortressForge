@@ -11,7 +11,6 @@ using UnityEngine.InputSystem;
 public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInputActionsActions
 {
     [SerializeField] private WeaponBuildingTemplate _constants;
-    [SerializeField] private GameObject _ammunitionPrefab;
     [SerializeField] private Transform _firePoint;
 
     private Transform _towerBase;
@@ -208,7 +207,7 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
     [ServerRpc(RequireOwnership = false)]
     private void FireCannonServerRpc()
     {
-        GameObject ammunition = Instantiate(_ammunitionPrefab, _firePoint.position, _firePoint.rotation);
+        GameObject ammunition = Instantiate(_constants.ammunitionPrefab, _firePoint.position, _firePoint.rotation);
         NetworkObject netObj = ammunition.GetComponent<NetworkObject>();
 
         if (netObj != null)

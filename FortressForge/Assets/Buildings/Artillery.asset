@@ -23,6 +23,7 @@ MonoBehaviour:
   MaxHealth: 100
   ResourceRates: []
   BuildCosts: []
+  ammunitionPrefab: {fileID: 956282788987846253, guid: b7e4d5bc00f3f0146b14669c21c8ffe1, type: 3}
   BuildingHealth: 100
   baseDamage: 40
   reloadSpeed: 5
