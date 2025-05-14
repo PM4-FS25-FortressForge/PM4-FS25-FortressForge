@@ -19,17 +19,12 @@ MonoBehaviour:
       H: 0
     IsStackable: 1
   - Coordinate:
-      Q: 0
-      R: -1
+      Q: 1
+      R: 0
       H: 0
     IsStackable: 1
   - Coordinate:
-      Q: 1
-      R: -1
-      H: 0
-    IsStackable: 1
-  - Coordinate:
-      Q: 1
+      Q: -1
       R: 0
       H: 0
     IsStackable: 1
@@ -39,13 +34,18 @@ MonoBehaviour:
       H: 0
     IsStackable: 1
   - Coordinate:
-      Q: -1
-      R: 1
+      Q: 0
+      R: -1
       H: 0
     IsStackable: 1
   - Coordinate:
-      Q: 0
+      Q: 1
       R: -1
+      H: 0
+    IsStackable: 1
+  - Coordinate:
+      Q: -1
+      R: 1
       H: 0
     IsStackable: 1
   BuildingPrefab: {fileID: 5515854222252199270, guid: 38c333816d7a40d4ca02301d22c1d89e, type: 3}

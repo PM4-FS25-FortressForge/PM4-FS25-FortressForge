@@ -2,6 +2,7 @@
 using System.Linq;
 using FortressForge.BuildingSystem.BuildingData;
 using FortressForge.BuildingSystem.BuildManager;
+using FortressForge.Economy;
 using FortressForge.UI.CustomVisualElements;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -18,7 +19,9 @@ namespace FortressForge.UI
         private TrapezElement _trapezElement;
         public VisualTreeAsset BuildingSelectorViewTree;
         public VisualTreeAsset BuildingCardVisualTree;
-
+        
+        private VisualElement _tooltipContainer;
+        private Label _tooltipLabel;
         private BuildViewController _buildViewController;
         private List<BaseBuildingTemplate> _availableBuildings;
         private VisualElement _selectedCard;
@@ -33,6 +36,8 @@ namespace FortressForge.UI
 
             LoadBuildingSelectorView();
             AlignTabHeadersWithTrapezBorder();
+
+            InitializeTooltipElement();
 
             BuildViewController.OnExitBuildModeEvent += HandleExitBuildMode;
         }
@@ -86,6 +91,20 @@ namespace FortressForge.UI
 
             Debug.LogError("Overlay UIDocument is not assigned.");
             return false;
+        }
+        
+        private void InitializeTooltipElement()
+        {
+            _tooltipContainer = new VisualElement();
+            _tooltipContainer.AddToClassList("building-tooltip");
+            _tooltipContainer.style.position = Position.Absolute;
+            _tooltipContainer.style.visibility = Visibility.Hidden;
+
+            _tooltipLabel = new Label();
+            _tooltipLabel.AddToClassList("building-label");
+
+            _tooltipContainer.Add(_tooltipLabel);
+            overlayUIDocument.rootVisualElement.Add(_tooltipContainer);
         }
 
         /// <summary>
@@ -207,28 +226,24 @@ namespace FortressForge.UI
 
             BaseBuildingTemplate building = _availableBuildings[index];
             
-            // Erstelle ein Tooltip-Element und füge es der Karte hinzu
-            Label tooltip = new Label();
-            tooltip.AddToClassList("building-tooltip");
-            tooltip.style.display = DisplayStyle.None; // Anfangs nicht sichtbar
-            item.Add(tooltip);
-
-            // Tooltip-Text vorbereiten
-            tooltip.text = GetBuildCostText(building);
-
-            // Maus-Events registrieren
-            item.RegisterCallback<MouseEnterEvent>(_ =>
+            item.RegisterCallback<PointerEnterEvent>(evt =>
             {
-                tooltip.style.display = DisplayStyle.Flex;
+                _tooltipLabel.text = GetFullTooltipText(building);
+
+                Vector2 cardGlobalPos = item.worldBound.position;
+                float tooltipWidth = _tooltipContainer.resolvedStyle.width;
+                float tooltipHeight = _tooltipContainer.resolvedStyle.height;
+
+                _tooltipContainer.style.left = cardGlobalPos.x + (item.resolvedStyle.width - tooltipWidth) / 2;
+                _tooltipContainer.style.top = cardGlobalPos.y - tooltipHeight - 8f; // 8px Abstand nach oben
+
+                _tooltipContainer.style.visibility = Visibility.Visible;
             });
 
-            item.RegisterCallback<MouseLeaveEvent>(_ =>
+            item.RegisterCallback<PointerLeaveEvent>(_ =>
             {
-                tooltip.style.display = DisplayStyle.None;
+                _tooltipContainer.style.visibility = Visibility.Hidden;
             });
-            
-            tooltip.style.whiteSpace = WhiteSpace.Normal;
-            tooltip.style.flexWrap = Wrap.Wrap;
 
             item.AddToClassList("building-card-template-container");
 
@@ -267,14 +282,20 @@ namespace FortressForge.UI
             Debug.Log("Building card unselected.");
         }
         
-        private string GetBuildCostText(BaseBuildingTemplate building)
+        private string GetFullTooltipText(BaseBuildingTemplate building)
         {
-            var costs = building.GetBuildCost();
-            if (costs.Count == 0) return "Kostenlos";
+            Dictionary<ResourceType, float> costs = building.GetBuildCost();
+            Dictionary<ResourceType, float> production = building.GetNetResourceChange();
 
-            return string.Join("\n", costs.Select(c =>
-                $"{c.Key}: {c.Value}"));
+            string costText = costs.Count > 0
+                ? "Kosten:\n" + string.Join("\n", costs.Select(c => $"{c.Key}: -{c.Value}"))
+                : "Kosten:\nKeine";
+
+            string prodText = production.Count > 0
+                ? "Produktion:\n" + string.Join("\n", production.Select(p => $"{p.Key}: +{p.Value}"))
+                : "Produktion:\nKeine";
+
+            return $"{costText}\n\n{prodText}";
         }
-
     }
 }
