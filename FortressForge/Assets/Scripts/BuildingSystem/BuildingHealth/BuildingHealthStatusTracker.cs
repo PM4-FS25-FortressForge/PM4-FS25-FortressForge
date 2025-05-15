@@ -2,12 +2,13 @@ using FishNet.Object;
 using FortressForge.BuildingSystem.BuildingData;
 using FortressForge.BuildingSystem.BuildManager;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 
 public class BuildingHealthStateTracker : NetworkBehaviour
 {
     private BuildingData _buildingData;
-    [SerializeField] private BaseBuildingTemplate _constants;
+    [SerializeField] private BaseBuildingTemplate baseBuildingTemplate;
 
     private int _currentHealth;
 
@@ -33,7 +34,7 @@ public class BuildingHealthStateTracker : NetworkBehaviour
     public override void OnStartServer()
     {
         base.OnStartServer();
-        _currentHealth = _constants.MaxHealth;
+        _currentHealth = baseBuildingTemplate.MaxHealth;
         
     }
 
@@ -53,12 +54,12 @@ public class BuildingHealthStateTracker : NetworkBehaviour
     [ObserversRpc]
     private void HandleBuildingStatusRpc(int currentHealth)
     {
-        if (currentHealth <= _constants.MaxHealth / 2)
+        if (currentHealth <= baseBuildingTemplate.MaxHealth / 2)
         {
             _buildingMaterial.color = Color.yellow;
         }
 
-        if (currentHealth <= _constants.MaxHealth / 4)
+        if (currentHealth <= baseBuildingTemplate.MaxHealth / 4)
         {
             _buildingMaterial.color = Color.Lerp(Color.white, Color.yellow, 0.6f); // Light orange
         }
@@ -67,6 +68,7 @@ public class BuildingHealthStateTracker : NetworkBehaviour
         {
             _buildingMaterial.color = Color.red;
             MakeInvisibleAndPassable();
+            baseBuildingTemplate.Disable();
         }
     }
 
@@ -78,6 +80,4 @@ public class BuildingHealthStateTracker : NetworkBehaviour
         if (_collider != null)
             _collider.enabled = false;
     }
-    
-    
 }

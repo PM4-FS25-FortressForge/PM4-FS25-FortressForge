@@ -236,7 +236,7 @@ MonoBehaviour:
   _componentIndexCache: 3
   _addedNetworkObject: {fileID: -2940466027783819273}
   _networkObjectCache: {fileID: -2940466027783819273}
-  _constants: {fileID: 11400000, guid: 144de24a11567824284fa9f68f35e9d6, type: 2}
+  baseBuildingTemplate: {fileID: 11400000, guid: 144de24a11567824284fa9f68f35e9d6, type: 2}
 --- !u!1 &3313136294588837289
 GameObject:
   m_ObjectHideFlags: 0

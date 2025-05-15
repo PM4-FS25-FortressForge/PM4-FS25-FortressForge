@@ -177,4 +177,4 @@ MonoBehaviour:
   _componentIndexCache: 255
   _addedNetworkObject: {fileID: 3936581197016872487}
   _networkObjectCache: {fileID: 0}
-  _constants: {fileID: 11400000, guid: 5874729940006ef4f93f529aa9ebed96, type: 2}
+  baseBuildingTemplate: {fileID: 11400000, guid: 5874729940006ef4f93f529aa9ebed96, type: 2}
