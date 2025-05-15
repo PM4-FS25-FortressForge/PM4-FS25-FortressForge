@@ -11,6 +11,7 @@ namespace FortressForge.HexGrid.Data
     {
         public event Action<HexTileData> OnChanged;
         public event Action<HexTileData> OnHoverChanged;
+        public event Action OnMouseLeftClick;
         
         private bool _isMouseTarget;
         // The following properties are used to determine the visual state of the tile.
@@ -106,6 +107,10 @@ namespace FortressForge.HexGrid.Data
             HexTileCoordinate = hexTileCoordinate;
             _isOccupied = false;
             _isOwned = false;
+        }
+
+        public void TriggerMouseLeftClick() {
+            OnMouseLeftClick?.Invoke();
         }
     }
 }

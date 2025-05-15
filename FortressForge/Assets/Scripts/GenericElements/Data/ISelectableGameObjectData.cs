@@ -33,5 +33,7 @@ namespace FortressForge.HexGrid.View {
             get => false;
             set => throw new NotImplementedException();
         }
+
+        void TriggerMouseLeftClick();
     }
 }
