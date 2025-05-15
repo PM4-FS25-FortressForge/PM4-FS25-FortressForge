@@ -221,5 +221,8 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
         Vector3 velocity = _firePoint.rotation * -Vector3.right * _constants.cannonForce;
 
         rb.velocity = velocity; 
+        
+        Ammunition ammoScript = ammunition.GetComponent<Ammunition>();
+        ammoScript.SetInitialVelocity(velocity);
     }
 }
