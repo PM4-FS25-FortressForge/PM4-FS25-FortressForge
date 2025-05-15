@@ -217,10 +217,7 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
             base.Spawn(ammunition);
         }
 
-        Rigidbody rb = ammunition.GetComponent<Rigidbody>();
         Vector3 velocity = _firePoint.rotation * -Vector3.right * _constants.cannonForce;
-
-        rb.velocity = velocity; 
         
         Ammunition ammoScript = ammunition.GetComponent<Ammunition>();
         ammoScript.SetInitialVelocity(velocity);
