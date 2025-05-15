@@ -1,7 +1,6 @@
 using System;
-using FortressForge.BuildingSystem.BuildManager;
 
-namespace FortressForge.HexGrid.View {
+namespace FortressForge.GenericElements.Data {
     public interface ISelectableGameObjectData<out T> {
         public event Action<T> OnChanged;
         bool IsMouseTarget {

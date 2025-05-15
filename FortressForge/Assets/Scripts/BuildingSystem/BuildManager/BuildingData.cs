@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using FortressForge.BuildingSystem.BuildingData;
+using FortressForge.GenericElements.Data;
 using FortressForge.HexGrid;
 using FortressForge.HexGrid.Data;
 using FortressForge.HexGrid.View;
