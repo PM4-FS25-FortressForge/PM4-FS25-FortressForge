@@ -1,39 +1,36 @@
+using UnityEngine;
 using FishNet.Object;
 using FortressForge.BuildingSystem.BuildingData;
-using UnityEngine;
 
-/// <summary>
-/// Represents a network-synced projectile fired from a weapon.
-/// Handles physics-based movement and automatic despawning upon collision.
-/// </summary>
 public class Ammunition : NetworkBehaviour
 {
     [SerializeField] private WeaponBuildingTemplate _constants;
-    private Rigidbody _rigidbody;
 
-    /// <summary>
-    /// Caches the Rigidbody component on initialization.
-    /// </summary>
-    void Awake()
+    private void Awake()
     {
-        _rigidbody = GetComponent<Rigidbody>();
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+        }
     }
 
-    /// <summary>
-    /// Automatically despawns the projectile when it collides with another object.
-    /// Only executed on the server and broadcasted to all clients.
-    /// </summary>
     private void OnCollisionEnter(Collision collision)
     {
-        if (!IsServer) return;
+        Debug.Log("Projectile hit: " + collision.gameObject.name + " (layer: " +
+                  LayerMask.LayerToName(collision.gameObject.layer) + ")");
 
-        
-        BuildingHealthStateTracker target = collision.gameObject.GetComponentInParent<BuildingHealthStateTracker>();
-        if (target != null)
+        // Damage logic (server-side only)
+        if (IsServer)
         {
-            target.ApplyDamage(_constants.baseDamage);
-        }
+            BuildingHealthStateTracker health = collision.gameObject.GetComponentInParent<BuildingHealthStateTracker>();
 
-        Despawn();
+            if (health != null && !health.IsDestroyed)
+            {
+                health.ApplyDamage(_constants.baseDamage);
+            }
+
+            base.Despawn();
+        }
     }
 }

@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: -8295050706128679816}
   - component: {fileID: 4909367845771665793}
   - component: {fileID: 9158468590781887508}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: CannonBall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -176,6 +176,7 @@ MonoBehaviour:
   - {fileID: -1812884232068997851}
   - {fileID: 4909367845771665793}
   - {fileID: 9158468590781887508}
+  - {fileID: 0}
   InitializedParentNetworkBehaviour: {fileID: 0}
   InitializedNestedNetworkObjects: []
   RuntimeParentNetworkBehaviour: {fileID: 0}
