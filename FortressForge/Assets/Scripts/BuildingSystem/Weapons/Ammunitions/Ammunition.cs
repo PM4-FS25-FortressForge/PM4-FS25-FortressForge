@@ -25,7 +25,7 @@ public class Ammunition : NetworkBehaviour
         {
             BuildingHealthStateTracker health = collision.gameObject.GetComponentInParent<BuildingHealthStateTracker>();
 
-            if (health != null && !health.IsDestroyed)
+            if (health != null)
             {
                 health.ApplyDamage(_constants.baseDamage);
             }

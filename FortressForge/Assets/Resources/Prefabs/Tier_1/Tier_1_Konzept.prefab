@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2884723042644000846}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: FirePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -47,7 +47,7 @@ GameObject:
   - component: {fileID: 768717479293063548}
   - component: {fileID: -2864747656303959849}
   - component: {fileID: 1738007785681860641}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Tier_1_Konzept
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -274,7 +274,7 @@ GameObject:
   - component: {fileID: 862909995200839376}
   - component: {fileID: 6473202475021336477}
   - component: {fileID: 5649453677918417649}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Lauf
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -471,7 +471,7 @@ GameObject:
   - component: {fileID: 8689544987036081665}
   - component: {fileID: 3439284731007581139}
   - component: {fileID: 4131325448960181009}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Sockel_Geschuetzturm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -557,7 +557,7 @@ GameObject:
   - component: {fileID: 4863711499496905041}
   - component: {fileID: 3487596647882374469}
   - component: {fileID: 6319675237493729366}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Fundament
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -646,7 +646,7 @@ GameObject:
   - component: {fileID: 8090244960283999250}
   - component: {fileID: 457356341139885803}
   - component: {fileID: 1948973296604991250}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Geschuetzturm
   m_TagString: Untagged
   m_Icon: {fileID: 0}

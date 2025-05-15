@@ -1,19 +1,19 @@
 using FishNet.Object;
 using FortressForge.BuildingSystem.BuildingData;
+using FortressForge.BuildingSystem.BuildManager;
 using UnityEngine;
 
 
 public class BuildingHealthStateTracker : NetworkBehaviour
 {
+    private BuildingData _buildingData;
     [SerializeField] private BaseBuildingTemplate _constants;
-    
-    private int currentHealth;
-    
+
+    private int _currentHealth;
+
     private MeshRenderer _renderer;
     private Collider _collider;
     private Material _buildingMaterial;
-
-    public bool IsDestroyed => currentHealth <= 0;
 
     /// <summary>
     /// Caches the MeshRenderer and Collider components on initialization.
@@ -33,8 +33,8 @@ public class BuildingHealthStateTracker : NetworkBehaviour
     public override void OnStartServer()
     {
         base.OnStartServer();
-        currentHealth = _constants.MaxHealth;
-        ;
+        _currentHealth = _constants.MaxHealth;
+        
     }
 
     /// <summary>
@@ -43,32 +43,29 @@ public class BuildingHealthStateTracker : NetworkBehaviour
     [Server]
     public void ApplyDamage(int damage)
     {
-        currentHealth -= damage;
-        HandleBuildingStatus();
+        _currentHealth -= damage;
+        HandleBuildingStatusRpc(_currentHealth);
     }
 
     /// <summary>
     /// Visual status handling for the building.
     /// </summary>
-    private void HandleBuildingStatus()
+    [ObserversRpc]
+    private void HandleBuildingStatusRpc(int currentHealth)
     {
-        if (currentHealth <= currentHealth / 2)
+        if (currentHealth <= _constants.MaxHealth / 2)
         {
-            if (_buildingMaterial != null)
-                _buildingMaterial.color = Color.Lerp(Color.white, Color.yellow, 0.7f); // Light orange
+            _buildingMaterial.color = Color.yellow;
         }
 
-        if (currentHealth <= currentHealth / 4)
+        if (currentHealth <= _constants.MaxHealth / 4)
         {
-            if (_buildingMaterial != null)
-                _buildingMaterial.color = Color.Lerp(Color.yellow, Color.red, 0.7f); // Light red
+            _buildingMaterial.color = Color.Lerp(Color.white, Color.yellow, 0.6f); // Light orange
         }
 
         if (currentHealth <= 0)
         {
-            if (_buildingMaterial != null)
-                _buildingMaterial.color = Color.red;
-
+            _buildingMaterial.color = Color.red;
             MakeInvisibleAndPassable();
         }
     }
@@ -81,4 +78,6 @@ public class BuildingHealthStateTracker : NetworkBehaviour
         if (_collider != null)
             _collider.enabled = false;
     }
+    
+    
 }

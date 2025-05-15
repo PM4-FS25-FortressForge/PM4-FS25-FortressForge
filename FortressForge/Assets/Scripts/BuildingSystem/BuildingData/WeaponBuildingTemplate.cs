@@ -10,9 +10,6 @@ namespace FortressForge.BuildingSystem.BuildingData
     {
         [SerializeField] 
         public GameObject ammunitionPrefab;
-        
-        [Header("Building Data")] 
-        public int BuildingHealth;
 
         [Header("Weapon Data")] 
         public int baseDamage;
