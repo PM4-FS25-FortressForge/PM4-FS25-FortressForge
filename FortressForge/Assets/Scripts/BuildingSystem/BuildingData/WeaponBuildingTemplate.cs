@@ -13,7 +13,8 @@ namespace FortressForge.BuildingSystem.BuildingData
 
         [Header("Weapon Data")] 
         public int baseDamage;
-        public float reloadSpeed;
+        public float automaticReloadSpeed;
+        public int weaponReload;
         public int maxAmmo;
         public int rechargeCost;
 

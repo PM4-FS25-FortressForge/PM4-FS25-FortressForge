@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using FishNet.Object;
 using FortressForge.BuildingSystem.BuildingData;
 using FortressForge.Economy;
+using FortressForge.HexGrid.Data;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -13,7 +14,7 @@ using UnityEngine.UI;
 /// </summary>
 public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInputActionsActions
 {
-    private Button _rechargeButton; //TODO: in UI
+    
     [SerializeField] private WeaponBuildingTemplate _constants;
     [SerializeField] private Transform _firePoint;
     private Transform _towerBase;
@@ -21,12 +22,12 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
 
     private WeaponInputAction _weaponInputAction;
     private Coroutine _autoFireCoroutine;
-    private EconomySystem _economySystem;
+    private HexGridData _hexGridData;
     private Material _buildingMaterial;
     private Color _originalColor;
 
     private bool _isInFightMode = false;
-    private bool _isReloading = true;
+    private bool _singleShotReload = true;
     private bool _isAutoFiring = false;
     private bool _canReload = false;
 
@@ -54,7 +55,11 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
         _buildingMaterial = GetComponentInChildren<MeshRenderer>().material;
         _originalColor = _buildingMaterial.color;
         _currentAmmo = _constants.maxAmmo;
-        ShowRechargeButton(false);
+    }
+
+    public void Init(HexGridData hexGridData)
+    {
+        _hexGridData = hexGridData;
     }
 
     /// <summary>
@@ -93,7 +98,6 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
             _isInFightMode = true;
             _weaponInputAction.WeaponInputActions.Enable();
             Debug.Log("Entered Fight Mode!");
-            ShowRechargeButton(_canReload);
         }
     }
 
@@ -106,7 +110,6 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
         {
             _isInFightMode = false;
             _weaponInputAction.WeaponInputActions.Disable();
-            ShowRechargeButton(false);
             Debug.Log("Exited Fight Mode");
         }
     }
@@ -175,7 +178,7 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
     {
         if (context.performed && IsOwner)
         {
-            if (!_isAutoFiring && _isReloading && _currentAmmo > 0)
+            if (!_isAutoFiring && _singleShotReload && _currentAmmo > 0)
             {
                 _isAutoFiring = true;
                 StartCoroutine(AutoFire());
@@ -191,24 +194,17 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
     {
         while (_isAutoFiring && _currentAmmo > 0)
         {
-            if (_isReloading)
-            {
-                FireCannonServerRpc();
-                _currentAmmo--;
-                _isReloading = false;
-                yield return new WaitForSeconds(_constants.reloadSpeed);
-                _isReloading = true;
-            }
-            else
-            {
-                yield return null;
-            }
+            FireCannonServerRpc();
+            _currentAmmo--;
+            yield return new WaitForSeconds(_constants.automaticReloadSpeed);
         }
-
+        
         _isAutoFiring = false;
-        _canReload = true;
-        ShowRechargeButton(true);
+        StopCoroutine(AutoFire());
         _buildingMaterial.color = Color.blue;
+        reloadWeapon();
+        yield return new WaitForSeconds(_constants.weaponReload);
+        _buildingMaterial.color = _originalColor;
     }
 
     /// <summary>
@@ -231,28 +227,14 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
         ammoScript.SetInitialVelocity(velocity);
     }
 
-    private void ShowRechargeButton(bool show)
-    {
-        _rechargeButton.gameObject.SetActive(show);
-    }
-
-    public void OnRechargePressed()
-    {
-        rechargeWeapon(_originalColor);
-
-        _canReload = false;
-        ShowRechargeButton(false);
-    }
-
-    private void rechargeWeapon(Color originalColor)
+    private void reloadWeapon()
     {
         var cost = new Dictionary<ResourceType, float>
         {
-            { ResourceType.Metal, _constants.rechargeCost }
+            { ResourceType.Amunition, _constants.rechargeCost }
         };
 
-        _economySystem.PayResource(cost);
-        _buildingMaterial.color = originalColor;
+        _hexGridData.EconomySystem.PayResource(cost);
         _currentAmmo = _constants.maxAmmo;
     }
 

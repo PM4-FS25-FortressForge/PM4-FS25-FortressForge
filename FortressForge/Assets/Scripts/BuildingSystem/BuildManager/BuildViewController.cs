@@ -205,7 +205,12 @@ namespace FortressForge.BuildingSystem.BuildManager
                 collider.enabled = true;
             
             SetLayerRecursively(prefab, LayerMask.NameToLayer("Building"));
-
+            
+            if (template.GetType() == typeof(WeaponBuildingTemplate))
+            {
+                prefab.GetComponent<WeaponInputHandler>().Init(targetGrid);
+            }
+            
             targetGrid.MarkBuildingTiles(coord, rotatedShape, isStackableList);
             targetGrid.EconomySystem.PayResource(template.GetBuildCost());
             

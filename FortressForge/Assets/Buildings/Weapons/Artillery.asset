@@ -25,8 +25,9 @@ MonoBehaviour:
   BuildCosts: []
   ammunitionPrefab: {fileID: 956282788987846253, guid: b7e4d5bc00f3f0146b14669c21c8ffe1, type: 3}
   baseDamage: 50
-  reloadSpeed: 2
-  maxAmmo: 10
+  automaticReloadSpeed: 5
+  weaponReload: 20
+  maxAmmo: 3
   rechargeCost: 200
   minCannonAngle: 10
   maxCannonAngle: 45
