@@ -1,8 +1,11 @@
 using System.Collections;
+using System.Collections.Generic;
 using FishNet.Object;
 using FortressForge.BuildingSystem.BuildingData;
+using FortressForge.Economy;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 /// <summary>
 /// Handles input, aiming, and firing logic for a networked deployable weapon.
@@ -10,21 +13,26 @@ using UnityEngine.InputSystem;
 /// </summary>
 public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInputActionsActions
 {
+    private Button _rechargeButton; //TODO: in UI
     [SerializeField] private WeaponBuildingTemplate _constants;
     [SerializeField] private Transform _firePoint;
-
     private Transform _towerBase;
     private Transform _cannonShaft;
 
     private WeaponInputAction _weaponInputAction;
     private Coroutine _autoFireCoroutine;
+    private EconomySystem _economySystem;
+    private Material _buildingMaterial;
+    private Color _originalColor;
 
     private bool _isInFightMode = false;
     private bool _isReloading = true;
     private bool _isAutoFiring = false;
+    private bool _canReload = false;
 
     private float _rotateInput;
     private float _angleInput;
+    private int _currentAmmo;
 
     /// <summary>
     /// Initializes the input system and finds the required child transforms.
@@ -42,6 +50,11 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
         {
             throw new System.Exception("Could not find required transforms!");
         }
+
+        _buildingMaterial = GetComponentInChildren<MeshRenderer>().material;
+        _originalColor = _buildingMaterial.color;
+        _currentAmmo = _constants.maxAmmo;
+        ShowRechargeButton(false);
     }
 
     /// <summary>
@@ -80,6 +93,7 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
             _isInFightMode = true;
             _weaponInputAction.WeaponInputActions.Enable();
             Debug.Log("Entered Fight Mode!");
+            ShowRechargeButton(_canReload);
         }
     }
 
@@ -92,6 +106,7 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
         {
             _isInFightMode = false;
             _weaponInputAction.WeaponInputActions.Disable();
+            ShowRechargeButton(false);
             Debug.Log("Exited Fight Mode");
         }
     }
@@ -160,7 +175,7 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
     {
         if (context.performed && IsOwner)
         {
-            if (!_isAutoFiring && _isReloading)
+            if (!_isAutoFiring && _isReloading && _currentAmmo > 0)
             {
                 _isAutoFiring = true;
                 StartCoroutine(AutoFire());
@@ -174,11 +189,12 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
     /// </summary>
     private IEnumerator AutoFire()
     {
-        while (_isAutoFiring)
+        while (_isAutoFiring && _currentAmmo > 0)
         {
             if (_isReloading)
             {
                 FireCannonServerRpc();
+                _currentAmmo--;
                 _isReloading = false;
                 yield return new WaitForSeconds(_constants.reloadSpeed);
                 _isReloading = true;
@@ -188,19 +204,11 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
                 yield return null;
             }
         }
-    }
 
-    /// <summary>
-    /// Stops auto-firing and ends the firing coroutine.
-    /// Called when aim is adjusted.
-    /// </summary>
-    private void stopAutoFire()
-    {
-        if (_isAutoFiring)
-        {
-            _isAutoFiring = false;
-            StopCoroutine(AutoFire());
-        }
+        _isAutoFiring = false;
+        _canReload = true;
+        ShowRechargeButton(true);
+        _buildingMaterial.color = Color.blue;
     }
 
     /// <summary>
@@ -218,8 +226,46 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
         }
 
         Vector3 velocity = _firePoint.rotation * -Vector3.right * _constants.cannonForce;
-        
+
         Ammunition ammoScript = ammunition.GetComponent<Ammunition>();
         ammoScript.SetInitialVelocity(velocity);
+    }
+
+    private void ShowRechargeButton(bool show)
+    {
+        _rechargeButton.gameObject.SetActive(show);
+    }
+
+    public void OnRechargePressed()
+    {
+        rechargeWeapon(_originalColor);
+
+        _canReload = false;
+        ShowRechargeButton(false);
+    }
+
+    private void rechargeWeapon(Color originalColor)
+    {
+        var cost = new Dictionary<ResourceType, float>
+        {
+            { ResourceType.Metal, _constants.rechargeCost }
+        };
+
+        _economySystem.PayResource(cost);
+        _buildingMaterial.color = originalColor;
+        _currentAmmo = _constants.maxAmmo;
+    }
+
+    /// <summary>
+    /// Stops auto-firing and ends the firing coroutine.
+    /// Called when aim is adjusted.
+    /// </summary>
+    private void stopAutoFire()
+    {
+        if (_isAutoFiring)
+        {
+            _isAutoFiring = false;
+            StopCoroutine(AutoFire());
+        }
     }
 }
