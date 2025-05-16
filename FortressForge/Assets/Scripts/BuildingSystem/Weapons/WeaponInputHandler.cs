@@ -14,22 +14,23 @@ using UnityEngine.UI;
 /// </summary>
 public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInputActionsActions
 {
-    
     [SerializeField] private WeaponBuildingTemplate _constants;
     [SerializeField] private Transform _firePoint;
     private Transform _towerBase;
     private Transform _cannonShaft;
 
     private WeaponInputAction _weaponInputAction;
-    private Coroutine _autoFireCoroutine;
     private HexGridData _hexGridData;
     private Material _buildingMaterial;
     private Color _originalColor;
 
+    private Coroutine _reloadCoroutine = null;
+    private Coroutine _autoFireCoroutine = null;
+
     private bool _isInFightMode = false;
-    private bool _singleShotReload = true;
     private bool _isAutoFiring = false;
-    private bool _canReload = false;
+    private bool _isReloading = false;
+    private bool _isOnCooldown = false;
 
     private float _rotateInput;
     private float _angleInput;
@@ -176,13 +177,34 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
     /// </summary>
     public void OnFireWeapon(InputAction.CallbackContext context)
     {
-        if (context.performed && IsOwner)
+        if (!IsOwner || !context.performed)
+            return;
+
+        switch (true)
         {
-            if (!_isAutoFiring && _singleShotReload && _currentAmmo > 0)
-            {
+            case true when !_isAutoFiring && !_isReloading && !_isOnCooldown && _currentAmmo > 0 &&
+                           _autoFireCoroutine == null: // Fire if not already firing and reloaded
                 _isAutoFiring = true;
-                StartCoroutine(AutoFire());
-            }
+                _autoFireCoroutine = StartCoroutine(AutoFire());
+                break;
+
+            case true
+                when _isAutoFiring && _currentAmmo > 0 && _autoFireCoroutine != null
+                : // Denies the player to fire while already firing
+                break;
+
+            case true
+                when !_isReloading && _currentAmmo <= 0 && _reloadCoroutine == null
+                : // Reload if not already reloading and out of ammo
+                ReloadWeaponServerRpc();
+                _isReloading = true;
+                _reloadCoroutine = StartCoroutine(ReloadTime());
+                break;
+
+            case true
+                when _isReloading && _currentAmmo <= 0 && _reloadCoroutine != null
+                : // Denies the player to reload while already reloading
+                break;
         }
     }
 
@@ -196,15 +218,50 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
         {
             FireCannonServerRpc();
             _currentAmmo--;
-            yield return new WaitForSeconds(_constants.automaticReloadSpeed);
+            yield return StartCoroutine(FireCooldown()); 
         }
-        
+
         _isAutoFiring = false;
-        StopCoroutine(AutoFire());
+        _autoFireCoroutine = null;
         _buildingMaterial.color = Color.blue;
-        reloadWeapon();
+
+        ReloadWeaponServerRpc();
+        _isReloading = true;
+        _reloadCoroutine = StartCoroutine(ReloadTime());
+    }
+
+    private IEnumerator FireCooldown()
+    {
+        _isOnCooldown = true;
+        yield return new WaitForSeconds(_constants.automaticReloadSpeed);
+        _isOnCooldown = false;
+    }
+
+    private IEnumerator ReloadTime()
+    {
         yield return new WaitForSeconds(_constants.weaponReload);
         _buildingMaterial.color = _originalColor;
+        _isReloading = false;
+        _reloadCoroutine = null;
+    }
+
+    /// <summary>
+    /// Stops auto-firing and ends the firing coroutine.
+    /// Called when aim is adjusted.
+    /// </summary>
+    private void stopAutoFire()
+    {
+        if (_isAutoFiring)
+        {
+            _isAutoFiring = false;
+
+            if (_autoFireCoroutine != null)
+            {
+                StopCoroutine(_autoFireCoroutine);
+                StartCoroutine(FireCooldown());
+                _autoFireCoroutine = null;
+            }
+        }
     }
 
     /// <summary>
@@ -227,27 +284,21 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
         ammoScript.SetInitialVelocity(velocity);
     }
 
-    private void reloadWeapon()
+    [ServerRpc(RequireOwnership = false)]
+    private void ReloadWeaponServerRpc()
     {
         var cost = new Dictionary<ResourceType, float>
         {
-            { ResourceType.Amunition, _constants.rechargeCost }
+            { ResourceType.Amunition, _constants.reloadCost }
         };
+
+        if (_hexGridData == null || !_hexGridData.EconomySystem.CheckForSufficientResources(cost))
+        {
+            Debug.Log("Server: Insufficient resources.");
+            return;
+        }
 
         _hexGridData.EconomySystem.PayResource(cost);
         _currentAmmo = _constants.maxAmmo;
-    }
-
-    /// <summary>
-    /// Stops auto-firing and ends the firing coroutine.
-    /// Called when aim is adjusted.
-    /// </summary>
-    private void stopAutoFire()
-    {
-        if (_isAutoFiring)
-        {
-            _isAutoFiring = false;
-            StopCoroutine(AutoFire());
-        }
     }
 }

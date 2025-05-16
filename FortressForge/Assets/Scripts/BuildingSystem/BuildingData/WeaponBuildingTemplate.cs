@@ -16,7 +16,7 @@ namespace FortressForge.BuildingSystem.BuildingData
         public float automaticReloadSpeed;
         public int weaponReload;
         public int maxAmmo;
-        public int rechargeCost;
+        public int reloadCost;
 
         [Header("Weapon Control Constants")] 
         public float minCannonAngle;

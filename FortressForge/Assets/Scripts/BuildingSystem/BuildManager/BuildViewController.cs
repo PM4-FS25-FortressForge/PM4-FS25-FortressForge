@@ -18,7 +18,6 @@ namespace FortressForge.BuildingSystem.BuildManager
         private List<HexGridData> _ownedHexGridDatas = new();
         private GameStartConfiguration _config;
         private HexGridManager _hexGridManager;
-
         private GameObject _previewBuilding;
         private MeshRenderer _previewBuildingMeshRenderer;
         private float _currentPreviewBuildingRotation = 0f;
@@ -189,31 +188,30 @@ namespace FortressForge.BuildingSystem.BuildManager
                 return;
             }
 
-            Vector3 pos = coord.GetWorldPosition(_config.GridRadius, _config.TileHeight) + GetAveragePosition(rotatedShape);
+            Vector3 pos = coord.GetWorldPosition(_config.GridRadius, _config.TileHeight) +
+                          GetAveragePosition(rotatedShape);
             Quaternion rot = Quaternion.Euler(0f, rotation, 0f) * template.BuildingPrefab.transform.rotation;
-            GameObject prefab =  SpawnNetworked(template.BuildingPrefab, pos, rot);
-            
+            GameObject prefab = SpawnNetworked(template.BuildingPrefab, pos, rot);
+
             if (prefab == null)
             {
                 Debug.LogError("Failed to spawn building prefab.");
                 return;
             }
-            
+
             // Re enable collider on placement
             var collider = prefab.GetComponentInChildren<Collider>();
             if (collider != null)
                 collider.enabled = true;
-            
-            SetLayerRecursively(prefab, LayerMask.NameToLayer("Building"));
-            
+
             if (template.GetType() == typeof(WeaponBuildingTemplate))
             {
                 prefab.GetComponent<WeaponInputHandler>().Init(targetGrid);
             }
-            
+
             targetGrid.MarkBuildingTiles(coord, rotatedShape, isStackableList);
             targetGrid.EconomySystem.PayResource(template.GetBuildCost());
-            
+
             // Give ownership to the player who placed the building.
             // Enforces that only the owner can interact with the placed buildings.
             NetworkObject netObj = prefab.GetComponent<NetworkObject>();
@@ -221,28 +219,16 @@ namespace FortressForge.BuildingSystem.BuildManager
             {
                 netObj.GiveOwnership(base.Owner);
             }
-            
+
             // Add reference to building manager for later use.
             List<HexTileData> tileDatas = globalRotatedShape
                 .Select(coord => targetGrid.TileMap[coord])
                 .ToList();
             targetGrid.BuildingManager.AddBuilding(new BuildingData(prefab, tileDatas, template));
-            
+
             SyncPlacedBuildingToClientsRpc(buildingIndex, coord, targetGrid.Id, rotation, prefab);
         }
         
-        ///<summary>
-        /// Helper method to set layer recursively
-        /// </summary>
-        private void SetLayerRecursively(GameObject obj, int layer)
-        {
-            obj.layer = layer;
-            foreach (Transform child in obj.transform)
-            {
-                SetLayerRecursively(child.gameObject, layer);
-            }
-        }
-
         [ObserversRpc]
         private void SyncPlacedBuildingToClientsRpc(int buildingIndex, HexTileCoordinate coord, int hexGridId,
             float rotation,
@@ -269,6 +255,12 @@ namespace FortressForge.BuildingSystem.BuildManager
             {
                 targetGrid.BuildingManager.AddBuilding(buildingData);
                 targetGrid.MarkBuildingTiles(coord, rotatedShape, isStackableList);
+                if (template is WeaponBuildingTemplate)
+                {
+                    var handler = prefab.GetComponent<WeaponInputHandler>();
+                    if (handler != null)
+                        handler.Init(targetGrid);
+                }
             }
         }
 
