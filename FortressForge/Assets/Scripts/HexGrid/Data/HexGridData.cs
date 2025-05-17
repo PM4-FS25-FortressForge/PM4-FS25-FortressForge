@@ -12,7 +12,7 @@ namespace FortressForge.HexGrid.Data
     /// Represents the pure data of a hex grid. This class is responsible for
     /// organizing the data of the hex tiles and providing methods to access them.
     /// In this implementation, AXIAL coordinates are used to identify the hex tiles
-    /// with a additional height coordinate.
+    /// with an additional height coordinate.
     /// The coordinates are stored as (q, r, h) tuples. (Queue, Row, Height)
     /// Reference: https://www.redblobgames.com/grids/hexagons/
     /// </summary>

@@ -42,11 +42,9 @@ namespace FortressForge.Economy
                 {
                     Debug.Log($"[Resource] { _type } exceeded max ({value} > {MaxAmount}). Clamping.");
                     _currentAmount = MaxAmount;
+                    return;
                 }
-                else 
-                {
-                    _currentAmount = value;
-                }
+                _currentAmount = value;
                 if (Math.Abs(previousValue - _currentAmount) > Mathf.Epsilon)
                 {
                     OnChanged?.Invoke();

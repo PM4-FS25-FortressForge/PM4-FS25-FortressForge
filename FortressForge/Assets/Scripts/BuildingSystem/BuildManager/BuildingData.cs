@@ -20,6 +20,7 @@ namespace FortressForge.BuildingSystem.BuildManager {
         public BaseBuildingTemplate BaseBuildingTemplate => _baseBuildingTemplate;
         
         public event Action<BuildingData> OnChanged;
+        public event Action OnMouseLeftClick;
         
         private bool _isHighlighted;
         public bool IsHighlighted
@@ -52,8 +53,11 @@ namespace FortressForge.BuildingSystem.BuildManager {
 
             _buildingTiles.ForEach(tile => {
                 tile.OnChanged += HandleTileDataChange;
+                tile.OnMouseLeftClick += HandleMouseLeftClick;
             });
+            
             OnChanged += HandleBuildingDataChange;
+            OnMouseLeftClick += HandleMouseLeftClick;
         }
         
         private void HandleTileDataChange(HexTileData tileData) {
@@ -82,6 +86,15 @@ namespace FortressForge.BuildingSystem.BuildManager {
                     tile.IsHighlighted = false;
                 });
             }
+        }
+
+        public void TriggerMouseLeftClick() {
+            OnMouseLeftClick?.Invoke();
+        }
+        
+        public void HandleMouseLeftClick() {
+            // Handle the mouse left click event here, gets triggered twice if on server
+            Debug.Log("Building data clicked!");
         }
     }
 }

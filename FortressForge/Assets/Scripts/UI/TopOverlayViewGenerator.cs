@@ -120,7 +120,7 @@ namespace FortressForge.UI
             ressourceContainerTrapezoid.Add(resourceContainer);
 
             LoadRessourceFillContainer("FillableRessourceContainer-left-top", resourceContainer, ResourceType.Power, "Energy");
-            LoadRessourceFillContainer("FillableRessourceContainer-right-top", resourceContainer, ResourceType.Magma, "Magma");
+            LoadRessourceFillContainer("FillableRessourceContainer-right-top", resourceContainer, ResourceType.Amunition, "Ammunition");
             LoadRessourceFillContainer("FillableRessourceContainer-left-bottom", resourceContainer, ResourceType.Metal, "Metal");
             LoadRessourceFillContainer("FillableRessourceContainer-right-bottom", resourceContainer, ResourceType.Concrete, "Concrete");
         }
