@@ -220,7 +220,7 @@ namespace FortressForge.BuildingSystem.BuildManager
                 netObj.GiveOwnership(base.Owner);
             }
 
-            // Add reference to building manager for later use.
+            // Add reference to the building manager for later use.
             List<HexTileData> tileDatas = globalRotatedShape
                 .Select(coord => targetGrid.TileMap[coord])
                 .ToList();
@@ -255,6 +255,7 @@ namespace FortressForge.BuildingSystem.BuildManager
             {
                 targetGrid.BuildingManager.AddBuilding(buildingData);
                 targetGrid.MarkBuildingTiles(coord, rotatedShape, isStackableList);
+                
                 if (template is WeaponBuildingTemplate)
                 {
                     var handler = prefab.GetComponent<WeaponInputHandler>();

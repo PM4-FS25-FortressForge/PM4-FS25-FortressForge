@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using FishNet.Connection;
 using FishNet.Object;
 using FortressForge.BuildingSystem.BuildingData;
 using FortressForge.Economy;
@@ -124,6 +125,7 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
         {
             _rotateInput = context.ReadValue<float>();
             stopAutoFire();
+            StartCoroutine(FireCooldown());
         }
     }
 
@@ -136,6 +138,7 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
         {
             _angleInput = context.ReadValue<float>();
             stopAutoFire();
+            StartCoroutine(FireCooldown());
         }
     }
 
@@ -182,28 +185,25 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
 
         switch (true)
         {
-            case true when !_isAutoFiring && !_isReloading && !_isOnCooldown && _currentAmmo > 0 &&
-                           _autoFireCoroutine == null: // Fire if not already firing and reloaded
+            case true when !_isAutoFiring && !_isReloading && !_isOnCooldown && _currentAmmo > 0 && _autoFireCoroutine == null: // Fire if not already firing and reloaded
                 _isAutoFiring = true;
+                Debug.Log("Firing");
                 _autoFireCoroutine = StartCoroutine(AutoFire());
                 break;
 
             case true
-                when _isAutoFiring && _currentAmmo > 0 && _autoFireCoroutine != null
-                : // Denies the player to fire while already firing
+                when _isAutoFiring && _currentAmmo > 0 && _autoFireCoroutine != null: // Denies the player to fire while already firing
+                Debug.Log("Already firing");
                 break;
 
             case true
-                when !_isReloading && _currentAmmo <= 0 && _reloadCoroutine == null
-                : // Reload if not already reloading and out of ammo
+                when !_isReloading && _currentAmmo <= 0 && _reloadCoroutine == null: // Reload if not already reloading and out of ammo
                 ReloadWeaponServerRpc();
-                _isReloading = true;
-                _reloadCoroutine = StartCoroutine(ReloadTime());
                 break;
 
             case true
-                when _isReloading && _currentAmmo <= 0 && _reloadCoroutine != null
-                : // Denies the player to reload while already reloading
+                when _isReloading && _currentAmmo <= 0 && _reloadCoroutine != null: // Denies the player to reload while already reloading
+                Debug.Log("Already reloading");
                 break;
         }
     }
@@ -226,8 +226,6 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
         _buildingMaterial.color = Color.blue;
 
         ReloadWeaponServerRpc();
-        _isReloading = true;
-        _reloadCoroutine = StartCoroutine(ReloadTime());
     }
 
     private IEnumerator FireCooldown()
@@ -240,9 +238,11 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
     private IEnumerator ReloadTime()
     {
         yield return new WaitForSeconds(_constants.weaponReload);
+        _currentAmmo = _constants.maxAmmo;
         _buildingMaterial.color = _originalColor;
         _isReloading = false;
         _reloadCoroutine = null;
+        Debug.Log("Reloading Finished");
     }
 
     /// <summary>
@@ -258,8 +258,8 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
             if (_autoFireCoroutine != null)
             {
                 StopCoroutine(_autoFireCoroutine);
-                StartCoroutine(FireCooldown());
                 _autoFireCoroutine = null;
+                StartCoroutine(FireCooldown());
             }
         }
     }
@@ -292,13 +292,29 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
             { ResourceType.Amunition, _constants.reloadCost }
         };
 
-        if (_hexGridData == null || !_hexGridData.EconomySystem.CheckForSufficientResources(cost))
+        bool success = false;
+
+        if (_hexGridData != null && _hexGridData.EconomySystem.CheckForSufficientResources(cost))
         {
-            Debug.Log("Server: Insufficient resources.");
-            return;
+            _isReloading = true;
+            _hexGridData.EconomySystem.PayResource(cost);
+            success = true;
+            Debug.Log("Reloading");
         }
 
-        _hexGridData.EconomySystem.PayResource(cost);
-        _currentAmmo = _constants.maxAmmo;
+        TargetReloadResult(Owner, success);
+    }
+    
+    [TargetRpc]
+    private void TargetReloadResult(NetworkConnection conn, bool success)
+    {
+        if (success)
+        {
+            _reloadCoroutine = StartCoroutine(ReloadTime());
+        }
+        else
+        {
+            Debug.Log("Reloading Failed - Not enough resources");
+        }
     }
 }
