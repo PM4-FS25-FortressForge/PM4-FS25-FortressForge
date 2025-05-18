@@ -188,38 +188,32 @@ namespace FortressForge.BuildingSystem.BuildManager
                 return;
             }
 
+            // Spawn the building prefab at the calculated position and rotation
             Vector3 pos = coord.GetWorldPosition(_config.GridRadius, _config.TileHeight) +
                           GetAveragePosition(rotatedShape);
             Quaternion rot = Quaternion.Euler(0f, rotation, 0f) * template.BuildingPrefab.transform.rotation;
             GameObject prefab = SpawnNetworked(template.BuildingPrefab, pos, rot);
-
             if (prefab == null)
             {
                 Debug.LogError("Failed to spawn building prefab.");
                 return;
             }
-
-            // Re enable collider on placement
-            var collider = prefab.GetComponentInChildren<Collider>();
-            if (collider != null)
-                collider.enabled = true;
-
-            if (template.GetType() == typeof(WeaponBuildingTemplate))
-            {
-                prefab.GetComponent<WeaponInputHandler>().Init(targetGrid);
-            }
-
-            targetGrid.MarkBuildingTiles(coord, rotatedShape, isStackableList);
-            targetGrid.EconomySystem.PayResource(template.GetBuildCost());
-
             // Give ownership to the player who placed the building.
             // Enforces that only the owner can interact with the placed buildings.
+            // Because of FishNet's ownership system, we need to do this directly inside the serverrpc method
             NetworkObject netObj = prefab.GetComponent<NetworkObject>();
             if (netObj != null && base.Owner.IsValid)
             {
                 netObj.GiveOwnership(base.Owner);
             }
+            if (template.GetType() == typeof(WeaponBuildingTemplate))
+            { // Quick n dirty init for prefab
+                prefab.GetComponent<WeaponInputHandler>().Init(targetGrid);
+            }
 
+            targetGrid.MarkBuildingTiles(coord, rotatedShape, isStackableList);
+            targetGrid.EconomySystem.PayResource(template.GetBuildCost());
+            
             // Add reference to the building manager for later use.
             List<HexTileData> tileDatas = globalRotatedShape
                 .Select(coord => targetGrid.TileMap[coord])
@@ -346,6 +340,7 @@ namespace FortressForge.BuildingSystem.BuildManager
 
             GameObject obj = Instantiate(prefab, pos, rot, parent);
             InstanceFinder.ServerManager.Spawn(obj);
+            
             return obj;
         }
 
