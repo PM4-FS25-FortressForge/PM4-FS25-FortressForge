@@ -58,7 +58,10 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
         _originalColor = _buildingMaterial.color;
         _currentAmmo = _constants.maxAmmo;
     }
-
+    
+    /// <summary>
+    /// Initializes weapon with external hex grid data used for economic checks.
+    /// </summary>
     public void Init(HexGridData hexGridData)
     {
         _hexGridData = hexGridData;
@@ -176,7 +179,8 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
     }
 
     /// <summary>
-    /// Starts auto-firing when fire input is received, if not already firing and reloaded.
+    /// Starts auto-firing when the fire button is pressed.
+    /// Handles all firing states and transitions, including reloading.
     /// </summary>
     public void OnFireWeapon(InputAction.CallbackContext context)
     {
@@ -209,8 +213,7 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
     }
 
     /// <summary>
-    /// Coroutine to continuously fire the weapon at a fixed rate until stopped.
-    /// Waits for reload time between shots.
+    /// Coroutine to fire ammunition at a constant rate until ammo runs out or firing is stopped.
     /// </summary>
     private IEnumerator AutoFire()
     {
@@ -227,14 +230,20 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
 
         ReloadWeaponServerRpc();
     }
-
+    
+    /// <summary>
+    /// Handles firing delay between shots.
+    /// </summary>
     private IEnumerator FireCooldown()
     {
         _isOnCooldown = true;
         yield return new WaitForSeconds(_constants.automaticReloadSpeed);
         _isOnCooldown = false;
     }
-
+    
+    /// <summary>
+    /// Handles time-based reloading and ammunition refill.
+    /// </summary>
     private IEnumerator ReloadTime()
     {
         yield return new WaitForSeconds(_constants.weaponReload);
@@ -247,7 +256,7 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
 
     /// <summary>
     /// Stops auto-firing and ends the firing coroutine.
-    /// Called when aim is adjusted.
+    /// Triggered by aim adjustment or exit condition.
     /// </summary>
     private void stopAutoFire()
     {
@@ -265,7 +274,7 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
     }
 
     /// <summary>
-    /// Server-side method to spawn ammunition, set its velocity, and broadcast the shot to all clients.
+    /// Spawns the ammunition object and assigns its velocity. Called on the server.
     /// </summary>
     [ServerRpc(RequireOwnership = false)]
     private void FireCannonServerRpc()
@@ -284,6 +293,9 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
         ammoScript.SetInitialVelocity(velocity);
     }
 
+    /// <summary>
+    /// Checks for available resources and initiates reloading on the server.
+    /// </summary>
     [ServerRpc(RequireOwnership = false)]
     private void ReloadWeaponServerRpc()
     {
@@ -305,6 +317,9 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
         TargetReloadResult(Owner, success);
     }
     
+    /// <summary>
+    /// Client-side handler for reload result. Starts reload time if successful.
+    /// </summary>
     [TargetRpc]
     private void TargetReloadResult(NetworkConnection conn, bool success)
     {
