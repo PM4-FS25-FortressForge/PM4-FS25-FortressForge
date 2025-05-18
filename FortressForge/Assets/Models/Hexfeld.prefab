@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5851944598102998090}
   - component: {fileID: 8562116752616523904}
   - component: {fileID: -2569334805087935114}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Hexfeld
   m_TagString: Untagged
   m_Icon: {fileID: 0}
