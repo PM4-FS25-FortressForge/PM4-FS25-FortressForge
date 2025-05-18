@@ -73,7 +73,7 @@ public class BuildingHealthStateTracker : NetworkBehaviour
     }
 
     /// <summary>
-    /// Makes the building invisible and passable.
+    /// Makes the building passable.
     /// </summary>
     private void MakeInvisibleAndPassable()
     {
