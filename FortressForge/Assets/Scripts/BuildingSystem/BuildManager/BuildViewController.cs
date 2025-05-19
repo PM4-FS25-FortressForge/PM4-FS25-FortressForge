@@ -8,11 +8,9 @@ using FortressForge.BuildingSystem.BuildingData;
 using FortressForge.GameInitialization;
 using FortressForge.HexGrid;
 using FortressForge.HexGrid.Data;
-using FortressForge.HexGrid.View;
-using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Tilemaps;
+
 
 namespace FortressForge.BuildingSystem.BuildManager
 {
@@ -21,7 +19,6 @@ namespace FortressForge.BuildingSystem.BuildManager
         private List<HexGridData> _ownedHexGridDatas = new();
         private GameStartConfiguration _config;
         private HexGridManager _hexGridManager;
-
         private GameObject _previewBuilding;
         private MeshRenderer _previewBuildingMeshRenderer;
         private float _currentPreviewBuildingRotation = 0f;
@@ -29,7 +26,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         private int _selectedBuildingIndex = -1;
         private HexTileData _hoveredHexTile;
         private BaseBuildingTemplate _selectedBuildingTemplate;
-        
+
         private bool IsPreviewMode => _selectedBuildingIndex != -1;
         private List<BaseBuildingTemplate> AvailableBuildings => _config.availableBuildings;
 
@@ -45,7 +42,7 @@ namespace FortressForge.BuildingSystem.BuildManager
             _config = config;
             _hexGridManager = hexGridManager;
             _hexTileHoverController = hoverController;
-            
+
             _hexTileHoverController.OnHoverTileChanged += OnHexTileChanged;
         }
 
@@ -88,7 +85,7 @@ namespace FortressForge.BuildingSystem.BuildManager
             _hexTileHoverController.OnHoverTileChanged -= OnHexTileChanged;
             ExitBuildMode();
         }
-        
+
         private void OnEnable()
         {
             _input = new BuildActions();
@@ -132,7 +129,8 @@ namespace FortressForge.BuildingSystem.BuildManager
         {
             ClearPreviousBuildTargets();
             Vector3 snappedPos = targetCoord.GetWorldPosition(_config.GridRadius, _config.TileHeight);
-            List<HexTileCoordinate> rotatedShape = GetRotatedShape(_selectedBuildingTemplate.ShapeData, _currentPreviewBuildingRotation);
+            List<HexTileCoordinate> rotatedShape =
+                GetRotatedShape(_selectedBuildingTemplate.ShapeData, _currentPreviewBuildingRotation);
             Vector3 avgPos = GetAveragePosition(rotatedShape);
 
             _previewBuilding.transform.position = snappedPos + avgPos;
@@ -157,14 +155,14 @@ namespace FortressForge.BuildingSystem.BuildManager
 
             _previewBuildingMeshRenderer.enabled = true;
         }
-        
+
         private void ClearPreviousBuildTargets()
         {
             foreach (HexTileCoordinate coord in _currentBuildTargets)
             {
                 var tile = _hexGridManager.GetHexTileDataOrCreate(coord);
                 if (tile == null) continue;
-                
+
                 tile.IsBuildTarget = false;
             }
 
@@ -191,30 +189,44 @@ namespace FortressForge.BuildingSystem.BuildManager
                 return;
             }
 
-            Vector3 pos = coord.GetWorldPosition(_config.GridRadius, _config.TileHeight) + GetAveragePosition(rotatedShape);
+            // Spawn the building prefab at the calculated position and rotation
+            Vector3 pos = coord.GetWorldPosition(_config.GridRadius, _config.TileHeight) +
+                          GetAveragePosition(rotatedShape);
             Quaternion rot = Quaternion.Euler(0f, rotation, 0f) * template.BuildingPrefab.transform.rotation;
-            GameObject prefab =  SpawnNetworked(template.BuildingPrefab, pos, rot);
-            
+            GameObject prefab = SpawnNetworked(template.BuildingPrefab, pos, rot);
             if (prefab == null)
             {
                 Debug.LogError("Failed to spawn building prefab.");
                 return;
             }
+            // Give ownership to the player who placed the building.
+            // Enforces that only the owner can interact with the placed buildings.
+            // Because of FishNet's ownership system, we need to do this directly inside the serverrpc method
+            NetworkObject netObj = prefab.GetComponent<NetworkObject>();
+            if (netObj != null && base.Owner.IsValid)
+            {
+                netObj.GiveOwnership(base.Owner);
+            }
+            if (template.GetType() == typeof(WeaponBuildingTemplate))
+            { // Quick n dirty init for prefab
+                prefab.GetComponent<WeaponInputHandler>().Init(targetGrid);
+            }
 
             targetGrid.MarkBuildingTiles(coord, rotatedShape, isStackableList);
             targetGrid.EconomySystem.PayResource(template.GetBuildCost());
             
-            // Add reference to building manager for later use.
+            // Add reference to the building manager for later use.
             List<HexTileData> tileDatas = globalRotatedShape
                 .Select(coord => targetGrid.TileMap[coord])
                 .ToList();
             targetGrid.BuildingManager.AddBuilding(new BuildingData(prefab, tileDatas, template));
-            
+
             SyncPlacedBuildingToClientsRpc(buildingIndex, coord, targetGrid.Id, rotation, prefab);
         }
-
+        
         [ObserversRpc]
-        private void SyncPlacedBuildingToClientsRpc(int buildingIndex, HexTileCoordinate coord, int hexGridId, float rotation,
+        private void SyncPlacedBuildingToClientsRpc(int buildingIndex, HexTileCoordinate coord, int hexGridId,
+            float rotation,
             GameObject prefab)
         {
             BaseBuildingTemplate template = AvailableBuildings[buildingIndex];
@@ -223,27 +235,35 @@ namespace FortressForge.BuildingSystem.BuildManager
             List<HexTileCoordinate> rotatedShape = GetRotatedShape(shapeData, rotation);
             List<HexTileCoordinate> globalRotatedShape = rotatedShape.Select(tile => tile + coord).ToList();
             targetGrid.MarkBuildingTiles(coord, rotatedShape, isStackableList);
-            
+
             // Add local reference to building manager for later use.
             List<HexTileData> tileDatas = globalRotatedShape
                 .Select(coord => targetGrid.TileMap[coord])
                 .ToList();
             var buildingData = new BuildingData(prefab, tileDatas, template);
-            
+
             var tileData = prefab.AddComponent<BuildingView>();
             tileData.Init(buildingData, _config);
-            
+
             // Repeated steps from serverrpc dont need to be repeated server side
-            if (!IsServerInitialized) { 
+            if (!IsServerInitialized)
+            {
                 targetGrid.BuildingManager.AddBuilding(buildingData);
                 targetGrid.MarkBuildingTiles(coord, rotatedShape, isStackableList);
+                
+                if (template is WeaponBuildingTemplate)
+                {
+                    var handler = prefab.GetComponent<WeaponInputHandler>();
+                    if (handler != null)
+                        handler.Init(targetGrid);
+                }
             }
         }
 
         private void ExitBuildMode()
         {
             if (!IsPreviewMode) return;
-            
+
             OnExitBuildModeEvent?.Invoke();
 
             _selectedBuildingIndex = -1;
@@ -269,9 +289,10 @@ namespace FortressForge.BuildingSystem.BuildManager
             if (!IsPreviewMode || _previewBuilding == null) return;
 
             _currentPreviewBuildingRotation = (_currentPreviewBuildingRotation + angle) % 360f;
-            _previewBuilding.transform.rotation = Quaternion.Euler(0f, _currentPreviewBuildingRotation, 0f) * _selectedBuildingTemplate.BuildingPrefab.transform.rotation;
+            _previewBuilding.transform.rotation = Quaternion.Euler(0f, _currentPreviewBuildingRotation, 0f) *
+                                                  _selectedBuildingTemplate.BuildingPrefab.transform.rotation;
             if (_hoveredHexTile == null) return;
-            
+
             MovePreviewObject(_hoveredHexTile.HexTileCoordinate);
         }
 
@@ -282,6 +303,7 @@ namespace FortressForge.BuildingSystem.BuildManager
             {
                 avg += coord.GetWorldPosition(_config.GridRadius, _config.TileHeight);
             }
+
             return avg / hexTileCoordinates.Count;
         }
 
@@ -323,17 +345,21 @@ namespace FortressForge.BuildingSystem.BuildManager
                 int gridId = _ownedHexGridDatas[0].Id;
                 parent = GameObject.Find("BuildingContainer_Grid_" + gridId).transform;
             }
+
             if (prefab.GetComponent<NetworkObject>() == null)
             {
                 Debug.LogError("Prefab does not have a NetworkObject component.");
                 return null;
             }
+
             GameObject obj = Instantiate(prefab, pos, rot, parent);
             InstanceFinder.ServerManager.Spawn(obj);
+            
             return obj;
         }
-        
-        private static (List<HexTileCoordinate> coordinates, List<bool> isStackable) ExtractShapeInformation(List<HexTileEntry> shapeDataEntries)
+
+        private static (List<HexTileCoordinate> coordinates, List<bool> isStackable) ExtractShapeInformation(
+            List<HexTileEntry> shapeDataEntries)
         {
             List<HexTileCoordinate> coordinates = new List<HexTileCoordinate>();
             List<bool> isStackable = new List<bool>();

@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ad156cbb789edb4489d0d9e206747c9, type: 3}
+  m_Name: Artillery
+  m_EditorClassIdentifier: 
+  ShapeDataEntries:
+  - Coordinate:
+      Q: 0
+      R: 0
+      H: 0
+    IsStackable: 1
+  BuildingPrefab: {fileID: 2769958289302531891, guid: 76360c13862af3348ba5d83bf754ccb8, type: 3}
+  Name: Artillery
+  MaxHealth: 100
+  ResourceRates: []
+  BuildCosts: []
+  ammunitionPrefab: {fileID: 956282788987846253, guid: b7e4d5bc00f3f0146b14669c21c8ffe1, type: 3}
+  baseDamage: 100
+  automaticReloadSpeed: 2
+  weaponReload: 10
+  maxAmmo: 5
+  reloadCost: 30
+  minCannonAngle: 10
+  maxCannonAngle: 45
+  rotationSpeed: 50
+  pitchSpeed: 50
+  cannonForce: 70

@@ -32,5 +32,7 @@ namespace FortressForge.GenericElements.Data {
             get => false;
             set => throw new NotImplementedException();
         }
+
+        void TriggerMouseLeftClick();
     }
 }

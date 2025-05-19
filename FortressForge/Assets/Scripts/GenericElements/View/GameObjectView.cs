@@ -1,5 +1,6 @@
 using FortressForge.GameInitialization;
 using FortressForge.GenericElements.Data;
+using FortressForge.GenericElements.View;
 using FortressForge.UI;
 using UnityEngine;
 
@@ -81,6 +82,15 @@ namespace FortressForge.GenericElements.View
             else if (!UIClickChecker.Instance.IsMouseOnOverlay() && !_data.IsMouseTarget)
             {
                 OnMouseEnter();
+            }
+        }
+
+        private void OnMouseDown() {
+            if (UIClickChecker.Instance.IsMouseOnOverlay())
+                return;
+
+            if (Input.GetMouseButtonDown(0)) {
+                _data.TriggerMouseLeftClick();
             }
         }
     }
