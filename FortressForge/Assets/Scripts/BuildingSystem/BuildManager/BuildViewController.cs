@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using FishNet;
@@ -245,8 +246,21 @@ namespace FortressForge.BuildingSystem.BuildManager
             
             OnExitBuildModeEvent?.Invoke();
 
-            Destroy(_previewBuilding);
             _selectedBuildingIndex = -1;
+            // Delay destruction to end of frame so any queued events don't break
+            if (_previewBuilding != null)
+                StartCoroutine(RemovePreviewBuildingEndOfFrame());
+        }
+
+        private IEnumerator RemovePreviewBuildingEndOfFrame()
+        {
+            yield return new WaitForEndOfFrame();
+
+            if (_previewBuilding != null)
+            {
+                Destroy(_previewBuilding);
+                _previewBuilding = null;
+            }
             ClearPreviousBuildTargets();
         }
 
