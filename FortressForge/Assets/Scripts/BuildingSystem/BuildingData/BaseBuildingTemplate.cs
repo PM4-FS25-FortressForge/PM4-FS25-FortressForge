@@ -35,7 +35,6 @@ namespace FortressForge.BuildingSystem.BuildingData
         public List<RessourceTypeRate> ResourceRates = new();
         public List<RessourceTypeRate> BuildCosts = new();
         
-        
         public void OnEnable()
         {
             ResourceRates

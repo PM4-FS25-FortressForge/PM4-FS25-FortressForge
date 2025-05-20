@@ -13,10 +13,13 @@ namespace FortressForge.GameInitialization
         [Header("Map")]
         public Terrain Terrain;
         
+        [Header("Players")]
+        public List<string> PlayerNames = new();
+        
         [Header("Available Buildings")]
         public List<BaseBuildingTemplate> availableBuildings = new();
         
-        [FormerlySerializedAs("Radius")] [Header("HexGrid Konfiguration")]
+        [Header("HexGrid Konfiguration")]
         public int GridRadius;
         public float TileSize;
         public float TileHeight;
@@ -32,6 +35,8 @@ namespace FortressForge.GameInitialization
         public Material PreviewMaterial;
         public Material MeshTilesMaterial;
         public Material UnownedHexMaterial;
+        
+        [Header("Game Rules")]
         public float GlobalMagmaAmount = 100000;
     }
 }
