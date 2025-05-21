@@ -1,0 +1,20 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI%20Toolkit/Style/OrientationButtonsStyle.uss?fileID=7433441132597879392&amp;guid=b06d3e886466275468571219cfb261be&amp;type=3#OrientationButtonsStyle" />
+    <engine:VisualElement name="orientation-grid-root" class="orientation-grid-root">
+        <engine:VisualElement class="orientation-row">
+            <engine:VisualElement class="orientation-placeholder" />
+            <engine:Button name="arrow-up" focusable="false" class="orientation-arrow" />
+            <engine:VisualElement class="orientation-placeholder" />
+        </engine:VisualElement>
+        <engine:VisualElement class="orientation-row">
+            <engine:Button name="arrow-left" focusable="false" class="orientation-arrow" />
+            <engine:VisualElement class="orientation-placeholder" />
+            <engine:Button name="arrow-right" focusable="false" class="orientation-arrow" />
+        </engine:VisualElement>
+        <engine:VisualElement class="orientation-row">
+            <engine:VisualElement class="orientation-placeholder" />
+            <engine:Button name="arrow-down" focusable="false" class="orientation-arrow" />
+            <engine:VisualElement class="orientation-placeholder" />
+        </engine:VisualElement>
+    </engine:VisualElement>
+</engine:UXML>

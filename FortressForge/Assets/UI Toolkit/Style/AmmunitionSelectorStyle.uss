@@ -1,0 +1,30 @@
+.ammunition-selector-frame {
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-self: center;
+    align-items: center;
+    margin-right: 170px;
+}
+
+.ammunition-selector-button {
+    width: 70px;
+    height: 70px;
+    padding: 2px;
+}
+
+.ammunition-button-wrapper {
+    color: var(--red);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+}
+
+.fire-button {
+    width: 150px;
+    height: 150px;
+    padding: 2px;
+}
+
+.ammunition-selector-button-selected {
+    background-color: var(--outer-space-grey);
+    border-color: var(--dark-grey);
+}
