@@ -19,7 +19,7 @@ namespace FortressForge.UI
         private TrapezElement _trapezElement;
         public VisualTreeAsset BuildingSelectorViewTree;
         public VisualTreeAsset BuildingCardVisualTree;
-        
+
         private VisualElement _tooltipContainer;
         private Label _tooltipLabel;
         private BuildViewController _buildViewController;
@@ -92,7 +92,7 @@ namespace FortressForge.UI
             Debug.LogError("Overlay UIDocument is not assigned.");
             return false;
         }
-        
+
         private void InitializeTooltipElement()
         {
             _tooltipContainer = new VisualElement();
@@ -160,11 +160,19 @@ namespace FortressForge.UI
                 return;
             }
 
-            List<int> tabHeaderMargins = new() { 40, 29, 16, 4 };
             List<VisualElement> tabHeaderList = tabHeaders.Children().ToList();
 
-            for (int i = 0; i < tabHeaderList.Count && i < tabHeaderMargins.Count; i++)
-                tabHeaderList[i].style.marginLeft = Length.Percent(tabHeaderMargins[i]);
+            const float maxMargin = 40f;
+            const float minMargin = 4f;
+            int count = tabHeaderList.Count;
+
+            for (int i = 0; i < count; i++)
+            {
+                float margin = count > 1
+                    ? Mathf.Lerp(maxMargin, minMargin, i / (float)(count - 1))
+                    : maxMargin;
+                tabHeaderList[i].style.marginLeft = Length.Percent(margin);
+            }
         }
 
         /// <summary>
@@ -225,7 +233,7 @@ namespace FortressForge.UI
             if (index < 0 || index >= _availableBuildings.Count) return;
 
             BaseBuildingTemplate building = _availableBuildings[index];
-            
+
             item.RegisterCallback<PointerEnterEvent>(evt =>
             {
                 _tooltipLabel.text = GetFullTooltipText(building);
@@ -240,10 +248,7 @@ namespace FortressForge.UI
                 _tooltipContainer.style.visibility = Visibility.Visible;
             });
 
-            item.RegisterCallback<PointerLeaveEvent>(_ =>
-            {
-                _tooltipContainer.style.visibility = Visibility.Hidden;
-            });
+            item.RegisterCallback<PointerLeaveEvent>(_ =>  _tooltipContainer.style.visibility = Visibility.Hidden);
 
             item.AddToClassList("building-card-template-container");
 
@@ -281,7 +286,12 @@ namespace FortressForge.UI
             _selectedCard = null;
             Debug.Log("Building card unselected.");
         }
-        
+
+        /// <summary>
+        /// Gets the full tooltip text for the building card.
+        /// </summary>
+        /// <param name="building"> The building template.</param>
+        /// <returns> The full tooltip text.</returns>
         private string GetFullTooltipText(BaseBuildingTemplate building)
         {
             Dictionary<ResourceType, float> costs = building.GetBuildCost();
