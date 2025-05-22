@@ -78,6 +78,12 @@ namespace FortressForge.GameInitialization
                 Debug.LogError("HexTileHoverController not found!");
                 return;
             }
+            var previewController = globalObjectGameObject.GetComponent<PreviewController>();
+            if (previewController == null)
+            {
+                Debug.LogError("PreviewController not found!");
+                return;
+            }
             
             // Currently takes the playerId from the owner of this object
             int playerId = Owner.ClientId;
@@ -92,7 +98,7 @@ namespace FortressForge.GameInitialization
             // We only initialize the view for the selected grid,
             // theoretically you could add multiple grids per player here. But EconomySystem is only one per player. So there mustn't be overlaps.
             buildViewController.Init(new List<HexGridData> { selectedGrid },
-                _gameStartConfiguration, HexGridManager.Instance, hoverController);
+                _gameStartConfiguration, HexGridManager.Instance, hoverController, previewController);
 
             // After creating EconomySystem
             var economySync = gameObject.GetComponent<EconomySync>();
