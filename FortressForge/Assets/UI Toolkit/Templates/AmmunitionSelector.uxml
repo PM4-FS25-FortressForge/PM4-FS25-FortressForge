@@ -1,0 +1,26 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI%20Toolkit/Style/AmmunitionSelectorStyle.uss?fileID=7433441132597879392&amp;guid=a556af7a02eff07448b70059228f9d22&amp;type=3#AmmunitionSelectorStyle" />
+    <engine:VisualElement name="ammunition-selector-root" class="ammunition-selector-frame" style="flex-grow: 1;">
+        <engine:VisualElement name="ammuniton-wrapper" class="ammunition-selector-frame" style="flex-grow: 1;">
+            <engine:VisualElement name="button-wrapper" class="ammunition-button-wrapper" style="flex-grow: 1;">
+                <engine:Button name="ammo-type-1" focusable="false" class="ammunition-selector-button" />
+                <engine:Label name="ammo-typ-1-label" />
+            </engine:VisualElement>
+            <engine:VisualElement name="button-wrapper" class="ammunition-button-wrapper" style="flex-grow: 1;">
+                <engine:Button name="ammo-type-2" focusable="false" class="ammunition-selector-button" />
+                <engine:Label name="ammo-typ-2-label" />
+            </engine:VisualElement>
+            <engine:VisualElement name="button-wrapper" class="ammunition-button-wrapper" style="flex-grow: 1;">
+                <engine:Button name="ammo-type-3" focusable="false" class="ammunition-selector-button" />
+                <engine:Label name="ammo-typ-3-label" />
+            </engine:VisualElement>
+            <engine:VisualElement name="button-wrapper" class="ammunition-button-wrapper" style="flex-grow: 1;">
+                <engine:Button name="ammo-type-4" focusable="false" class="ammunition-selector-button" />
+                <engine:Label name="ammo-typ-4-label" />
+            </engine:VisualElement>
+        </engine:VisualElement>
+        <engine:VisualElement name="fire-button-root" style="flex-grow: 1;">
+            <engine:Button name="fire-button" focusable="false" class="fire-button" />
+        </engine:VisualElement>
+    </engine:VisualElement>
+</engine:UXML>

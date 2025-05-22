@@ -1,0 +1,17 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI%20Toolkit/Style/ColorPaletteStyle.uss?fileID=7433441132597879392&amp;guid=5ec20a6ef536e8446ae4e92fb3e188a3&amp;type=3#ColorPaletteStyle" />
+    <Style src="project://database/Assets/UI%20Toolkit/Style/WeaponSelector.uss?fileID=7433441132597879392&amp;guid=bcf76b249ea713c4280c6a8c396543e8&amp;type=3#WeaponSelector" />
+    <engine:VisualElement name="weapon-selector-root" style="flex-grow: 1;">
+        <engine:TabView>
+            <engine:Tab label="Tab1" name="tab-1">
+                <engine:ScrollView vertical-scroller-visibility="Hidden" nested-interaction-kind="Default" horizontal-scroller-visibility="Hidden" focusable="false" touch-scroll-type="Unrestricted" name="weapon-scroll-view" class="building-selector-list-view" />
+            </engine:Tab>
+            <engine:Tab label="Tab2" name="tab-2">
+                <engine:ScrollView vertical-scroller-visibility="Hidden" nested-interaction-kind="Default" horizontal-scroller-visibility="Hidden" name="weapon-scroll-view" class="building-selector-list-view" />
+            </engine:Tab>
+            <engine:Tab label="Tab3" name="tab-3">
+                <engine:ScrollView vertical-scroller-visibility="Hidden" nested-interaction-kind="Default" horizontal-scroller-visibility="Hidden" name="weapon-scroll-view" class="building-selector-list-view" />
+            </engine:Tab>
+        </engine:TabView>
+    </engine:VisualElement>
+</engine:UXML>

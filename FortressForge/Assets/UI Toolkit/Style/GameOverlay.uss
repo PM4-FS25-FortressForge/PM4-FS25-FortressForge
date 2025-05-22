@@ -18,6 +18,11 @@
     border-bottom-color: var(--transparent);
 }
 
+.bottom-weapons-trapez-frame {
+    flex-direction: row;
+    justify-content: space-between;
+}
+
 .ressource-container {
     color: var(--transparent);
     border-left-color: var(--dark-grey);
