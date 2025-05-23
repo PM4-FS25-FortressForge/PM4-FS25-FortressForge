@@ -52,9 +52,6 @@ namespace FortressForge.UI
 
             _fightSystemOverlayRoot = fightSystemOverlayUiDocument?.rootVisualElement;
             _fightSystemOverlay = _fightSystemOverlayRoot?.Q<TrapezElement>(className: "bottom-weapons-trapez-frame");
-
-            if (_topTrapezOverlay == null || _bottomTrapezOverlay == null || _pauseMenuRoot == null || _fightSystemOverlay == null)
-                Debug.LogWarning($"TopTrapezOverlay: {_topTrapezOverlay != null}, BottomTrapezOverlay: {_bottomTrapezOverlay != null}, PauseMenuRoot: {_pauseMenuRoot != null}, FightSystemOverlay: {_fightSystemOverlay != null}");
         }
 
         /// <summary>

@@ -14,7 +14,7 @@ namespace FortressForge.BuildingSystem.BuildingData
         /// Information about the shape of the building, in the form of a list of HexTileCoordinates.
         /// </summary>
         [Header("Shape Data")]
-        public virtual List<HexTileCoordinate> ShapeData
+        public List<HexTileCoordinate> ShapeData
         {
             get { return ShapeDataEntries.Select(data => data.Coordinate).ToList(); }
         }

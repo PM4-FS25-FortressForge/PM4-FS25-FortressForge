@@ -76,7 +76,7 @@ namespace FortressForge.HexGrid
             }
         }
 
-        private void HoverTileChanged(HexTileData hexTileData)
+        protected void HoverTileChanged(HexTileData hexTileData)
         {
             _currentlyHoveredTile = hexTileData.IsMouseTarget ? hexTileData : null;
             OnHoverTileChanged?.Invoke(_currentlyHoveredTile);
