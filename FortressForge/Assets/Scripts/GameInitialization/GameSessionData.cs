@@ -1,67 +1,32 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 namespace FortressForge.GameInitialization
 {
     /// <summary>
-    /// Holds all the data for the current game session.
-    /// Instance-based so you can inject it, serialize it, or attach it to a GameObject.
+    /// Singleton that holds all the data for the current game session.
+    /// Pure C#—can be new’d up in tests, but by default you access GameSessionData.Instance.
     /// </summary>
-    public class GameSessionData : MonoBehaviour
+    [Serializable]
+    public class GameSessionData
     {
-        // ------------------------------------------------------------
-        // Singleton plumbing (optional—only if you want one global).
-        // ------------------------------------------------------------
-        public static GameSessionData Instance { get; private set; }
-
-        private void Awake()
-        {
-            if (Instance != null && Instance != this)
-            {
-                Destroy(gameObject);
-                return;
-            }
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-
-        // -------------------------
-        // Session fields & methods
-        // -------------------------
-        
-        [Tooltip("The current player's ID (-1 if none).")]
-        public int PlayerId = -1;
-
-        [SerializeField]
-        [Tooltip("Pair each player to the hex-grid they're on.")]
-        private List<GridPlayerIdPair> _gridPlayerIdPairs = new List<GridPlayerIdPair>();
+        // Lazy<T> ensures thread-safe lazy initialization
+        private static readonly Lazy<GameSessionData> _lazyInstance =
+            new(() => new GameSessionData());
 
         /// <summary>
-        /// Read-only list of (player, grid) tuples.
+        /// The one and only instance.
         /// </summary>
-        public IReadOnlyList<(int PlayerId, int HexGridId)> GridPlayerIdTuples =>
-            _gridPlayerIdPairs
-                .Select(p => (p.PlayerId, p.HexGridId))
-                .ToList();
-        
-        /// <summary>
-        /// Add or update the mapping of a player to a grid.
-        /// </summary>
-        public void SetPlayerGrid(int playerId, int hexGridId)
-        {
-            var existing = _gridPlayerIdPairs.FirstOrDefault(p => p.PlayerId == playerId);
-            if (existing != null)
-                existing.HexGridId = hexGridId;
-            else
-                _gridPlayerIdPairs.Add(new GridPlayerIdPair { PlayerId = playerId, HexGridId = hexGridId });
-        }
+        public static GameSessionData Instance => _lazyInstance.Value;
+
+        // Private constructor prevents external instantiation
+        private GameSessionData() { }
 
         /// <summary>
-        /// Clears all player-grid mappings.
+        /// The current player's ID (-1 if none).
         /// </summary>
-        public void ClearMappings() => _gridPlayerIdPairs.Clear();
+        public int PlayerId { get; set; } = -1;
 
         [Serializable]
         private class GridPlayerIdPair
@@ -69,5 +34,35 @@ namespace FortressForge.GameInitialization
             public int PlayerId;
             public int HexGridId;
         }
+
+        // Backing list
+        private readonly List<GridPlayerIdPair> _gridPlayerIdPairs = new List<GridPlayerIdPair>();
+
+        /// <summary>
+        /// Read-only snapshot of (PlayerId, HexGridId) tuples.
+        /// </summary>
+        public IReadOnlyList<(int PlayerId, int HexGridId)> GridPlayerIdTuples =>
+            _gridPlayerIdPairs.Select(p => (p.PlayerId, p.HexGridId)).ToList();
+
+        /// <summary>
+        /// Map a player to a hex-grid. Adds if new, updates if exists.
+        /// </summary>
+        public void SetPlayerGrid(int playerId, int hexGridId)
+        {
+            var existing = _gridPlayerIdPairs.FirstOrDefault(p => p.PlayerId == playerId);
+            if (existing != null)
+                existing.HexGridId = hexGridId;
+            else
+                _gridPlayerIdPairs.Add(new GridPlayerIdPair
+                {
+                    PlayerId = playerId,
+                    HexGridId = hexGridId
+                });
+        }
+
+        /// <summary>
+        /// Clears all player-grid mappings.
+        /// </summary>
+        public void ClearMappings() => _gridPlayerIdPairs.Clear();
     }
 }
