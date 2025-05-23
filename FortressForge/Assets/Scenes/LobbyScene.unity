@@ -388,6 +388,7 @@ MonoBehaviour:
   lobbyViewDoc: {fileID: 1540258046}
   gameRoomViewDoc: {fileID: 978647737}
   lobbyScene: LobbyScene
+  sessionConfig: {fileID: 11400000, guid: 4f4cf94a3791f8942832f1ce52f12292, type: 2}
 --- !u!4 &885907599
 Transform:
   m_ObjectHideFlags: 0

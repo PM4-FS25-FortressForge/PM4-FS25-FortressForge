@@ -87,11 +87,11 @@ namespace FortressForge.GameInitialization
             }
             
             // Currently takes the playerId from the owner of this object
-            int playerId = _gameSessionStartConfiguration.PlayerId == -1 ? 
-                NetworkObject.Owner.ClientId : _gameSessionStartConfiguration.PlayerId;
+            int playerId = GameSessionData.Instance.PlayerId == -1 ? 
+                NetworkObject.Owner.ClientId : GameSessionData.Instance.PlayerId;
 
             // Take the clientId from the owner of this object, also called the playerId
-            int gridId = _gameSessionStartConfiguration.GridPlayerIdTuples
+            int gridId = GameSessionData.Instance.GridPlayerIdTuples
                 .First(gpit => gpit.PlayerId == playerId).HexGridId;
             HexGridData selectedGrid = HexGridManager.Instance.AllGrids.First(grid => grid.Id == gridId);
 

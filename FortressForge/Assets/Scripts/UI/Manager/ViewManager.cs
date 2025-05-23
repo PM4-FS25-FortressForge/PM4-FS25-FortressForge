@@ -291,11 +291,11 @@ namespace FortressForge.UI.Manager
         {
             BootstrapSceneManager sceneManager = FindAnyObjectByType<BootstrapSceneManager>();
             
-            sessionConfig.PlayerId = _playerClient.PlayerID;
-            sessionConfig.GridPlayerIdTuples.Clear(); // TODO: Wird nicht überschrieben
+            GameSessionData.Instance.PlayerId = _playerClient.PlayerID;
+            GameSessionData.Instance.ClearMappings();
             _gameRoomView.PlayersList.ForEach(player =>
             {
-                sessionConfig.GridPlayerIdTuples.Add((player.PlayerID, player.PlayerID)); // Kein Coop möglich
+                GameSessionData.Instance.SetPlayerGrid(player.PlayerID, player.PlayerID); // Kein Coop möglich
             });
             
             sceneManager.LoadScene(_nextScene);

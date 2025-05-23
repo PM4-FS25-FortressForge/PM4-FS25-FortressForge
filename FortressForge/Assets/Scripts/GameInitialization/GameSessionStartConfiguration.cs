@@ -12,27 +12,7 @@ namespace FortressForge.GameInitialization
     [CreateAssetMenu(fileName = "PlaySessionStartConfiguration", menuName = "Configurations/PlaySessionStartConfiguration")]
     public class GameSessionStartConfiguration : ScriptableObject
     {
-        [Header("This PlayerID")]
-        public int PlayerId =-1;
-        
-        [Header("PlayerIds und ihre HexGrid Zugehörigkeit")]
-        [SerializeField]
-        private List<GridPlayerIdPair> _gridPlayerIdPairs;
-        
-        public List<(int PlayerId, int HexGridId)> GridPlayerIdTuples =>
-            _gridPlayerIdPairs.Select(p => (p.PlayerId, p.HexGridId)).ToList();
-        
         [Header("HexGrid origin Koordinaten")]
         public List<Vector3> HexGridOrigins;
-        
-        /// <summary>
-        /// Represents a pair of PlayerId and HexGridId.
-        /// Made for unity serialization.
-        /// </summary>
-        [System.Serializable]
-        public class GridPlayerIdPair
-        {
-            public int PlayerId, HexGridId;
-        }
     }
 }
