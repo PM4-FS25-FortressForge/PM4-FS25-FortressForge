@@ -13,7 +13,7 @@ namespace FortressForge.GameInitialization
     public class GameSessionStartConfiguration : ScriptableObject
     {
         [Header("This PlayerID")]
-        public int PlayerId;
+        public int PlayerId =-1;
         
         [Header("PlayerIds und ihre HexGrid Zugehörigkeit")]
         [SerializeField]

@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using FishNet;
 using FishNet.Transporting;
+using FortressForge.GameInitialization;
 using FortressForge.Network;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -289,6 +290,14 @@ namespace FortressForge.UI.Manager
         private void StartMatch()
         {
             BootstrapSceneManager sceneManager = FindAnyObjectByType<BootstrapSceneManager>();
+            
+            sessionConfig.PlayerId = _playerClient.PlayerID;
+            sessionConfig.GridPlayerIdTuples.Clear(); // TODO: Wird nicht überschrieben
+            _gameRoomView.PlayersList.ForEach(player =>
+            {
+                sessionConfig.GridPlayerIdTuples.Add((player.PlayerID, player.PlayerID)); // Kein Coop möglich
+            });
+            
             sceneManager.LoadScene(_nextScene);
         }
 

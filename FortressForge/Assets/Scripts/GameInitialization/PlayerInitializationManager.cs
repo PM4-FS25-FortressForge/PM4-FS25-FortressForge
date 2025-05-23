@@ -78,6 +78,7 @@ namespace FortressForge.GameInitialization
                 Debug.LogError("HexTileHoverController not found!");
                 return;
             }
+            
             var previewController = globalObjectGameObject.GetComponent<PreviewController>();
             if (previewController == null)
             {
@@ -86,7 +87,8 @@ namespace FortressForge.GameInitialization
             }
             
             // Currently takes the playerId from the owner of this object
-            int playerId = Owner.ClientId;
+            int playerId = _gameSessionStartConfiguration.PlayerId == -1 ? 
+                NetworkObject.Owner.ClientId : _gameSessionStartConfiguration.PlayerId;
 
             // Take the clientId from the owner of this object, also called the playerId
             int gridId = _gameSessionStartConfiguration.GridPlayerIdTuples
