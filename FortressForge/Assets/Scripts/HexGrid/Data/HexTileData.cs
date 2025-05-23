@@ -1,4 +1,5 @@
 ﻿using System;
+using FortressForge.GenericElements.Data;
 using FortressForge.HexGrid.View;
 using UnityEngine;
 
