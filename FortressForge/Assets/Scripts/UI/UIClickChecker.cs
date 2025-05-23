@@ -15,6 +15,9 @@ namespace FortressForge.UI
 
         private TrapezElement _topTrapezOverlay;
         private TrapezElement _bottomTrapezOverlay;
+        private VisualElement _bottomTrapezRoot;
+        private TrapezElement _fightSystemOverlay;
+        private VisualElement _fightSystemOverlayRoot;
 
         private VisualElement _pauseMenuRoot;
 
@@ -36,25 +39,22 @@ namespace FortressForge.UI
         private void InitializeOverlays()
         {
             UIDocument[] uiDocuments = Object.FindObjectsByType<UIDocument>(FindObjectsSortMode.None);
-            UIDocument uiDocument = uiDocuments.FirstOrDefault(document => document.name == "BuildingOverlay");
-            UIDocument pauseMenuDocument = uiDocuments.FirstOrDefault(document => document.name == "PauseMenu");
+            UIDocument uiDocument = uiDocuments?.FirstOrDefault(document => document.name == "BuildingOverlay");
+            UIDocument topOverlayUiDocument = uiDocuments?.FirstOrDefault(document => document.name == "TopOverlay");
+            UIDocument fightSystemOverlayUiDocument = uiDocuments?.FirstOrDefault(document => document.name == "FightSystemOverlay");
+            UIDocument pauseMenuDocument = uiDocuments?.FirstOrDefault(document => document.name == "PauseMenu");
 
-            if (uiDocument is null || pauseMenuDocument is null)
+            _pauseMenuRoot = pauseMenuDocument?.rootVisualElement;
 
-            {
-                _topTrapezOverlay = null;
-                _bottomTrapezOverlay = null;
-                _pauseMenuRoot = null;
-                return;
-            }
+            _topTrapezOverlay = topOverlayUiDocument?.rootVisualElement.Q<TrapezElement>(className: "top-trapez-frame");
+            _bottomTrapezRoot = uiDocument?.rootVisualElement;
+            _bottomTrapezOverlay = _bottomTrapezRoot?.Q<TrapezElement>(className: "bottom-trapez-frame");
 
-            _pauseMenuRoot = pauseMenuDocument.rootVisualElement;
+            _fightSystemOverlayRoot = fightSystemOverlayUiDocument?.rootVisualElement;
+            _fightSystemOverlay = _fightSystemOverlayRoot?.Q<TrapezElement>(className: "bottom-weapons-trapez-frame");
 
-            _topTrapezOverlay = uiDocument.rootVisualElement.Q<TrapezElement>(className: "top-trapez-frame");
-            _bottomTrapezOverlay = uiDocument.rootVisualElement.Q<TrapezElement>(className: "bottom-trapez-frame");
-
-            if (_topTrapezOverlay == null || _bottomTrapezOverlay == null || _pauseMenuRoot == null)
-                Debug.Log("TrapezOverlay or PauseContainer not found!");
+            if (_topTrapezOverlay == null || _bottomTrapezOverlay == null || _pauseMenuRoot == null || _fightSystemOverlay == null)
+                Debug.LogWarning($"TopTrapezOverlay: {_topTrapezOverlay != null}, BottomTrapezOverlay: {_bottomTrapezOverlay != null}, PauseMenuRoot: {_pauseMenuRoot != null}, FightSystemOverlay: {_fightSystemOverlay != null}");
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace FortressForge.UI
         /// <returns>True if the mouse is on the overlay, false otherwise.</returns>
         public bool IsMouseOnOverlay()
         {
-            if (_topTrapezOverlay == null || _bottomTrapezOverlay == null || _pauseMenuRoot == null)
+            if (_topTrapezOverlay == null || _bottomTrapezOverlay == null || _pauseMenuRoot == null || _fightSystemOverlay == null)
             {
                 InitializeOverlays();
             }
@@ -73,7 +73,17 @@ namespace FortressForge.UI
                 return true;
             }
 
-            return _topTrapezOverlay?.IsPointInTrapez() == true || _bottomTrapezOverlay?.IsPointInTrapez() == true;
+            if (_bottomTrapezOverlay != null && _bottomTrapezRoot != null && _bottomTrapezRoot.resolvedStyle.display == DisplayStyle.Flex)
+            {
+                return _bottomTrapezOverlay?.IsPointInTrapez() == true;
+            }
+
+            if (_fightSystemOverlay != null && _fightSystemOverlayRoot != null && _fightSystemOverlayRoot.resolvedStyle.display == DisplayStyle.Flex)
+            {
+                return _fightSystemOverlay?.IsPointInTrapez() == true;
+            }
+
+            return _topTrapezOverlay?.IsPointInTrapez() == true;
         }
     }
 }

@@ -1,10 +1,10 @@
-using System;
 using FortressForge.GameInitialization;
-using FortressForge.HexGrid.Data;
+using FortressForge.GenericElements.Data;
+using FortressForge.GenericElements.View;
 using FortressForge.UI;
 using UnityEngine;
 
-namespace FortressForge.HexGrid.View
+namespace FortressForge.GenericElements.View
 {
     /// <summary>
     /// Represents the visual representation of a HexTile.
@@ -82,6 +82,15 @@ namespace FortressForge.HexGrid.View
             else if (!UIClickChecker.Instance.IsMouseOnOverlay() && !_data.IsMouseTarget)
             {
                 OnMouseEnter();
+            }
+        }
+
+        private void OnMouseDown() {
+            if (UIClickChecker.Instance.IsMouseOnOverlay())
+                return;
+
+            if (Input.GetMouseButtonDown(0)) {
+                _data.TriggerMouseLeftClick();
             }
         }
     }
