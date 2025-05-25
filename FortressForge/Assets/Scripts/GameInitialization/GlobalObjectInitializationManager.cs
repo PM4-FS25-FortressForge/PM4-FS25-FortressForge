@@ -1,4 +1,5 @@
-﻿using FortressForge.HexGrid;
+﻿using FortressForge.BuildingSystem.BuildManager;
+using FortressForge.HexGrid;
 using FortressForge.HexGrid.View;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -38,6 +39,9 @@ namespace FortressForge.GameInitialization
             
             HexTileHoverController hexTileHoverController = gameObject.AddComponent<HexTileHoverController>();
             hexTileHoverController.Init(terrainHeightProvider, HexGridManager.Instance, _gameStartConfiguration);
+            
+            PreviewController previewController = gameObject.AddComponent<PreviewController>();
+            previewController.Init(_gameStartConfiguration, HexGridManager.Instance, hexTileHoverController);
             
             InitializeHexGridViews(_gameStartConfiguration, HexGridManager.Instance);
         }
