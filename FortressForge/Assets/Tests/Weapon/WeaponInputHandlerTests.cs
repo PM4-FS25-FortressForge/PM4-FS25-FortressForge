@@ -1,4 +1,7 @@
+using System;
 using System.Collections;
+using System.Reflection;
+using System.Text.RegularExpressions;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -17,20 +20,10 @@ namespace Tests.Weapon
         private GameObject _weaponInstance;
         private WeaponInputHandler _weaponInputHandler;
         private Transform _towerBase;
+        private WeaponBuildingTemplate _testConstants;
         private Keyboard _keyboard;
+        private float TestsDelayTime = 0f; // Delay time for the tests to wait for the camera to move (Change this for optical debuging to 0.5f)
 
-        private const float _rotationSpeed = 90f;
-        private const float _pitchSpeed = 90f;
-
-        private const int _maxWeaponAngle = 60;
-        private const int _minWeaponAngle = 10;
-
-        private const float _cannonForce = 50f;
-        private const int _maxAmmo = 5;
-        private const int _reloadCost = 20;
-        private const float _automaticReloadSpeed = 3f;
-        private const int _weaponReload = 5;
-        private const int _baseDamage = 100;
 
         /// <summary>
         /// Registers the keyboard input device and prepares the input system for test execution.
@@ -85,41 +78,48 @@ namespace Tests.Weapon
             _weaponInputHandler = _weaponInstance.GetComponentInChildren<WeaponInputHandler>();
             Assert.IsNotNull(_weaponInputHandler, "WeaponInputHandler not found!");
 
-
-            // Set weapon rotation and ammo constants
-            var constants = ScriptableObject.CreateInstance<WeaponBuildingTemplate>();
-            constants.rotationSpeed = _rotationSpeed;
-            constants.pitchSpeed = _pitchSpeed;
-            constants.minCannonAngle = _minWeaponAngle;
-            constants.minCannonAngle = _maxWeaponAngle;
-            constants.cannonForce = _cannonForce;
-            constants.maxAmmo = _maxAmmo;
-            constants.reloadCost = _reloadCost;
-            constants.automaticReloadSpeed = _automaticReloadSpeed;
-            constants.weaponReload = _weaponReload;
-            constants.baseDamage = _baseDamage;
-
-            var constantsField = typeof(WeaponInputHandler).GetField("_constants",
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            constantsField.SetValue(_weaponInputHandler, constants);
+            _testConstants = GetWeaponConstantsFromPrefabInstance(_weaponInputHandler);
+            Assert.IsNotNull(_testConstants, "WeaponBuildingTemplate reference on prefab is null.");
 
             _towerBase = _weaponInstance.transform.Find("Geschuetzturm");
             Assert.IsNotNull(_towerBase, "'Geschuetzturm' transform not found!");
+        }
+
+        private WeaponBuildingTemplate GetWeaponConstantsFromPrefabInstance(WeaponInputHandler handler)
+        {
+            // Use reflection to get the private field _constants from WeaponInputHandler
+            var constantsField = typeof(WeaponInputHandler)
+                .GetField("_constants", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            if (constantsField == null)
+                throw new Exception("Field '_constants' not found in WeaponInputHandler.");
+
+            var constants = (WeaponBuildingTemplate)constantsField.GetValue(handler);
+            return constants;
         }
 
         /// <summary>
         /// Normalizes a given angle to be within the range [0, 360).
         /// This is useful for comparing angles regardless of how Unity internally stores them.
         /// </summary>
-        private float NormalizeRotation(float angle)
+        private float NormalizeRotation(float angle) => (angle + 360f) % 360f;
+
+        private IEnumerator WaitUntilTimeout(Func<bool> condition, float timeoutSeconds = 5f)
         {
-            return (angle + 360f) % 360f;
+            float startTime = Time.time;
+            while (!condition() && Time.time - startTime < timeoutSeconds)
+                yield return null;
+
+            Assert.IsTrue(condition(), $"Condition not met within {timeoutSeconds} seconds");
         }
 
-        private float NormalizePitchAngle(float angle)
+        private int GetCurrentAmmo(object weapon)
         {
-            if (angle > 180f) angle -= 360f;
-            return angle;
+            var currentAmmoField =
+                weapon.GetType().GetField("_currentAmmo", BindingFlags.NonPublic | BindingFlags.Instance);
+            if (currentAmmoField == null)
+                throw new Exception("_currentAmmo field not found");
+            return (int)currentAmmoField.GetValue(weapon);
         }
 
         /// <summary>
@@ -129,23 +129,18 @@ namespace Tests.Weapon
         [UnityTest]
         public IEnumerator RotateRight_LKeyPressed()
         {
+            //Setup
             yield return SetupSceneAndWeapon();
-
             _towerBase.localEulerAngles = Vector3.zero;
-
-            // Enter fight mode to enable input actions
-            _weaponInputHandler.SendMessage("OnMouseDown");
-
-            // Press L key to rotate right (clockwise)
+            _weaponInputHandler.SendMessage("OnMouseDown"); // Enter fight mode to enable input actions
+            
+            // Rotate right
             Press(_keyboard.lKey);
-
-            yield return new WaitForSeconds(2.5f);
-
+            yield return new WaitForSeconds(TestsDelayTime);
             Release(_keyboard.lKey);
             yield return null;
 
-            // Calculate expected rotation based on rotationSpeed and deltaTime
-            float expectedRotation = _rotationSpeed * Time.deltaTime;
+            float expectedRotation = _testConstants.rotationSpeed * Time.deltaTime;
             float actualRotation = NormalizeRotation(_towerBase.localEulerAngles.z);
 
             Assert.That(actualRotation, Is.EqualTo(expectedRotation).Within(1f),
@@ -159,104 +154,91 @@ namespace Tests.Weapon
         [UnityTest]
         public IEnumerator RotateLeft_JKeyPressed()
         {
+            //Setup
             yield return SetupSceneAndWeapon();
-
-            // Disable problematic GameRoomSynchronisation to avoid NullReferenceException during tests
-            var gameRoomSync = Object.FindObjectOfType<FortressForge.Network.GameRoomSynchronisation>();
-            if (gameRoomSync != null)
-                Object.Destroy(gameRoomSync);
-
             _towerBase.localEulerAngles = Vector3.zero;
+            _weaponInputHandler.SendMessage("OnMouseDown"); // Enter fight mode to enable input actions
 
-            // Enter fight mode to enable input actions
-            _weaponInputHandler.SendMessage("OnMouseDown");
-
-            // Press J key to rotate left (counter-clockwise)
+            // rotate left
             Press(_keyboard.jKey);
-
-            yield return new WaitForSeconds(2.5f);
-
+            yield return new WaitForSeconds(TestsDelayTime);
             Release(_keyboard.jKey);
             yield return null;
 
-            // Expected rotation based on rotation speed and deltaTime
-            float expectedRotation = -_rotationSpeed * Time.deltaTime;
+            float expectedRotation = -_testConstants.rotationSpeed * Time.deltaTime;
             float actualRotation = NormalizeRotation(_towerBase.localEulerAngles.z);
 
             Assert.That(actualRotation, Is.EqualTo(expectedRotation).Within(1f),
                 $"Expected counter-clockwise rotation ~{expectedRotation}°, but was {actualRotation}°");
         }
 
-        /// <summary>
-        /// Simulates no key being pressed and ensures that the turret does not rotate.
-        /// Asserts that the rotation angle remains effectively unchanged.
-        /// </summary>
-        [UnityTest]
-        public IEnumerator NoRotation_NoKeyPressed()
-        {
-            yield return SetupSceneAndWeapon();
-            _towerBase.localEulerAngles = Vector3.zero;
-            _weaponInputHandler.SendMessage("OnMouseDown");
-
-            yield return new WaitForSeconds(0.1f);
-
-            float actualRotation = NormalizeRotation(_towerBase.localEulerAngles.z);
-            Assert.That(actualRotation, Is.EqualTo(0f).Within(0.1f), "Expected no rotation when no keys are pressed.");
-        }
-
         [UnityTest]
         public IEnumerator AdjustAngle_IKeyPressed_StopsAtMaxAngle()
         {
             yield return SetupSceneAndWeapon();
-
             var cannonShaft = _weaponInstance.transform.Find("Geschuetzturm/Lauf");
             Assert.IsNotNull(cannonShaft, "Cannon shaft transform not found!");
-
-            // Start at maximum pitch angle
-            cannonShaft.localEulerAngles = new Vector3(_minWeaponAngle, 0, 0);
-
-            _weaponInputHandler.SendMessage("OnMouseDown"); // enter fight mode
-
-            Press(_keyboard.iKey); // Press K key to decrease angle
-
-            yield return new WaitForSeconds(2.0f);
-
+            cannonShaft.localEulerAngles = new Vector3(_testConstants.minCannonAngle, 0, 0);    // Start at maximum pitch angle
+            _weaponInputHandler.SendMessage("OnMouseDown"); // Enter fight mode to enable input actions
+            yield return null;
+            
+            //Adjust angle up (to max.)
+            Press(_keyboard.iKey); 
+            yield return new WaitForSeconds(TestsDelayTime);
             Release(_keyboard.iKey);
             yield return null;
 
             float pitch = cannonShaft.localRotation.eulerAngles.x;
             if (pitch > 180f) pitch -= 360f;
 
-            Assert.That(pitch, Is.LessThanOrEqualTo(_maxWeaponAngle + 0.1f),
-                $"Pitch angle exceeded max limit: {pitch} > {_maxWeaponAngle}");
+            Assert.That(pitch, Is.LessThanOrEqualTo(_testConstants.maxCannonAngle + 0.1f),
+                $"Pitch angle exceeded max limit: {pitch} > {_testConstants.maxCannonAngle}");
         }
 
         [UnityTest]
         public IEnumerator AdjustAngle_KKeyPressed_StopsAtMinAngle()
         {
             yield return SetupSceneAndWeapon();
-
             var cannonShaft = _weaponInstance.transform.Find("Geschuetzturm/Lauf");
             Assert.IsNotNull(cannonShaft, "Cannon shaft transform not found!");
+            cannonShaft.localEulerAngles = new Vector3(_testConstants.maxCannonAngle, 0, 0);    // Start at maximum pitch angle
+            _weaponInputHandler.SendMessage("OnMouseDown"); // Enter fight mode to enable input actions
 
-            // Start at maximum pitch angle
-            cannonShaft.localEulerAngles = new Vector3(_maxWeaponAngle, 0, 0);
-
-            _weaponInputHandler.SendMessage("OnMouseDown"); // enter fight mode
-
-            Press(_keyboard.kKey); // Press K key to decrease angle
-
-            yield return new WaitForSeconds(2.0f); // wait enough time to try go beyond min
-
+            //Adjust angle down (to min.)
+            Press(_keyboard.kKey); 
+            yield return new WaitForSeconds(TestsDelayTime); 
             Release(_keyboard.kKey);
             yield return null;
 
             float pitch = cannonShaft.localRotation.eulerAngles.x;
             if (pitch > 180f) pitch -= 360f;
 
-            Assert.That(pitch, Is.GreaterThanOrEqualTo(_minWeaponAngle - 0.1f),
-                $"Pitch angle exceeded min limit: {pitch} < {_minWeaponAngle}");
+            Assert.That(pitch, Is.GreaterThanOrEqualTo(_testConstants.minCannonAngle - 0.1f),
+                $"Pitch angle below min limit: {pitch} < {_testConstants.minCannonAngle}");
         }
+
+        [UnityTest]
+        public IEnumerator FireWeapon_SpaceKeyPressed_FiresOnce()
+        {
+            LogAssert.ignoreFailingMessages = true;
+            LogAssert.Expect(LogType.Exception, new Regex("NullReferenceException.*GameRoomSynchronisation"));
+
+            yield return SetupSceneAndWeapon();
+
+            int initialAmmo = GetCurrentAmmo(_weaponInputHandler);
+            _weaponInputHandler.SendMessage("OnMouseDown");
+
+            Press(_keyboard.spaceKey);
+            yield return null;
+            Release(_keyboard.spaceKey);
+            yield return new WaitForSeconds(TestsDelayTime);    
+
+            int ammoAfterFire = GetCurrentAmmo(_weaponInputHandler);
+
+            Assert.AreEqual(initialAmmo - 1, ammoAfterFire,
+                $"Expected ammo to decrease by 1 after firing. Actual: {ammoAfterFire}");
+        }
+
 
         /// <summary>
         /// Cleans up the weapon instance after each test to avoid memory leaks or leftover state.

@@ -332,4 +332,9 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
             Debug.Log("Reloading Failed - Not enough resources");
         }
     }
+    
+    public int GetCurrentAmmo()
+    {
+        return _currentAmmo;
+    }
 }
