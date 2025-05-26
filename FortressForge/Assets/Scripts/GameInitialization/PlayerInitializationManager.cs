@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FishNet;
 using FishNet.Object;
+using FortressForge.BuildingSystem.BuildingData;
 using FortressForge.BuildingSystem.BuildManager;
 using FortressForge.CameraControll;
 using FortressForge.Economy;
@@ -25,6 +26,7 @@ namespace FortressForge.GameInitialization
         private GameStartConfiguration _gameStartConfiguration;
 
         [SerializeField] private GameSessionStartConfiguration _gameSessionStartConfiguration;
+        [SerializeField] private BaseBuildingTemplate _coreBuildingTemplate;
 
         public override void OnStartClient()
         {
@@ -100,8 +102,15 @@ namespace FortressForge.GameInitialization
             // We only initialize the view for the selected grid,
             // theoretically you could add multiple grids per player here. But EconomySystem is only one per player. So there mustn't be overlaps.
             buildViewController.Init(new List<HexGridData> { selectedGrid },
-                _gameStartConfiguration, HexGridManager.Instance, hoverController, previewController);
-
+                _gameStartConfiguration, HexGridManager.Instance, hoverController, previewController, _gameSessionStartConfiguration, playerId);
+            
+            buildViewController.PreviewSelectedBuilding(_coreBuildingTemplate);
+            
+            
+        }
+        
+        private void InitializeClientView(HexGridData selectedGrid, int gridId,  BuildViewController buildViewController)
+        {
             // After creating EconomySystem
             var economySync = gameObject.GetComponent<EconomySync>();
             EconomyController economyController = gameObject.AddComponent<EconomyController>();
@@ -112,31 +121,26 @@ namespace FortressForge.GameInitialization
                 economySync.Init(selectedGrid.EconomySystem);
                 economyController.Init(selectedGrid.EconomySystem);
             }
+            
+            selectedGrid.MarkGridAsOwned();
+            Vector3 gridOrigin = _gameSessionStartConfiguration.HexGridOrigins[gridId];
 
-            // Initialize view only on clients, server doesn't need the individual views
-            if (IsClientInitialized && IsOwner)
+            Camera mainCamera = Camera.main;
+            if (mainCamera == null)
             {
-                selectedGrid.MarkGridAsOwned();
-                Vector3 gridOrigin = _gameSessionStartConfiguration.HexGridOrigins[gridId];
-
-                Camera mainCamera = Camera.main;
-                if (mainCamera == null)
-                {
-                    Debug.LogError("Main camera not found!");
-                    return;
-                }
-
-                mainCamera.GetComponent<CameraController>()
-                    .SetTargetPosition(gridOrigin);
-                
-               GameObject topOverlay = GameObject.Find("TopOverlay");
-                TopOverlayViewGenerator topOverlayViewGenerator = topOverlay.GetComponent<TopOverlayViewGenerator>();
-                topOverlayViewGenerator.Init(economySync);
-
-                GameObject buildingOverlay = GameObject.Find("BuildingOverlay");
-                BottomOverlayViewGenerator bottomOverlayViewGenerator = buildingOverlay.GetComponent<BottomOverlayViewGenerator>();
-                bottomOverlayViewGenerator.Init(_gameStartConfiguration.availableBuildings, buildViewController);
+                Debug.LogError("Main camera not found!");
+                return;
             }
+
+            mainCamera.GetComponent<CameraController>().SetTargetPosition(gridOrigin);
+
+            GameObject topOverlay = GameObject.Find("TopOverlay");
+            TopOverlayViewGenerator topOverlayViewGenerator = topOverlay.GetComponent<TopOverlayViewGenerator>();
+            topOverlayViewGenerator.Init(economySync);
+
+            GameObject buildingOverlay = GameObject.Find("BuildingOverlay");
+            BottomOverlayViewGenerator bottomOverlayViewGenerator = buildingOverlay.GetComponent<BottomOverlayViewGenerator>();
+            bottomOverlayViewGenerator.Init(_gameStartConfiguration.availableBuildings, buildViewController);
         }
     }
 }

@@ -18,6 +18,7 @@ namespace FortressForge.BuildingSystem.BuildManager
     {
         private List<HexGridData> _ownedHexGridDatas = new();
         private GameStartConfiguration _config;
+        private GameSessionStartConfiguration _gameSessionStartConfiguration;
         private HexGridManager _hexGridManager;
         private PreviewController _previewController;
 
@@ -30,15 +31,21 @@ namespace FortressForge.BuildingSystem.BuildManager
 
         public static event Action OnExitBuildModeEvent;
 
+        private bool _gridSelectionMode = true;
+        private int _playerId;
+
         public void Init(List<HexGridData> ownedHexGridData, GameStartConfiguration config,
             HexGridManager hexGridManager, HexTileHoverController hoverController,
-            PreviewController previewController)
+            PreviewController previewController, GameSessionStartConfiguration gameSessionStartConfiguration, int playerId)
         {
             _ownedHexGridDatas = ownedHexGridData;
             _config = config;
             _hexGridManager = hexGridManager;
             _hexTileHoverController = hoverController;
             _previewController = previewController;
+            _gameSessionStartConfiguration = gameSessionStartConfiguration;
+            _playerId = playerId;
+            
         }
 
         /// <summary>
@@ -53,6 +60,13 @@ namespace FortressForge.BuildingSystem.BuildManager
             _selectedBuildingIndex = buildingIndex;
             
             _previewController.PreviewBuilding(SelectedBuildingTemplate);
+        }
+        
+        public void PreviewSelectedBuilding(BaseBuildingTemplate buildingTemplate)
+        {
+            if (!IsOwner) return;
+
+            _previewController.PreviewBuilding(buildingTemplate);
         }
 
         #region Input Callbacks
@@ -82,6 +96,12 @@ namespace FortressForge.BuildingSystem.BuildManager
             {
                 var coord = _previewController.HoveredHexTile.HexTileCoordinate;
                 TryPlaceBuildingServerRpc(_selectedBuildingIndex, coord, _previewController.CurrentPreviewBuildingRotation);
+            }
+
+            if (_gridSelectionMode && context.performed)
+            {
+                _gameSessionStartConfiguration.HexGridOrigins.Insert(_playerId,_previewController.HoveredHexTile.HexTileCoordinate.GetWorldPosition(_config.GridRadius, _config.TileHeight));
+                _gridSelectionMode = false;
             }
         }
 
