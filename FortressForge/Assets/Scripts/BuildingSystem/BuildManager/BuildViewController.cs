@@ -33,6 +33,8 @@ namespace FortressForge.BuildingSystem.BuildManager
 
         private bool _gridSelectionMode = true;
         private int _playerId;
+        
+        private BaseBuildingTemplate _starterBuildingTemplate;
 
         public void Init(List<HexGridData> ownedHexGridData, GameStartConfiguration config,
             HexGridManager hexGridManager, HexTileHoverController hoverController,
@@ -45,7 +47,7 @@ namespace FortressForge.BuildingSystem.BuildManager
             _previewController = previewController;
             _gameSessionStartConfiguration = gameSessionStartConfiguration;
             _playerId = playerId;
-            
+            _starterBuildingTemplate = _config.StarterBuildingTemplate;
         }
 
         /// <summary>
@@ -92,16 +94,19 @@ namespace FortressForge.BuildingSystem.BuildManager
         public void OnPlaceAction(InputAction.CallbackContext context)
         {
             if (!IsOwner) return;
-            if (context.performed && _previewController.IsPreviewMode)
-            {
-                var coord = _previewController.HoveredHexTile.HexTileCoordinate;
-                TryPlaceBuildingServerRpc(_selectedBuildingIndex, coord, _previewController.CurrentPreviewBuildingRotation);
-            }
 
             if (_gridSelectionMode && context.performed)
             {
                 _gameSessionStartConfiguration.HexGridOrigins.Insert(_playerId,_previewController.HoveredHexTile.HexTileCoordinate.GetWorldPosition(_config.GridRadius, _config.TileHeight));
                 _gridSelectionMode = false;
+                var coord = _previewController.HoveredHexTile.HexTileCoordinate;
+                TryPlaceBuildingServerRpc(_starterBuildingTemplate, coord, _previewController.CurrentPreviewBuildingRotation);
+            }
+            
+            else if (context.performed && _previewController.IsPreviewMode)
+            {
+                var coord = _previewController.HoveredHexTile.HexTileCoordinate;
+                TryPlaceBuildingServerRpc(_selectedBuildingIndex, coord, _previewController.CurrentPreviewBuildingRotation);
             }
         }
 
@@ -129,10 +134,15 @@ namespace FortressForge.BuildingSystem.BuildManager
         /// <param name="buildingIndex"></param>
         /// <param name="coord"></param>
         /// <param name="rotation"></param>
-        [ServerRpc(RequireOwnership = false)]
         private void TryPlaceBuildingServerRpc(int buildingIndex, HexTileCoordinate coord, float rotation)
         {
             BaseBuildingTemplate template = AvailableBuildings[buildingIndex];
+            TryPlaceBuildingServerRpc(template, coord, rotation);
+        }
+        
+        [ServerRpc(RequireOwnership = false)]
+        private void TryPlaceBuildingServerRpc(BaseBuildingTemplate template, HexTileCoordinate coord, float rotation)
+        {
             (var shapeData, var isStackableList) = HexTileHelper.ExtractShapeInformation(template.ShapeDataEntries);
 
             List<HexTileCoordinate> rotatedShape = HexTileHelper.GetRotatedShape(shapeData, rotation);
@@ -179,16 +189,15 @@ namespace FortressForge.BuildingSystem.BuildManager
                 .ToList();
             targetGrid.BuildingManager.AddBuilding(new BuildingData(prefab, tileDatas, template));
 
-            SyncPlacedBuildingToClientsRpc(buildingIndex, coord, targetGrid.Id, rotation, prefab);
+            SyncPlacedBuildingToClientsRpc(template, coord, targetGrid.Id, rotation, prefab);
         }
         
         [ObserversRpc]
-        private void SyncPlacedBuildingToClientsRpc(int buildingIndex, HexTileCoordinate coord, int hexGridId,
+        private void SyncPlacedBuildingToClientsRpc(BaseBuildingTemplate template, HexTileCoordinate coord, int hexGridId,
             float rotation,
             GameObject prefab)
         {
             HexGridData targetGrid = _hexGridManager.AllGrids.FirstOrDefault(grid => grid.Id == hexGridId);
-            BaseBuildingTemplate template = AvailableBuildings[buildingIndex];
             var (shapeData, isStackableList) = HexTileHelper.ExtractShapeInformation(template.ShapeDataEntries);
             List<HexTileCoordinate> rotatedShape = HexTileHelper.GetRotatedShape(shapeData, rotation);
             List<HexTileCoordinate> globalRotatedShape = rotatedShape.Select(tile => tile + coord).ToList();

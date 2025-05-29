@@ -52,6 +52,7 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 7935336322730317849}
   _gameStartConfiguration: {fileID: 11400000, guid: 5a14fda24b5e45a48a6e66352b2d350d, type: 2}
   _gameSessionStartConfiguration: {fileID: 11400000, guid: 4f4cf94a3791f8942832f1ce52f12292, type: 2}
+  _coreBuildingTemplate: {fileID: 11400000, guid: 5874729940006ef4f93f529aa9ebed96, type: 2}
 --- !u!114 &7935336322730317849
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -96,7 +97,7 @@ MonoBehaviour:
   _spectatorInterpolation: 2
   _enableTeleport: 0
   _teleportThreshold: 1
-  <PrefabId>k__BackingField: 17
+  <PrefabId>k__BackingField: 22
   <SpawnableCollectionId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 16549769214515790529
   <SceneId>k__BackingField: 0

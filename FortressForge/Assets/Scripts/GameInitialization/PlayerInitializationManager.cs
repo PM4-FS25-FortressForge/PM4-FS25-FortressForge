@@ -24,9 +24,9 @@ namespace FortressForge.GameInitialization
     {
         [Header("Game Start Configuration")] [SerializeField]
         private GameStartConfiguration _gameStartConfiguration;
-
         [SerializeField] private GameSessionStartConfiguration _gameSessionStartConfiguration;
-        [SerializeField] private BaseBuildingTemplate _coreBuildingTemplate;
+        
+        private Camera _mainCamera;
 
         public override void OnStartClient()
         {
@@ -62,6 +62,13 @@ namespace FortressForge.GameInitialization
         /// </summary>
         private void Init()
         {
+            _mainCamera = Camera.main;
+            if (_mainCamera == null)
+            {
+                Debug.LogError("Main camera not found!");
+                return;
+            }
+            
             if (_gameStartConfiguration == null)
             {
                 Debug.LogError("GameStartConfiguration is not set.");
@@ -104,9 +111,7 @@ namespace FortressForge.GameInitialization
             buildViewController.Init(new List<HexGridData> { selectedGrid },
                 _gameStartConfiguration, HexGridManager.Instance, hoverController, previewController, _gameSessionStartConfiguration, playerId);
             
-            buildViewController.PreviewSelectedBuilding(_coreBuildingTemplate);
-            
-            
+            buildViewController.PreviewSelectedBuilding(_gameStartConfiguration.StarterBuildingTemplate);
         }
         
         private void InitializeClientView(HexGridData selectedGrid, int gridId,  BuildViewController buildViewController)
@@ -125,14 +130,7 @@ namespace FortressForge.GameInitialization
             selectedGrid.MarkGridAsOwned();
             Vector3 gridOrigin = _gameSessionStartConfiguration.HexGridOrigins[gridId];
 
-            Camera mainCamera = Camera.main;
-            if (mainCamera == null)
-            {
-                Debug.LogError("Main camera not found!");
-                return;
-            }
-
-            mainCamera.GetComponent<CameraController>().SetTargetPosition(gridOrigin);
+            _mainCamera.GetComponent<CameraController>().SetTargetPosition(gridOrigin);
 
             GameObject topOverlay = GameObject.Find("TopOverlay");
             TopOverlayViewGenerator topOverlayViewGenerator = topOverlay.GetComponent<TopOverlayViewGenerator>();
