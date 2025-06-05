@@ -22,7 +22,11 @@ namespace Tests.Weapon
         private Transform _towerBase;
         private WeaponBuildingTemplate _testConstants;
         private Keyboard _keyboard;
-        private float TestsDelayTime = 0f; // Delay time for the tests to wait for the camera to move (Change this for optical debuging to 0.5f)
+        private Mouse _mouse;
+
+        private float
+            TestsDelayTime =
+                0f; // Delay time for the tests to wait for the camera to move (Change this for optical debuging to 0.5f)
 
 
         /// <summary>
@@ -34,10 +38,13 @@ namespace Tests.Weapon
         {
             base.Setup();
 
-            // Register and add keyboard device for input simulation
+            // Register and add keyboard and a mouse device for input simulation
             InputSystem.RegisterLayout<Keyboard>();
             _keyboard = InputSystem.AddDevice<Keyboard>();
             Assert.NotNull(_keyboard, "Keyboard device not found.");
+            InputSystem.AddDevice<Mouse>();
+            _mouse = InputSystem.GetDevice<Mouse>();
+            Assert.NotNull(_mouse, "Error: Mouse device not found.");
         }
 
         /// <summary>
@@ -50,6 +57,9 @@ namespace Tests.Weapon
             SceneManager.LoadScene("EmptyScene", LoadSceneMode.Single);
             yield return new WaitUntil(() => SceneManager.GetActiveScene().name == "EmptyScene");
 
+            // 1. Load the Ammunition prefab
+            GameObject ammoPrefab = Resources.Load<GameObject>("Prefabs/Ammunition/CannonBall");
+            Assert.IsNotNull(ammoPrefab, "Ammunition prefab could not be loaded. Make sure it exists in a Resources folder.");
             // Instantiate NetworkManager prefab for FishNet networking setup
             var networkManagerPrefab = Resources.Load<GameObject>("Prefabs/NetworkManager");
             Assert.IsNotNull(networkManagerPrefab, "NetworkManager prefab not found!");
@@ -104,24 +114,6 @@ namespace Tests.Weapon
         /// </summary>
         private float NormalizeRotation(float angle) => (angle + 360f) % 360f;
 
-        private IEnumerator WaitUntilTimeout(Func<bool> condition, float timeoutSeconds = 5f)
-        {
-            float startTime = Time.time;
-            while (!condition() && Time.time - startTime < timeoutSeconds)
-                yield return null;
-
-            Assert.IsTrue(condition(), $"Condition not met within {timeoutSeconds} seconds");
-        }
-
-        private int GetCurrentAmmo(object weapon)
-        {
-            var currentAmmoField =
-                weapon.GetType().GetField("_currentAmmo", BindingFlags.NonPublic | BindingFlags.Instance);
-            if (currentAmmoField == null)
-                throw new Exception("_currentAmmo field not found");
-            return (int)currentAmmoField.GetValue(weapon);
-        }
-
         /// <summary>
         /// Simulates pressing the 'L' key to rotate the weapon turret to the right (clockwise).
         /// Asserts that the turret rotated approximately by the expected degrees based on rotation speed and delta time.
@@ -133,7 +125,7 @@ namespace Tests.Weapon
             yield return SetupSceneAndWeapon();
             _towerBase.localEulerAngles = Vector3.zero;
             _weaponInputHandler.SendMessage("OnMouseDown"); // Enter fight mode to enable input actions
-            
+
             // Rotate right
             Press(_keyboard.lKey);
             yield return new WaitForSeconds(TestsDelayTime);
@@ -178,12 +170,13 @@ namespace Tests.Weapon
             yield return SetupSceneAndWeapon();
             var cannonShaft = _weaponInstance.transform.Find("Geschuetzturm/Lauf");
             Assert.IsNotNull(cannonShaft, "Cannon shaft transform not found!");
-            cannonShaft.localEulerAngles = new Vector3(_testConstants.minCannonAngle, 0, 0);    // Start at maximum pitch angle
+            cannonShaft.localEulerAngles =
+                new Vector3(_testConstants.minCannonAngle, 0, 0); // Start at maximum pitch angle
             _weaponInputHandler.SendMessage("OnMouseDown"); // Enter fight mode to enable input actions
             yield return null;
-            
+
             //Adjust angle up (to max.)
-            Press(_keyboard.iKey); 
+            Press(_keyboard.iKey);
             yield return new WaitForSeconds(TestsDelayTime);
             Release(_keyboard.iKey);
             yield return null;
@@ -201,12 +194,13 @@ namespace Tests.Weapon
             yield return SetupSceneAndWeapon();
             var cannonShaft = _weaponInstance.transform.Find("Geschuetzturm/Lauf");
             Assert.IsNotNull(cannonShaft, "Cannon shaft transform not found!");
-            cannonShaft.localEulerAngles = new Vector3(_testConstants.maxCannonAngle, 0, 0);    // Start at maximum pitch angle
+            cannonShaft.localEulerAngles =
+                new Vector3(_testConstants.maxCannonAngle, 0, 0); // Start at maximum pitch angle
             _weaponInputHandler.SendMessage("OnMouseDown"); // Enter fight mode to enable input actions
 
             //Adjust angle down (to min.)
-            Press(_keyboard.kKey); 
-            yield return new WaitForSeconds(TestsDelayTime); 
+            Press(_keyboard.kKey);
+            yield return new WaitForSeconds(TestsDelayTime);
             Release(_keyboard.kKey);
             yield return null;
 
@@ -220,25 +214,36 @@ namespace Tests.Weapon
         [UnityTest]
         public IEnumerator FireWeapon_SpaceKeyPressed_FiresOnce()
         {
-            LogAssert.ignoreFailingMessages = true;
-            LogAssert.Expect(LogType.Exception, new Regex("NullReferenceException.*GameRoomSynchronisation"));
-
             yield return SetupSceneAndWeapon();
 
-            int initialAmmo = GetCurrentAmmo(_weaponInputHandler);
+            // Enter fight mode
             _weaponInputHandler.SendMessage("OnMouseDown");
-
-            Press(_keyboard.spaceKey);
             yield return null;
-            Release(_keyboard.spaceKey);
-            yield return new WaitForSeconds(TestsDelayTime);    
 
-            int ammoAfterFire = GetCurrentAmmo(_weaponInputHandler);
+            // Wait until CanFire returns true
+            //yield return new WaitUntil(() => _weaponInputHandler.Test_CanFire());
+
+            int initialAmmo = _weaponInputHandler.GetCurrentAmmo();
+
+            // Press and release space to fire
+            Press(_keyboard.spaceKey);
+            yield return null; 
+            Release(_keyboard.spaceKey);
+            
+            // rotate left to stop the Autofiring
+            Press(_keyboard.jKey);
+            yield return new WaitForSeconds(TestsDelayTime);
+            Release(_keyboard.jKey);
+            yield return null;
+            
+            // Wait until ammo has changed or timeout
+            yield return new WaitUntil(() => _weaponInputHandler.GetCurrentAmmo() < initialAmmo);
+
+            int ammoAfterFire = _weaponInputHandler.GetCurrentAmmo();
 
             Assert.AreEqual(initialAmmo - 1, ammoAfterFire,
                 $"Expected ammo to decrease by 1 after firing. Actual: {ammoAfterFire}");
         }
-
 
         /// <summary>
         /// Cleans up the weapon instance after each test to avoid memory leaks or leftover state.

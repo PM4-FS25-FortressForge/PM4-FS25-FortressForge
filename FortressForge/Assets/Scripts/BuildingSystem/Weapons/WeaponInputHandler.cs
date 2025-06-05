@@ -58,7 +58,7 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
         _originalColor = _buildingMaterial.color;
         _currentAmmo = _constants.maxAmmo;
     }
-    
+
     /// <summary>
     /// Initializes weapon with external hex grid data used for economic checks.
     /// </summary>
@@ -189,24 +189,28 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
 
         switch (true)
         {
-            case true when !_isAutoFiring && !_isReloading && !_isOnCooldown && _currentAmmo > 0 && _autoFireCoroutine == null: // Fire if not already firing and reloaded
+            case true when !_isAutoFiring && !_isReloading && !_isOnCooldown && _currentAmmo > 0 &&
+                           _autoFireCoroutine == null: // Fire if not already firing and reloaded
                 _isAutoFiring = true;
                 Debug.Log("Firing");
                 _autoFireCoroutine = StartCoroutine(AutoFire());
                 break;
 
             case true
-                when _isAutoFiring && _currentAmmo > 0 && _autoFireCoroutine != null: // Denies the player to fire while already firing
+                when _isAutoFiring && _currentAmmo > 0 && _autoFireCoroutine != null
+                : // Denies the player to fire while already firing
                 Debug.Log("Already firing");
                 break;
 
             case true
-                when !_isReloading && _currentAmmo <= 0 && _reloadCoroutine == null: // Reload if not already reloading and out of ammo
+                when !_isReloading && _currentAmmo <= 0 && _reloadCoroutine == null
+                : // Reload if not already reloading and out of ammo
                 ReloadWeaponServerRpc();
                 break;
 
             case true
-                when _isReloading && _currentAmmo <= 0 && _reloadCoroutine != null: // Denies the player to reload while already reloading
+                when _isReloading && _currentAmmo <= 0 && _reloadCoroutine != null
+                : // Denies the player to reload while already reloading
                 Debug.Log("Already reloading");
                 break;
         }
@@ -221,7 +225,7 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
         {
             FireCannonServerRpc();
             _currentAmmo--;
-            yield return StartCoroutine(FireCooldown()); 
+            yield return StartCoroutine(FireCooldown());
         }
 
         _isAutoFiring = false;
@@ -230,7 +234,7 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
 
         ReloadWeaponServerRpc();
     }
-    
+
     /// <summary>
     /// Handles firing delay between shots.
     /// </summary>
@@ -240,7 +244,7 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
         yield return new WaitForSeconds(_constants.automaticReloadSpeed);
         _isOnCooldown = false;
     }
-    
+
     /// <summary>
     /// Handles time-based reloading and ammunition refill.
     /// </summary>
@@ -316,7 +320,7 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
 
         TargetReloadResult(Owner, success);
     }
-    
+
     /// <summary>
     /// Client-side handler for reload result. Starts reload time if successful.
     /// </summary>
@@ -332,9 +336,14 @@ public class WeaponInputHandler : NetworkBehaviour, WeaponInputAction.IWeaponInp
             Debug.Log("Reloading Failed - Not enough resources");
         }
     }
-    
+
     public int GetCurrentAmmo()
     {
         return _currentAmmo;
+    }
+
+    public bool Test_CanFire()
+    {
+        return !_isAutoFiring && !_isReloading && !_isOnCooldown && _currentAmmo > 0;
     }
 }
