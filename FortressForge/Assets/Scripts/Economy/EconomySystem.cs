@@ -186,6 +186,12 @@ namespace FortressForge.Economy
             return resourceChanges;
         }
 
+        /// <summary>
+        /// Applies the local magma resource change to the global economy.
+        /// Subtracts the local magma consumption/production from the global magma pool.
+        /// If the global magma is depleted, additional handling can be implemented here.
+        /// </summary>
+        /// <param name="magmaResourceChange">The net change in magma for this tick (positive = produced, negative = consumed).</param>
         private void ApplyMagmaChanges(float magmaResourceChange) {
             GlobalEconomy.CurrentResources[ResourceType.Magma].AddAmountWithDeltaAmount(-magmaResourceChange);
 
