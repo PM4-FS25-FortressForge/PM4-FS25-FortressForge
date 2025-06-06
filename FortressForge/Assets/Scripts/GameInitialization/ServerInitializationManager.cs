@@ -15,19 +15,26 @@ namespace FortressForge.GameInitialization
         [SerializeField]
         private GameObject PlayerManagerPrefab;
 
+        /// <summary>
+        /// Ensures that only one instance of the ServerInitializationManager exists (Singleton pattern).
+        /// If an instance already exists, destroys the duplicate.
+        /// </summary>
         private void Awake()
         {
             if (Instance == null)
             {
                 Instance = this;
-                DontDestroyOnLoad(gameObject);
+                DontDestroyOnLoad(gameObject); // Persist across scene loads
             }
             else
             {
-                Destroy(gameObject);
+                Destroy(gameObject); // Destroy duplicate instance
             }
         }
 
+        /// <summary>
+        /// Called on script start. Initiates the game start logic.
+        /// </summary>
         private void Start()
         {
             StartGame();

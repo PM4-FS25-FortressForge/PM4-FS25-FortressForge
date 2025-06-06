@@ -2,6 +2,9 @@
 
 namespace FortressForge.Serializables
 {
+    /// <summary>
+    /// Represents a serializable pair of a resource type and its associated rate.
+    /// </summary>
     [System.Serializable]
     public struct RessourceTypeRate
     {

@@ -30,6 +30,13 @@ namespace FortressForge.HexGrid
                 .GetWorldPosition(tileSize, tileHeight).y;
         }
         
+        /// <summary>
+        /// Converts a world position to a hex tile coordinate, using the sampled terrain height.
+        /// </summary>
+        /// <param name="position">The world position to convert.</param>
+        /// <param name="tileHeight">The height of a single hex tile.</param>
+        /// <param name="tileRadius">The radius of a single hex tile.</param>
+        /// <returns>The corresponding hex tile coordinate.</returns>
         public HexTileCoordinate GetHexTileCoordinate(Vector3 position, float tileHeight, float tileRadius) 
         {
             float height = SampleHeight(position);

@@ -7,6 +7,10 @@ using UnityEngine;
 
 namespace FortressForge.Networking
 {
+    /// <summary>
+    /// Synchronizes economy resources across the network using FishNet.
+    /// </summary>
+
     public class EconomySync : NetworkBehaviour
     {
         private readonly SyncDictionary<ResourceType, ResourceDto> _syncedResources = new();
@@ -14,6 +18,11 @@ namespace FortressForge.Networking
         public SyncDictionary<ResourceType, ResourceDto> SyncedResources => _syncedResources;
 
         private EconomySystem _economySystem;
+        
+        /// <summary>
+        /// Initializes the economy sync with the given economy system and sets up resource change listeners.
+        /// </summary>
+        /// <param name="economySystem">The economy system to synchronize.</param>
 
         public void Init(EconomySystem economySystem)
         {
@@ -36,6 +45,13 @@ namespace FortressForge.Networking
                 _syncedResources[ResourceType.GlobalMagma] = Convert(globalMagma, ResourceType.GlobalMagma);
             };
         }
+
+        /// <summary>
+        /// Converts a resource to a serializable DTO for network synchronization.
+        /// </summary>
+        /// <param name="resource">The resource to convert.</param>
+        /// <param name="resourceType">Optional override for the resource type.</param>
+        /// <returns>The converted resource DTO.</returns>
 
         private ResourceDto Convert(Resource resource, ResourceType? resourceType = null)
         {

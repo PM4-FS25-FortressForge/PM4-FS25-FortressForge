@@ -48,6 +48,12 @@ namespace FortressForge.Network
             return "Player Name: " + PlayerName + " Player Id: " + PlayerID + " Is Host: " + IsHost;
         }
 
+        /// <summary>
+        /// Determines whether the specified object is equal to the current player.
+        /// </summary>
+        /// <param name="obj">The object to compare with the current player.</param>
+        /// <returns>True if the objects are equal; otherwise, false.</returns>
+
         public override bool Equals(object obj)
         {
             if (obj is PlayerClient player)
@@ -58,6 +64,10 @@ namespace FortressForge.Network
             return false;
         }
 
+        /// <summary>
+        /// Returns a hash code for the player.
+        /// </summary>
+        /// <returns>A hash code for the player.</returns>
         public override int GetHashCode()
         {
             return PlayerName.GetHashCode() + PlayerID.GetHashCode() + IsHost.GetHashCode();

@@ -115,6 +115,9 @@ namespace FortressForge.HexGrid
             Debug.Log($"Hex grid mesh generated in {sw.Elapsed.Ticks / 10000} ms");
         }
 
+        /// <summary>
+        /// Adds three edges (half a hex) to the mesh vertex and index lists.
+        /// </summary>
         private static int CreateRenderTile(Vector3 basePos, Vector3[] hexDirs, float tileRadius, List<Vector3> allVertices, List<int> allIndices, int vertexOffset)
         {
             // Generate edges for each side of the hex tile

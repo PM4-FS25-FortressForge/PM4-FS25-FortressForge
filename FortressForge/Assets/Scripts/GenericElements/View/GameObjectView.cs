@@ -7,7 +7,8 @@ using UnityEngine;
 namespace FortressForge.GenericElements.View
 {
     /// <summary>
-    /// Represents the visual representation of a HexTile.
+    /// Represents the visual representation of a HexTile or similar selectable game object.
+    /// Handles material changes and mouse interactions based on the underlying data.
     /// </summary>
     public class GameObjectView<T> : MonoBehaviour where T : ISelectableGameObjectData<T>
     {
@@ -17,10 +18,11 @@ namespace FortressForge.GenericElements.View
         private Material _originalMaterial;
 
         /// <summary>
-        /// Initializes the HexTileView with the given HexTileData.
+        /// Initializes the view with the given data and configuration.
+        /// Subscribes to data changes and sets up the renderer.
         /// </summary>
-        /// <param name="data"></param>
-        /// <param name="config"></param>
+        /// <param name="data">The data object representing the game element.</param>
+        /// <param name="config">The configuration for materials and visuals.</param>
         public void Init(T data, GameStartConfiguration config)
         {
             _config = config;
@@ -31,6 +33,9 @@ namespace FortressForge.GenericElements.View
             UpdateVisuals(data);
         }
         
+        /// <summary>
+        /// Unsubscribes from the data change event when destroyed to prevent memory leaks.
+        /// </summary>
         private void OnDestroy()
         {
             if (!Equals(_data, default(T)))
@@ -40,8 +45,9 @@ namespace FortressForge.GenericElements.View
         }
 
         /// <summary>
-        /// Changes the material of the HexTileView based on the IsOccupied property of the HexTileData.
+        /// Updates the material and visibility of the renderer based on the data's state.
         /// </summary>
+        /// <param name="data">The current data state.</param>
         private void UpdateVisuals(T data)
         { 
             _renderer.enabled = true;
@@ -61,18 +67,30 @@ namespace FortressForge.GenericElements.View
                 _renderer.material = _originalMaterial;
         }
 
+        /// <summary>
+        /// Called when the mouse enters the collider.
+        /// Sets the data as a mouse target and highlights it.
+        /// </summary>
         private void OnMouseEnter()
         {
             _data.IsMouseTarget = true;
             _data.IsHighlighted = true;
         }
         
+        /// <summary>
+        /// Called when the mouse exits the collider.
+        /// Removes mouse target and highlight states.
+        /// </summary>
         private void OnMouseExit()
         {
             _data.IsMouseTarget = false;
             _data.IsHighlighted = false;
         }
         
+        /// <summary>
+        /// Called every frame while the mouse is over the collider.
+        /// Handles overlay checks to update highlight and mouse target states.
+        /// </summary>
         private void OnMouseOver()
         {
             if (UIClickChecker.Instance.IsMouseOnOverlay() && _data.IsMouseTarget)
@@ -85,6 +103,10 @@ namespace FortressForge.GenericElements.View
             }
         }
 
+        /// <summary>
+        /// Called when the mouse is pressed down on the collider.
+        /// Triggers a left click action on the data if not over a UI overlay.
+        /// </summary>
         private void OnMouseDown() {
             if (UIClickChecker.Instance.IsMouseOnOverlay())
                 return;
