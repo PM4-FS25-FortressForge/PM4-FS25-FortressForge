@@ -67,162 +67,85 @@ namespace FortressForge.GameInitialization
         }
 
         /// <summary>
-        /// Initializes the player, their grid, economy, and UI overlays.
+        /// Initializes the player and the grid view.
         /// </summary>
         private void Init()
-        {
-            // Validate configuration
-            if (!ValidateConfiguration()) return;
-
-            // Find global object manager and required controllers
-            var globalObjectGameObject = FindGlobalObjectManager();
-            if (globalObjectGameObject == null) return;
-
-            var hoverController = GetComponentOrLog<HexTileHoverController>(globalObjectGameObject);
-            if (hoverController == null) return;
-
-            var previewController = GetComponentOrLog<PreviewController>(globalObjectGameObject);
-            if (previewController == null) return;
-
-            // Get the grid assigned to this player
-            int playerId = Owner.ClientId;
-            var selectedGrid = GetPlayerGrid(playerId);
-            if (selectedGrid == null) return;
-
-            // Initialize build view and economy systems
-            InitializeBuildView(selectedGrid, hoverController, previewController);
-            InitializeEconomy(selectedGrid);
-
-            // If this is the client and the owner, initialize client-specific UI and camera
-            if (IsClientInitialized && IsOwner)
-                InitializeClientView(selectedGrid);
-        }
-
-        /// <summary>
-        /// Checks if the game start configuration is set.
-        /// </summary>
-        /// <returns>True if configuration is valid, false otherwise.</returns>
-        private bool ValidateConfiguration()
         {
             if (_gameStartConfiguration == null)
             {
                 Debug.LogError("GameStartConfiguration is not set.");
-                return false;
+                return;
             }
-            return true;
-        }
 
-        /// <summary>
-        /// Finds the global object manager GameObject in the scene.
-        /// </summary>
-        /// <returns>The GameObject if found, otherwise null.</returns>
-        private GameObject FindGlobalObjectManager()
-        {
-            var obj = GameObject.Find("GlobalObjectManager");
-            if (obj == null)
+            var globalObjectGameObject = GameObject.Find("GlobalObjectManager");
+            if (globalObjectGameObject == null)
+            {
                 Debug.LogError("GlobalObjectManager not found!");
-            return obj;
-        }
-
-        /// <summary>
-        /// Gets a component of type T from the given GameObject, logging an error if not found.
-        /// </summary>
-        /// <typeparam name="T">Component type.</typeparam>
-        /// <param name="obj">GameObject to search.</param>
-        /// <returns>The component if found, otherwise null.</returns>
-        private T GetComponentOrLog<T>(GameObject obj) where T : Component
-        {
-            var comp = obj.GetComponent<T>();
-            if (comp == null)
-                Debug.LogError(typeof(T).Name + " not found!");
-            return comp;
-        }
-
-        /// <summary>
-        /// Retrieves the grid assigned to the given player ID.
-        /// </summary>
-        /// <param name="playerId">The player's ID.</param>
-        /// <returns>The assigned HexGridData, or null if not found.</returns>
-        private HexGridData GetPlayerGrid(int playerId)
-        {
-            var tuple = _gameSessionStartConfiguration.GridPlayerIdTuples
-                .FirstOrDefault(gpit => gpit.PlayerId == playerId);
-            if (tuple == default)
-            {
-                Debug.LogError($"No grid assigned for playerId {playerId}.");
-                return null;
+                return;
             }
-            int gridId = tuple.HexGridId;
-            var grid = HexGridManager.Instance.AllGrids.FirstOrDefault(g => g.Id == gridId);
-            if (grid == null)
-                Debug.LogError($"No grid found with Id {gridId}.");
-            return grid;
-        }
-
-        /// <summary>
-        /// Initializes the build view controller for the player.
-        /// </summary>
-        /// <param name="selectedGrid">The player's assigned grid.</param>
-        /// <param name="hoverController">The hex tile hover controller.</param>
-        /// <param name="previewController">The preview controller.</param>
-        private void InitializeBuildView(HexGridData selectedGrid, HexTileHoverController hoverController, PreviewController previewController)
-        {
-            var buildViewController = gameObject.GetComponent<BuildViewController>();
-            buildViewController.Init(
-                new List<HexGridData> { selectedGrid },
-                _gameStartConfiguration,
-                HexGridManager.Instance,
-                hoverController,
-                previewController
-            );
-        }
-
-        /// <summary>
-        /// Initializes the economy system for the player's grid.
-        /// </summary>
-        /// <param name="selectedGrid">The player's assigned grid.</param>
-        private void InitializeEconomy(HexGridData selectedGrid)
-        {
-            var economySync = gameObject.GetComponent<EconomySync>();
-            var economyController = gameObject.AddComponent<EconomyController>();
-            if (IsServerInitialized && !IsClientInitialized)
+            var hoverController = globalObjectGameObject.GetComponent<HexTileHoverController>();
+            if (hoverController == null)
             {
+                Debug.LogError("HexTileHoverController not found!");
+                return;
+            }
+            var previewController = globalObjectGameObject.GetComponent<PreviewController>();
+            if (previewController == null)
+            {
+                Debug.LogError("PreviewController not found!");
+                return;
+            }
+            
+            // Currently takes the playerId from the owner of this object
+            int playerId = Owner.ClientId;
+
+            // Take the clientId from the owner of this object, also called the playerId
+            int gridId = _gameSessionStartConfiguration.GridPlayerIdTuples
+                .First(gpit => gpit.PlayerId == playerId).HexGridId;
+            HexGridData selectedGrid = HexGridManager.Instance.AllGrids.First(grid => grid.Id == gridId);
+
+            // initialize the grid view so allgrids is set
+            BuildViewController buildViewController = gameObject.GetComponent<BuildViewController>();
+            // We only initialize the view for the selected grid,
+            // theoretically you could add multiple grids per player here. But EconomySystem is only one per player. So there mustn't be overlaps.
+            buildViewController.Init(new List<HexGridData> { selectedGrid },
+                _gameStartConfiguration, HexGridManager.Instance, hoverController, previewController);
+
+            // After creating EconomySystem
+            var economySync = gameObject.GetComponent<EconomySync>();
+            EconomyController economyController = gameObject.AddComponent<EconomyController>();
+
+            // Only the server needs to initialize the EconomySystem
+            if (IsServerInitialized && !IsClientInitialized)
+            { // TODO this is a bit of a hack, but it works for now
                 economySync.Init(selectedGrid.EconomySystem);
                 economyController.Init(selectedGrid.EconomySystem);
             }
-        }
 
-        /// <summary>
-        /// Initializes client-specific UI overlays and camera for the player.
-        /// </summary>
-        /// <param name="selectedGrid">The player's assigned grid.</param>
-        private void InitializeClientView(HexGridData selectedGrid)
-        {
-            // Mark grid as owned by this player
-            selectedGrid.MarkGridAsOwned();
-            int gridId = selectedGrid.Id;
-            Vector3 gridOrigin = _gameSessionStartConfiguration.HexGridOrigins[gridId];
-
-            // Move camera to the grid's origin
-            Camera mainCamera = Camera.main;
-            if (mainCamera == null)
+            // Initialize view only on clients, server doesn't need the individual views
+            if (IsClientInitialized && IsOwner)
             {
-                Debug.LogError("Main camera not found!");
-                return;
+                selectedGrid.MarkGridAsOwned();
+                Vector3 gridOrigin = _gameSessionStartConfiguration.HexGridOrigins[gridId];
+
+                Camera mainCamera = Camera.main;
+                if (mainCamera == null)
+                {
+                    Debug.LogError("Main camera not found!");
+                    return;
+                }
+
+                mainCamera.GetComponent<CameraController>()
+                    .SetTargetPosition(gridOrigin);
+                
+               GameObject topOverlay = GameObject.Find("TopOverlay");
+                TopOverlayViewGenerator topOverlayViewGenerator = topOverlay.GetComponent<TopOverlayViewGenerator>();
+                topOverlayViewGenerator.Init(economySync);
+
+                GameObject buildingOverlay = GameObject.Find("BuildingOverlay");
+                BottomOverlayViewGenerator bottomOverlayViewGenerator = buildingOverlay.GetComponent<BottomOverlayViewGenerator>();
+                bottomOverlayViewGenerator.Init(_gameStartConfiguration.availableBuildings, buildViewController);
             }
-            mainCamera.GetComponent<CameraController>().SetTargetPosition(gridOrigin);
-
-            // Initialize top overlay UI with economy sync
-            var topOverlay = GameObject.Find("TopOverlay");
-            var topOverlayViewGenerator = topOverlay.GetComponent<TopOverlayViewGenerator>();
-            var economySync = gameObject.GetComponent<EconomySync>();
-            topOverlayViewGenerator.Init(economySync);
-
-            // Initialize bottom overlay UI with available buildings and build view controller
-            var buildingOverlay = GameObject.Find("BuildingOverlay");
-            var bottomOverlayViewGenerator = buildingOverlay.GetComponent<BottomOverlayViewGenerator>();
-            var buildViewController = gameObject.GetComponent<BuildViewController>();
-            bottomOverlayViewGenerator.Init(_gameStartConfiguration.availableBuildings, buildViewController);
         }
     }
 }
