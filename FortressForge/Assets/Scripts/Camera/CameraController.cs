@@ -333,7 +333,8 @@ namespace FortressForge.CameraControll
         {
             TargetPosition = position;
             _targetHeight = GetTerrainHeight(position);
-            Zoom = Mathf.SmoothDamp(Zoom, _buildingSelectionZoom, ref _zoomVelocity, _zoomSmoothTime);
+            _targetZoom = _buildingSelectionZoom; // Set the zoom to the building selection zoom level
+            Zoom = Mathf.SmoothDamp(Zoom, _targetZoom, ref _zoomVelocity, _zoomSmoothTime);
             UpdateCameraPosition();
         }
     }
