@@ -22,7 +22,7 @@ namespace FortressForge.BuildingSystem.Weapons
 
         private int SelectedWeaponBuildingId { get; set; } = -1;
 
-        private void Awake()
+        private WeaponBuildingManager()
         {
             Instance = this;
         }
