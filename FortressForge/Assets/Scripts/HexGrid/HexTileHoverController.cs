@@ -8,7 +8,7 @@ using UnityEngine.PlayerLoop;
 namespace FortressForge.HexGrid
 {
     /// <summary>
-    /// Holds the information about the currently hovered tile.
+    /// Holds the information about the currently hovered tile and manages hover state updates.
     /// </summary>
     public class HexTileHoverController : MonoBehaviour
     {
@@ -19,8 +19,17 @@ namespace FortressForge.HexGrid
         private ITerrainHeightProvider _terrainHeightProvider;
         private bool _isInitialized;
         
+        /// <summary>
+        /// Event fired when the hovered tile changes.
+        /// </summary>
         public event Action<HexTileData> OnHoverTileChanged;
 
+        /// <summary>
+        /// Initializes the hover controller with required dependencies.
+        /// </summary>
+        /// <param name="terrainHeightProvider">Provider for terrain height sampling.</param>
+        /// <param name="hexGridManager">Reference to the hex grid manager.</param>
+        /// <param name="gameStartConfiguration">Game start configuration data.</param>
         public void Init(ITerrainHeightProvider terrainHeightProvider, HexGridManager hexGridManager, GameStartConfiguration gameStartConfiguration)
         {
             _hexGridManager = hexGridManager;
@@ -31,6 +40,9 @@ namespace FortressForge.HexGrid
             _isInitialized = true;
         }
 
+        /// <summary>
+        /// Unity Update callback. Checks and updates the currently hovered tile.
+        /// </summary>
         public void Update()
         {
             if (!_isInitialized) return;
@@ -43,6 +55,10 @@ namespace FortressForge.HexGrid
             }
         }
 
+        /// <summary>
+        /// Gets the currently hovered tile, or determines it from the mouse position if not set.
+        /// </summary>
+        /// <returns>The currently hovered <see cref="HexTileData"/>, or null if none.</returns>
         [CanBeNull]
         public HexTileData GetCurrentlyHoveredTile()
         {
@@ -68,6 +84,9 @@ namespace FortressForge.HexGrid
             return newHexTile;
         }
 
+        /// <summary>
+        /// Unity callback when the object is disabled. Unsubscribes from events.
+        /// </summary>
         private void OnDisable()
         {
             if (_hexGridManager != null)
@@ -76,6 +95,10 @@ namespace FortressForge.HexGrid
             }
         }
 
+        /// <summary>
+        /// Handles changes to the hovered tile and fires the <see cref="OnHoverTileChanged"/> event.
+        /// </summary>
+        /// <param name="hexTileData">The new hovered tile data.</param>
         private void HoverTileChanged(HexTileData hexTileData)
         {
             _currentlyHoveredTile = hexTileData.IsMouseTarget ? hexTileData : null;

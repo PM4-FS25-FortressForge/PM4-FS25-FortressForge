@@ -9,13 +9,23 @@ namespace FortressForge.Economy
     /// </summary>
     public class Resource
     {
+        /// <summary>
+        /// Event triggered whenever the resource amount changes.
+        /// </summary>
         public event Action OnChanged;
         
         private readonly ResourceType _type;
+
+        /// <summary>
+        /// Gets the type of this resource.
+        /// </summary>
         public ResourceType Type => _type;
 
         private float _currentAmount;
 
+        /// <summary>
+        /// The difference in amount since the last update.
+        /// </summary>
         public float DeltaAmount { get; private set; }
 
         /// <summary>
@@ -52,6 +62,11 @@ namespace FortressForge.Economy
             }
         }
         
+        /// <summary>
+        /// Sets the current amount and updates the delta amount accordingly.
+        /// Triggers the <see cref="OnChanged"/> event if the value changes.
+        /// </summary>
+        /// <param name="amount">The new amount to set.</param>
         public void SetCurrentAmountWithDeltaAmount(float amount)
         {
             var pastDeltaAmount = _currentAmount;
@@ -64,6 +79,11 @@ namespace FortressForge.Economy
             }
         }
 
+        /// <summary>
+        /// Adds the specified amount to the current amount and updates the delta.
+        /// Triggers the <see cref="OnChanged"/> event if the value changes.
+        /// </summary>
+        /// <param name="amount">The amount to add (can be negative).</param>
         public void AddAmountWithDeltaAmount(float amount) {
             DeltaAmount = amount;
             CurrentAmount += amount;

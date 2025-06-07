@@ -26,6 +26,10 @@ namespace FortressForge.HexGrid
 
         private TerrainHeightProvider _terrainHeightProvider;
 
+        /// <summary>
+        /// Unity Awake callback. Initializes the singleton instance and terrain height provider.
+        /// </summary>
+
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -39,6 +43,12 @@ namespace FortressForge.HexGrid
 
             _terrainHeightProvider = new TerrainHeightProvider();
         }
+
+        /// <summary>
+        /// Initializes all hex grids based on the provided game session and start configuration.
+        /// </summary>
+        /// <param name="gameSessionStartConfiguration">Session configuration containing grid origins.</param>
+        /// <param name="gameStartConfiguration">Start configuration with grid parameters.</param>
 
         public void InitializeHexGrids(GameSessionStartConfiguration gameSessionStartConfiguration,
             GameStartConfiguration gameStartConfiguration)
@@ -105,6 +115,11 @@ namespace FortressForge.HexGrid
             
             return IndependentGrid.CreateTile(coordinate);
         }
+
+        /// <summary>
+        /// Adds a new grid to the manager and subscribes to its hover event.
+        /// </summary>
+        /// <param name="gridData">The grid data to add.</param>
 
         public void AddGrid(HexGridData gridData) {
             AllGrids.Add(gridData);

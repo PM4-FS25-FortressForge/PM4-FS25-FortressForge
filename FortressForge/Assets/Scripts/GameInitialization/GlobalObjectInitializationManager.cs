@@ -6,6 +6,9 @@ using UnityEngine.Serialization;
 
 namespace FortressForge.GameInitialization
 {
+    /// <summary>
+    /// Manages the initialization of global game objects and systems at the start of a session.
+    /// </summary>
     public class GlobalObjectInitializationManager : MonoBehaviour
     {
         [Header("Game Start Configuration")]
@@ -13,7 +16,7 @@ namespace FortressForge.GameInitialization
         [SerializeField] private GameSessionStartConfiguration _gameSessionStartConfiguration;
         
         /// <summary>
-        /// Initializing all global objects.
+        /// Unity Awake callback. Instantiates the terrain and adds the HexGridManager component.
         /// </summary>
         public void Awake()
         {
@@ -22,7 +25,7 @@ namespace FortressForge.GameInitialization
         }
         
         /// <summary>
-        /// Start function to initialize common game systems.
+        /// Unity Start callback. Initializes core game systems and grid views.
         /// </summary>
         public void Start()
         {
@@ -46,6 +49,11 @@ namespace FortressForge.GameInitialization
             InitializeHexGridViews(_gameStartConfiguration, HexGridManager.Instance);
         }
 
+        /// <summary>
+        /// Instantiates and initializes all HexGridView objects for each grid in the game.
+        /// </summary>
+        /// <param name="config">The game start configuration.</param>
+        /// <param name="hexGridManager">The hex grid manager instance.</param>
         private void InitializeHexGridViews(GameStartConfiguration config, HexGridManager hexGridManager)
         {
             foreach (var data in hexGridManager.AllGrids)
