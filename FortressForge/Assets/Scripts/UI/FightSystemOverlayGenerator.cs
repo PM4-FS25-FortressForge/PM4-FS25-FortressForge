@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using FortressForge.BuildingSystem.Weapons;
 using FortressForge.Enums;
 using FortressForge.UI.CustomVisualElements;
 using UnityEngine;
@@ -20,29 +21,20 @@ namespace FortressForge.UI
         private TrapezElement _trapezElement;
 
         private Label _selectedWeaponLabel;
-        private readonly List<Label> _weaponLabels = new();
-        private int _selectedWeaponIndex = -1;
+
+        private List<Label> _weaponLabels = new();
         private InputAction _tabAction;
-        
+
         public Texture2D AmmoType1Icon;
         public Texture2D AmmoType2Icon;
         public Texture2D AmmoType3Icon;
         public Texture2D AmmoType4Icon;
         public Texture2D FireIcon;
 
-
         public VisualTreeAsset WeaponSelectorViewTree;
-
-        private Dictionary<WeaponClasses, List<string>> _weaponBuildings = new()
-        {
-            { WeaponClasses.Artillery, new List<string>() },
-            { WeaponClasses.Rockets, new List<string>() },
-            { WeaponClasses.Lasers, new List<string>() },
-        };
 
         private void OnEnable()
         {
-            PopulateWeaponsListForDevelopment(); // Todo: Remove this method in production
             if (!ValidateUIDocument()) return;
 
             InitializeOverlayFrame();
@@ -53,7 +45,10 @@ namespace FortressForge.UI
             AlignTabHeadersWithTrapezBorder();
             AddTabHeaderTitles();
             RegisterTabInput();
-            PopulateTabView();
+
+            WeaponBuildingManager.Instance.OnWeaponBuildingsChanged += UpdateWeaponListFromPlacedBuildings;
+            WeaponBuildingManager.Instance.OnWeaponBuildingSelectedByPrefab += SelectWeaponLabelAction;
+            UpdateWeaponListFromPlacedBuildings();
 
             InitOrientationButtons();
             InitAmmunitionSelectorButtons();
@@ -61,6 +56,8 @@ namespace FortressForge.UI
 
         private void OnDisable()
         {
+            WeaponBuildingManager.Instance.OnWeaponBuildingsChanged -= UpdateWeaponListFromPlacedBuildings;
+            WeaponBuildingManager.Instance.OnWeaponBuildingSelectedByPrefab -= SelectWeaponLabelAction;
             _tabAction?.Disable();
         }
 
@@ -166,28 +163,10 @@ namespace FortressForge.UI
         }
 
         /// <summary>
-        /// Adds a building name to the list of weapon buildings for a specific weapon class.
-        /// </summary>
-        /// <param name="weaponClass">The weapon class to which the building belongs.</param>
-        /// <param name="buildingName">The name of the building to add.</param>
-        public void AddToWeaponBuildingsList(WeaponClasses weaponClass, string buildingName)
-        {
-            _weaponBuildings ??= new Dictionary<WeaponClasses, List<string>>();
-
-            if (!_weaponBuildings.ContainsKey(weaponClass))
-                _weaponBuildings[weaponClass] = new List<string>();
-
-            if (!_weaponBuildings[weaponClass].Contains(buildingName))
-                _weaponBuildings[weaponClass].Add(buildingName);
-        }
-
-        /// <summary>
         /// Populates the tab view with weapon labels based on the weapon buildings dictionary.
         /// </summary>
         private void PopulateTabView()
         {
-            _weaponLabels.Clear();
-
             IEnumerable<VisualElement> tabContentList = _trapezElement.Q<TemplateContainer>()?
                 .Q<VisualElement>("weapon-selector-root")?
                 .Q<TabView>(className: "unity-tab-view")?
@@ -200,12 +179,34 @@ namespace FortressForge.UI
                 return;
             }
 
+            var groupedLabels = _weaponLabels
+                .GroupBy(label =>
+                {
+                    var container = WeaponBuildingManager.Instance
+                        .GetType()
+                        .GetField("_weaponBuildings", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                        .GetValue(WeaponBuildingManager.Instance) as IEnumerable<object>;
+                    var weaponClass = WeaponClasses.Artillery;
+                    foreach (var c in container)
+                    {
+                        var labelField = c.GetType().GetProperty("Label").GetValue(c) as Label;
+                        if (labelField == label)
+                        {
+                            weaponClass = (WeaponClasses)c.GetType().GetProperty("WeaponClass").GetValue(c);
+                            break;
+                        }
+                    }
+
+                    return weaponClass;
+                });
+
             foreach (VisualElement tabContent in tabContentList)
             {
                 if (!System.Enum.TryParse(tabContent.name, out WeaponClasses weaponClass))
                     continue;
 
-                if (!_weaponBuildings.TryGetValue(weaponClass, out var buildingList))
+                var labelsForClass = groupedLabels.FirstOrDefault(g => g.Key == weaponClass);
+                if (labelsForClass == null)
                     continue;
 
                 VisualElement tabContentListView = tabContent.Q<VisualElement>("unity-tab__content-container")?.Q<ScrollView>();
@@ -215,9 +216,12 @@ namespace FortressForge.UI
                     continue;
                 }
 
+                tabContentListView.Clear();
+
+                var labelList = labelsForClass.ToList();
+                int labelCount = labelList.Count;
                 const float maxMargin = 20f;
                 const float minMargin = 0f;
-                int labelCount = buildingList.Count;
 
                 for (int i = 0; i < labelCount; i++)
                 {
@@ -225,16 +229,11 @@ namespace FortressForge.UI
                         ? Mathf.Lerp(maxMargin, minMargin, i / (float)(labelCount - 1))
                         : maxMargin;
 
-                    Label weaponLabel = new()
-                    {
-                        text = buildingList[i],
-                        name = buildingList[i],
-                        style = { marginLeft = Length.Percent(margin) }
-                    };
+                    Label weaponLabel = labelList[i];
+                    weaponLabel.style.marginLeft = Length.Percent(margin);
                     weaponLabel.AddToClassList("weapon-label");
-                    AddOnClickToWeaponLabels(weaponLabel);
                     tabContentListView.Add(weaponLabel);
-                    _weaponLabels.Add(weaponLabel);
+                    AddOnClickToWeaponLabels(weaponLabel);
                 }
             }
         }
@@ -245,15 +244,22 @@ namespace FortressForge.UI
         /// <param name="label">The label to which the click event will be added.</param>
         private void AddOnClickToWeaponLabels(Label label)
         {
-            label.RegisterCallback<ClickEvent>(_ => SelectWeaponLabel(label));
+            label.RegisterCallback<ClickEvent>(_ =>
+            {
+                SelectWeaponLabel(label);
+                WeaponBuildingManager.Instance.SelectWeaponBuildingByLabel(label);
+            });
         }
 
+        /// <summary>
+        /// Selects the weapon label and updates the active tab in the TabView.
+        /// </summary>
+        /// <param name="label"></param>
         private void SelectWeaponLabel(Label label)
         {
             _selectedWeaponLabel?.RemoveFromClassList("selected-weapon-label");
             _selectedWeaponLabel = label;
             _selectedWeaponLabel.AddToClassList("selected-weapon-label");
-            _selectedWeaponIndex = _weaponLabels.IndexOf(label);
 
             TabView tabView = _trapezElement.Q<TabView>(className: "unity-tab-view");
             if (tabView == null) return;
@@ -264,13 +270,33 @@ namespace FortressForge.UI
         }
 
         /// <summary>
+        /// Selects the currently selected weapon label from the WeaponBuildingManager.
+        /// </summary>
+        private void SelectWeaponLabelAction()
+        {
+            Label selectedLabel = WeaponBuildingManager.Instance.GetSelectedWeaponBuildingLabel();
+            if (selectedLabel != null)
+            {
+                SelectWeaponLabel(selectedLabel);
+            }
+            else
+            {
+                Debug.LogWarning("No weapon label is currently selected.");
+            }
+        }
+
+        /// <summary>
         /// Selects the next weapon label in the list.
         /// </summary>
         private void SelectNextWeaponLabel()
         {
             if (_weaponLabels.Count == 0 || _bottomFrame.parent.parent.resolvedStyle.display == DisplayStyle.None) return;
-            _selectedWeaponIndex = (_selectedWeaponIndex + 1) % _weaponLabels.Count;
-            SelectWeaponLabel(_weaponLabels[_selectedWeaponIndex]);
+
+            int currentIndex = _selectedWeaponLabel != null ? _weaponLabels.IndexOf(_selectedWeaponLabel) : -1;
+            int nextIndex = (currentIndex + 1) % _weaponLabels.Count;
+
+            SelectWeaponLabel(_weaponLabels[nextIndex]);
+            WeaponBuildingManager.Instance.SelectWeaponBuildingByLabel(_weaponLabels[nextIndex]);
         }
 
         /// <summary>
@@ -284,18 +310,14 @@ namespace FortressForge.UI
                 .Q<TabView>(className: "unity-tab-view")?
                 .Q<VisualElement>("unity-tab-view__content-container")?
                 .Children().ToList();
-            for (int i = 0; i < tabHeaderList.Count; i++)
+
+            WeaponClasses[] weaponClasses = (WeaponClasses[])System.Enum.GetValues(typeof(WeaponClasses));
+            for (int i = 0; i < tabHeaderList.Count && i < weaponClasses.Length; i++)
             {
-                if (i < _weaponBuildings.Count)
-                {
-                    WeaponClasses weaponClass = (WeaponClasses)i;
-                    tabHeaderList[i].Q<Label>().text = weaponClass.ToString();
-                    if (tabList?.ElementAtOrDefault(i) != null) tabList[i].name = weaponClass.ToString();
-                }
-                else
-                {
-                    Debug.LogError("Not enough weapon classes to match the tab headers.");
-                }
+                WeaponClasses weaponClass = weaponClasses[i];
+                tabHeaderList[i].Q<Label>().text = weaponClass.ToString();
+                if (tabList?.ElementAtOrDefault(i) != null)
+                    tabList[i].name = weaponClass.ToString();
             }
         }
 
@@ -314,8 +336,9 @@ namespace FortressForge.UI
             _trapezElement.Add(orientationButton);
 
             AddIconsToOrientationButtons(orientationButton);
+            RegisterOrientationButtonCallbacks(orientationButton);
         }
-        
+
         /// <summary>
         /// Adds icons to the orientation buttons by setting their text.
         /// </summary>
@@ -332,7 +355,40 @@ namespace FortressForge.UI
             arrowLeft.text = "\u2190"; // ←
             arrowRight.text = "\u2192"; // →
         }
-        
+
+        /// <summary>
+        /// Registers the callbacks for the orientation buttons.
+        /// </summary>
+        /// <param name="orientationButtons">The visual element containing the orientation buttons.</param>
+        private void RegisterOrientationButtonCallbacks(VisualElement orientationButtons)
+        {
+            RegisterHoldButton(orientationButtons.Q<Button>("arrow-up"),
+                () => WeaponBuildingManager.Instance.AdjustSelectedWeaponAngleStart(AxisDirection.Positive),
+                () => WeaponBuildingManager.Instance.AdjustSelectedWeaponAngleStop());
+            RegisterHoldButton(orientationButtons.Q<Button>("arrow-down"),
+                () => WeaponBuildingManager.Instance.AdjustSelectedWeaponAngleStart(AxisDirection.Negative),
+                () => WeaponBuildingManager.Instance.AdjustSelectedWeaponAngleStop());
+            RegisterHoldButton(orientationButtons.Q<Button>("arrow-left"),
+                () => WeaponBuildingManager.Instance.RotateSelectedWeaponStart(AxisDirection.Negative),
+                () => WeaponBuildingManager.Instance.RotateSelectedWeaponStop());
+            RegisterHoldButton(orientationButtons.Q<Button>("arrow-right"),
+                () => WeaponBuildingManager.Instance.RotateSelectedWeaponStart(AxisDirection.Positive),
+                () => WeaponBuildingManager.Instance.RotateSelectedWeaponStop());
+        }
+
+        /// <summary>
+        /// Registers a hold button callback for mouse down and mouse up events.
+        /// </summary>
+        /// <param name="button">The button to register the callback for.</param>
+        /// <param name="onDown">The action to invoke on mouse down.</param>
+        /// <param name="onUp">The action to invoke on mouse up.</param>
+        private void RegisterHoldButton(Button button, System.Action onDown, System.Action onUp)
+        {
+            if (button == null) return;
+            button.RegisterCallback<MouseDownEvent>(_ => onDown?.Invoke(), TrickleDown.TrickleDown);
+            button.RegisterCallback<MouseUpEvent>(_ => onUp?.Invoke(), TrickleDown.TrickleDown);
+        }
+
         /// <summary>
         /// Initializes the ammunition selector buttons by cloning the visual tree asset and adding it to the trapez element.
         /// </summary>
@@ -346,60 +402,78 @@ namespace FortressForge.UI
 
             VisualElement ammunitionButtons = AmmunitionSelectorButtonTree.CloneTree();
             _trapezElement.Add(ammunitionButtons);
-            
+
             AddIconsToAmmunitionSelectorButtons(ammunitionButtons);
+            RegisterFireButtonCallback(ammunitionButtons);
         }
 
+        /// <summary>
+        /// Adds icons to the ammunition selector buttons by setting their text.
+        /// </summary>
+        /// <param name="ammunitionButtons">The visual element containing the ammunition buttons.</param>
         private void AddIconsToAmmunitionSelectorButtons(VisualElement ammunitionButtons)
         {
             Button ammoType1Button = ammunitionButtons.Q<Button>("ammo-type-1");
             Button ammoType2Button = ammunitionButtons.Q<Button>("ammo-type-2");
             Button ammoType3Button = ammunitionButtons.Q<Button>("ammo-type-3");
             Button ammoType4Button = ammunitionButtons.Q<Button>("ammo-type-4");
-            
+
             Button fireButton = ammunitionButtons.Q<Button>("fire-button");
-            
+
             if (ammoType1Button == null || ammoType2Button == null || ammoType3Button == null || ammoType4Button == null || fireButton == null)
             {
                 Debug.LogError("Ammunition buttons not found.");
                 return;
             }
+
             ammoType1Button.iconImage = Background.FromTexture2D(AmmoType1Icon);
             ammoType2Button.iconImage = Background.FromTexture2D(AmmoType2Icon);
             ammoType3Button.iconImage = Background.FromTexture2D(AmmoType3Icon);
             ammoType4Button.iconImage = Background.FromTexture2D(AmmoType4Icon);
             fireButton.iconImage = Background.FromTexture2D(FireIcon);
-            
+
             Label ammoType1Label = ammunitionButtons.Q<Label>("ammo-typ-1-label");
             Label ammoType2Label = ammunitionButtons.Q<Label>("ammo-typ-2-label");
             Label ammoType3Label = ammunitionButtons.Q<Label>("ammo-typ-3-label");
             Label ammoType4Label = ammunitionButtons.Q<Label>("ammo-typ-4-label");
-            
+
             if (ammoType1Label == null || ammoType2Label == null || ammoType3Label == null || ammoType4Label == null)
             {
                 Debug.LogError("Ammunition labels not found.");
                 return;
             }
-            
+
             ammoType1Label.text = "Normal";
             ammoType2Label.text = "Fire";
             ammoType3Label.text = "EMP";
             ammoType4Label.text = "HE";
         }
 
-
-        // Todo: Remove this method in production
-        private void PopulateWeaponsListForDevelopment()
+        /// <summary>
+        /// Registers the callback for the fire button.
+        /// </summary>
+        /// <param name="ammunitionButtons">The visual element containing the ammunition buttons.</param>
+        private void RegisterFireButtonCallback(VisualElement ammunitionButtons)
         {
-            AddToWeaponBuildingsList(WeaponClasses.Artillery, "ArtilleryBuilding");
-            AddToWeaponBuildingsList(WeaponClasses.Artillery, "ArtilleryBuilding2");
-            AddToWeaponBuildingsList(WeaponClasses.Artillery, "ArtilleryBuilding3");
-            AddToWeaponBuildingsList(WeaponClasses.Rockets, "RocketLauncher");
-            AddToWeaponBuildingsList(WeaponClasses.Rockets, "RocketLauncher2");
-            AddToWeaponBuildingsList(WeaponClasses.Rockets, "RocketLauncher3");
-            AddToWeaponBuildingsList(WeaponClasses.Rockets, "RocketLauncher4");
-            AddToWeaponBuildingsList(WeaponClasses.Lasers, "LaserCannon");
-            AddToWeaponBuildingsList(WeaponClasses.Lasers, "LaserCannon2");
+            Button fireButton = ammunitionButtons.Q<Button>("fire-button");
+            if (fireButton != null)
+            {
+                fireButton.clicked += () => WeaponBuildingManager.Instance.FireSelectedWeaponBuilding();
+            }
+            else
+            {
+                Debug.LogError("Fire button not found.");
+            }
+        }
+
+        /// <summary>
+        /// Updates the weapon list from the placed buildings by clearing the existing lists and populating them with the current buildings.
+        /// </summary>
+        private void UpdateWeaponListFromPlacedBuildings()
+        {
+            _weaponLabels.Clear();
+            _weaponLabels = WeaponBuildingManager.Instance.GetAllWeaponBuildingLabels();
+            PopulateTabView();
         }
     }
 }
