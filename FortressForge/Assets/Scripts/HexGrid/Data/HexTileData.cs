@@ -6,22 +6,25 @@ using UnityEngine;
 namespace FortressForge.HexGrid.Data
 {
     /// <summary>
-    /// Represents the data for a hexagonal tile in the grid.
+    /// Data for a hex tile.
     /// </summary>
     public class HexTileData : ISelectableGameObjectData<HexTileData>
     {
+        /// <summary>Fired when tile data changes.</summary>
         public event Action<HexTileData> OnChanged;
+        /// <summary>Fired when hover state changes.</summary>
         public event Action<HexTileData> OnHoverChanged;
+        /// <summary>Fired on left mouse click.</summary>
         public event Action OnMouseLeftClick;
-        
+
         private bool _isMouseTarget;
-        // The following properties are used to determine the visual state of the tile.
-        private bool _isOccupied;        
+        private bool _isOccupied;
         private bool _isBuildTarget;
         private bool _isHighlighted;
         private bool _isOwned;
         private bool _isInvisible;
 
+        /// <summary>True if tile is occupied.</summary>
         public bool IsOccupied
         {
             get => _isOccupied;
@@ -35,6 +38,7 @@ namespace FortressForge.HexGrid.Data
             }
         }
 
+        /// <summary>True if tile is a build target.</summary>
         public bool IsBuildTarget
         {
             get => _isBuildTarget;
@@ -48,6 +52,7 @@ namespace FortressForge.HexGrid.Data
             }
         }
 
+        /// <summary>True if mouse is over tile.</summary>
         public bool IsMouseTarget
         {
             get => _isMouseTarget;
@@ -62,6 +67,7 @@ namespace FortressForge.HexGrid.Data
             }
         }
 
+        /// <summary>True if tile is owned.</summary>
         public bool IsOwned
         {
             get => _isOwned;
@@ -74,7 +80,8 @@ namespace FortressForge.HexGrid.Data
                 }
             }
         }
-        
+
+        /// <summary>True if tile is invisible.</summary>
         public bool IsInvisible
         {
             get => _isInvisible;
@@ -87,7 +94,8 @@ namespace FortressForge.HexGrid.Data
                 }
             }
         }
-        
+
+        /// <summary>True if tile is highlighted.</summary>
         public bool IsHighlighted
         {
             get => _isHighlighted;
@@ -100,9 +108,13 @@ namespace FortressForge.HexGrid.Data
                 }
             }
         }
-        
+
+        /// <summary>Tile coordinate.</summary>
         public HexTileCoordinate HexTileCoordinate { get; }
 
+        /// <summary>
+        /// Create new tile data.
+        /// </summary>
         public HexTileData(HexTileCoordinate hexTileCoordinate)
         {
             HexTileCoordinate = hexTileCoordinate;
@@ -110,6 +122,9 @@ namespace FortressForge.HexGrid.Data
             _isOwned = false;
         }
 
+        /// <summary>
+        /// Call on left mouse click.
+        /// </summary>
         public void TriggerMouseLeftClick() {
             OnMouseLeftClick?.Invoke();
         }

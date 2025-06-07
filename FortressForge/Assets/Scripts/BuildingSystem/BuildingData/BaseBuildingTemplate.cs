@@ -36,6 +36,9 @@ namespace FortressForge.BuildingSystem.BuildingData
         public List<RessourceTypeRate> BuildCosts = new();
         
         
+        /// <summary>
+        /// Initializes the resource change and build cost dictionaries when the object is enabled.
+        /// </summary>
         public void OnEnable()
         {
             ResourceRates
@@ -53,12 +56,19 @@ namespace FortressForge.BuildingSystem.BuildingData
                     _buildCost[g.Key] = g.Sum(x => x.Rate);
                 });
         }
-        
+
+        /// <summary>
+        /// Returns the net resource change for this building if it is enabled.
+        /// </summary>
+        /// <returns>A dictionary of resource types and their net change rates.</returns>
         public virtual Dictionary<ResourceType, float> GetNetResourceChange()
         {
             return _enabled ? _resourceChange : new Dictionary<ResourceType, float>();
         }
-        
+
+        /// <summary>
+        /// Disables the building and performs any necessary cleanup logic.
+        /// </summary>
         public virtual void Disable()
         {
             _enabled = false;
@@ -66,9 +76,13 @@ namespace FortressForge.BuildingSystem.BuildingData
             Debug.Log($"{Name} has been disabled.");
         }
 
+        /// <summary>
+        /// Returns the build cost for this building as a dictionary of resource types and amounts.
+        /// </summary>
+        /// <returns>A dictionary of resource types and their build costs.</returns>
         public virtual Dictionary<ResourceType, float> GetBuildCost()
         {
             return _buildCost;
-        } 
+        }
     }
 }

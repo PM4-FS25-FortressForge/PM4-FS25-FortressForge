@@ -19,30 +19,41 @@ using UnityEngine.UIElements;
 
 namespace FortressForge.GameInitialization
 {
+    /// <summary>
+    /// Handles the initialization of player-specific systems and grid views in a networked game session.
+    /// </summary>
     public class PlayerInitializationManager : NetworkBehaviour
     {
-        [Header("Game Start Configuration")] [SerializeField]
+        [Header("Game Start Configuration")]
+        [SerializeField]
         private GameStartConfiguration _gameStartConfiguration;
 
-        [SerializeField] private GameSessionStartConfiguration _gameSessionStartConfiguration;
+        [SerializeField]
+        private GameSessionStartConfiguration _gameSessionStartConfiguration;
 
+        /// <summary>
+        /// Called when the client starts. Begins initialization coroutine.
+        /// </summary>
         public override void OnStartClient()
         {
             // Initialize Client for each player so ObserverRpc can be used
             StartCoroutine(WaitForInitialization());
         }
 
+        /// <summary>
+        /// Called when the server starts. Initializes player and grid view for each player.
+        /// </summary>
         public override void OnStartServer()
         {
-            // Initialize Server for each player so ObserverRpc can be used. This gets called on each joining client on server side.
-            // This is a bit of a hack, for optimization but higher complexity you could differentiate between server and client more.
+            // Initialize Server for each player so ObserverRpc can be used.
+            // This is a bit of a hack; for optimization but higher complexity you could differentiate between server and client more.
             Init();
         }
 
         /// <summary>
-        /// Waits for the initialization of the HexGridManager and the AllGrids list.
+        /// Waits for the HexGridManager and its AllGrids list to be initialized before proceeding.
         /// </summary>
-        /// <returns>IEnumerator</returns>
+        /// <returns>Coroutine enumerator.</returns>
         private IEnumerator WaitForInitialization()
         {
             yield return new WaitUntil(() =>
