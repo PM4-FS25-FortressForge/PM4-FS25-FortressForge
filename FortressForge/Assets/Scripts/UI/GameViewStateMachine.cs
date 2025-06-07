@@ -66,32 +66,23 @@ namespace FortressForge.UI
         /// </summary>
         private void UpdateOverlay()
         {
+            if (BottomOverlayViewGenerator?.overlayUIDocument is null || FightSystemOverlayGenerator?.OverlayUIDocument is null)
+            {
+                Debug.LogWarning("Overlay UIDocuments are not set.");
+                return;
+            }
+
             switch (_currentState)
             {
                 default:
                 case GameOverlayState.BuildingOverlay:
-                    if (BottomOverlayViewGenerator is not null)
-                    {
-                        BottomOverlayViewGenerator.overlayUIDocument.rootVisualElement.style.display = DisplayStyle.Flex;
-                        FightSystemOverlayGenerator.OverlayUIDocument.rootVisualElement.style.display = DisplayStyle.None;
-                    }
-                    else
-                    {
-                        Debug.LogError("BuildingOverlayTree is not assigned.");
-                    }
-
+                    BottomOverlayViewGenerator.overlayUIDocument.rootVisualElement.style.display = DisplayStyle.Flex;
+                    FightSystemOverlayGenerator.OverlayUIDocument.rootVisualElement.style.display = DisplayStyle.None;
                     break;
 
                 case GameOverlayState.FightingSystemOverlay:
-                    if (FightSystemOverlayGenerator is not null)
-                    {
-                        FightSystemOverlayGenerator.OverlayUIDocument.rootVisualElement.style.display = DisplayStyle.Flex;
-                        BottomOverlayViewGenerator.overlayUIDocument.rootVisualElement.style.display = DisplayStyle.None;
-                    }
-                    else
-                    {
-                        Debug.LogError("FightingSystemOverlayTree is not assigned.");
-                    }
+                    FightSystemOverlayGenerator.OverlayUIDocument.rootVisualElement.style.display = DisplayStyle.Flex;
+                    BottomOverlayViewGenerator.overlayUIDocument.rootVisualElement.style.display = DisplayStyle.None;
 
                     break;
             }
