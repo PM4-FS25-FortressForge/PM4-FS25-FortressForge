@@ -55,8 +55,8 @@ namespace FortressForge.CameraControll
         [SerializeField] public float ButtonsZoomSpeed = 5f; // Zoom input with the Buttons is bigger to make the buttons more sensitive
         private float _targetZoom;  // Zoomtarget that will be reached by SmoothDamp
         private float _zoomVelocity; // SmoothDamp (used in HandleZoom methode) needs this velocity-Reference
-        private float _zoomSmoothTime = 0.2f; // the time it takes to reach the _targetZoom (bigger value more smooth but less accurate)
         private float _buildingSelectionZoom = 60f; // Default zoom level when moving to a building
+        private readonly float _zoomSmoothTime = 0.2f; // the time it takes to reach the _targetZoom (bigger value more smooth but less accurate)
         
         [FormerlySerializedAs("_config")]
         [Header("Game Start Configuration")]
@@ -79,7 +79,7 @@ namespace FortressForge.CameraControll
         private ITerrainHeightProvider _terrainHeightProvider;
         private float _targetHeight; // target terrain height that will be reached by SmoothDamp
         private float _heightVelocity; // Needed for SmoothDamp (in the UpdateCameraPosition methode)
-        private float _heightSmoothTime = 0.5f; // Higher = smoother but less accurate
+        private readonly float _heightSmoothTime = 0.5f; // Higher = smoother but less accurate
         
         private float _moveSpeedZoomSensitivity = 1f; // Zoom speed sensitivity for the WASD movement (from 0.4f, 3f, neutral is 1.0f)
         private float _pitchAndRollSpeedZoomSensitivity = 1f; // Zoom speed sensitivity for the pitch and roll movement (from 0.85f, 1.5f, neutral is 1.0f)
