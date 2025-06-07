@@ -27,7 +27,7 @@ public class Ammunition : NetworkBehaviour
     /// </summary>
     public void SetInitialVelocity(Vector3 velocity)
     {
-        _rb.velocity = velocity;
+        _rb.linearVelocity = velocity;
         SetVelocityClientRpc(velocity);
     }
 
@@ -35,7 +35,7 @@ public class Ammunition : NetworkBehaviour
     private void SetVelocityClientRpc(Vector3 velocity)
     {
         if (IsServer) return; 
-        _rb.velocity = velocity;
+        _rb.linearVelocity = velocity;
     }
     
     /// <summary>

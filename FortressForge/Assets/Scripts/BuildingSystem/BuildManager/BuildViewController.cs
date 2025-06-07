@@ -5,6 +5,7 @@ using System.Linq;
 using FishNet;
 using FishNet.Object;
 using FortressForge.BuildingSystem.BuildingData;
+using FortressForge.BuildingSystem.Weapons;
 using FortressForge.GameInitialization;
 using FortressForge.HexGrid;
 using FortressForge.HexGrid.Data;
