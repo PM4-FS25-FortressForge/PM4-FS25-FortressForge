@@ -169,7 +169,7 @@ namespace FortressForge.BuildingSystem.Weapons
             WeaponInputHandler selectedWeaponInputHandler = GetSelectedWeaponInputHandler();
             if (selectedWeaponInputHandler != null)
             {
-                selectedWeaponInputHandler.FireWeaponFromOverlay();
+                selectedWeaponInputHandler.FireWeapon();
             }
             else
             {
