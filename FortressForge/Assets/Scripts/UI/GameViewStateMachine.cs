@@ -1,4 +1,5 @@
 ﻿using System;
+using FortressForge.Enums;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -12,19 +13,13 @@ namespace FortressForge.UI
         public BottomOverlayViewGenerator BottomOverlayViewGenerator;
         public FightSystemOverlayGenerator FightSystemOverlayGenerator;
 
-        private GameState _currentState;
+        private GameOverlayState _currentState;
 
         public static event Action OnSpacePressed;
 
-        private enum GameState
-        {
-            BuildingOverlay,
-            FightingSystemOverlay
-        }
-
         private void OnEnable()
         {
-            _currentState = GameState.BuildingOverlay;
+            _currentState = GameOverlayState.BuildingOverlay;
 
             UpdateOverlay();
 
@@ -49,11 +44,20 @@ namespace FortressForge.UI
         /// </summary>
         private void ToggleOverlay()
         {
-            Debug.Log("Toggle overlay");
-            _currentState = _currentState == GameState.BuildingOverlay
-                ? GameState.FightingSystemOverlay
-                : GameState.BuildingOverlay;
+            _currentState = _currentState == GameOverlayState.BuildingOverlay
+                ? GameOverlayState.FightingSystemOverlay
+                : GameOverlayState.BuildingOverlay;
 
+            UpdateOverlay();
+        }
+
+        /// <summary>
+        /// Sets the overlay state to the specified state.
+        /// </summary>
+        /// <param name="state">The state to set.</param>
+        public void SetOverlayState(GameOverlayState state)
+        {
+            _currentState = state;
             UpdateOverlay();
         }
 
@@ -65,7 +69,7 @@ namespace FortressForge.UI
             switch (_currentState)
             {
                 default:
-                case GameState.BuildingOverlay:
+                case GameOverlayState.BuildingOverlay:
                     if (BottomOverlayViewGenerator is not null)
                     {
                         BottomOverlayViewGenerator.overlayUIDocument.rootVisualElement.style.display = DisplayStyle.Flex;
@@ -78,7 +82,7 @@ namespace FortressForge.UI
 
                     break;
 
-                case GameState.FightingSystemOverlay:
+                case GameOverlayState.FightingSystemOverlay:
                     if (FightSystemOverlayGenerator is not null)
                     {
                         FightSystemOverlayGenerator.OverlayUIDocument.rootVisualElement.style.display = DisplayStyle.Flex;
