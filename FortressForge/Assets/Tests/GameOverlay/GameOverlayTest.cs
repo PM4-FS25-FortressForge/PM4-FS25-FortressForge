@@ -15,7 +15,6 @@ namespace Tests.GameOverlay
     public class GameOverlayTest
     {
         private const string OVERLAY_SCENE_NAME = "GameOverlayTesting";
-        private GameObject _document;
         private VisualElement _root;
         private TabView _tabView;
 
