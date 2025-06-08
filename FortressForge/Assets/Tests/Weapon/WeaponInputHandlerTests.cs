@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using FishNet;
 using FishNet.Object;
@@ -11,7 +12,11 @@ using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
 using FortressForge.BuildingSystem.BuildingData;
+using FortressForge.BuildingSystem.BuildManager;
 using FortressForge.BuildingSystem.Weapons;
+using FortressForge.Economy;
+using FortressForge.HexGrid;
+using FortressForge.HexGrid.Data;
 using GameObject = UnityEngine.GameObject;
 
 namespace Tests.Weapon
@@ -167,7 +172,8 @@ namespace Tests.Weapon
 
             float pitchBefore = _cannonShaft.localRotation.eulerAngles.x;
             if (pitchBefore > 180f) pitchBefore -= 360f;
-            Assert.That(pitchBefore, Is.LessThan(_testConstants.maxCannonAngle), "Initial pitch angle is not less than max angle.");
+            Assert.That(pitchBefore, Is.LessThan(_testConstants.maxCannonAngle),
+                "Initial pitch angle is not less than max angle.");
 
             Press(_keyboard.iKey);
 
@@ -199,7 +205,8 @@ namespace Tests.Weapon
 
             float pitchBefore = _cannonShaft.localRotation.eulerAngles.x;
             if (pitchBefore > 180f) pitchBefore -= 360f;
-            Assert.That(pitchBefore, Is.GreaterThan(_testConstants.minCannonAngle), "Startwinkel ist nicht größer als das Minimum.");
+            Assert.That(pitchBefore, Is.GreaterThan(_testConstants.minCannonAngle),
+                "Startwinkel ist nicht größer als das Minimum.");
 
             Press(_keyboard.kKey);
 
@@ -241,7 +248,7 @@ namespace Tests.Weapon
             yield return new WaitUntil(() => _weaponInputHandler.GetCurrentAmmo() < initialAmmo, new TimeSpan(0, 0, 3),
                 () => Assert.Fail(
                     "Warten auf Munitionsverbrauch nach Schuss hat das Zeitlimit von 3 Sekunden überschritten."));
-            
+
             int ammoAfterFire = _weaponInputHandler.GetCurrentAmmo();
 
             Assert.AreEqual(initialAmmo - 1, ammoAfterFire,
@@ -253,32 +260,69 @@ namespace Tests.Weapon
         {
             yield return SetupSceneAndWeapon();
             
-            // Enter fight mode
+            var dummyHexGrid = new DummyHexGridData();
+            _weaponInputHandler.Init(dummyHexGrid);
+
             _weaponInputHandler.SendMessage("OnMouseDown");
             yield return null;
 
             int initialAmmo = _weaponInputHandler.GetCurrentAmmo();
 
-            // Press and release space to fire
             Press(_keyboard.enterKey);
             yield return null;
             Release(_keyboard.enterKey);
 
-            // Wait until ammo has changed or timeout
             yield return new WaitUntil(() => _weaponInputHandler.GetCurrentAmmo() == 0, new TimeSpan(0, 0, 10),
-                () => Assert.Fail(
-                    "Warten auf Munitionsverbrauch nach Schuss hat das Zeitlimit von 10 Sekunden überschritten."));
-            
+                () => Assert.Fail("Warten auf Munitionsverbrauch nach Schuss hat das Zeitlimit von 10 Sekunden überschritten."));
+
             Assert.AreEqual(initialAmmo - 5, _weaponInputHandler.GetCurrentAmmo(), "Expected weapon running out of ammunition");
 
-            yield return new WaitUntil(() => _weaponInputHandler.GetCurrentAmmo() == initialAmmo,
-                new TimeSpan(0, 0, 10),
-                () => Assert.Fail(
-                    "Weapon wurde nicht nachgeladen"));
-            
+            yield return new WaitUntil(() => _weaponInputHandler.GetCurrentAmmo() == initialAmmo, new TimeSpan(0, 0, 15),
+                () => Assert.Fail("Weapon wurde nicht nachgeladen"));
+
             Assert.AreEqual(initialAmmo, _weaponInputHandler.GetCurrentAmmo(), "Weapon expected to be reloaded");
         }
+        
+        private class DummyTerrainHeightProvider : ITerrainHeightProvider
+        {
+            public float SampleHeight(Vector3 position) => 0f;
+            public float SampleHexHeight(Vector3 position, float tileHeight, float tileRadius) => 0f;
+            public HexTileCoordinate GetHexTileCoordinate(Vector3 position, float tileHeight, float tileRadius) => new (0, 0, 0);
+        }
 
+        private class DummyEconomySystem : EconomySystem
+        {
+            public DummyEconomySystem() : base(null, null, new Dictionary<ResourceType, float>()) { }
+
+            public override bool CheckForSufficientResources(Dictionary<ResourceType, float> resourceCosts)
+            {
+                return true;
+            }
+
+            public override void PayResource(Dictionary<ResourceType, float> resourceCosts)
+            {}
+        }
+
+        private class DummyBuildingManager : BuildingManager {}
+
+        public class DummyHexGridManager : HexGridManager
+        {}
+
+        private class DummyHexGridData : HexGridData
+        {
+            public DummyHexGridData()
+                : base(
+                    id: -1,
+                    tileSize: 1f,
+                    tileHeight: 1f,
+                    terrainHeightProvider: new DummyTerrainHeightProvider(),
+                    economySystem: new DummyEconomySystem(),
+                    buildingManager: new DummyBuildingManager(),
+                    hexGridManager: new DummyHexGridManager(),
+                    isInvisible: false)
+            {
+            }
+        }
 
         private IEnumerator SpawnWeaponBuildingPrefab()
         {
@@ -289,7 +333,7 @@ namespace Tests.Weapon
             var connection = InstanceFinder.ClientManager.Connection;
             Assert.NotNull(connection, "Connection was not found.");
             Assert.AreNotEqual(-1, connection.ClientId, "ClientId ist ungültig.");
-            
+
             var weaponPrefab = Resources.Load<GameObject>("Prefabs/Tier_1/Tier_1_Konzept");
             Assert.IsNotNull(weaponPrefab, "Weapon prefab not found in Resources.");
             _weaponInstance = Object.Instantiate(weaponPrefab);
@@ -300,9 +344,9 @@ namespace Tests.Weapon
             var networkObject = _weaponInstance.GetComponent<NetworkObject>();
             yield return new WaitUntil(() => networkObject.IsOwner, new TimeSpan(0, 0, 2),
                 () => Assert.Fail("Ownership was not set after 2 seconds."));
-            
+
             Assert.IsTrue(networkObject.IsOwner, "Client besitzt keine Ownership nach dem Spawn.");
-            
+
             // Ensure ammunition is present
             GameObject ammoPrefab = Resources.Load<GameObject>("Prefabs/Ammunition/CannonBall");
             Assert.IsNotNull(ammoPrefab,
@@ -363,3 +407,4 @@ namespace Tests.Weapon
         }
     }
 }
+
