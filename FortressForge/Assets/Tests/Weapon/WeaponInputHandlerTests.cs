@@ -6,7 +6,6 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
-using FishNet;
 using Object = UnityEngine.Object;
 using FortressForge.BuildingSystem.BuildingData;
 using FortressForge.BuildingSystem.Weapons;
@@ -62,28 +61,7 @@ namespace Tests.Weapon
                 () => Assert.AreEqual(WEAPON_TESTS, SceneManager.GetActiveScene().name,
                     "Failed to load GameOverlay scene within the timeout period.")
             );
-
-            var networkManagerPrefab = Resources.Load<GameObject>("Prefabs/NetworkManager");
-            if (networkManagerPrefab != null)
-            {
-                var networkManagerInstance = Object.Instantiate(networkManagerPrefab);
-                networkManagerInstance.name = "TestNetworkManager";
-
-                yield return null;
-
-                if (!InstanceFinder.ServerManager.Started)
-                {
-                    InstanceFinder.ServerManager.StartConnection();
-                    yield return new WaitUntil(() => InstanceFinder.ServerManager.Started);
-                }
-
-                if (!InstanceFinder.ClientManager.Started)
-                {
-                    InstanceFinder.ClientManager.StartConnection();
-                    yield return new WaitUntil(() => InstanceFinder.ClientManager.Started);
-                }
-            }
-
+            
             SpawnWeaponBuildingPrefab();
             yield return null;
 
@@ -100,7 +78,8 @@ namespace Tests.Weapon
             //Setup
             yield return SetupSceneAndWeapon();
             _towerBase.localEulerAngles = Vector3.zero;
-            _weaponInputHandler.SendMessage("OnMouseDown"); // Enter fight mode to enable input actions
+            
+            _weaponInputHandler.OnMouseDown();
 
             // Rotate right
             Press(_keyboard.lKey);
@@ -125,7 +104,7 @@ namespace Tests.Weapon
             //Setup
             yield return SetupSceneAndWeapon();
             _towerBase.localEulerAngles = Vector3.zero;
-            _weaponInputHandler.SendMessage("OnMouseDown");
+            _weaponInputHandler.OnMouseDown();
 
             // rotate left
             Press(_keyboard.jKey);
@@ -147,7 +126,7 @@ namespace Tests.Weapon
 
             _cannonShaft.localEulerAngles =
                 new Vector3(_testConstants.minCannonAngle, 0, 0); // Start at maximum pitch angle
-            _weaponInputHandler.SendMessage("OnMouseDown"); // Enter fight mode to enable input actions
+            _weaponInputHandler.OnMouseDown();
             yield return null;
 
             //Adjust angle up (to max.)
@@ -170,7 +149,7 @@ namespace Tests.Weapon
 
             _cannonShaft.localEulerAngles =
                 new Vector3(_testConstants.maxCannonAngle, 0, 0); // Start at maximum pitch angle
-            _weaponInputHandler.SendMessage("OnMouseDown"); // Enter fight mode to enable input actions
+            _weaponInputHandler.OnMouseDown();
 
             //Adjust angle down (to min.)
             Press(_keyboard.kKey);
@@ -191,7 +170,7 @@ namespace Tests.Weapon
             yield return SetupSceneAndWeapon();
 
             // Enter fight mode
-            _weaponInputHandler.SendMessage("OnMouseDown");
+            _weaponInputHandler.OnMouseDown();
             yield return null;
 
             // Wait until CanFire returns true
