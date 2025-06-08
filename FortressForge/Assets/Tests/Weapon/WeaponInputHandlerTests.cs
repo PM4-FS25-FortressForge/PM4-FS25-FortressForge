@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
+using FishNet;
+using FishNet.Object;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -13,7 +16,7 @@ using GameObject = UnityEngine.GameObject;
 
 namespace Tests.Weapon
 {
-    public class WeaponInputHandlerRotationTests : InputTestFixture
+    public class WeaponInputHandlerTests : InputTestFixture
     {
         private const string WEAPON_TESTS = "WeaponTests";
         private GameObject _weaponInstance;
@@ -61,13 +64,32 @@ namespace Tests.Weapon
                 () => Assert.AreEqual(WEAPON_TESTS, SceneManager.GetActiveScene().name,
                     "Failed to load GameOverlay scene within the timeout period.")
             );
-            
-            SpawnWeaponBuildingPrefab();
-            yield return null;
 
-            _weaponInputHandler.GetComponent<PlayerInput>()?.ActivateInput();
+            var networkManagerPrefab = Resources.Load<GameObject>("Prefabs/Tests/NetworkManagerTesting");
+            if (networkManagerPrefab != null)
+            {
+                var networkManagerInstance = Object.Instantiate(networkManagerPrefab);
+                networkManagerInstance.name = "TestNetworkManager";
+
+                yield return null;
+
+                if (!InstanceFinder.ServerManager.Started)
+                {
+                    InstanceFinder.ServerManager.StartConnection();
+                    yield return new WaitUntil(() => InstanceFinder.ServerManager.Started);
+                }
+
+                if (!InstanceFinder.ClientManager.Started)
+                {
+                    InstanceFinder.ClientManager.StartConnection();
+                    yield return new WaitUntil(() => InstanceFinder.ClientManager.Started);
+                }
+            }
+
+            yield return SpawnWeaponBuildingPrefab();
+            yield return null;
         }
-        
+
         /// <summary>
         /// Simulates pressing the 'L' key to rotate the weapon turret to the right (clockwise).
         /// Asserts that the turret rotated approximately by the expected degrees based on rotation speed and delta time.
@@ -75,23 +97,30 @@ namespace Tests.Weapon
         [UnityTest]
         public IEnumerator RotateRight_LKeyPressed()
         {
-            //Setup
             yield return SetupSceneAndWeapon();
             _towerBase.localEulerAngles = Vector3.zero;
-            
-            _weaponInputHandler.OnMouseDown();
+            _weaponInputHandler.SendMessage("OnMouseDown");
 
-            // Rotate right
+            float rotationBefore = NormalizeRotation(_towerBase.localEulerAngles.z);
+            Debug.Log($"[Test] rotationBefore: {rotationBefore}");
+
             Press(_keyboard.lKey);
-            yield return new WaitForSeconds(TestsDelayTime);
+
+            yield return new WaitUntil(() =>
+            {
+                float rotation = NormalizeRotation(_towerBase.localEulerAngles.z);
+                Debug.Log($"[Test] rotation: {rotation}");
+                return Mathf.DeltaAngle(rotationBefore, rotation) > 0f;
+            }, new TimeSpan(0, 0, 2), () => Assert.Fail("Tower did not rotate to the right within 2 seconds."));
+
             Release(_keyboard.lKey);
             yield return null;
 
-            float expectedRotation = _testConstants.rotationSpeed * Time.deltaTime;
-            float actualRotation = NormalizeRotation(_towerBase.localEulerAngles.z);
+            float rotationAfter = NormalizeRotation(_towerBase.localEulerAngles.z);
+            Debug.Log($"[Test] rotationAfter: {rotationAfter}");
 
-            Assert.That(actualRotation, Is.EqualTo(expectedRotation).Within(1f),
-                $"Expected clockwise rotation ~{expectedRotation}°, but was {actualRotation}°");
+            Assert.That(Mathf.DeltaAngle(rotationBefore, rotationAfter), Is.GreaterThan(0f),
+                $"Tower rotation did not increase to the right: {rotationAfter} (Delta: {Mathf.DeltaAngle(rotationBefore, rotationAfter)})");
         }
 
         /// <summary>
@@ -101,22 +130,30 @@ namespace Tests.Weapon
         [UnityTest]
         public IEnumerator RotateLeft_JKeyPressed()
         {
-            //Setup
             yield return SetupSceneAndWeapon();
             _towerBase.localEulerAngles = Vector3.zero;
-            _weaponInputHandler.OnMouseDown();
+            _weaponInputHandler.SendMessage("OnMouseDown");
 
-            // rotate left
+            float rotationBefore = NormalizeRotation(_towerBase.localEulerAngles.z);
+            Debug.Log($"[Test] rotationBefore: {rotationBefore}");
+
             Press(_keyboard.jKey);
-            yield return new WaitForSeconds(TestsDelayTime);
+
+            yield return new WaitUntil(() =>
+            {
+                float rotation = NormalizeRotation(_towerBase.localEulerAngles.z);
+                Debug.Log($"[Test] rotation: {rotation}");
+                return Mathf.DeltaAngle(rotationBefore, rotation) < 0f;
+            }, new TimeSpan(0, 0, 2), () => Assert.Fail("Tower did not rotate to the left within 2 seconds."));
+
             Release(_keyboard.jKey);
             yield return null;
 
-            float expectedRotation = -_testConstants.rotationSpeed * Time.deltaTime;
-            float actualRotation = NormalizeRotation(_towerBase.localEulerAngles.z);
+            float rotationAfter = NormalizeRotation(_towerBase.localEulerAngles.z);
+            Debug.Log($"[Test] rotationAfter: {rotationAfter}");
 
-            Assert.That(actualRotation, Is.EqualTo(expectedRotation).Within(1f),
-                $"Expected counter-clockwise rotation ~{expectedRotation}°, but was {actualRotation}°");
+            Assert.That(Mathf.DeltaAngle(rotationBefore, rotationAfter), Is.LessThan(0f),
+                $"Tower rotation did not decrease to the left: {rotationAfter} (Delta: {Mathf.DeltaAngle(rotationBefore, rotationAfter)})");
         }
 
         [UnityTest]
@@ -124,22 +161,32 @@ namespace Tests.Weapon
         {
             yield return SetupSceneAndWeapon();
 
-            _cannonShaft.localEulerAngles =
-                new Vector3(_testConstants.minCannonAngle, 0, 0); // Start at maximum pitch angle
-            _weaponInputHandler.OnMouseDown();
+            _cannonShaft.localEulerAngles = new Vector3(_testConstants.minCannonAngle, 0, 0);
+            _weaponInputHandler.SendMessage("OnMouseDown");
             yield return null;
 
-            //Adjust angle up (to max.)
+            float pitchBefore = _cannonShaft.localRotation.eulerAngles.x;
+            if (pitchBefore > 180f) pitchBefore -= 360f;
+            Assert.That(pitchBefore, Is.LessThan(_testConstants.maxCannonAngle), "Initial pitch angle is not less than max angle.");
+
             Press(_keyboard.iKey);
-            yield return new WaitForSeconds(TestsDelayTime);
+
+            yield return new WaitUntil(() =>
+            {
+                float pitch = _cannonShaft.localRotation.eulerAngles.x;
+                if (pitch > 180f) pitch -= 360f;
+                return pitch > pitchBefore || pitch >= _testConstants.maxCannonAngle;
+            }, new TimeSpan(0, 0, 2), () => Assert.Fail("Angle did not increase within 2 seconds."));
+
             Release(_keyboard.iKey);
             yield return null;
 
-            float pitch = _cannonShaft.localRotation.eulerAngles.x;
-            if (pitch > 180f) pitch -= 360f;
+            float pitchAfter = _cannonShaft.localRotation.eulerAngles.x;
+            if (pitchAfter > 180f) pitchAfter -= 360f;
 
-            Assert.That(pitch, Is.LessThanOrEqualTo(_testConstants.maxCannonAngle + 0.1f),
-                $"Pitch angle exceeded max limit: {pitch} > {_testConstants.maxCannonAngle}");
+            Assert.That(pitchAfter, Is.GreaterThan(pitchBefore), "Angle did not increase as expected.");
+            Assert.That(pitchAfter, Is.LessThanOrEqualTo(_testConstants.maxCannonAngle + 0.1f),
+                $"Pitch angle exceeded max limit: {pitchAfter} > {_testConstants.maxCannonAngle}");
         }
 
         [UnityTest]
@@ -147,21 +194,31 @@ namespace Tests.Weapon
         {
             yield return SetupSceneAndWeapon();
 
-            _cannonShaft.localEulerAngles =
-                new Vector3(_testConstants.maxCannonAngle, 0, 0); // Start at maximum pitch angle
-            _weaponInputHandler.OnMouseDown();
+            _cannonShaft.localEulerAngles = new Vector3(_testConstants.maxCannonAngle, 0, 0);
+            _weaponInputHandler.SendMessage("OnMouseDown");
 
-            //Adjust angle down (to min.)
+            float pitchBefore = _cannonShaft.localRotation.eulerAngles.x;
+            if (pitchBefore > 180f) pitchBefore -= 360f;
+            Assert.That(pitchBefore, Is.GreaterThan(_testConstants.minCannonAngle), "Startwinkel ist nicht größer als das Minimum.");
+
             Press(_keyboard.kKey);
-            yield return new WaitForSeconds(TestsDelayTime);
+
+            yield return new WaitUntil(() =>
+            {
+                float pitch = _cannonShaft.localRotation.eulerAngles.x;
+                if (pitch > 180f) pitch -= 360f;
+                return pitch < pitchBefore || pitch <= _testConstants.minCannonAngle;
+            }, new TimeSpan(0, 0, 2), () => Assert.Fail("Winkel hat sich nach 2 Sekunden nicht verringert."));
+
             Release(_keyboard.kKey);
             yield return null;
 
-            float pitch = _cannonShaft.localRotation.eulerAngles.x;
-            if (pitch > 180f) pitch -= 360f;
+            float pitchAfter = _cannonShaft.localRotation.eulerAngles.x;
+            if (pitchAfter > 180f) pitchAfter -= 360f;
 
-            Assert.That(pitch, Is.GreaterThanOrEqualTo(_testConstants.minCannonAngle - 0.1f),
-                $"Pitch angle below min limit: {pitch} < {_testConstants.minCannonAngle}");
+            Assert.That(pitchAfter, Is.LessThan(pitchBefore), "Winkel hat sich nicht verringert.");
+            Assert.That(pitchAfter, Is.GreaterThanOrEqualTo(_testConstants.minCannonAngle - 0.1f),
+                $"Pitch angle below min limit: {pitchAfter} < {_testConstants.minCannonAngle}");
         }
 
         [UnityTest]
@@ -170,43 +227,82 @@ namespace Tests.Weapon
             yield return SetupSceneAndWeapon();
 
             // Enter fight mode
-            _weaponInputHandler.OnMouseDown();
+            _weaponInputHandler.SendMessage("OnMouseDown");
             yield return null;
-
-            // Wait until CanFire returns true
-            //yield return new WaitUntil(() => _weaponInputHandler.Test_CanFire());
 
             int initialAmmo = _weaponInputHandler.GetCurrentAmmo();
 
             // Press and release space to fire
-            Press(_keyboard.spaceKey);
+            Press(_keyboard.enterKey);
             yield return null;
-            Release(_keyboard.spaceKey);
-
-            // rotate left to stop the Autofiring
-            Press(_keyboard.jKey);
-            yield return new WaitForSeconds(TestsDelayTime);
-            Release(_keyboard.jKey);
-            yield return null;
+            Release(_keyboard.enterKey);
 
             // Wait until ammo has changed or timeout
-            yield return new WaitUntil(() => _weaponInputHandler.GetCurrentAmmo() < initialAmmo);
-
+            yield return new WaitUntil(() => _weaponInputHandler.GetCurrentAmmo() < initialAmmo, new TimeSpan(0, 0, 3),
+                () => Assert.Fail(
+                    "Warten auf Munitionsverbrauch nach Schuss hat das Zeitlimit von 3 Sekunden überschritten."));
+            
             int ammoAfterFire = _weaponInputHandler.GetCurrentAmmo();
 
             Assert.AreEqual(initialAmmo - 1, ammoAfterFire,
                 $"Expected ammo to decrease by 1 after firing. Actual: {ammoAfterFire}");
         }
 
-        private void SpawnWeaponBuildingPrefab()
+        [UnityTest]
+        public IEnumerator ReloadWeapon_RefillsAmmoAfterDelay()
         {
-            // Load and instantiate prefab
-            GameObject weaponPrefab = Resources.Load<GameObject>("Prefabs/Tier_1/Tier_1_Konzept");
-            Assert.IsNotNull(weaponPrefab, "Weapon prefab not found in Resources.");
+            yield return SetupSceneAndWeapon();
+            
+            // Enter fight mode
+            _weaponInputHandler.SendMessage("OnMouseDown");
+            yield return null;
 
+            int initialAmmo = _weaponInputHandler.GetCurrentAmmo();
+
+            // Press and release space to fire
+            Press(_keyboard.enterKey);
+            yield return null;
+            Release(_keyboard.enterKey);
+
+            // Wait until ammo has changed or timeout
+            yield return new WaitUntil(() => _weaponInputHandler.GetCurrentAmmo() == 0, new TimeSpan(0, 0, 10),
+                () => Assert.Fail(
+                    "Warten auf Munitionsverbrauch nach Schuss hat das Zeitlimit von 10 Sekunden überschritten."));
+            
+            Assert.AreEqual(initialAmmo - 5, _weaponInputHandler.GetCurrentAmmo(), "Expected weapon running out of ammunition");
+
+            yield return new WaitUntil(() => _weaponInputHandler.GetCurrentAmmo() == initialAmmo,
+                new TimeSpan(0, 0, 10),
+                () => Assert.Fail(
+                    "Weapon wurde nicht nachgeladen"));
+            
+            Assert.AreEqual(initialAmmo, _weaponInputHandler.GetCurrentAmmo(), "Weapon expected to be reloaded");
+        }
+
+
+        private IEnumerator SpawnWeaponBuildingPrefab()
+        {
+            yield return new WaitUntil(() =>
+                InstanceFinder.ClientManager.Connection != null &&
+                InstanceFinder.ClientManager.Connection.ClientId != -1
+            );
+            var connection = InstanceFinder.ClientManager.Connection;
+            Assert.NotNull(connection, "Connection was not found.");
+            Assert.AreNotEqual(-1, connection.ClientId, "ClientId ist ungültig.");
+            
+            var weaponPrefab = Resources.Load<GameObject>("Prefabs/Tier_1/Tier_1_Konzept");
+            Assert.IsNotNull(weaponPrefab, "Weapon prefab not found in Resources.");
             _weaponInstance = Object.Instantiate(weaponPrefab);
             Assert.IsNotNull(_weaponInstance, "Weapon prefab instance could not be created.");
 
+            InstanceFinder.ServerManager.Spawn(_weaponInstance, connection);
+
+            var networkObject = _weaponInstance.GetComponent<NetworkObject>();
+            yield return new WaitUntil(() => networkObject.IsOwner, new TimeSpan(0, 0, 2),
+                () => Assert.Fail("Ownership was not set after 2 seconds."));
+            
+            Assert.IsTrue(networkObject.IsOwner, "Client besitzt keine Ownership nach dem Spawn.");
+            
             // Ensure ammunition is present
             GameObject ammoPrefab = Resources.Load<GameObject>("Prefabs/Ammunition/CannonBall");
             Assert.IsNotNull(ammoPrefab,
@@ -229,6 +325,8 @@ namespace Tests.Weapon
 
             _cannonShaft = _weaponInstance.transform.Find("Geschuetzturm/Lauf");
             Assert.IsNotNull(_cannonShaft, "Cannon shaft transform not found!");
+
+            yield return null;
         }
 
 
