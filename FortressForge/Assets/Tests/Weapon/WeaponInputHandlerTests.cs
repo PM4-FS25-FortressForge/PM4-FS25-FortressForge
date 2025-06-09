@@ -46,29 +46,6 @@ namespace Tests.Weapon
         public override void Setup()
         {
             base.Setup();
-            // Ensure EventSystem exists and is properly set up for InputSystem interaction
-            EventSystem existingEventSystem = GameObject.FindObjectOfType<EventSystem>();
-            if (existingEventSystem == null)
-            {
-                Debug.Log("Creating EventSystem for tests.");
-                var eventSystemGO = new GameObject("EventSystem");
-                eventSystemGO.AddComponent<EventSystem>();
-                // Crucially, add the InputSystemUIInputModule for UI Toolkit interaction
-                // Or StandaloneInputModule if you are not exclusively using UI Toolkit
-                eventSystemGO.AddComponent<InputSystemUIInputModule>();
-                EventSystem.current = eventSystemGO.GetComponent<EventSystem>(); // Ensure it's the current one
-            }
-            else
-            {
-                // If an EventSystem already exists, ensure it has the correct input module
-                if (existingEventSystem.GetComponent<InputSystemUIInputModule>() == null &&
-                    existingEventSystem.GetComponent<StandaloneInputModule>() == null) // Check for both
-                {
-                    Debug.Log("Adding InputSystemUIInputModule to existing EventSystem.");
-                    existingEventSystem.gameObject.AddComponent<InputSystemUIInputModule>();
-                }
-                EventSystem.current = existingEventSystem; // Ensure it's the current one
-            }
 
             InputSystem.RegisterLayout<Keyboard>();
             InputSystem.AddDevice<Keyboard>();
@@ -266,9 +243,9 @@ namespace Tests.Weapon
             int initialAmmo = _weaponInputHandler.GetCurrentAmmo();
 
             // Press and release space to fire
-            Press(_keyboard.enterKey);
+            Press(_keyboard.kKey);
             yield return null;
-            Release(_keyboard.enterKey);
+            Release(_keyboard.kKey);
 
             // Wait until ammo has changed or timeout
             yield return new WaitUntil(() => _weaponInputHandler.GetCurrentAmmo() < initialAmmo, new TimeSpan(0, 0, 3),
@@ -294,9 +271,9 @@ namespace Tests.Weapon
 
             int initialAmmo = _weaponInputHandler.GetCurrentAmmo();
 
-            Press(_keyboard.enterKey);
+            Press(_keyboard.kKey);
             yield return null;
-            Release(_keyboard.enterKey);
+            Release(_keyboard.kKey);
 
             yield return new WaitUntil(() => _weaponInputHandler.GetCurrentAmmo() == 0, new TimeSpan(0, 0, 10),
                 () => Assert.Fail("Waiting for ammunition consumption after firing exceeded the time limit of 10 seconds."));
