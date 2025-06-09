@@ -18,6 +18,7 @@ using FortressForge.Economy;
 using FortressForge.HexGrid;
 using FortressForge.HexGrid.Data;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem.UI;
 using GameObject = UnityEngine.GameObject;
 
 namespace Tests.Weapon
@@ -45,10 +46,28 @@ namespace Tests.Weapon
         public override void Setup()
         {
             base.Setup();
-            if (GameObject.FindObjectOfType<EventSystem>() == null)
+            // Ensure EventSystem exists and is properly set up for InputSystem interaction
+            EventSystem existingEventSystem = GameObject.FindObjectOfType<EventSystem>();
+            if (existingEventSystem == null)
             {
-                var eventSystem = new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
-                Debug.Log("Created EventSystem for tests.");
+                Debug.Log("Creating EventSystem for tests.");
+                var eventSystemGO = new GameObject("EventSystem");
+                eventSystemGO.AddComponent<EventSystem>();
+                // Crucially, add the InputSystemUIInputModule for UI Toolkit interaction
+                // Or StandaloneInputModule if you are not exclusively using UI Toolkit
+                eventSystemGO.AddComponent<InputSystemUIInputModule>();
+                EventSystem.current = eventSystemGO.GetComponent<EventSystem>(); // Ensure it's the current one
+            }
+            else
+            {
+                // If an EventSystem already exists, ensure it has the correct input module
+                if (existingEventSystem.GetComponent<InputSystemUIInputModule>() == null &&
+                    existingEventSystem.GetComponent<StandaloneInputModule>() == null) // Check for both
+                {
+                    Debug.Log("Adding InputSystemUIInputModule to existing EventSystem.");
+                    existingEventSystem.gameObject.AddComponent<InputSystemUIInputModule>();
+                }
+                EventSystem.current = existingEventSystem; // Ensure it's the current one
             }
 
             InputSystem.RegisterLayout<Keyboard>();
