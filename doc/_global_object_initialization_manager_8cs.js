@@ -1,4 +1,0 @@
-var _global_object_initialization_manager_8cs =
-[
-    [ "FortressForge.GameInitialization.GlobalObjectInitializationManager", "class_fortress_forge_1_1_game_initialization_1_1_global_object_initialization_manager.html", "class_fortress_forge_1_1_game_initialization_1_1_global_object_initialization_manager" ]
-];
