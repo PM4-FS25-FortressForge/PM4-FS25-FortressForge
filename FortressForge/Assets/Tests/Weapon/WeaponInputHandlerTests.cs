@@ -243,9 +243,9 @@ namespace Tests.Weapon
             int initialAmmo = _weaponInputHandler.GetCurrentAmmo();
 
             // Press and release space to fire
-            Press(_keyboard.kKey);
+            Press(_keyboard.pKey);
             yield return null;
-            Release(_keyboard.kKey);
+            Release(_keyboard.pKey);
 
             // Wait until ammo has changed or timeout
             yield return new WaitUntil(() => _weaponInputHandler.GetCurrentAmmo() < initialAmmo, new TimeSpan(0, 0, 3),
@@ -271,9 +271,9 @@ namespace Tests.Weapon
 
             int initialAmmo = _weaponInputHandler.GetCurrentAmmo();
 
-            Press(_keyboard.kKey);
+            Press(_keyboard.pKey);
             yield return null;
-            Release(_keyboard.kKey);
+            Release(_keyboard.pKey);
 
             yield return new WaitUntil(() => _weaponInputHandler.GetCurrentAmmo() == 0, new TimeSpan(0, 0, 10),
                 () => Assert.Fail("Waiting for ammunition consumption after firing exceeded the time limit of 10 seconds."));

@@ -209,7 +209,7 @@ public partial class @WeaponInputAction: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""3ac79c99-b45d-4f88-8a62-81303297844d"",
-                    ""path"": ""<Keyboard>/enter"",
+                    ""path"": ""<Keyboard>/p"",
                     ""interactions"": ""Press"",
                     ""processors"": """",
                     ""groups"": """",
