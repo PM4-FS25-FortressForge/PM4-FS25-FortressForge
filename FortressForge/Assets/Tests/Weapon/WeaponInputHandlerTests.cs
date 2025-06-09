@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using FishNet;
 using FishNet.Object;
@@ -17,8 +16,6 @@ using FortressForge.BuildingSystem.Weapons;
 using FortressForge.Economy;
 using FortressForge.HexGrid;
 using FortressForge.HexGrid.Data;
-using UnityEngine.EventSystems;
-using UnityEngine.InputSystem.UI;
 using GameObject = UnityEngine.GameObject;
 
 namespace Tests.Weapon
