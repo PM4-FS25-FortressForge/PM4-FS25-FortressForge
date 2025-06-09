@@ -1,0 +1,7 @@
+var namespace_fortress_forge_1_1_building_system_1_1_building_data =
+[
+    [ "BaseBuildingTemplate", "class_fortress_forge_1_1_building_system_1_1_building_data_1_1_base_building_template.html", "class_fortress_forge_1_1_building_system_1_1_building_data_1_1_base_building_template" ],
+    [ "CoreBuildingTemplate", "class_fortress_forge_1_1_building_system_1_1_building_data_1_1_core_building_template.html", "class_fortress_forge_1_1_building_system_1_1_building_data_1_1_core_building_template" ],
+    [ "FactoryBuildingTemplate", "class_fortress_forge_1_1_building_system_1_1_building_data_1_1_factory_building_template.html", "class_fortress_forge_1_1_building_system_1_1_building_data_1_1_factory_building_template" ],
+    [ "WeaponBuildingTemplate", "class_fortress_forge_1_1_building_system_1_1_building_data_1_1_weapon_building_template.html", "class_fortress_forge_1_1_building_system_1_1_building_data_1_1_weapon_building_template" ]
+];

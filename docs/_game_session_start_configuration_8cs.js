@@ -1,0 +1,5 @@
+var _game_session_start_configuration_8cs =
+[
+    [ "FortressForge.GameInitialization.GameSessionStartConfiguration", "class_fortress_forge_1_1_game_initialization_1_1_game_session_start_configuration.html", "class_fortress_forge_1_1_game_initialization_1_1_game_session_start_configuration" ],
+    [ "FortressForge.GameInitialization.GameSessionStartConfiguration.GridPlayerIdPair", "class_fortress_forge_1_1_game_initialization_1_1_game_session_start_configuration_1_1_grid_player_id_pair.html", "class_fortress_forge_1_1_game_initialization_1_1_game_session_start_configuration_1_1_grid_player_id_pair" ]
+];

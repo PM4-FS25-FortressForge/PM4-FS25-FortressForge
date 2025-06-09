@@ -1,0 +1,4 @@
+var searchData=
+[
+  ['look_20at_20the_20centred_20target_0',['The Camera will Orbit around a centred target (0.0.0 coordinates at beginning) and always look at the centred target',['../class_fortress_forge_1_1_camera_controll_1_1_camera_controller.html#the-camera-will-orbit-around-a-centred-target-000-coordinates-at-beginning-and-always-look-at-the-centred-target',1,'']]]
+];
