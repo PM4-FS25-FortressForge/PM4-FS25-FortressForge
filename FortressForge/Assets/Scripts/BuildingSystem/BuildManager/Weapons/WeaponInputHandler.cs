@@ -141,7 +141,7 @@ namespace FortressForge.BuildingSystem.Weapons
         /// Called when the weapon prefab is clicked with the mouse.
         /// Enters fight mode and enables input handling.
         /// </summary>
-        public void OnMouseDown()
+        void OnMouseDown()
         {
             WeaponBuildingManager.Instance.InvokeSelectedWeaponBuilding(this);
             SelectWeapon();
