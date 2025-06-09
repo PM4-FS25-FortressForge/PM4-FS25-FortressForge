@@ -27,6 +27,7 @@ Fortress Forge is a strategy game where players build, manage resources, and com
 - [Testing Concept](#testing-concept)
 - [Change Log](#change-log)
 - [Development](#development)
+- [Codeing Guidelines](#code-guidelines)
 - [License](#license)
 
 ---
@@ -117,6 +118,9 @@ A user story is broken down into tasks by the developer(s). Each task is worked 
 * **Sprint Retrospective**: At the end of the sprint, a Sprint Retrospective meeting is held where the team discusses what went well, what didn’t go well, and what can be improved.
 
 ---
+
+## Coding Guidelines
+[Guidelines](Unity Code-Richtlinien für Fortress Forge.md)
 
 ## License
 
