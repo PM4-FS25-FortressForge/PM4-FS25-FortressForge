@@ -74,6 +74,23 @@ For detailed information on the testing strategy and test cases, please refer to
 
 ---
 
+## Change Log
+
+## Change Log (Auszug der wichtigsten Pull Requests)
+
+- 07.06.2025: Weapon Controlls
+- 27.05.2025: Magma Resource
+- 20.05.2025: Lobby to GameView to Lobby connection
+- 16.04.2025: Game Initializer
+- 12.04.2025: Multi Block Build
+- 03.04.2025: Building System
+- 31.03.2025: Economy Logic
+- 24.03.2025: Hexgrid
+- 20.03.2025: GitHub Actions, SonarQube
+- 20.03.2025: Camera Implementation
+
+---
+
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
