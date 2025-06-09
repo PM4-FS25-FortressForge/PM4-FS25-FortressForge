@@ -76,8 +76,6 @@ For detailed information on the testing strategy and test cases, please refer to
 
 ## Change Log
 
-## Change Log (Auszug der wichtigsten Pull Requests)
-
 - 07.06.2025: Weapon Controlls
 - 27.05.2025: Magma Resource
 - 20.05.2025: Lobby to GameView to Lobby connection
