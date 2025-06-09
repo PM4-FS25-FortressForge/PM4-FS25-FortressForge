@@ -93,32 +93,6 @@ Alles Skripte werden in den `Assets/Scripts/Subfolder` Ordner gespeichert.
 │           └── ViewManager.cs
 ```
 
-## Branching Regeln
-- **Branches**: Jedes Task sollte in einem eigenen Branch entwickelt werden
-- **Branch-Namen**: Der Branch-Name sollte aus dem Task-Titel bestehen
-- **Wichtig**: Vor dem Branch-Namen noch ein `Feature/` oder `Bug/` oder `Documentation/` -prefix hinzufügen (z.B. `Feature/Task-Title`)
-
-## Scrum Regeln und Beschreibungen
-
-### Scum Beschreibung
-Was ist Scrum?
-- Scrum ist ein agiles Framework, das Teams dabei hilft, komplexe Probleme zu lösen, indem es sich auf die kontinuierliche Verbesserung konzentriert, indem es auf die Prinzipien von Transparenz, Inspektion und Anpassung setzt.
-
-
-### Aufgaben Aufbau
-- **User Story**: Eine User Story ist eine kurze Beschreibung einer Funktion, die aus der Sicht des Benutzers geschrieben ist. Sie beschreibt, was der Benutzer tun kann und warum.
-    - **Akzeptanzkriterien**: Die Akzeptanzkriterien sind die Bedingungen, die erfüllt sein müssen, damit die User Story als abgeschlossen betrachtet wird.
-- **Task**: Ein Task ist eine Aufgabe, die erledigt werden muss, um die User Story zu vervollständigen.
-
-Eine User Story wird durch den/die Entwickler in Tasks aufgeteilt. Jeder Task wird von einem Entwickler bearbeitet und sobald der Task abgeschlossen ist, wird er in den `main` Branch gemerged. (Auch wenn dabei die User Story noch nicht vollständig abgeschlossen ist)
-
-### Sprint
-- **Dauer**: 2 Wochen
-- **Sprint Planning**: Am Anfang des Sprints wird ein Sprint Planning Meeting abgehalten, in dem die User Stories ausgewählt werden, die in diesem Sprint bearbeitet werden sollen.
-- **Daily Standup**: Mehrmals in der Woche wird ein Standup Meeting abgehalten, in dem jeder Entwickler sagt, was er am die letzten Tage gemacht hat, was er heute machen wird und ob es irgendwelche Probleme gibt.
-- **Sprint Review**: Am Ende des Sprints wird ein Sprint Review Meeting abgehalten, in dem die User Stories, die abgeschlossen wurden, präsentiert werden.
-- **Sprint Retrospective**: Am Ende des Sprints wird ein Sprint Retrospective Meeting abgehalten, in dem das Team darüber spricht, was gut gelaufen ist, was nicht gut gelaufen ist und was verbessert werden kann.
-
 
 ## Quelle
 - [Unity Code Styles](https://unity.com/how-to/naming-and-code-style-tips-c-scripting-unity)
