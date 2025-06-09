@@ -91,7 +91,7 @@ namespace FortressForge.Economy
         /// </summary>
         /// <param name="resourceCosts">The resource amount.</param>
         /// <returns>True if there are sufficient resources.</returns>
-        public bool CheckForSufficientResources(Dictionary<ResourceType, float> resourceCosts)
+        public virtual bool CheckForSufficientResources(Dictionary<ResourceType, float> resourceCosts)
         {
             if (resourceCosts.Any(resource => 
                     _currentResources[resource.Key].CurrentAmount < resource.Value))
@@ -103,7 +103,7 @@ namespace FortressForge.Economy
         /// Deducts specified resources from the current resources. Will not check if there are sufficient resources. Use CheckForSufficientResources first.
         /// </summary>
         /// <param name="resourceCosts">The resource amount.</param>
-        public void PayResource(Dictionary<ResourceType, float> resourceCosts)
+        public virtual void PayResource(Dictionary<ResourceType, float> resourceCosts)
         {
             foreach (var resource in resourceCosts)
             {

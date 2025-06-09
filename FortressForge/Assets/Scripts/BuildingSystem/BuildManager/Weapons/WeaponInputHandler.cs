@@ -459,5 +459,10 @@ namespace FortressForge.BuildingSystem.Weapons
         {
             _angleInput = 0f;
         }
+
+        public int GetCurrentAmmo()
+        {
+            return _currentAmmo;
+        }
     }
 }

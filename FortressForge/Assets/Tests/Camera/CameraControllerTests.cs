@@ -68,6 +68,10 @@ namespace Tests.Camera
             Assert.NotNull(_mouse, "Error: Mouse device not found.");
         }
 
+        /// <summary>
+        /// Loads the test scene and sets up the main camera and camera controller.
+        /// </summary>
+        /// <returns>IEnumerator</returns>
         private IEnumerator SetupCustom()
         {
             SceneManager.LoadScene(TEST_SCENE);
@@ -86,6 +90,9 @@ namespace Tests.Camera
             _cameraController.Config = ScriptableObject.CreateInstance<GameStartConfiguration>();
         }
 
+        /// <summary>
+        /// Sets the initial values for the camera controller before each test.
+        /// </summary>
         private void SetInitialCameraValuesForEachTest()
         {
             // Setting initial values in CameraController
@@ -409,8 +416,12 @@ namespace Tests.Camera
             return result;
         }
 
-        private string
-            PrintFailedTestMsg(Vector3 newCalculatedPosition) // Helper function to print the failed test message including the expected and actual camera position
+        /// <summary>
+        /// Helper function to print the failed test message including the expected and actual camera position
+        /// </summary>
+        /// <param name="newCalculatedPosition"> The expected camera position after the input</param>
+        /// <returns> A string containing the expected and actual camera position</returns>
+        private string PrintFailedTestMsg(Vector3 newCalculatedPosition) // Helper function to print the failed test message including the expected and actual camera position
         {
             return $"\n\nExpected: {newCalculatedPosition} \nbut got: {_mainCamera.transform.position}";
         }
