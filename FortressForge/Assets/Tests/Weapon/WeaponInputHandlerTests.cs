@@ -17,6 +17,7 @@ using FortressForge.BuildingSystem.Weapons;
 using FortressForge.Economy;
 using FortressForge.HexGrid;
 using FortressForge.HexGrid.Data;
+using UnityEngine.EventSystems;
 using GameObject = UnityEngine.GameObject;
 
 namespace Tests.Weapon
@@ -44,6 +45,12 @@ namespace Tests.Weapon
         public override void Setup()
         {
             base.Setup();
+            if (GameObject.FindObjectOfType<EventSystem>() == null)
+            {
+                var eventSystem = new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
+                Debug.Log("Created EventSystem for tests.");
+            }
+
             InputSystem.RegisterLayout<Keyboard>();
             InputSystem.AddDevice<Keyboard>();
             Assert.That(InputSystem.devices, Has.Exactly(1).TypeOf<Keyboard>());
