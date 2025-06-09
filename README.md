@@ -1,128 +1,81 @@
 # PM4-FS25-FortressForge
 
-# C# /Unity Code-Richtlinien für Fortress Forge
+Fortress Forge is a strategy game where players build, manage resources, and compete on hex-based maps. The project is developed in C# using Unity, with a modular codebase and clear coding guidelines.
 
-## Namenskonventionen
-- **Klassen**: PascalCase
-- **Klassen Variablen**:
-    - **Öffentliche Variablen**: PascalCase
-    - **Private Variablen**: camelCase mit Unterstrich am Anfang
-    - **Konstanten**: UPPERCASE_WITH_UNDERSCORES
-- **Methoden**: PascalCase
-    - **Lokale Variablen**: camelCase
-    - **Parameter**: camelCase
+![Game Screenshot](img.png)
 
-- **Interfaces**: IPascalCase (INameDesInterfaces)
-- **Abstrakte Klassen**: PascalCase
-- **Namespaces**: PascalCase
-- **Enums**: PascalCase
+---
 
-## Namespaces
-Jedes Skript sollte in einem Namespace sein. Der Name setzt sich aus `FortressForge.SubFolder.SubSubFolder` zusammen. Für die Namenskonventionen der Subfolder wird *PascalCase* verwendet.
-- **Beispiel**: `namespace FortressForge.Camera`
-- **Beispiel**: `namespace FortressForge.Network`
+## Team Members 🧑‍💻
 
+- Esposito Diego
+- Geisser Fabio
+- Hofer Levin
+- Kryeziu Leona
+- Wyss Julien
+- Zürcher Patrick
 
-## Case-Erklärung mit Beispielen
-- **PascalCase**: Jedes Wort beginnt mit einem Großbuchstaben, keine Leerzeichen
-    - **Beispiel**: `ThisIsPascalCase`
-- **camelCase**: Das erste Wort beginnt mit einem Kleinbuchstaben, jedes weitere Wort beginnt mit einem Großbuchstaben, keine Leerzeichen
-    - **Beispiel**: `thisIsCamelCase`
-- **camelCase mit Unterstrich am Anfang**: Das erste Wort beginnt mit einem Kleinbuchstaben, jedes weitere Wort beginnt mit einem Großbuchstaben, keine Leerzeichen, Unterstrich am Anfang
-    - **Beispiel**: `_thisIsCamelCaseWithUnderscore`
-- **UPPERCASE_WITH_UNDERSCORES**: Alle Buchstaben sind Großbuchstaben, Wörter sind durch Unterstriche getrennt
-    - **Beispiel**: `THIS_IS_UPPERCASE_WITH_UNDERSCORES`
+---
 
-### Beispiel-Klasse
-```csharp
-namespace ExampleNamespace
-{
-    public class ExampleClass : IExampleInterface
-    {
-        private int _exampleVariable;
-        public int ExampleVariable { get; set; }
+## Table of Contents
 
-        public const int EXAMPLE_CONSTANT = 0;
+- [Key Features](#key-features)
+- [How to Start Development](#how-to-start-development)
+    - [Prerequisites](#prerequisites)
+    - [Clone the Repository](#clone-the-repository)
+    - [Open with Unity](#open-with-unity)
+- [Testing Concept](#testing-concept)
+- [License](#license)
 
-        public void ExampleMethod(int exampleParameter)
-        {
-            int exampleLocalVariable = 0;
-        }
-    }
-}
-```
-## Code-Struktur
-- **Klammern**: Klammerung auf neuer Zeile
- - **Beispiel**:
-    ```csharp
-    public void Method()
-    {
-        // Code
-    }
-    ```
+---
 
-- **Kommentare**: 
-    - **Sprache**: Englisch
-    - **Methoden/Klassen Dokumentation**: XML-Dokumentation
-        - **Beispiel**:
-        ```csharp
-        /// <summary>
-        /// This is a summary of the method.
-        /// </summary>
-        /// <param name="param1">This is the first parameter.</param>
-        /// <param name="param2">This is the second parameter.</param>
-        /// <returns>This method returns a string.</returns>
-        public string Method(int param1, int param2)
-        {
-            // Code
-        }
-        ```
+## Key Features
 
-## Ordnerstruktur
-Alles Skripte werden in den `Assets/Scripts/Subfolder` Ordner gespeichert.
-### Beispiel
-```
-├── Assets/
-│   └── Scripts/
-│       ├── Camera/
-│       │   ├── CameraController.cs
-│       │   └── CameraMovement.cs
-│       ├── RessourceManager/
-│       │   └── RessourceManager.cs
-│       ├── Network/
-│       │   └── NetworkManager.cs
-│       └── UIMenu/
-│           └── ViewManager.cs
-```
+- **Game Initialization**: Host can select available buildings, technologies, and the map.
+- **HexGrid System**: Each player has one or more HexGrids.
+- **Team Support**: Teams are supported in the backend.
+- **Resource Management**: Buildings affect resources over time.
+- **Modular Building System**: Easily add new buildings and technologies.
 
-## Branching Regeln
-- **Branches**: Jedes Task sollte in einem eigenen Branch entwickelt werden
-- **Branch-Namen**: Der Branch-Name sollte aus dem Task-Titel bestehen
-- **Wichtig**: Vor dem Branch-Namen noch ein `Feature/` oder `Bug/` oder `Documentation/` -prefix hinzufügen (z.B. `Feature/Task-Title`)
+---
 
-## Scrum Regeln und Beschreibungen
+## How to Start Development
 
-### Scum Beschreibung
-Was ist Scrum?
-- Scrum ist ein agiles Framework, das Teams dabei hilft, komplexe Probleme zu lösen, indem es sich auf die kontinuierliche Verbesserung konzentriert, indem es auf die Prinzipien von Transparenz, Inspektion und Anpassung setzt.
+Follow these steps to get up and running with the project.
+
+### Prerequisites
+
+•⁠  ⁠*Unity Editor*: [Download Unity Hub](https://unity.com/download) and install the correct Unity version:
+- 🔧 *Version:* ⁠ Unity 6000.0.37f1 ⁠
+  •⁠  ⁠(Optional) *Rider* or any C# IDE with Unity support
 
 
-### Aufgaben Aufbau
-- **User Story**: Eine User Story ist eine kurze Beschreibung einer Funktion, die aus der Sicht des Benutzers geschrieben ist. Sie beschreibt, was der Benutzer tun kann und warum.
-    - **Akzeptanzkriterien**: Die Akzeptanzkriterien sind die Bedingungen, die erfüllt sein müssen, damit die User Story als abgeschlossen betrachtet wird.
-- **Task**: Ein Task ist eine Aufgabe, die erledigt werden muss, um die User Story zu vervollständigen.
+###  Clone the Repository
 
-Eine User Story wird durch den/die Entwickler in Tasks aufgeteilt. Jeder Task wird von einem Entwickler bearbeitet und sobald der Task abgeschlossen ist, wird er in den `main` Branch gemerged. (Auch wenn dabei die User Story noch nicht vollständig abgeschlossen ist)
+⁠ bash
+git clone https://github.com/PM4-FS25-FortressForge/PM4-FS25-FortressForge.git
+ ⁠
 
-### Sprint
-- **Dauer**: 2 Wochen
-- **Sprint Planning**: Am Anfang des Sprints wird ein Sprint Planning Meeting abgehalten, in dem die User Stories ausgewählt werden, die in diesem Sprint bearbeitet werden sollen.
-- **Daily Standup**: Mehrmals in der Woche wird ein Standup Meeting abgehalten, in dem jeder Entwickler sagt, was er am die letzten Tage gemacht hat, was er heute machen wird und ob es irgendwelche Probleme gibt.
-- **Sprint Review**: Am Ende des Sprints wird ein Sprint Review Meeting abgehalten, in dem die User Stories, die abgeschlossen wurden, präsentiert werden.
-- **Sprint Retrospective**: Am Ende des Sprints wird ein Sprint Retrospective Meeting abgehalten, in dem das Team darüber spricht, was gut gelaufen ist, was nicht gut gelaufen ist und was verbessert werden kann.
+### Open with Unity
 
+•⁠  ⁠Open Unity Hub
+- Navigate to Add -> Add project from disk
+- Navigate to your clones Repository
+- *Important:* Make sure to select the ⁠ FortressForge/ ⁠ subfolder (not the root of the repository)
+    - This is the actual Unity project folder
 
-## Quelle
-- [Unity Code Styles](https://unity.com/how-to/naming-and-code-style-tips-c-scripting-unity)
-- [Microsoft C# Documentation Comments](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/language-specification/documentation-comments)
+Now you can start your installation with Unity.
+
+---
+
+## Testing Concept
+
+For detailed information on the testing strategy and test cases, please refer to the testing concept documentation.
+
+---
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+
 
