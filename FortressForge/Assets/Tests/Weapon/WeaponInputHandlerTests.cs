@@ -206,7 +206,7 @@ namespace Tests.Weapon
             float pitchBefore = _cannonShaft.localRotation.eulerAngles.x;
             if (pitchBefore > 180f) pitchBefore -= 360f;
             Assert.That(pitchBefore, Is.GreaterThan(_testConstants.minCannonAngle),
-                "Startwinkel ist nicht größer als das Minimum.");
+                "Starting angle is not greater than the minimum.");
 
             Press(_keyboard.kKey);
 
@@ -215,7 +215,7 @@ namespace Tests.Weapon
                 float pitch = _cannonShaft.localRotation.eulerAngles.x;
                 if (pitch > 180f) pitch -= 360f;
                 return pitch < pitchBefore || pitch <= _testConstants.minCannonAngle;
-            }, new TimeSpan(0, 0, 2), () => Assert.Fail("Winkel hat sich nach 2 Sekunden nicht verringert."));
+            }, new TimeSpan(0, 0, 2), () => Assert.Fail("Angle did not decrease after 2 seconds."));
 
             Release(_keyboard.kKey);
             yield return null;
@@ -223,7 +223,7 @@ namespace Tests.Weapon
             float pitchAfter = _cannonShaft.localRotation.eulerAngles.x;
             if (pitchAfter > 180f) pitchAfter -= 360f;
 
-            Assert.That(pitchAfter, Is.LessThan(pitchBefore), "Winkel hat sich nicht verringert.");
+            Assert.That(pitchAfter, Is.LessThan(pitchBefore), "Angle did not decrease.");
             Assert.That(pitchAfter, Is.GreaterThanOrEqualTo(_testConstants.minCannonAngle - 0.1f),
                 $"Pitch angle below min limit: {pitchAfter} < {_testConstants.minCannonAngle}");
         }
@@ -247,7 +247,7 @@ namespace Tests.Weapon
             // Wait until ammo has changed or timeout
             yield return new WaitUntil(() => _weaponInputHandler.GetCurrentAmmo() < initialAmmo, new TimeSpan(0, 0, 3),
                 () => Assert.Fail(
-                    "Warten auf Munitionsverbrauch nach Schuss hat das Zeitlimit von 3 Sekunden überschritten."));
+                    "Waiting for ammo consumption after firing exceeded the 3-second time limit."));
 
             int ammoAfterFire = _weaponInputHandler.GetCurrentAmmo();
 
@@ -273,16 +273,19 @@ namespace Tests.Weapon
             Release(_keyboard.enterKey);
 
             yield return new WaitUntil(() => _weaponInputHandler.GetCurrentAmmo() == 0, new TimeSpan(0, 0, 10),
-                () => Assert.Fail("Warten auf Munitionsverbrauch nach Schuss hat das Zeitlimit von 10 Sekunden überschritten."));
+                () => Assert.Fail("Waiting for ammunition consumption after firing exceeded the time limit of 10 seconds."));
 
-            Assert.AreEqual(initialAmmo - 5, _weaponInputHandler.GetCurrentAmmo(), "Expected weapon running out of ammunition");
+            Assert.AreEqual(initialAmmo - 5, _weaponInputHandler.GetCurrentAmmo(), "Expected the weapon to run out of ammunition.");
 
             yield return new WaitUntil(() => _weaponInputHandler.GetCurrentAmmo() == initialAmmo, new TimeSpan(0, 0, 15),
-                () => Assert.Fail("Weapon wurde nicht nachgeladen"));
+                () => Assert.Fail("Weapon was not reloaded."));
 
             Assert.AreEqual(initialAmmo, _weaponInputHandler.GetCurrentAmmo(), "Weapon expected to be reloaded");
         }
         
+        /// <summary>
+        /// Dummy terrain height provider for testing purposes. Always returns 0 height.
+        /// </summary>
         private class DummyTerrainHeightProvider : ITerrainHeightProvider
         {
             public float SampleHeight(Vector3 position) => 0f;
@@ -290,6 +293,9 @@ namespace Tests.Weapon
             public HexTileCoordinate GetHexTileCoordinate(Vector3 position, float tileHeight, float tileRadius) => new (0, 0, 0);
         }
 
+        /// <summary>
+        /// Dummy implementation of the EconomySystem that always has enough resources and does not perform payments.
+        /// </summary>
         private class DummyEconomySystem : EconomySystem
         {
             public DummyEconomySystem() : base(null, null, new Dictionary<ResourceType, float>()) { }
@@ -303,11 +309,20 @@ namespace Tests.Weapon
             {}
         }
 
+        /// <summary>
+        /// Dummy building manager used as a placeholder for tests.
+        /// </summary>
         private class DummyBuildingManager : BuildingManager {}
 
+        /// <summary>
+        /// Dummy hex grid manager used as a placeholder for tests.
+        /// </summary>
         public class DummyHexGridManager : HexGridManager
         {}
 
+        /// <summary>
+        /// Dummy implementation of HexGridData used to initialize weapon systems without needing full grid logic.
+        /// </summary>
         private class DummyHexGridData : HexGridData
         {
             public DummyHexGridData()
@@ -324,6 +339,9 @@ namespace Tests.Weapon
             }
         }
 
+        /// <summary>
+        /// Spawns the weapon prefab, assigns it network ownership, and initializes internal references for testing.
+        /// </summary>
         private IEnumerator SpawnWeaponBuildingPrefab()
         {
             yield return new WaitUntil(() =>
@@ -373,7 +391,11 @@ namespace Tests.Weapon
             yield return null;
         }
 
-
+        /// <summary>
+        /// Retrieves the WeaponBuildingTemplate constants from a WeaponInputHandler instance using reflection.
+        /// </summary>
+        /// <param name="handler">The WeaponInputHandler instance attached to the prefab.</param>
+        /// <returns>The WeaponBuildingTemplate used by the weapon.</returns>
         private WeaponBuildingTemplate GetWeaponConstantsFromPrefabInstance(WeaponInputHandler handler)
         {
             // Use reflection to get the private field _constants from WeaponInputHandler
