@@ -26,6 +26,7 @@ Fortress Forge is a strategy game where players build, manage resources, and com
     - [Open with Unity](#open-with-unity)
 - [Testing Concept](#testing-concept)
 - [Change Log](#change-log)
+- [Development](#development)
 - [License](#license)
 
 ---
@@ -87,6 +88,33 @@ For detailed information on the testing strategy and test cases, please refer to
 - 24.03.2025: Hexgrid
 - 20.03.2025: GitHub Actions, SonarQube
 - 20.03.2025: Camera Implementation
+
+---
+
+## Development
+
+### Scrum Rules and Descriptions
+
+What is Scrum?
+
+* Scrum is an agile framework that helps teams solve complex problems by focusing on continuous improvement, based on the principles of transparency, inspection, and adaptation.
+
+### Task Structure
+
+* **User Story**: A user story is a short description of a feature written from the user's perspective. It describes what the user can do and why.
+
+  * **Acceptance Criteria**: The acceptance criteria are the conditions that must be met for the user story to be considered complete.
+* **Task**: A task is a piece of work that needs to be done to complete the user story.
+
+A user story is broken down into tasks by the developer(s). Each task is worked on by a single developer and is merged into the `main` branch once completed (even if the user story as a whole is not yet finished).
+
+### Sprint
+
+* **Duration**: 2 weeks
+* **Sprint Planning**: At the beginning of the sprint, a Sprint Planning meeting is held where the user stories to be worked on during the sprint are selected.
+* **Daily Standup**: Several times a week, a standup meeting is held where each developer shares what they worked on recently, what they will work on today, and if there are any blockers.
+* **Sprint Review**: At the end of the sprint, a Sprint Review meeting is held to present the completed user stories.
+* **Sprint Retrospective**: At the end of the sprint, a Sprint Retrospective meeting is held where the team discusses what went well, what didn’t go well, and what can be improved.
 
 ---
 
