@@ -28,6 +28,7 @@ Fortress Forge is a strategy game where players build, manage resources, and com
 - [Change Log](#change-log)
 - [Development](#development)
 - [Codeing Guidelines](#code-guidelines)
+- [Project Wiki](#project-wiki)
 - [License](#license)
 
 ---
@@ -120,7 +121,17 @@ A user story is broken down into tasks by the developer(s). Each task is worked 
 ---
 
 ## Coding Guidelines
+
+Please follow our coding guidelines to ensure code quality and consistency across the project.  
 [Guidelines](CodingGuidelines.md)
+
+---
+
+## Project Wiki
+
+For detailed documentation, guides, and additional resources, visit the [Project Wiki](https://pm4-fs25-fortressforge.github.io/PM4-FS25-FortressForge/).
+
+---
 
 ## License
 
