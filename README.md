@@ -120,7 +120,7 @@ A user story is broken down into tasks by the developer(s). Each task is worked 
 ---
 
 ## Coding Guidelines
-[Guidelines](Unity Code-Richtlinien für Fortress Forge.md)
+[Guidelines](CodingGuidelines.md)
 
 ## License
 
