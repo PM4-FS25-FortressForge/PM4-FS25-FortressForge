@@ -86,7 +86,7 @@ This coverage report shows which parts of the codebase are covered by automated 
 Next step would be to continuously improve this metric to ensure better test reliability and robustness.
 
 
-**Note:** Some portions of the codebase are automatically generated or stem from Unity’s internal systems. These are not manually modified or tested, which may lower the overall coverage percentage.
+#### Note: Some portions of the codebase are automatically generated or stem from Unity’s internal systems. These are not manually modified or tested, which may lower the overall coverage percentage.
 ---
 
 ## Change Log
