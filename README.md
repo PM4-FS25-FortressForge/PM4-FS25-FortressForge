@@ -24,6 +24,9 @@ Fortress Forge is a strategy game where players build, manage resources, and com
     - [Prerequisites](#prerequisites)
     - [Clone the Repository](#clone-the-repository)
     - [Open with Unity](#open-with-unity)
+- [Testing & Quality Metrics](#testing-and-quality-metrics)
+    - [Static Code Analysis](#static-code-analysis)
+    - [Code Coverage](#code-coverage)
 - [Testing Concept](#testing-concept)
 - [Change Log](#change-log)
 - [Development](#development)
@@ -87,6 +90,12 @@ Next step would be to continuously improve this metric to ensure better test rel
 
 
 #### Note: Some portions of the codebase are automatically generated or stem from Unity’s internal systems. These are not manually modified or tested, which may lower the overall coverage percentage.
+
+---
+
+## Testing Concept
+For detailed information on the testing strategy and test cases, please refer to the testing concept documentation.
+
 ---
 
 ## Change Log
