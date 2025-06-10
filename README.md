@@ -2,7 +2,10 @@
 
 Fortress Forge is a strategy game where players build, manage resources, and compete on hex-based maps. The project is developed in C# using Unity, with a modular codebase and clear coding guidelines.
 
-![Game Screenshot](img.png)
+Game Screenshots:
+
+![Fortress](ProjectDocumentationFiles/Readme Pictures/Picture Fortress 1.png)
+![Canons](ProjectDocumentationFiles/Readme Pictures/Picture Canons.png)
 
 ---
 
@@ -106,7 +109,7 @@ We use Sonarqube to perform static code analysis. It checks for code quality and
 ## Code Coverage
 Test coverage is currently at **54%**, as shown below:
 
-![Code Coverage Report](ProjectDocumentationFiles/CodeCoverage.png)
+![Code Coverage Report](ProjectDocumentationFiles/Readme Pictures/CodeCoverage.png)
 
 This coverage report shows which parts of the codebase are covered by automated tests. 
 Next step would be to continuously improve this metric to ensure better test reliability and robustness.
