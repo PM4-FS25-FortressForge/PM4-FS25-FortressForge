@@ -72,10 +72,21 @@ Now you can start your installation with Unity.
 
 ---
 
-## Testing Concept
+## Testing & Quality Metrics
 
-For detailed information on the testing strategy and test cases, please refer to the testing concept documentation.
+### Static Code Analysis
+We use Sonarqube to perform static code analysis. It checks for code quality, complexity, and style issues. Reports are available in [location or CI logs, or tool dashboard].
 
+### Code Coverage
+Test coverage is currently at **54%**, as shown below:
+
+![Code Coverage Report](CodeCoverage.png)
+
+This coverage report shows which parts of the codebase are covered by automated tests. 
+Next step would be to continuously improve this metric to ensure better test reliability and robustness.
+
+
+**Note:** Some portions of the codebase are automatically generated or stem from Unity’s internal systems. These are not manually modified or tested, which may lower the overall coverage percentage.
 ---
 
 ## Change Log
