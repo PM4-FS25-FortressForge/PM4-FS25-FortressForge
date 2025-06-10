@@ -80,7 +80,7 @@ For detailed information on the testing strategy and test cases, please refer to
 
 ## Change Log
 
-- 07.06.2025: Weapon Controlls
+- 07.06.2025: Weapon Controls
 - 27.05.2025: Magma Resource
 - 20.05.2025: Lobby to GameView to Lobby connection
 - 16.04.2025: Game Initializer
