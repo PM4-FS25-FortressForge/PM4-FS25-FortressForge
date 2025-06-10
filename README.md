@@ -74,27 +74,42 @@ git clone https://github.com/PM4-FS25-FortressForge/PM4-FS25-FortressForge.git
 Now you can start your installation with Unity.
 
 ---
+## Testing Concept
 
-## Testing & Quality Metrics
+## Overview
 
-### Static Code Analysis
+The goal of this testing concept is to ensure a bug-free and user-friendly experience in **FortressForge**. To achieve this, we use a combination of **automated** and **manual** testing methods, prioritizing key areas that impact the overall functionality of the game.
+
+### Testing Approach
+
+Due to the complexity introduced by **Unity** and **FishNet**, we do **not aim for 100% test coverage**. Instead, we take a pragmatic approach based on the following considerations:
+
+### Why We Don't Aim for Full Coverage
+
+- **Covered by Frameworks**: Many lower-level behaviors are already handled by Unity or FishNet.
+- **High Complexity**: Some areas are too complex to test given the project's timeframe and learning curve.
+- **Difficult to Automate**: Features like multiplayer synchronization across multiple clients and servers are not easily automatable with our current resources.
+- **Obvious Failures**: Some critical errors would be immediately noticeable during normal gameplay (e.g., core startup issues).
+
+### What We Prioritize
+
+- **Automated Tests**: Where feasible, we use automated testing to cover reusable logic and to assist in future refactoring.
+- **Manual Testing**: Complex or highly integrated systems (e.g., UI behavior, performance, multiplayer sync) are tested manually through active gameplay.
+
+### Summary
+
+We believe this balanced testing strategy ensures stability and playability without overwhelming the team with unrealistic testing demands. As the game's logic evolves, our testing depth and coverage will grow accordingly.
+
+## Static Code Analysis
 We use Sonarqube to perform static code analysis. It checks for code quality and style issues. Reports are available in [location or CI logs, or tool dashboard].
 
-### Code Coverage
+## Code Coverage
 Test coverage is currently at **54%**, as shown below:
 
 ![Code Coverage Report](CodeCoverage.png)
 
 This coverage report shows which parts of the codebase are covered by automated tests. 
 Next step would be to continuously improve this metric to ensure better test reliability and robustness.
-
-
-#### Note: Some portions of the codebase are automatically generated or stem from Unity’s internal systems. These are not manually modified or tested, which may lower the overall coverage percentage.
-
----
-
-## Testing Concept
-For detailed information on the testing strategy and test cases, please refer to the testing concept documentation.
 
 ---
 
