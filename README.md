@@ -27,7 +27,7 @@ Fortress Forge is a strategy game where players build, manage resources, and com
 - [Testing Concept](#testing-concept)
 - [Change Log](#change-log)
 - [Development](#development)
-- [Codeing Guidelines](#code-guidelines)
+- [Coding Guidelines](#code-guidelines)
 - [Project Wiki](#project-wiki)
 - [License](#license)
 
