@@ -75,7 +75,7 @@ Now you can start your installation with Unity.
 ## Testing & Quality Metrics
 
 ### Static Code Analysis
-We use Sonarqube to perform static code analysis. It checks for code quality, complexity, and style issues. Reports are available in [location or CI logs, or tool dashboard].
+We use Sonarqube to perform static code analysis. It checks for code quality and style issues. Reports are available in [location or CI logs, or tool dashboard].
 
 ### Code Coverage
 Test coverage is currently at **54%**, as shown below:
