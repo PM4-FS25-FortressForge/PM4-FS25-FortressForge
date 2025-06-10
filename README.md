@@ -106,10 +106,13 @@ We use Sonarqube to perform static code analysis. It checks for code quality and
 ## Code Coverage
 Test coverage is currently at **54%**, as shown below:
 
-![Code Coverage Report](CodeCoverage.png)
+![Code Coverage Report](ProjectDocumentationFiles/CodeCoverage.png)
 
 This coverage report shows which parts of the codebase are covered by automated tests. 
 Next step would be to continuously improve this metric to ensure better test reliability and robustness.
+
+## Detailed Testing concept
+See [Test Konzept FortressForge](ProjectDocumentationFiles/Test Konzept FortressForge.docx) for a detailed description of our testing concept.
 
 ---
 
