@@ -4,12 +4,12 @@ Fortress Forge is a strategy game where players build, manage resources, and com
 
 Game Screenshots:
 
-![Fortress](ProjectDocumentationFiles/Readme Pictures/Picture Fortress 1.png)
-![Canons](ProjectDocumentationFiles/Readme Pictures/Picture Canons.png)
+![Fortress](/ProjectDocumentationFiles/Readme%20Pictures/Picture%20Fortress%201.png)
+![Canons](ProjectDocumentationFiles/Readme%20Pictures/Picture%20Canons.png)
 
 Game Trailer & Gameplay:
 
-[![Fortress Forge Trailer](ProjectDocumentationFiles/Readme Pictures/Trailer Video Thumbnail.png)](https://youtu.be/FKWZydHwMPI)
+[![Fortress Forge Trailer](/ProjectDocumentationFiles/Readme%20Pictures/Trailer%20Video%20Thumbnail.png)](https://youtu.be/FKWZydHwMPI)
 (Link: https://www.youtube.com/watch?v=FKWZydHwMPI)
 ---
 
@@ -113,13 +113,13 @@ We use Sonarqube to perform static code analysis. It checks for code quality and
 ## Code Coverage
 Test coverage is currently at **54%**, as shown below:
 
-![Code Coverage Report](ProjectDocumentationFiles/Readme Pictures/CodeCoverage.png)
+![Code Coverage Report](/ProjectDocumentationFiles/Readme%20Pictures/CodeCoverage.png)
 
 This coverage report shows which parts of the codebase are covered by automated tests. 
 Next step would be to continuously improve this metric to ensure better test reliability and robustness.
 
 ## Detailed Testing concept
-See [Test Konzept FortressForge](ProjectDocumentationFiles/Test Konzept FortressForge.docx) for a detailed description of our testing concept.
+See [Test Konzept FortressForge](ProjectDocumentationFiles/Test%20Konzept%20FortressForge.docx) for a detailed description of our testing concept.
 
 ---
 
