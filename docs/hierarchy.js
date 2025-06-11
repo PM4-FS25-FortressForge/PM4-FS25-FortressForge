@@ -67,9 +67,9 @@ var hierarchy =
       [ "FortressForge.UI.TopOverlayViewGenerator", "class_fortress_forge_1_1_u_i_1_1_top_overlay_view_generator.html", null ]
     ] ],
     [ "NetworkBehaviour", null, [
-      [ "Ammunition", "class_ammunition.html", null ],
-      [ "BuildingHealthStateTracker", "class_building_health_state_tracker.html", null ],
       [ "FortressForge.BuildingSystem.BuildManager.BuildViewController", "class_fortress_forge_1_1_building_system_1_1_build_manager_1_1_build_view_controller.html", null ],
+      [ "FortressForge.BuildingSystem.BuildManager.Weapons.Ammunitions.Ammunition", "class_fortress_forge_1_1_building_system_1_1_build_manager_1_1_weapons_1_1_ammunitions_1_1_ammunition.html", null ],
+      [ "FortressForge.BuildingSystem.BuildingHealth.BuildingHealthStateTracker", "class_fortress_forge_1_1_building_system_1_1_building_health_1_1_building_health_state_tracker.html", null ],
       [ "FortressForge.BuildingSystem.Weapons.WeaponInputHandler", "class_fortress_forge_1_1_building_system_1_1_weapons_1_1_weapon_input_handler.html", null ],
       [ "FortressForge.GameInitialization.PlayerInitializationManager", "class_fortress_forge_1_1_game_initialization_1_1_player_initialization_manager.html", null ],
       [ "FortressForge.Network.GameRoomSynchronisation", "class_fortress_forge_1_1_network_1_1_game_room_synchronisation.html", null ],

@@ -8,7 +8,15 @@ var annotated_dup =
           [ "FactoryBuildingTemplate", "class_fortress_forge_1_1_building_system_1_1_building_data_1_1_factory_building_template.html", "class_fortress_forge_1_1_building_system_1_1_building_data_1_1_factory_building_template" ],
           [ "WeaponBuildingTemplate", "class_fortress_forge_1_1_building_system_1_1_building_data_1_1_weapon_building_template.html", "class_fortress_forge_1_1_building_system_1_1_building_data_1_1_weapon_building_template" ]
         ] ],
+        [ "BuildingHealth", "namespace_fortress_forge_1_1_building_system_1_1_building_health.html", [
+          [ "BuildingHealthStateTracker", "class_fortress_forge_1_1_building_system_1_1_building_health_1_1_building_health_state_tracker.html", "class_fortress_forge_1_1_building_system_1_1_building_health_1_1_building_health_state_tracker" ]
+        ] ],
         [ "BuildManager", "namespace_fortress_forge_1_1_building_system_1_1_build_manager.html", [
+          [ "Weapons", "namespace_fortress_forge_1_1_building_system_1_1_build_manager_1_1_weapons.html", [
+            [ "Ammunitions", "namespace_fortress_forge_1_1_building_system_1_1_build_manager_1_1_weapons_1_1_ammunitions.html", [
+              [ "Ammunition", "class_fortress_forge_1_1_building_system_1_1_build_manager_1_1_weapons_1_1_ammunitions_1_1_ammunition.html", "class_fortress_forge_1_1_building_system_1_1_build_manager_1_1_weapons_1_1_ammunitions_1_1_ammunition" ]
+            ] ]
+          ] ],
           [ "BuildingData", "class_fortress_forge_1_1_building_system_1_1_build_manager_1_1_building_data.html", "class_fortress_forge_1_1_building_system_1_1_build_manager_1_1_building_data" ],
           [ "BuildingManager", "class_fortress_forge_1_1_building_system_1_1_build_manager_1_1_building_manager.html", "class_fortress_forge_1_1_building_system_1_1_build_manager_1_1_building_manager" ],
           [ "BuildingView", "class_fortress_forge_1_1_building_system_1_1_build_manager_1_1_building_view.html", null ],
@@ -96,8 +104,6 @@ var annotated_dup =
         [ "UIClickChecker", "class_fortress_forge_1_1_u_i_1_1_u_i_click_checker.html", "class_fortress_forge_1_1_u_i_1_1_u_i_click_checker" ]
       ] ]
     ] ],
-    [ "Ammunition", "class_ammunition.html", "class_ammunition" ],
     [ "BuildActions", "class_build_actions.html", "class_build_actions" ],
-    [ "BuildingHealthStateTracker", "class_building_health_state_tracker.html", "class_building_health_state_tracker" ],
     [ "WeaponInputAction", "class_weapon_input_action.html", "class_weapon_input_action" ]
 ];

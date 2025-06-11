@@ -8,6 +8,6 @@ var searchData=
   ['addstyleforclasslist_5',['AddStyleForClassList',['../class_fortress_forge_1_1_u_i_1_1_custom_visual_elements_1_1_fillable_ressource_container.html#a6e999b8640f547f58349e0d65f19f137',1,'FortressForge::UI::CustomVisualElements::FillableRessourceContainer']]],
   ['adjustselectedweaponanglestart_6',['AdjustSelectedWeaponAngleStart',['../class_fortress_forge_1_1_building_system_1_1_weapons_1_1_weapon_building_manager.html#a25117375c6b03a5ea071fdfa193a16de',1,'FortressForge::BuildingSystem::Weapons::WeaponBuildingManager']]],
   ['adjustselectedweaponanglestop_7',['AdjustSelectedWeaponAngleStop',['../class_fortress_forge_1_1_building_system_1_1_weapons_1_1_weapon_building_manager.html#a448ed36359a30e70e434f1c2b1e9369a',1,'FortressForge::BuildingSystem::Weapons::WeaponBuildingManager']]],
-  ['applydamage_8',['ApplyDamage',['../class_building_health_state_tracker.html#a3d3c40b720912e7abd0852bd85e04c08',1,'BuildingHealthStateTracker']]],
+  ['applydamage_8',['ApplyDamage',['../class_fortress_forge_1_1_building_system_1_1_building_health_1_1_building_health_state_tracker.html#a8d3706545d78c2f960c7369c12d2ff75',1,'FortressForge::BuildingSystem::BuildingHealth::BuildingHealthStateTracker']]],
   ['awake_9',['Awake',['../class_fortress_forge_1_1_game_initialization_1_1_global_object_initialization_manager.html#a6713ba09bdd02f65f15dac3b770437f5',1,'FortressForge::GameInitialization::GlobalObjectInitializationManager']]]
 ];

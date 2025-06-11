@@ -1,0 +1,4 @@
+var namespace_fortress_forge_1_1_building_system_1_1_building_health =
+[
+    [ "BuildingHealthStateTracker", "class_fortress_forge_1_1_building_system_1_1_building_health_1_1_building_health_state_tracker.html", "class_fortress_forge_1_1_building_system_1_1_building_health_1_1_building_health_state_tracker" ]
+];
