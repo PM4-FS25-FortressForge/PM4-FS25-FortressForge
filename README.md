@@ -60,15 +60,16 @@ Follow these steps to get up and running with the project.
 ### Prerequisites
 
 •⁠  ⁠*Unity Editor*: [Download Unity Hub](https://unity.com/download) and install the correct Unity version:
-- 🔧 *Version:* ⁠ Unity 6000.0.37f1 ⁠
+- *Version:* ⁠ Unity 6000.0.37f1 ⁠
   •⁠  ⁠(Optional) *Rider* or any C# IDE with Unity support
 
 
 ###  Clone the Repository
 
-⁠ bash
+
+```bash
 git clone https://github.com/PM4-FS25-FortressForge/PM4-FS25-FortressForge.git
- ⁠
+```
 
 ### Open with Unity
 
