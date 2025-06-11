@@ -1,128 +1,185 @@
 # PM4-FS25-FortressForge
 
-# C# /Unity Code-Richtlinien für Fortress Forge
+Fortress Forge is a strategy game where players build, manage resources, and compete on hex-based maps. The project is developed in C# using Unity, with a modular codebase and clear coding guidelines.
 
-## Namenskonventionen
-- **Klassen**: PascalCase
-- **Klassen Variablen**:
-    - **Öffentliche Variablen**: PascalCase
-    - **Private Variablen**: camelCase mit Unterstrich am Anfang
-    - **Konstanten**: UPPERCASE_WITH_UNDERSCORES
-- **Methoden**: PascalCase
-    - **Lokale Variablen**: camelCase
-    - **Parameter**: camelCase
+Game Screenshots:
 
-- **Interfaces**: IPascalCase (INameDesInterfaces)
-- **Abstrakte Klassen**: PascalCase
-- **Namespaces**: PascalCase
-- **Enums**: PascalCase
+![Fortress](/ProjectDocumentationFiles/Readme%20Pictures/Picture%20Fortress%201.png)
+![Canons](ProjectDocumentationFiles/Readme%20Pictures/Picture%20Canons.png)
 
-## Namespaces
-Jedes Skript sollte in einem Namespace sein. Der Name setzt sich aus `FortressForge.SubFolder.SubSubFolder` zusammen. Für die Namenskonventionen der Subfolder wird *PascalCase* verwendet.
-- **Beispiel**: `namespace FortressForge.Camera`
-- **Beispiel**: `namespace FortressForge.Network`
+Game Trailer & Gameplay:
 
+[![Fortress Forge Trailer](/ProjectDocumentationFiles/Readme%20Pictures/Trailer%20Video%20Thumbnail.png)](https://youtu.be/FKWZydHwMPI)
+(Link: https://www.youtube.com/watch?v=FKWZydHwMPI)
+---
 
-## Case-Erklärung mit Beispielen
-- **PascalCase**: Jedes Wort beginnt mit einem Großbuchstaben, keine Leerzeichen
-    - **Beispiel**: `ThisIsPascalCase`
-- **camelCase**: Das erste Wort beginnt mit einem Kleinbuchstaben, jedes weitere Wort beginnt mit einem Großbuchstaben, keine Leerzeichen
-    - **Beispiel**: `thisIsCamelCase`
-- **camelCase mit Unterstrich am Anfang**: Das erste Wort beginnt mit einem Kleinbuchstaben, jedes weitere Wort beginnt mit einem Großbuchstaben, keine Leerzeichen, Unterstrich am Anfang
-    - **Beispiel**: `_thisIsCamelCaseWithUnderscore`
-- **UPPERCASE_WITH_UNDERSCORES**: Alle Buchstaben sind Großbuchstaben, Wörter sind durch Unterstriche getrennt
-    - **Beispiel**: `THIS_IS_UPPERCASE_WITH_UNDERSCORES`
+## Team Members 🧑‍💻
 
-### Beispiel-Klasse
-```csharp
-namespace ExampleNamespace
-{
-    public class ExampleClass : IExampleInterface
-    {
-        private int _exampleVariable;
-        public int ExampleVariable { get; set; }
+- Esposito Diego
+- Geisser Fabio
+- Hofer Levin
+- Kryeziu Leona
+- Wyss Julien
+- Zürcher Patrick
 
-        public const int EXAMPLE_CONSTANT = 0;
+---
 
-        public void ExampleMethod(int exampleParameter)
-        {
-            int exampleLocalVariable = 0;
-        }
-    }
-}
-```
-## Code-Struktur
-- **Klammern**: Klammerung auf neuer Zeile
- - **Beispiel**:
-    ```csharp
-    public void Method()
-    {
-        // Code
-    }
-    ```
+## Table of Contents
 
-- **Kommentare**: 
-    - **Sprache**: Englisch
-    - **Methoden/Klassen Dokumentation**: XML-Dokumentation
-        - **Beispiel**:
-        ```csharp
-        /// <summary>
-        /// This is a summary of the method.
-        /// </summary>
-        /// <param name="param1">This is the first parameter.</param>
-        /// <param name="param2">This is the second parameter.</param>
-        /// <returns>This method returns a string.</returns>
-        public string Method(int param1, int param2)
-        {
-            // Code
-        }
-        ```
+- [Key Features](#key-features)
+- [How to Start Development](#how-to-start-development)
+    - [Prerequisites](#prerequisites)
+    - [Clone the Repository](#clone-the-repository)
+    - [Open with Unity](#open-with-unity)
+- [Testing & Quality Metrics](#testing-and-quality-metrics)
+    - [Static Code Analysis](#static-code-analysis)
+    - [Code Coverage](#code-coverage)
+- [Testing Concept](#testing-concept)
+- [Change Log](#change-log)
+- [Development](#development)
+- [Coding Guidelines](#code-guidelines)
+- [Project Wiki](#project-wiki)
+- [License](#license)
 
-## Ordnerstruktur
-Alles Skripte werden in den `Assets/Scripts/Subfolder` Ordner gespeichert.
-### Beispiel
-```
-├── Assets/
-│   └── Scripts/
-│       ├── Camera/
-│       │   ├── CameraController.cs
-│       │   └── CameraMovement.cs
-│       ├── RessourceManager/
-│       │   └── RessourceManager.cs
-│       ├── Network/
-│       │   └── NetworkManager.cs
-│       └── UIMenu/
-│           └── ViewManager.cs
-```
+---
 
-## Branching Regeln
-- **Branches**: Jedes Task sollte in einem eigenen Branch entwickelt werden
-- **Branch-Namen**: Der Branch-Name sollte aus dem Task-Titel bestehen
-- **Wichtig**: Vor dem Branch-Namen noch ein `Feature/` oder `Bug/` oder `Documentation/` -prefix hinzufügen (z.B. `Feature/Task-Title`)
+## Key Features
 
-## Scrum Regeln und Beschreibungen
+- **Game Initialization**: Host can select available buildings, technologies, and the map.
+- **HexGrid System**: Each player has one or more HexGrids.
+- **Team Support**: Teams are supported in the backend.
+- **Resource Management**: Buildings affect resources over time.
+- **Modular Building System**: Easily add new buildings and technologies.
 
-### Scum Beschreibung
-Was ist Scrum?
-- Scrum ist ein agiles Framework, das Teams dabei hilft, komplexe Probleme zu lösen, indem es sich auf die kontinuierliche Verbesserung konzentriert, indem es auf die Prinzipien von Transparenz, Inspektion und Anpassung setzt.
+---
+
+## How to Start Development
+
+Follow these steps to get up and running with the project.
+
+### Prerequisites
+
+•⁠  ⁠*Unity Editor*: [Download Unity Hub](https://unity.com/download) and install the correct Unity version:
+- 🔧 *Version:* ⁠ Unity 6000.0.37f1 ⁠
+  •⁠  ⁠(Optional) *Rider* or any C# IDE with Unity support
 
 
-### Aufgaben Aufbau
-- **User Story**: Eine User Story ist eine kurze Beschreibung einer Funktion, die aus der Sicht des Benutzers geschrieben ist. Sie beschreibt, was der Benutzer tun kann und warum.
-    - **Akzeptanzkriterien**: Die Akzeptanzkriterien sind die Bedingungen, die erfüllt sein müssen, damit die User Story als abgeschlossen betrachtet wird.
-- **Task**: Ein Task ist eine Aufgabe, die erledigt werden muss, um die User Story zu vervollständigen.
+###  Clone the Repository
 
-Eine User Story wird durch den/die Entwickler in Tasks aufgeteilt. Jeder Task wird von einem Entwickler bearbeitet und sobald der Task abgeschlossen ist, wird er in den `main` Branch gemerged. (Auch wenn dabei die User Story noch nicht vollständig abgeschlossen ist)
+⁠ bash
+git clone https://github.com/PM4-FS25-FortressForge/PM4-FS25-FortressForge.git
+ ⁠
+
+### Open with Unity
+
+•⁠  ⁠Open Unity Hub
+- Navigate to Add -> Add project from disk
+- Navigate to your clones Repository
+- *Important:* Make sure to select the ⁠ FortressForge/ ⁠ subfolder (not the root of the repository)
+    - This is the actual Unity project folder
+
+Now you can start your installation with Unity.
+
+---
+## Testing Concept
+
+## Overview
+
+The goal of this testing concept is to ensure a bug-free and user-friendly experience in **FortressForge**. To achieve this, we use a combination of **automated** and **manual** testing methods, prioritizing key areas that impact the overall functionality of the game.
+
+### Testing Approach
+
+Due to the complexity introduced by **Unity** and **FishNet**, we do **not aim for 100% test coverage**. Instead, we take a pragmatic approach based on the following considerations:
+
+### Why We Don't Aim for Full Coverage
+
+- **Covered by Frameworks**: Many lower-level behaviors are already handled by Unity or FishNet.
+- **High Complexity**: Some areas are too complex to test given the project's timeframe and learning curve.
+- **Difficult to Automate**: Features like multiplayer synchronization across multiple clients and servers are not easily automatable with our current resources.
+- **Obvious Failures**: Some critical errors would be immediately noticeable during normal gameplay (e.g., core startup issues).
+
+### What We Prioritize
+
+- **Automated Tests**: Where feasible, we use automated testing to cover reusable logic and to assist in future refactoring.
+- **Manual Testing**: Complex or highly integrated systems (e.g., UI behavior, performance, multiplayer sync) are tested manually through active gameplay.
+
+### Summary
+
+We believe this balanced testing strategy ensures stability and playability without overwhelming the team with unrealistic testing demands. As the game's logic evolves, our testing depth and coverage will grow accordingly.
+
+## Static Code Analysis
+We use Sonarqube to perform static code analysis. It checks for code quality and style issues. Reports are available in [location or CI logs, or tool dashboard].
+
+## Code Coverage
+Test coverage is currently at **54%**, as shown below:
+
+![Code Coverage Report](/ProjectDocumentationFiles/Readme%20Pictures/CodeCoverage.png)
+
+This coverage report shows which parts of the codebase are covered by automated tests. 
+Next step would be to continuously improve this metric to ensure better test reliability and robustness.
+
+## Detailed Testing concept
+See [Test Konzept FortressForge](ProjectDocumentationFiles/Test%20Konzept%20FortressForge.docx) for a detailed description of our testing concept.
+
+---
+
+## Change Log
+
+- 07.06.2025: Weapon Controls
+- 27.05.2025: Magma Resource
+- 20.05.2025: Lobby to GameView to Lobby connection
+- 16.04.2025: Game Initializer
+- 12.04.2025: Multi Block Build
+- 03.04.2025: Building System
+- 31.03.2025: Economy Logic
+- 24.03.2025: Hexgrid
+- 20.03.2025: GitHub Actions, SonarQube
+- 20.03.2025: Camera Implementation
+
+---
+
+## Development
+
+### Scrum Rules and Descriptions
+
+What is Scrum?
+
+* Scrum is an agile framework that helps teams solve complex problems by focusing on continuous improvement, based on the principles of transparency, inspection, and adaptation.
+
+### Task Structure
+
+* **User Story**: A user story is a short description of a feature written from the user's perspective. It describes what the user can do and why.
+
+  * **Acceptance Criteria**: The acceptance criteria are the conditions that must be met for the user story to be considered complete.
+* **Task**: A task is a piece of work that needs to be done to complete the user story.
+
+A user story is broken down into tasks by the developer(s). Each task is worked on by a single developer and is merged into the `main` branch once completed (even if the user story as a whole is not yet finished).
 
 ### Sprint
-- **Dauer**: 2 Wochen
-- **Sprint Planning**: Am Anfang des Sprints wird ein Sprint Planning Meeting abgehalten, in dem die User Stories ausgewählt werden, die in diesem Sprint bearbeitet werden sollen.
-- **Daily Standup**: Mehrmals in der Woche wird ein Standup Meeting abgehalten, in dem jeder Entwickler sagt, was er am die letzten Tage gemacht hat, was er heute machen wird und ob es irgendwelche Probleme gibt.
-- **Sprint Review**: Am Ende des Sprints wird ein Sprint Review Meeting abgehalten, in dem die User Stories, die abgeschlossen wurden, präsentiert werden.
-- **Sprint Retrospective**: Am Ende des Sprints wird ein Sprint Retrospective Meeting abgehalten, in dem das Team darüber spricht, was gut gelaufen ist, was nicht gut gelaufen ist und was verbessert werden kann.
 
+* **Duration**: 2 weeks
+* **Sprint Planning**: At the beginning of the sprint, a Sprint Planning meeting is held where the user stories to be worked on during the sprint are selected.
+* **Daily Standup**: Several times a week, a standup meeting is held where each developer shares what they worked on recently, what they will work on today, and if there are any blockers.
+* **Sprint Review**: At the end of the sprint, a Sprint Review meeting is held to present the completed user stories.
+* **Sprint Retrospective**: At the end of the sprint, a Sprint Retrospective meeting is held where the team discusses what went well, what didn’t go well, and what can be improved.
 
-## Quelle
-- [Unity Code Styles](https://unity.com/how-to/naming-and-code-style-tips-c-scripting-unity)
-- [Microsoft C# Documentation Comments](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/language-specification/documentation-comments)
+---
+
+## Coding Guidelines
+
+Please follow our coding guidelines to ensure code quality and consistency across the project.  
+[Guidelines](CodingGuidelines.md)
+
+---
+
+## Project Wiki
+
+For detailed documentation, guides, and additional resources, visit the [Project Wiki](https://pm4-fs25-fortressforge.github.io/PM4-FS25-FortressForge/).
+
+---
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+
 
