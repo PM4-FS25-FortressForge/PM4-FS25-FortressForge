@@ -7,6 +7,10 @@ Game Screenshots:
 ![Fortress](ProjectDocumentationFiles/Readme Pictures/Picture Fortress 1.png)
 ![Canons](ProjectDocumentationFiles/Readme Pictures/Picture Canons.png)
 
+Game Trailer & Gameplay:
+
+[![Fortress Forge Trailer](ProjectDocumentationFiles/Readme Pictures/Trailer Video Thumbnail.png)](https://youtu.be/FKWZydHwMPI)
+(Link: https://www.youtube.com/watch?v=FKWZydHwMPI)
 ---
 
 ## Team Members 🧑‍💻
