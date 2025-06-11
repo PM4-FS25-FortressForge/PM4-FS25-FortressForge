@@ -109,7 +109,11 @@ Due to the complexity introduced by **Unity** and **FishNet**, we do **not aim f
 We believe this balanced testing strategy ensures stability and playability without overwhelming the team with unrealistic testing demands. As the game's logic evolves, our testing depth and coverage will grow accordingly.
 
 ## Static Code Analysis
-We use Sonarqube to perform static code analysis. It checks for code quality and style issues. Reports are available in [location or CI logs, or tool dashboard].
+We originally tried using Sonarqube to perform static code analysis. After investing around 8 hours into this problem. It proved to be impossible or too difficult. 
+The usage of Unity was the main reason for this, as it is not fully compatible with Sonarqube.
+Here is the link to sonarqube: https://sonarqube.pm4.init-lab.ch/dashboard?id=FortressForge
+Instead, we utilized the **Rider** IDE plugin SonarLint for static code analysis. And added a picture of the results below (Note: We left some issues unresolved, as they are not relevant to the project or are false positives): 
+![SonarLint Results](/ProjectDocumentationFiles/Readme%20Pictures/SonarLintResults.png)
 
 ## Code Coverage
 Test coverage is currently at **54%**, as shown below:

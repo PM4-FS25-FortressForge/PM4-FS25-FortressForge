@@ -55,7 +55,7 @@ namespace FortressForge.CameraControll
         [SerializeField] public float ButtonsZoomSpeed = 5f; // Zoom input with the Buttons is bigger to make the buttons more sensitive
         private float _targetZoom;  // Zoomtarget that will be reached by SmoothDamp
         private float _zoomVelocity; // SmoothDamp (used in HandleZoom methode) needs this velocity-Reference
-        private float _buildingSelectionZoom = 60f; // Default zoom level when moving to a building
+        private readonly float _buildingSelectionZoom = 60f; // Default zoom level when moving to a building
         private readonly float _zoomSmoothTime = 0.2f; // the time it takes to reach the _targetZoom (bigger value more smooth but less accurate)
         
         [FormerlySerializedAs("_config")]

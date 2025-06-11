@@ -138,7 +138,7 @@ namespace FortressForge.BuildingSystem.BuildManager
         public void OnPlaceAction(InputAction.CallbackContext context)
         {
             if (!IsOwner) return;
-            if (context.performed && _previewController.IsPreviewMode)
+            if (context.performed && _previewController.IsPreviewMode && _previewController.HoveredHexTile != null)
             {
                 var coord = _previewController.HoveredHexTile.HexTileCoordinate;
                 TryPlaceBuildingServerRpc(_selectedBuildingIndex, coord, _previewController.CurrentPreviewBuildingRotation);
